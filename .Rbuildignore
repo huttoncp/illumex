@@ -1,0 +1,13 @@
+^\.gitignore$
+^\.git$
+^\.Rproj\.user$
+^.*\.Rproj$
+^.*\.Rcheck$
+^_pkgdown\.yml$
+^docs$
+^pkgdown$
+^\.github$
+^CODE_OF_CONDUCT\.md$
+^CONTRIBUTING\.md$
+^LICENSE\.md$
+^dev$
