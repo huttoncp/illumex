@@ -1,3 +1,8 @@
+# illumex 0.0.8.9000
+
+* The version moves in step with `illume` 0.0.8.9000, which now requires
+  `illumex (>= 0.0.8.9000)`. Nothing any function does has changed.
+
 # illumex 0.0.7.9000
 
 * First version: the exploratory half of `illume` 0.0.7.9000, split out into a
