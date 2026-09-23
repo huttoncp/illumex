@@ -1,4 +1,4 @@
-# illumex
+# illumex <a href="https://huttoncp.github.io/illumex/"><img src="man/figures/logo.png" align="right" height="139" alt="illumex website" /></a>
 
 **Describe, Clean, Plot and Profile Data Before a Model.**
 
