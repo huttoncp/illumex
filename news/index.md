@@ -32,3 +32,5 @@
 - It needs neither TMB nor RTMB. Its only imports are `collapse`,
   `tinyplot` and base R’s own packages, and `cluster`, `isotree` and
   `PCAmixdata` are used where they are installed.
+- illumex has a hex sticker of its own. It is shown in the README and on
+  the pkgdown site, and the site’s favicons are made from it.
