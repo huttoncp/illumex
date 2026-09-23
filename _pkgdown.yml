@@ -1,0 +1,124 @@
+url: https://huttoncp.github.io/illumex/
+template:
+  bootstrap: 5
+  bslib:
+    primary: "#2a6f97"
+
+home:
+  title: Describe, Clean, Plot and Profile Data Before a Model
+
+navbar:
+  structure:
+    left:  [reference, articles, news, illume]
+    right: [search, github]
+  components:
+    illume:
+      text: Modelling (illume)
+      href: https://huttoncp.github.io/illume/
+
+articles:
+- title: Articles
+  navbar: ~
+  contents:
+  - exploring-data
+  - profiling
+  - anomaly-detection
+
+reference:
+- title: "Describing data"
+  desc: >
+    Descriptive statistics, counts, and the things that are wrong with a data frame before any model sees it.
+  contents:
+  - ilm_describe_all
+  - ilm_describe
+  - ilm_frame_issues
+  - ilm_gauss_check
+  - ilm_copies
+  - ilm_counts
+  - ilm_counts_all
+  - ilm_counts_tb
+  - ilm_counts_tb_all
+  - ilm_dupes
+- title: "Cleaning"
+  desc: >
+    Tidying a data frame and recoding values that were entered wrongly.
+  contents:
+  - ilm_recode_errors
+  - ilm_recode_errors_vec
+  - ilm_translate
+  - ilm_wash_df
+- title: "Uncertainty without a model"
+  desc: >
+    Bootstrap intervals for a statistic, and for differences between groups.
+  contents:
+  - ilm_boot_ci
+  - ilm_boot_diff
+  - ilm_plot_boot_diff
+- title: "Outliers and anomalies"
+  desc: >
+    A value extreme for its own column, against a row implausible as a combination.
+  contents:
+  - ilm_anomaly
+  - ilm_anomalous
+  - ilm_plot_anomaly
+  - ilm_outliers
+  - ilm_outliers_all
+- title: "Structure: profile, cluster, reduce"
+  desc: >
+    ilm_profile() is the front door: it reduces, clusters and describes the groups in one call, and handles mixed columns. The other two are the same pipeline taken a step at a time, for when you want the coordinates or the partition on their own.
+  contents:
+  - ilm_profile
+  - ilm_var_contrib
+  - ilm_cluster
+  - ilm_reduce
+  - ilm_glrm
+  - ilm_profile_na
+  - ilm_cluster_na
+  - ilm_reduce_na
+  - ilm_plot_cluster
+  - ilm_plot_cluster_gap
+  - ilm_plot_profile
+  - ilm_plot_reduce
+  - ilm_plot_reduce_contrib
+  - ilm_plot_reduce_scree
+- title: "Missing values"
+  desc: >
+    What is missing, whether it matters, and which values go missing together. Filling them in and pooling across the imputations is illume's.
+  contents:
+  - ilm_check_missing
+  - ilm_describe_na_all
+  - ilm_describe_na
+  - ilm_plot_missing
+  - ilm_plot_na
+  - ilm_plot_na_all
+- title: "Plots"
+  desc: >
+    Built on tinyplot, named for what they show.
+  contents:
+  - ilm_plot
+  - ilm_plot_all
+  - ilm_pick_geom
+  - ilm_geom_spec
+  - ilm_plot_bar
+  - ilm_plot_box
+  - ilm_plot_c
+  - ilm_plot_density
+  - ilm_plot_histogram
+  - ilm_plot_line
+  - ilm_plot_scatter
+  - ilm_plot_stat_error
+  - ilm_plot_var
+  - ilm_plot_var_all
+  - ilm_plot_var_pairs
+  - ilm_plot_violin
+- title: "Example data"
+  desc: >
+    A grouped data set with a known structure, used throughout the examples.
+  contents:
+  - ilm_sim
+- title: "Shared parameters and print methods"
+  desc: >
+    Documentation shared across functions, and methods you call by printing rather than by name.
+  contents:
+  - ilm_progress_arg
+  - ilm_selection
