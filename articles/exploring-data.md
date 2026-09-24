@@ -638,9 +638,9 @@ cat(p$summary, sep = "\n\n")
 #> 
 #> Cluster 2 holds 7 rows, 21.9% of the data (moderate). What sets it apart: qsec is higher: the middle half 18.9 to 20.2, against 16.9 to 18.9 overall; vs is higher: the middle half 1 to 1, against 0 to 1 overall; cyl is '8' for none of them, against 44% overall; and am is '0' for 100% of them, against 59% overall. 1 of its members sits close enough to another cluster to be uncertain.
 #> 
-#> Cluster 3 holds 12 rows, 37.5% of the data (stable). What sets it apart: cyl is '8' for 100% of them, against 44% overall; disp is higher: the middle half  276 to 400, against  120 to 318 overall; gear is lower: the middle half 3 to 3, against 3 to 4 overall; and wt is higher: the middle half 3.52 to 4.07, against 2.46 to 3.57 overall. Less strongly, 5 more variables set it apart as well.
+#> Cluster 3 holds 12 rows, 37.5% of the data (stable). What sets it apart: cyl is '8' for 100% of them, against 44% overall; disp is higher: the middle half 276 to 400, against 120 to 318 overall; gear is lower: the middle half 3 to 3, against 3 to 4 overall; and wt is higher: the middle half 3.52 to 4.07, against 2.46 to 3.57 overall. Less strongly, 5 more variables set it apart as well.
 #> 
-#> Cluster 4 holds 8 rows, 25.0% of the data (stable). What sets it apart: cyl is '4' for 100% of them, against 34% overall; mpg is higher: the middle half 22.8 to 30.4, against 15.2 to 22.8 overall; wt is lower: the middle half 1.62 to  2.2, against 2.46 to 3.57 overall; and am is '0' for none of them, against 59% overall. Less strongly, 6 more variables set it apart as well.
+#> Cluster 4 holds 8 rows, 25.0% of the data (stable). What sets it apart: cyl is '4' for 100% of them, against 34% overall; mpg is higher: the middle half 22.8 to 30.4, against 15.2 to 22.8 overall; wt is lower: the middle half 1.62 to 2.2, against 2.46 to 3.57 overall; and am is '0' for none of them, against 59% overall. Less strongly, 6 more variables set it apart as well.
 ```
 
 The reduction picks its own method from the column types: PCA when they
