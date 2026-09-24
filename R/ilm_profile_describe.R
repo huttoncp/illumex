@@ -32,13 +32,15 @@
 ## ---------------------------------------------------------------------------
 
 ## Numbers as a reader writes them: whole numbers stay whole, large ones get a
-## thousands separator, the rest three significant figures.
+## thousands separator, the rest three significant figures. Trimmed, because
+## formatC()'s "fg" pads to a common width -- 2.1 comes back as " 2.1" --
+## which in a sentence is a run of spaces.
 #' @keywords internal
 #' @noRd
 ilm_fmt_num <- function(v) {
   if (all(abs(v - round(v)) < 1e-9, na.rm = TRUE))
-    return(formatC(round(v), format = "d", big.mark = ","))
-  formatC(signif(v, 3), format = "fg", digits = 3, big.mark = ",")
+    return(trimws(formatC(round(v), format = "d", big.mark = ",")))
+  trimws(formatC(signif(v, 3), format = "fg", digits = 3, big.mark = ","))
 }
 
 ## The v-test of the rows in `m` against all rows, for a mean and for a share.
