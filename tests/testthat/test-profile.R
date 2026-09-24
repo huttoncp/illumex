@@ -282,3 +282,11 @@ test_that("the v-tests and the words for them", {
                    "Not distinctive in any cluster: 37 of the 45 variables.")
   expect_null(cl(character(0), 5))
 })
+
+test_that("the numbers in the profile prose carry no padding", {
+  ## formatC()'s "fg" pads to a common width, which in a sentence is a run of
+  ## spaces
+  expect_identical(ilm_fmt_num(c(2.1, 0.61, 15.2, 1234.5)),
+                   c("2.1", "0.61", "15.2", "1,230"))
+  expect_identical(ilm_fmt_num(c(5, 287, 1230)), c("5", "287", "1,230"))
+})
