@@ -99,18 +99,30 @@ is solid.
 
 ## Characterising
 
-The step people usually do by hand, badly. For each cluster and each variable it
-asks whether that cluster's mean (or its proportion in a category) differs from
-the overall one by more than sampling would explain, and reports a v-test.
+The step people usually do by hand, badly. Each cluster is compared with all
+rows on every variable the clustering used, and described in that variable's
+own units: a number by its middle half against everyone's, a category by the
+value whose share in the cluster sits furthest from its share among all rows, a
+date by its middle half and by any stretch of the week, month or year where the
+cluster stands out.
 
 ```{r}
-pr$characterization
-pr$summary                    # in words
+cat(pr$summary, sep = "\n\n")   # a paragraph per cluster
+pr$characterization               # every comparison behind them
+pr$frequencies                    # every value of every category, per cluster
+pr$by_cluster                     # ilm_describe_all(), by cluster
 ```
 
-The summary lines name the two variables that most distinguish each cluster and
-the direction, which is what a cluster is for: "high on income and education,
-low on commute time" is a finding, and "cluster 3" is not.
+The variables are ranked by a v-test -- how far the cluster's mean or share sits
+from everyone's, in standard errors of a subset that size -- and named, strongest
+first, when it clears 1.96 and the difference is big enough to matter: 0.2
+standard deviations for a number, 10 percentage points for a share. With many
+rows a chance difference clears 1.96 on its own, which is what the second bar is
+for. Variables that set no cluster apart are said to, after the paragraphs.
+
+That is what a cluster is for: "older, mostly retired, living alone or in twos"
+is a finding, and "cluster 3" is not. The v-test ranks the differences; it does
+not test them, since the clusters were found from these same variables.
 
 ## What this is, and is not
 

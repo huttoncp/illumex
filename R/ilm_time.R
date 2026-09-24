@@ -291,15 +291,13 @@ ilm_time_rhythms <- function(x, others, cand, B = 199L, max_n = 5000L) {
 ## ---------------------------------------------------------------------------
 ## Back from numbers to time, for the descriptions.
 ##
-## The reductions see a date as the numbers above, and a characterisation
-## built on them reported it that way: "high day_elapsed" is true and says
-## nothing a reader can use, and "high when_wday_cos" says less. So every
-## encoded column is traced back to the date it came from and the aspect of
-## it that it carries, and a cluster is then described in dates: the middle
-## half of it on the time line, and for a cycle the stretch of the day, week,
-## month or year where it stands out, beside the share of all rows in that
-## same stretch. A cluster of month-end transactions reads "94% from the 29th
-## to the 31st of the month (all rows 11%)".
+## The reductions see a date as the numbers above; a reader should not. Every
+## encoded column is traced back to the date it came from and the aspect of it
+## that it carries, so that a cluster is described in dates (see
+## ilm_profile_characterize()): its middle half on the time line, and for a
+## cycle the stretch of the day, week, month or year where it stands out,
+## beside the share of all rows in that same stretch -- "falls from the 29th
+## to the 31st of the month for 94% of them, against 11% overall".
 ## ---------------------------------------------------------------------------
 
 ilm_time_words <- c(elapsed = "time line", duration = "length",
@@ -343,21 +341,6 @@ ilm_time_formatter <- function(x) {
 ilm_time_number <- function(x)
   if (inherits(x, c("difftime", "Date"))) as.numeric(x) else as.numeric(as.POSIXct(x))
 
-## The middle half of the rows in `m` on the time line, and of all rows.
-#' @keywords internal
-#' @noRd
-ilm_time_middle <- function(x, m, fmt) {
-  num <- ilm_time_number(x)
-  q <- function(z) stats::quantile(z, c(0.25, 0.75), type = 1, na.rm = TRUE,
-                                   names = FALSE)
-  if (!any(m & !is.na(num)))
-    return(list(text = NA_character_, share = NA_real_, share_all = NA_real_))
-  qc <- q(num[m]); qa <- q(num)
-  list(text = sprintf("middle half %s to %s (all rows %s to %s)", fmt(qc[1]),
-                      fmt(qc[2]), fmt(qa[1]), fmt(qa[2])),
-       share = NA_real_, share_all = NA_real_)
-}
-
 #' @keywords internal
 #' @noRd
 ilm_ordinal <- function(d)
@@ -369,9 +352,11 @@ ilm_ordinal <- function(d)
 ## The stretch may wrap -- 22:00 to 03:59, November to February -- which is
 ## the reason for the sine and cosine in the first place, and it may be where
 ## the cluster is ABSENT: a cluster of weekday rows is best said as "only 3%
-## on Sat-Sun". The stretch was chosen to flatter the cluster, so a
-## difference is guaranteed; it is reported only when it clears 15 points
-## and three standard errors of a share at the cluster's size.
+## on Sat-Sun". The stretch was chosen to flatter the cluster, so a difference
+## is guaranteed; `stands_out` is whether it clears 15 points and three
+## standard errors of a share at the cluster's size, and only then is it
+## worth a reader's attention. Returns the stretch in words, the two shares,
+## and which rows fall in it; NULL when the cluster has no dated rows.
 #' @keywords internal
 #' @noRd
 ilm_time_arc <- function(x, m, aspect) {
@@ -381,8 +366,7 @@ ilm_time_arc <- function(x, m, aspect) {
   nb <- c(hour = 24L, wday = 7L, mday = 31L, yday = 12L)[[aspect]]
   ok <- !is.na(b)
   cc <- tabulate(b[m & ok] + 1L, nb); ca <- tabulate(b[ok] + 1L, nb)
-  if (!sum(cc))
-    return(list(text = NA_character_, share = NA_real_, share_all = NA_real_))
+  if (!sum(cc)) return(NULL)
   best <- NULL
   ## shortest first, so a longer stretch has to do strictly better
   for (len in seq_len(nb %/% 2L)) for (s in seq_len(nb) - 1L) {
@@ -392,8 +376,6 @@ ilm_time_arc <- function(x, m, aspect) {
       best <- list(s = s, len = len, sh = sh, sa = sa)
   }
   se <- sqrt(best$sa * (1 - best$sa) / sum(cc))
-  if (abs(best$sh - best$sa) < max(0.15, 3 * se))
-    return(list(text = "much as all rows", share = NA_real_, share_all = NA_real_))
   s <- best$s; len <- best$len; e <- (s + len - 1L) %% nb
   rng <- function(labs) if (len == 1L) labs[s + 1L]
                         else paste0(labs[s + 1L], "-", labs[e + 1L])
@@ -404,59 +386,7 @@ ilm_time_arc <- function(x, m, aspect) {
            else sprintf("from the %s to the %s of the month",
                         ilm_ordinal(s + 1L), ilm_ordinal(e + 1L)),
     yday = paste("in", rng(month.abb)))
-  pc <- round(100 * best$sh)
-  list(text = sprintf("%s %s (all rows %d%%)",
-                      if (!pc) "none" else if (best$sh < best$sa)
-                        sprintf("only %d%%", pc) else sprintf("%d%%", pc),
-                      lab, round(100 * best$sa)),
-       share = best$sh, share_all = best$sa)
-}
-
-## One row per cluster, date column and aspect of it the reduction used.
-#' @keywords internal
-#' @noRd
-ilm_time_describe <- function(data, map, cl) {
-  out <- list()
-  for (col in intersect(names(map), names(data))) {
-    x <- data[[col]]
-    if (!ilm_is_time(x)) next
-    asp <- unique(unname(map[[col]]))
-    fmt <- ilm_time_formatter(x)
-    for (cc in sort(unique(cl[!is.na(cl)]))) {
-      m <- !is.na(cl) & cl == cc
-      for (a in asp) {
-        d <- if (a %in% c("elapsed", "duration")) ilm_time_middle(x, m, fmt)
-             else ilm_time_arc(x, m, a)
-        out[[length(out) + 1L]] <- data.frame(
-          cluster = cc, variable = col, aspect = ilm_time_words[[a]],
-          description = d$text, share = d$share, share_all = d$share_all,
-          stringsAsFactors = FALSE)
-      }
-    }
-  }
-  if (!length(out)) return(NULL)
-  res <- do.call(rbind, out)
-  rownames(res) <- NULL
-  res
-}
-
-## The sentence a cluster's description gains for the dates among its top
-## variables: each date, and each aspect of it that was named, in dates.
-#' @keywords internal
-#' @noRd
-ilm_time_sentence <- function(vars, map, desc, cc) {
-  if (is.null(desc) || !length(vars)) return(character(0))
-  hit <- Filter(Negate(is.null), lapply(unique(vars), ilm_time_aspect, map = map))
-  if (!length(hit)) return(character(0))
-  cols <- unique(vapply(hit, `[[`, "", "column"))
-  vapply(cols, function(col) {
-    asp <- unique(vapply(Filter(function(h) h$column == col, hit), `[[`, "", "aspect"))
-    ## an aspect the cluster is unremarkable on says nothing in a sentence;
-    ## it stays in the table
-    d <- desc[desc$cluster == cc & desc$variable == col &
-                desc$aspect %in% ilm_time_words[asp] & !is.na(desc$description) &
-                desc$description != "much as all rows", , drop = FALSE]
-    if (!nrow(d)) return("")
-    paste0(col, ": ", paste(d$description, collapse = "; "), ".")
-  }, "", USE.NAMES = FALSE)
+  list(lab = lab, share = best$sh, share_all = best$sa,
+       hit = ifelse(ok, b %in% ((s + seq_len(len) - 1L) %% nb), NA),
+       stands_out = abs(best$sh - best$sa) >= max(0.15, 3 * se))
 }

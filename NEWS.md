@@ -26,12 +26,28 @@
   all of those: the year and the date count the trend twice and take over the
   reduction, and a numbered month puts December as far from January as it
   can.
-* Cluster descriptions speak in dates. A cluster is "later day", not "high
-  day_elapsed", and its sentence ends with its dates: the middle half of it
-  against the middle half of all rows, and for a cycle the stretch where it
-  stands out -- "94% between 20:00 and 23:59 (all rows 50%)", "only 3% on
-  Sat-Sun (all rows 50%)". `ilm_profile()` returns the same for every
-  cluster and aspect as `time`.
+* `ilm_profile()` and `ilm_profile_na()` describe each cluster by the original
+  variables that set it apart, in their own units, rather than by the
+  reduction's dimensions: "employment is 'retired' for 86% of them, against
+  21% overall; age is higher: the middle half 64 to 72, against 29 to 54
+  overall". The dimension-based sentences named which variables a cluster's
+  position was made of without saying which way the cluster lay on them: on a
+  sample with three known subgroups, which the clustering recovered almost
+  exactly, two of the three got the same sentence word for word. Variables are
+  ranked by a v-test against all rows (as FactoMineR's `catdes()`) and named
+  when it clears `vtest_threshold` and the difference is big enough to matter,
+  0.2 standard deviations or 10 percentage points -- on 1,200 rows a column of
+  pure noise cleared 1.96 in two clusters of three. A date is described in
+  dates, down to the stretch of a cycle where a cluster stands out ("falls on
+  Sat-Sun for 87% of them, against 50% overall"); markers of missingness as
+  "income is missing for 92% of them". The variables that set no cluster apart
+  are named after the paragraphs, or counted when there are many.
+* `ilm_profile()`'s `characterization` is now one row per cluster and variable
+  (and aspect of a date); `frequencies` is new (every value of every
+  categorical variable, per cluster, with its count, its share and its share
+  among all rows), as is `by_cluster` (`ilm_describe_all()` of the variables,
+  by cluster). `top_n_vars` now caps the variables named for one cluster, and
+  defaults to 4.
 * `ilm_var_contrib()` scores a date on the aspects the clustering used, its
   time line or a cycle, and says which in `type` ("date: day of the week").
   Scored on the time line alone, a clustering that split on the day of the

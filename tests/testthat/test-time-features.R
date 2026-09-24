@@ -96,17 +96,24 @@ test_that("a cycle is described where the cluster stands out, wrapping if it mus
   h <- c(runif(200, 22, 28) %% 24, runif(200, 8, 18))
   x <- start + sample(0:400, 400, TRUE) * 86400 + h * 3600
   m <- rep(c(TRUE, FALSE), each = 200)
-  expect_identical(arc(x, m, "hour")$text, "100% between 22:00 and 03:59 (all rows 50%)")
+  a1 <- arc(x, m, "hour")
+  expect_identical(a1$lab, "between 22:00 and 03:59")
+  expect_equal(c(a1$share, a1$share_all), c(1, 0.5))
+  expect_true(a1$stands_out)
+  expect_identical(a1$hit, (as.POSIXlt(x)$hour >= 22) | (as.POSIXlt(x)$hour < 4))
   ## where a cluster is absent is as much a description as where it is
-  expect_identical(arc(x, !m, "hour")$text, "none between 22:00 and 03:59 (all rows 50%)")
-  ## and rows no different from the rest are said to be so
-  expect_identical(arc(x, sample(m), "wday")$text, "much as all rows")
+  a0 <- arc(x, !m, "hour")
+  expect_identical(a0$lab, "between 22:00 and 03:59")
+  expect_equal(a0$share, 0)
+  ## and rows no different from the rest do not stand out
+  expect_false(arc(x, sample(m), "wday")$stands_out)
   ## month-end is the end of each month, whatever its length
   cal <- as.Date("2022-01-01") + 0:(3 * 365 - 1); l <- as.POSIXlt(cal)
   end <- l$mday > illumex:::ilm_month_days(l) - 3
   y <- c(sample(cal[end], 150, TRUE), sample(cal[!end], 250, TRUE))
   a <- arc(y, rep(c(TRUE, FALSE), c(150, 250)), "mday")
-  expect_match(a$text, "^9[0-9]% from the 2[0-9]th to the 31st of the month")
+  expect_match(a$lab, "^from the 2[0-9]th to the 31st of the month$")
+  expect_gt(a$share, 0.9)
   expect_gt(a$share - a$share_all, 0.5)
 })
 
@@ -115,14 +122,13 @@ test_that("the descriptions name a date in time, not as the number it was used a
   set.seed(2); d$z <- rnorm(nrow(d))
   p <- suppressMessages(ilm_profile(d[c("x", "z", "day")], k = 2, B = 5, seed = 1,
                                     var_contrib = FALSE))
-  tv <- paste(p$characterization$top_variables, collapse = " ")
-  expect_match(tv, "(later|earlier) day")
-  expect_no_match(tv, "day_elapsed")
-  ## and the sentence ends in dates: the two halves of the year, apart
   s <- paste(p$summary, collapse = " ")
-  expect_match(s, "day: middle half 2024-0[1-3]-[0-9]{2} to 2024-0[1-3]")
-  expect_match(s, "day: middle half 2024-1[0-2]-[0-9]{2} to 2024-1[0-2]")
-  expect_identical(unique(p$time$aspect), "time line")
+  expect_no_match(s, "day_elapsed")
+  ## the two halves of the year, apart, in dates
+  expect_match(s, "day is earlier: the middle half 2024-0[1-3]-[0-9]{2} to 2024-0[1-3]")
+  expect_match(s, "day is later: the middle half 2024-1[0-2]-[0-9]{2} to 2024-1[0-2]")
+  ch <- p$characterization
+  expect_identical(unique(ch$aspect[ch$variable == "day"]), "time line")
 })
 
 test_that("a clustering on a cycle is described, and scored, on that cycle", {
@@ -137,10 +143,9 @@ test_that("a clustering on a cycle is described, and scored, on that cycle", {
   p <- suppressMessages(ilm_profile(d, k = 2, B = 5, seed = 1, time = "cycles",
                                     top_n_vars = 3, var_contrib_B = 49))
   s <- paste(p$summary, collapse = " ")
-  expect_match(s, "day: day of the week")
   expect_no_match(s, "_sin|_cos")
-  expect_match(s, "[0-9]+% on Sat-Sun \\(all rows 50%\\)")
-  expect_match(s, "only [0-9]% on Sat-Sun \\(all rows 50%\\)")
+  expect_match(s, "day falls on Sat-Sun for [0-9]+% of them, against 50% overall")
+  expect_match(s, "day falls on Sat-Sun for (only [0-9]+% of them|none of them), against 50% overall")
   ## scored on the time line alone, the date that defines this clustering
   ## would have looked like noise
   expect_identical(p$var_contrib$type[p$var_contrib$variable == "day"],
@@ -148,7 +153,7 @@ test_that("a clustering on a cycle is described, and scored, on that cycle", {
   expect_lt(p$var_contrib$p[p$var_contrib$variable == "day"], 0.05)
 })
 
-test_that("two cycles of one date are named together", {
+test_that("each cycle of a date is described in its own terms", {
   set.seed(1); n <- 300
   cl <- rep(1:2, each = n / 2)
   cal <- as.Date("2022-01-01") + 0:(3 * 365 - 1); l <- as.POSIXlt(cal)
@@ -159,9 +164,8 @@ test_that("two cycles of one date are named together", {
   p <- suppressMessages(ilm_profile(d, k = 2, B = 5, seed = 1, time = "cycles",
                                     top_n_vars = 3, var_contrib = FALSE))
   s <- paste(p$summary, collapse = " ")
-  expect_match(s, "when: time of day and day of the month")
-  expect_match(s, "between 20:00 and 23:59")
-  expect_match(s, "to the 31st of the month")
+  expect_match(s, "when falls between 20:00 and 23:59 for [0-9]+% of them")
+  expect_match(s, "when falls from the 2[0-9]th to the 31st of the month for [0-9]+% of them")
 })
 
 test_that("a cycle is used only when the other columns vary with it", {

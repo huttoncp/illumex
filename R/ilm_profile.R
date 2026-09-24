@@ -1,198 +1,61 @@
 ## ---------------------------------------------------------------------------
 ## Reduce, cluster, then say what each cluster IS.
 ##
-## A cluster number tells you nothing. What is wanted is "cluster 4 is the
-## heavy, thirsty cars", and the route to that runs through the dimensions: find
-## which dimensions a cluster sits unusually far along, then name the variables
-## that load most heavily on those dimensions.
+## A cluster number tells you nothing. What is wanted is "cluster 2 is the
+## retirees: 86% retired, the middle half aged 64 to 72, living alone or in
+## twos", and that comes from comparing each cluster with all rows on the
+## original variables -- see ilm_profile_describe.R for how, and for why not
+## through the reduction's dimensions any more.
 ##
-## The unusualness measure is the v-test, the same device FactoMineR's catdes()
-## and condes() use: for cluster c on dimension d,
-## (mean_c - mean_overall) / (sd_overall / sqrt(n_c)). It is a standardised
-## statement of how surprising the cluster's average position would be if
-## membership had nothing to do with that dimension. It is NOT a p-value from a
-## model fitted to the whole design -- the clusters were found from the same
-## coordinates being tested -- so the 1.96 default is a useful cutoff rather
-## than a formal test, and is documented as one.
-##
-## The characterisation logic is shared with the missingness variant. Only the
-## labelling differs: high/low for values, "missing: x" for indicators, since a
-## present/missing marker has no meaningful high or low.
+## The same description serves the missingness variant, with present/missing
+## markers for variables: "income is missing for 92% of them".
 ## ---------------------------------------------------------------------------
-
-## For values: the direction combines the v-test's sign with the variable's own
-## correlation sign on that dimension, because a dimension can run either way.
-## A column that came from a date is named as the date, in time: "later day"
-## rather than "high day_elapsed". A sine or cosine of a cycle has no direction
-## a reader could use, so it is named by the cycle, and where in the cycle the
-## cluster sits is said in dates after the list.
-#' @keywords internal
-#' @noRd
-ilm_label_var_direction <- function(v, vtest, d_idx, reduce_res) {
-  qc <- reduce_res$fit$quanti.cor          # NULL when the method is MCA
-  up <- if (!is.null(qc) && v %in% rownames(qc))
-          sign(vtest) * sign(qc[v, d_idx]) > 0 else NA
-  ta <- ilm_time_aspect(v, reduce_res$time)
-  if (!is.null(ta))
-    return(switch(ta$aspect,
-      elapsed = if (is.na(up)) ta$column
-                else paste(if (up) "later" else "earlier", ta$column),
-      duration = if (is.na(up)) ta$column
-                 else paste(if (up) "longer" else "shorter", ta$column),
-      paste0(ta$column, ": ", ilm_time_words[[ta$aspect]])))
-  if (is.na(up)) v else paste0(if (up) "high " else "low ", v)
-}
-
-## For missingness: every variable is a present/missing marker, so direction
-## does not apply and the fact itself is the label.
-#' @keywords internal
-#' @noRd
-ilm_label_var_missing <- function(v, vtest, d_idx, reduce_res)
-  paste0("missing: ", v)
-
-#' @keywords internal
-#' @noRd
-ilm_characterize_clusters <- function(reduce_res, cluster_res, vtest_threshold,
-                                      top_n_vars, label_fn) {
-  coords <- reduce_res$ind_coord
-  dims <- setdiff(names(coords), "row_id")
-  cl <- cluster_res$ind_cluster$cluster
-  overall_mean <- vapply(coords[dims], mean, 1)
-  overall_sd <- vapply(coords[dims], stats::sd, 1)
-
-  rows <- list(); vars <- list()
-  for (cc in cluster_res$clusters$cluster) {
-    members <- which(cl == cc)
-    n_c <- length(members)
-    if (!n_c) next
-    for (d in dims) {
-      d_idx <- as.integer(sub("dim", "", d))
-      if (!is.finite(overall_sd[[d]]) || overall_sd[[d]] == 0) next
-      vtest <- (mean(coords[[d]][members]) - overall_mean[[d]]) /
-        (overall_sd[[d]] / sqrt(n_c))
-      if (!is.finite(vtest) || abs(vtest) < vtest_threshold) next
-      tv <- reduce_res$var_contrib[reduce_res$var_contrib$dim == d_idx, ,
-                                   drop = FALSE]
-      tv <- tv[order(-tv$sqload), , drop = FALSE]
-      tv <- tv[seq_len(min(top_n_vars, nrow(tv))), , drop = FALSE]
-      labs <- vapply(tv$variable, label_fn, "", vtest = vtest, d_idx = d_idx,
-                     reduce_res = reduce_res)
-      ## the cycles of one date are named together, "when: time of day and
-      ## day of the month", and the sine and cosine of one cycle once
-      ta <- lapply(tv$variable, ilm_time_aspect, map = reduce_res$time)
-      cyc <- vapply(ta, function(a) !is.null(a) &&
-                      !a$aspect %in% c("elapsed", "duration"), TRUE)
-      if (any(cyc)) {
-        colv <- vapply(ta[cyc], `[[`, "", "column")
-        aw <- ilm_time_words[vapply(ta[cyc], `[[`, "", "aspect")]
-        both <- vapply(colv, function(cv) paste(unique(aw[colv == cv]),
-                                                collapse = " and "), "")
-        labs[cyc] <- paste0(colv, ": ", both)
-      }
-      rows[[length(rows) + 1L]] <- data.frame(
-        cluster = cc, dim = d_idx, vtest = round(vtest, 2),
-        direction = if (vtest > 0) "high" else "low",
-        top_variables = paste(unique(labs), collapse = ", "),
-        stringsAsFactors = FALSE)
-      vars[[length(rows)]] <- tv$variable
-    }
-  }
-  out <- if (length(rows)) do.call(rbind, rows) else data.frame(
-    cluster = integer(0), dim = integer(0), vtest = numeric(0),
-    direction = character(0), top_variables = character(0),
-    stringsAsFactors = FALSE)
-  o <- if (nrow(out)) order(out$cluster, -abs(out$vtest)) else integer(0)
-  out <- out[o, , drop = FALSE]
-  rownames(out) <- NULL
-  ## the encoded columns behind each row's labels, which the date sentence of
-  ## the summary needs and a reader of the table does not
-  attr(out, "vars") <- vars[o]
-  out
-}
-
-#' @keywords internal
-#' @noRd
-ilm_profile_summary_lines <- function(characterization, cluster_res,
-                                      time_desc = NULL, time_map = NULL) {
-  ct <- cluster_res$clusters
-  ind <- cluster_res$ind_cluster
-  vars <- attr(characterization, "vars")
-  vapply(ct$cluster, function(cc) {
-    rc <- characterization[characterization$cluster == cc, , drop = FALSE]
-    tvars <- unlist(vars[characterization$cluster == cc])
-    si <- ct[ct$cluster == cc, , drop = FALSE]
-    n_amb <- sum(ind$cluster == cc & ind$is_ambiguous)
-    head_txt <- sprintf("Cluster %d (n = %d, %.1f%% of the data, %s)", cc,
-                        si$size, si$pct, as.character(si$stability))
-    ## Two dimensions can have the same top-loading variables -- which happens
-    ## whenever there are few variables to go round, as in a missingness
-    ## profile of a frame with two incomplete columns. Naming the same pair
-    ## twice in one sentence says nothing the first mention did not, so only
-    ## the first dimension to use a given set is reported.
-    rc <- rc[!duplicated(rc$top_variables), , drop = FALSE]
-    body <- if (!nrow(rc))
-      paste0(head_txt, ": no dimension stood out past the threshold.")
-    else sprintf("%s is characterised by %s.", head_txt,
-                 paste0("dim ", rc$dim, " (", rc$top_variables, ")",
-                        collapse = "; "))
-    ## a date it was characterised by, said in dates
-    tl <- ilm_time_sentence(tvars, time_map, time_desc, cc)
-    if (length(tl <- tl[nzchar(tl)])) body <- paste(body, paste(tl, collapse = " "))
-    notes <- character()
-    if (isTRUE(si$anomalous))
-      notes <- c(notes, sprintf(
-        "It is a small cluster, %.1f%% of observations: possibly a real minority pattern, possibly a data problem, but worth looking at either way.",
-        si$pct))
-    if (n_amb > 0)
-      ## "N of its members" is plural whatever N is; only the verb agrees
-      notes <- c(notes, sprintf(
-        "%d of its members sit%s close enough to another cluster to be uncertain.",
-        n_amb, if (n_amb == 1L) "s" else ""))
-    paste(c(body, notes), collapse = " ")
-  }, "")
-}
 
 #' Profile a data set: reduce, cluster, and describe the clusters
 #'
 #' Runs [ilm_reduce()], then [ilm_cluster()] on the dimensions it produces,
-#' then says what distinguishes each cluster -- which dimensions it sits
-#' unusually far along, and which original variables those dimensions are made
-#' of. The result is a sentence per cluster rather than a column of numbers.
+#' then says what sets each cluster apart, in the variables' own units -- a
+#' paragraph per cluster such as "employment is 'retired' for 86% of them,
+#' against 21% overall; age is higher: the middle half 64 to 72, against 29
+#' to 54 overall". The aim is the one profiling exists for: to find the
+#' subgroups in a sample and learn what each of them is.
 #'
-#' @section How a cluster gets characterised:
+#' @section How a cluster gets described:
 #'
-#' By a v-test: for cluster `c` and dimension `d`,
-#' `(mean_c - mean_overall) / (sd_overall / sqrt(n_c))`. It measures how
-#' surprising the cluster's average position on that dimension would be if
-#' membership had nothing to do with it.
+#' Each cluster is compared with all rows on every variable the clustering
+#' used. A number is described by its middle half (its quartiles) in the
+#' cluster against the same among all rows; a category by the value whose
+#' share in the cluster sits furthest from its share among all rows; a date by
+#' its middle half, and by the stretch of any cycle the reduction used (see
+#' `time`) where the cluster stands out -- "falls on Sat-Sun for 87% of them,
+#' against 50% overall".
 #'
-#' It is **not a p-value**. The clusters were found from the very coordinates
-#' being tested, so the usual sampling argument does not apply and the 1.96
-#' default is a threshold that behaves sensibly rather than a 5% test. Treat a
-#' characterisation as a description of the partition you have, not as evidence
-#' that the partition is real -- the stability and silhouette figures in
-#' [ilm_cluster()] are what speak to that.
+#' The variables are ranked by a v-test -- how far the cluster's mean or share
+#' sits from everyone's, in standard errors of a subset that size (Lebart's,
+#' as in FactoMineR's `catdes()`) -- and named, strongest first, up to
+#' `top_n_vars`, when the v-test clears `vtest_threshold` and the difference
+#' is big enough to matter: 0.2 standard deviations for a number, 10
+#' percentage points for a share. With many rows a chance difference clears
+#' 1.96 on its own: on 1,200 rows, a variable that was noise by construction
+#' did in two clusters of three, by 3 and 6 points. The variables that set no
+#' cluster apart are named after the paragraphs, or counted when there are
+#' many; every value of every categorical variable, per cluster, is in
+#' `frequencies`.
 #'
-#' For numeric variables the reported direction combines the v-test's sign with
-#' the variable's own correlation on that dimension, since a dimension can run
-#' either way. Categorical variables are named without a direction.
-#'
-#' A date is described as a date. The reduction used it as numbers (see `time`),
-#' but a cluster is named by "later day", not by the number, and its sentence
-#' ends with the dates themselves: the middle half of the cluster against the
-#' middle half of all rows, and for any cycle the stretch of it where the
-#' cluster stands out -- "94% from the 29th to the 31st of the month (all rows
-#' 11%)", or "only 3% on Sat-Sun (all rows 29%)". The same, for every cluster
-#' and aspect, is in `time`.
+#' It is **not a p-value**. The clusters were found from these same
+#' variables, so the ones the clustering used will differ between the
+#' clusters they helped make. Treat a profile as a description of the
+#' partition you have, not as evidence that the partition is real -- the
+#' stability and silhouette figures in [ilm_cluster()] are what speak to that.
 #'
 #' @inheritParams ilm_reduce
 #' @param time What to do with date and date-time columns; passed to
 #'   [ilm_reduce()], which describes the choices.
 #' @param ... Passed to [ilm_cluster()], for instance `k`, `k_max`, `method`,
 #'   `B` or `seed`.
-#' @param vtest_threshold Smallest `|vtest|` for a dimension to count toward a
+#' @param vtest_threshold Smallest `|v-test|` for a variable to be named in a
 #'   cluster's description.
-#' @param top_n_vars How many top-loading variables to name per dimension.
+#' @param top_n_vars Most variables to name for one cluster.
 #' @param var_contrib Run [ilm_var_contrib()] on the result and report it.
 #'   Nothing in this pipeline selects variables, and an irrelevant one is not
 #'   neutral: on three known clusters with two informative columns, adding two
@@ -204,10 +67,13 @@ ilm_profile_summary_lines <- function(characterization, cluster_res,
 #'   of the clustering at 500 rows and five columns.
 #' @param var_contrib_B Permutations for that check.
 #' @return An object of class `"ilm_profile"`: `reduce`, `cluster`,
-#'   `characterization` (one row per dimension that characterises a cluster),
-#'   `var_contrib` (or `NULL`), `time` (for data with dates, one row per
-#'   cluster, date and aspect of it, described in dates; otherwise `NULL`) and
-#'   `summary`, one sentence per cluster.
+#'   `characterization` (one row per cluster and variable -- and per aspect of
+#'   a date -- with its v-test, the size of the difference and the words for
+#'   it), `frequencies` (every value of every categorical variable, per
+#'   cluster: its count, its share, and its share among all rows),
+#'   `by_cluster` ([ilm_describe_all()] of the variables, by cluster),
+#'   `var_contrib` (or `NULL`), `summary` (a paragraph per cluster) and
+#'   `not_distinctive` (the variables that set no cluster apart).
 #' @seealso [ilm_reduce()], [ilm_cluster()], [ilm_plot_profile()],
 #'   [ilm_profile_na()].
 #' @examples
@@ -217,7 +83,7 @@ ilm_profile_summary_lines <- function(characterization, cluster_res,
 ilm_profile <- function(data, cols = NULL, ndim = 5,
                         method = c("pcamix", "glrm"),
                         time = c("cycles", "elapsed", "drop"), ...,
-                        vtest_threshold = 1.96, top_n_vars = 2,
+                        vtest_threshold = 1.96, top_n_vars = 4,
                         var_contrib = TRUE, var_contrib_B = 199L) {
   ## An ilm_anomaly() result is accepted directly: the flagged rows are what
   ## the user wants to look at next, and rebuilding that subset by hand from
@@ -227,8 +93,10 @@ ilm_profile <- function(data, cols = NULL, ndim = 5,
   rr <- ilm_reduce(data, cols = cols, ndim = ndim, method = method,
                    time = match.arg(time))
   cr <- ilm_cluster(rr, ...)
-  ch <- ilm_characterize_clusters(rr, cr, vtest_threshold, top_n_vars,
-                                  ilm_label_var_direction)
+  rows <- cr$ind_cluster$row_id
+  dsub <- if (!is.null(rows) && length(rows) == nrow(cr$ind_cluster) &&
+              max(rows) <= nrow(data)) data[rows, , drop = FALSE] else data
+  cl <- cr$ind_cluster$cluster
   ## Run the variable check HERE rather than leaving it for the user to find.
   ## Nothing in this pipeline selects variables, and an irrelevant one is not
   ## neutral: on three known clusters with two informative columns, adding two
@@ -238,20 +106,20 @@ ilm_profile <- function(data, cols = NULL, ndim = 5,
   ##
   ## It is cheap -- eta squared and Cramer's V on permuted labels, no models
   ## refitted -- so it costs a fraction of the clustering it follows.
-  rows <- cr$ind_cluster$row_id
-  dsub <- if (!is.null(rows) && length(rows) == nrow(cr$ind_cluster) &&
-              max(rows) <= nrow(data)) data[rows, , drop = FALSE] else data
   vc <- if (isFALSE(var_contrib)) NULL else {
     tryCatch(ilm_var_contrib(structure(list(reduce = rr, cluster = cr),
                                        class = "ilm_profile"),
                              dsub, B = var_contrib_B),
              error = function(e) NULL)
   }
-  td <- if (length(rr$time) && nrow(dsub) == nrow(cr$ind_cluster))
-    ilm_time_describe(dsub, rr$time, cr$ind_cluster$cluster)
-  out <- structure(list(reduce = rr, cluster = cr, characterization = ch,
-                        var_contrib = vc, time = td,
-                        summary = ilm_profile_summary_lines(ch, cr, td, rr$time)),
+  used <- dsub[ilm_profile_cols(rr, dsub)]
+  de <- ilm_profile_describe(used, cl, rr, cr, top_n_vars, vtest_threshold)
+  out <- structure(list(reduce = rr, cluster = cr,
+                        characterization = de$characterization,
+                        frequencies = de$frequencies,
+                        by_cluster = ilm_profile_by_cluster(used, cl),
+                        var_contrib = vc, summary = de$summary,
+                        not_distinctive = de$not_distinctive),
                    class = "ilm_profile")
   ## The dominance case is a warning rather than a line of output: a clustering
   ## that is one variable's levels under another name will otherwise have its
@@ -270,8 +138,8 @@ ilm_profile <- function(data, cols = NULL, ndim = 5,
 #'
 #' The missingness counterpart to [ilm_profile()]: runs [ilm_reduce_na()] then
 #' [ilm_cluster_na()], and describes each cluster of rows by which columns'
-#' *missingness* sets it apart -- "cluster 2 is characterised by dim 1 (missing:
-#' income, missing: age)" rather than by those columns' values.
+#' *missingness* sets it apart -- "income is missing for 92% of them, against
+#' 18% overall" -- rather than by those columns' values.
 #'
 #' This is how a structured gap shows itself: a block of variables that go
 #' missing together points at a shared cause, such as a section of a form
@@ -281,8 +149,9 @@ ilm_profile <- function(data, cols = NULL, ndim = 5,
 #'
 #' @inheritParams ilm_reduce_na
 #' @param ... Passed to [ilm_cluster_na()].
-#' @param vtest_threshold Smallest `|vtest|` for a dimension to count.
-#' @param top_n_vars How many top-loading indicators to name per dimension.
+#' @param vtest_threshold Smallest `|v-test|` for a column to be named in a
+#'   cluster's description; see [ilm_profile()].
+#' @param top_n_vars Most columns to name for one cluster.
 #' @return An object of class `"ilm_profile_na"`, which is also an
 #'   `"ilm_profile"`.
 #' @seealso [ilm_check_missing()], `illume::ilm_impute()`, [ilm_profile()].
@@ -291,13 +160,20 @@ ilm_profile <- function(data, cols = NULL, ndim = 5,
 #' cat(p$summary, sep = "\n")
 #' @export
 ilm_profile_na <- function(data, cols = NULL, ndim = 5, ...,
-                           vtest_threshold = 1.96, top_n_vars = 2) {
+                           vtest_threshold = 1.96, top_n_vars = 4) {
+  if (inherits(data, "ilm_anomaly"))
+    data <- ilm_from_anomaly(data, "ilm_profile_na")
   rr <- ilm_reduce_na(data, cols = cols, ndim = ndim)
   cr <- ilm_cluster_na(rr, ...)
-  ch <- ilm_characterize_clusters(rr, cr, vtest_threshold, top_n_vars,
-                                  ilm_label_var_missing)
-  structure(list(reduce = rr, cluster = cr, characterization = ch,
-                 summary = ilm_profile_summary_lines(ch, cr)),
+  ## the present/missing markers the clustering was built from
+  marks <- as.data.frame(lapply(rr$cols, function(cn) is.na(data[[cn]])))
+  names(marks) <- rr$cols
+  de <- ilm_profile_describe(marks, cr$ind_cluster$cluster, rr, cr,
+                             top_n_vars, vtest_threshold, missing = TRUE)
+  structure(list(reduce = rr, cluster = cr,
+                 characterization = de$characterization,
+                 frequencies = de$frequencies, summary = de$summary,
+                 not_distinctive = de$not_distinctive),
             class = c("ilm_profile_na", "ilm_profile"))
 }
 
@@ -311,6 +187,10 @@ print.ilm_profile <- function(x, ...) {
   print(x$cluster)
   cat("\n  what each cluster is\n")
   for (s in x$summary) cat(ilm_wrap(s, 76L, "    "), "\n\n")
+  ## what the paragraphs leave out, said once rather than left to be wondered at
+  closing <- ilm_profile_closing(x$not_distinctive,
+                                 attr(x$not_distinctive, "of"))
+  if (!is.null(closing)) cat(ilm_wrap(closing, 76L, "    "), "\n\n")
   ## The cluster descriptions above are always true OF THE CLUSTERS FOUND.
   ## Whether those clusters are worth describing is a separate question, and
   ## this is where it gets answered rather than left to a function the reader

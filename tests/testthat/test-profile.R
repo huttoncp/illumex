@@ -112,22 +112,26 @@ test_that("clustering refuses bad input and handles k = 1", {
   expect_equal(sum(one$ind_cluster$is_ambiguous), 0L)
 })
 
-test_that("a profile names what distinguishes each cluster", {
+test_that("a profile says how each cluster differs, in the variables' own units", {
   skip_profile()
   p <- ilm_profile(mixed_df(), k = 3, B = 20, seed = 1)
   expect_s3_class(p, "ilm_profile")
   expect_length(p$summary, 3L)
-  expect_true(all(nzchar(p$summary)))
-  expect_true(all(grepl("^Cluster [0-9]", p$summary)))
-  ## every characterising dimension was actually retained, and cleared the bar
-  expect_true(all(p$characterization$dim <= p$reduce$ndim))
-  expect_true(all(abs(p$characterization$vtest) >= 1.96))
-  ## a numeric variable gets a direction; the threshold controls how many rows
-  expect_match(paste(p$characterization$top_variables, collapse = " "),
-               "high |low ")
+  expect_true(all(grepl("^Cluster [0-9] holds", p$summary)))
+  ## what is named cleared both bars: the v-test and a size worth naming
+  ch <- p$characterization
+  named <- illumex:::ilm_profile_distinctive(ch, 1.96)
+  expect_true(any(named))
+  expect_true(all(abs(ch$v[named]) >= 1.96))
+  ## a number by its middle half, a category by its share against everyone's
+  s <- paste(p$summary, collapse = " ")
+  expect_match(s, "is (higher|lower): the middle half")
+  expect_match(s, "for [0-9]+% of them, against [0-9]+% overall")
+  ## the threshold controls how much is named
   strict <- ilm_profile(mixed_df(), k = 3, B = 20, seed = 1,
                         vtest_threshold = 50)
-  expect_lte(nrow(strict$characterization), nrow(p$characterization))
+  expect_lt(sum(illumex:::ilm_profile_distinctive(strict$characterization, 50)),
+            sum(named))
 })
 
 test_that("missingness profiling recovers which columns go missing together", {
@@ -158,9 +162,10 @@ test_that("the missingness pipeline runs end to end and is type-checked", {
   expect_s3_class(p, "ilm_profile_na")
   expect_s3_class(p, "ilm_profile")
   expect_gt(length(p$summary), 0L)
-  expect_match(paste(p$summary, collapse = " "), "missing: ")
-  ## no cluster names the same variable set twice in one sentence
-  expect_false(any(grepl("(missing: Ozone, missing: Solar.R).*\\1", p$summary)))
+  expect_match(paste(p$summary, collapse = " "),
+               "is missing for [0-9]+% of them, against [0-9]+% overall")
+  ## a column is described once per cluster
+  expect_false(any(duplicated(p$characterization[c("cluster", "variable")])))
 
   expect_error(ilm_cluster_na(ilm_reduce(mtcars)), "must be an ilm_reduce_na")
   expect_error(ilm_reduce_na(mtcars), "at least 2 columns")
@@ -194,4 +199,86 @@ test_that("the profiling plots draw and check their input", {
   expect_error(ilm_plot_profile(1), "must be an ilm_profile")
   expect_error(ilm_plot_reduce_na(r), "must be an ilm_reduce_na")
   expect_error(ilm_plot_cluster_na(cl), "must be an ilm_cluster_na")
+})
+
+## Three known subgroups -- retirees, students, families -- and two columns
+## that carry nothing: the case the descriptions are judged by.
+socio_df <- function(n = 600, seed = 42) {
+  set.seed(seed)
+  grp <- sample(c("retired", "student", "family"), n, TRUE, prob = c(.25, .25, .5))
+  by3 <- function(r, s, f) ifelse(grp == "retired", r, ifelse(grp == "student", s, f))
+  pick <- function(levels, p_r, p_s, p_f) {
+    out <- character(n)
+    for (g in c("retired", "student", "family")) {
+      i <- grp == g
+      out[i] <- sample(levels, sum(i), TRUE,
+                       prob = switch(g, retired = p_r, student = p_s, family = p_f))
+    }
+    out
+  }
+  data.frame(
+    age = round(by3(rnorm(n, 68, 6), rnorm(n, 21, 2.5), rnorm(n, 41, 7))),
+    income = round(by3(rlnorm(n, log(55000), .35), rlnorm(n, log(14000), .5),
+                       rlnorm(n, log(72000), .4)), -2),
+    employment = factor(pick(c("employed", "retired", "student", "unemployed"),
+                             c(.12, .85, 0, .03), c(.20, 0, .75, .05),
+                             c(.88, 0, .04, .08))),
+    tenure = factor(pick(c("own", "rent"), c(.8, .2), c(.1, .9), c(.65, .35))),
+    household = as.integer(by3(sample(1:2, n, TRUE), sample(1:5, n, TRUE),
+                               sample(2:6, n, TRUE))),
+    children = by3(runif(n) < .05, runif(n) < .03, runif(n) < .8),
+    region = factor(sample(c("north", "central", "south"), n, TRUE)),
+    surveyed = as.Date("2025-01-01") + sample(0:364, n, TRUE),
+    truth = grp)
+}
+
+test_that("each subgroup is described by what sets it apart, and only that", {
+  skip_profile()
+  d <- socio_df()
+  p <- suppressMessages(ilm_profile(d[setdiff(names(d), "truth")], k = 3,
+                                    B = 10, seed = 1))
+  tab <- table(p$cluster$ind_cluster$cluster, d$truth)
+  expect_gt(sum(apply(tab, 1, max)) / nrow(d), 0.9)
+  who <- colnames(tab)[apply(tab, 1, which.max)]
+  s <- p$summary
+  expect_match(s[who == "retired"], "employment is 'retired' for [0-9]+% of them")
+  expect_match(s[who == "retired"], "age is higher: the middle half")
+  expect_match(s[who == "student"], "employment is 'student' for [0-9]+% of them")
+  expect_match(s[who == "family"], "children is TRUE for [0-9]+% of them")
+  ## the two columns that carry nothing are said to, once, after the clusters
+  expect_setequal(as.vector(p$not_distinctive), c("region", "surveyed"))
+  expect_output(print(p), "Not distinctive in any cluster: region and surveyed.",
+                fixed = TRUE)
+  ## every value of every category, per cluster, sums to the cluster
+  fr <- p$frequencies
+  expect_true(all(abs(tapply(fr$share, paste(fr$cluster, fr$variable), sum) - 1) < 0.01))
+  expect_identical(sort(unique(fr$variable)),
+                   c("children", "employment", "region", "tenure"))
+  ## and the full descriptive tables, by cluster
+  expect_true(all(c("numeric", "categorical") %in% names(p$by_cluster)))
+})
+
+test_that("the v-tests and the words for them", {
+  vm <- illumex:::ilm_vtest_mean; vs <- illumex:::ilm_vtest_share
+  x <- c(1, 2, 3, 4, 10, 12); m <- c(FALSE, FALSE, FALSE, FALSE, TRUE, TRUE)
+  s2 <- mean((x - mean(x))^2)
+  expect_equal(vm(x, m), (11 - mean(x)) / sqrt(s2 / 2 * 4 / 5))
+  hit <- c(TRUE, FALSE, FALSE, FALSE, TRUE, TRUE)
+  expect_equal(vs(hit, m), (2 - 2 * 0.5) / sqrt(2 * 0.5 * 0.5 * 4 / 5))
+  expect_true(is.na(vm(rep(1, 6), m)))
+  expect_identical(illumex:::ilm_fmt_num(c(54400, 90700)), c("54,400", "90,700"))
+  expect_identical(illumex:::ilm_fmt_num(0.12345), "0.123")
+  expect_identical(illumex:::ilm_share_phrase(0.06, 0.44),
+                   "only 6% of them, against 44% overall")
+  expect_identical(illumex:::ilm_share_phrase(0.001, 0.2),
+                   "none of them, against 20% overall")
+  ## what the paragraphs leave out: named when few, counted when many
+  cl <- illumex:::ilm_profile_closing
+  expect_identical(cl(c("region", "surveyed"), 8),
+                   "Not distinctive in any cluster: region and surveyed.")
+  expect_identical(cl(c("a", "b", "c"), 8),
+                   "Not distinctive in any cluster: a, b, and c.")
+  expect_identical(cl(paste0("v", 1:37), 45),
+                   "Not distinctive in any cluster: 37 of the 45 variables.")
+  expect_null(cl(character(0), 5))
 })
