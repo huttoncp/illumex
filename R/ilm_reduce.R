@@ -30,8 +30,8 @@ ilm_require_pcamixdata <- function() {
 #' dimensions. Which method that means is decided by the column types: PCA when
 #' they are all numeric, multiple correspondence analysis when they are all
 #' categorical, and a mixed method when both are present. A date or date-time
-#' column cannot be used by any of the three and is dropped with a message;
-#' convert it to something numeric first if it should count.
+#' column is used as the time elapsed since its earliest value, which keeps its
+#' order, and by the rhythms in it that the other columns follow; see `time`.
 #'
 #' The mixed method is Chavent et al.'s, which belongs to the same
 #' generalised-PCA family as the FAMD of Pages without being a
@@ -49,6 +49,22 @@ ilm_require_pcamixdata <- function() {
 #'   than squared error on one-hot indicators, and reconstructs a category as a
 #'   category. It costs an iterative fit, and on all-numeric data the two are
 #'   the same model -- see [ilm_glrm()] for when it is worth that.
+#' @param time What to do with date and date-time columns. `"cycles"`, the
+#'   default, uses each as the time since its earliest value -- its order and
+#'   spacing, in one column -- and adds the time of day, the day of the week,
+#'   the day of the month and the time of year, each as a sine and cosine so
+#'   that the ends of the cycle meet, but only the cycles some other column
+#'   varies with, and only where the data cover two of the cycle. A cycle
+#'   nothing else follows is noise to a clustering: on two known clusters,
+#'   every cycle given unasked took recovery from 0.38 to 0.10 where the date
+#'   meant nothing, while the tested ones left it at 0.36 there and, where a
+#'   rhythm was real, raised it from 0.36 to between 0.58 (month-end) and
+#'   0.94 (winter against summer). The test looks at no more than 5,000 rows
+#'   and takes a second or two on wide data. `"elapsed"` is the time since the
+#'   earliest value alone -- it cannot see a rhythm, since a number that only
+#'   grows puts every Monday somewhere new -- and skips the test, for very
+#'   large data or when only order matters. `"drop"` leaves dates out. A
+#'   duration (`difftime`) is used as its number of days.
 #' @param ... Passed to [ilm_glrm()] when `method = "glrm"`.
 #' @param ndim Number of dimensions to keep.
 #' @return An object of class `"ilm_reduce"`: `method` (`"pca"`, `"mca"` or
@@ -71,19 +87,22 @@ ilm_require_pcamixdata <- function() {
 #' head(r$var_contrib[order(-r$var_contrib$sqload), ])
 #' @export
 ilm_reduce <- function(data, cols = NULL, ndim = 5,
-                       method = c("pcamix", "glrm"), ...) {
+                       method = c("pcamix", "glrm"),
+                       time = c("cycles", "elapsed", "drop"), ...) {
   method <- match.arg(method)
+  time <- match.arg(time)
   ## An ilm_anomaly() result is accepted directly: the flagged rows are what
   ## the user wants to look at next, and rebuilding that subset by hand from
   ## `row` is both a papercut and a chance to line the wrong rows up.
   if (inherits(data, "ilm_anomaly"))
     data <- ilm_from_anomaly(data, "ilm_reduce")
-  if (method == "glrm") return(ilm_reduce_glrm(data, cols, ndim, ...))
+  if (method == "glrm") return(ilm_reduce_glrm(data, cols, ndim, time = time, ...))
   ilm_require_pcamixdata()
   if (!is.data.frame(data))
     stop("`data` must be a data frame; it is ", class(data)[1], call. = FALSE)
   keep <- ilm_resolve_cols(data, cols)
-  sub <- data[keep]
+  sub <- ilm_time_encode(data[keep], time, "ilm_reduce")
+  tmap <- attr(sub, "time_map")
 
   is_num <- vapply(sub, is.numeric, TRUE)
   is_cat <- vapply(sub, function(x)
@@ -154,7 +173,7 @@ ilm_reduce <- function(data, cols = NULL, ndim = 5,
 
   structure(list(method = method, eig = eig, ind_coord = ind_coord,
                  var_contrib = var_contrib, n = nrow(sub), ndim = ndim,
-                 cols = keep, fit = fit), class = "ilm_reduce")
+                 cols = keep, fit = fit, time = tmap), class = "ilm_reduce")
 }
 
 #' @export
@@ -301,5 +320,5 @@ ilm_reduce_glrm <- function(data, cols, ndim, ...) {
   names(co) <- paste0("dim", seq_len(k))
   structure(list(method = "glrm", eig = eig, ind_coord = co,
                  var_contrib = vc, n = n, ndim = k,
-                 cols = g$columns, fit = g), class = "ilm_reduce")
+                 cols = g$columns, fit = g, time = g$time), class = "ilm_reduce")
 }

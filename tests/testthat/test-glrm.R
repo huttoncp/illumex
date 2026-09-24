@@ -149,6 +149,10 @@ test_that("it says what it cannot do", {
   expect_error(ilm_glrm(d, weights = c(1, 2)), "one non-negative")
   expect_error(ilm_glrm("nope"), "must be a data frame")
   ## a column with no loss to give it is dropped with a note
-  dd <- d; dd$when <- Sys.Date() + seq_len(nrow(d))
+  dd <- d; dd$z <- complex(real = seq_len(nrow(d)), imaginary = 1)
   expect_message(ilm_glrm(dd, rank = 1L, progress = FALSE), "no loss to give")
+  ## while a date is used as the time elapsed since its earliest value
+  dt <- d; dt$when <- as.Date("2024-01-01") + seq_len(nrow(d))
+  expect_message(g <- ilm_glrm(dt, rank = 1L, progress = FALSE), "when -> when_elapsed")
+  expect_true("when_elapsed" %in% names(g$encoding$blocks))
 })

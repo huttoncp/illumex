@@ -43,11 +43,17 @@ test_that("a reduction refuses what it cannot use", {
   skip_profile()
   expect_error(ilm_reduce("nope"), "must be a data frame")
   expect_error(ilm_reduce(mtcars, cols = "nosuch"), "not found")
-  ## dates are usable by none of the three methods, so they are dropped aloud
+  ## a date is used as the time elapsed since its earliest value; a column
+  ## no method can use at all is still dropped aloud
   d <- mtcars; d$when <- as.Date("2024-01-01") + seq_len(nrow(d))
+  expect_message(ilm_reduce(d), "when -> when_elapsed")
+  d$z <- complex(real = seq_len(nrow(d)), imaginary = 1)
   expect_message(ilm_reduce(d), "neither numeric nor categorical")
-  expect_error(ilm_reduce(data.frame(when = as.Date("2024-01-01") + 1:5)),
+  expect_error(ilm_reduce(data.frame(z = complex(real = 1:5, imaginary = 1))),
                "no numeric or categorical columns")
+  ## a date on its own is one number, and a reduction needs two
+  expect_error(ilm_reduce(data.frame(when = as.Date("2024-01-01") + 1:5)),
+               "only 1 dimension")
 })
 
 test_that("clustering reports size, stability and per-row ambiguity", {

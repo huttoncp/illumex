@@ -22,13 +22,25 @@
 
 ## For values: the direction combines the v-test's sign with the variable's own
 ## correlation sign on that dimension, because a dimension can run either way.
+## A column that came from a date is named as the date, in time: "later day"
+## rather than "high day_elapsed". A sine or cosine of a cycle has no direction
+## a reader could use, so it is named by the cycle, and where in the cycle the
+## cluster sits is said in dates after the list.
 #' @keywords internal
 #' @noRd
 ilm_label_var_direction <- function(v, vtest, d_idx, reduce_res) {
   qc <- reduce_res$fit$quanti.cor          # NULL when the method is MCA
-  if (!is.null(qc) && v %in% rownames(qc))
-    paste0(if (sign(vtest) * sign(qc[v, d_idx]) > 0) "high " else "low ", v)
-  else v
+  up <- if (!is.null(qc) && v %in% rownames(qc))
+          sign(vtest) * sign(qc[v, d_idx]) > 0 else NA
+  ta <- ilm_time_aspect(v, reduce_res$time)
+  if (!is.null(ta))
+    return(switch(ta$aspect,
+      elapsed = if (is.na(up)) ta$column
+                else paste(if (up) "later" else "earlier", ta$column),
+      duration = if (is.na(up)) ta$column
+                 else paste(if (up) "longer" else "shorter", ta$column),
+      paste0(ta$column, ": ", ilm_time_words[[ta$aspect]])))
+  if (is.na(up)) v else paste0(if (up) "high " else "low ", v)
 }
 
 ## For missingness: every variable is a present/missing marker, so direction
@@ -48,7 +60,7 @@ ilm_characterize_clusters <- function(reduce_res, cluster_res, vtest_threshold,
   overall_mean <- vapply(coords[dims], mean, 1)
   overall_sd <- vapply(coords[dims], stats::sd, 1)
 
-  rows <- list()
+  rows <- list(); vars <- list()
   for (cc in cluster_res$clusters$cluster) {
     members <- which(cl == cc)
     n_c <- length(members)
@@ -65,29 +77,49 @@ ilm_characterize_clusters <- function(reduce_res, cluster_res, vtest_threshold,
       tv <- tv[seq_len(min(top_n_vars, nrow(tv))), , drop = FALSE]
       labs <- vapply(tv$variable, label_fn, "", vtest = vtest, d_idx = d_idx,
                      reduce_res = reduce_res)
+      ## the cycles of one date are named together, "when: time of day and
+      ## day of the month", and the sine and cosine of one cycle once
+      ta <- lapply(tv$variable, ilm_time_aspect, map = reduce_res$time)
+      cyc <- vapply(ta, function(a) !is.null(a) &&
+                      !a$aspect %in% c("elapsed", "duration"), TRUE)
+      if (any(cyc)) {
+        colv <- vapply(ta[cyc], `[[`, "", "column")
+        aw <- ilm_time_words[vapply(ta[cyc], `[[`, "", "aspect")]
+        both <- vapply(colv, function(cv) paste(unique(aw[colv == cv]),
+                                                collapse = " and "), "")
+        labs[cyc] <- paste0(colv, ": ", both)
+      }
       rows[[length(rows) + 1L]] <- data.frame(
         cluster = cc, dim = d_idx, vtest = round(vtest, 2),
         direction = if (vtest > 0) "high" else "low",
-        top_variables = paste(labs, collapse = ", "),
+        top_variables = paste(unique(labs), collapse = ", "),
         stringsAsFactors = FALSE)
+      vars[[length(rows)]] <- tv$variable
     }
   }
   out <- if (length(rows)) do.call(rbind, rows) else data.frame(
     cluster = integer(0), dim = integer(0), vtest = numeric(0),
     direction = character(0), top_variables = character(0),
     stringsAsFactors = FALSE)
-  if (nrow(out)) out <- out[order(out$cluster, -abs(out$vtest)), , drop = FALSE]
+  o <- if (nrow(out)) order(out$cluster, -abs(out$vtest)) else integer(0)
+  out <- out[o, , drop = FALSE]
   rownames(out) <- NULL
+  ## the encoded columns behind each row's labels, which the date sentence of
+  ## the summary needs and a reader of the table does not
+  attr(out, "vars") <- vars[o]
   out
 }
 
 #' @keywords internal
 #' @noRd
-ilm_profile_summary_lines <- function(characterization, cluster_res) {
+ilm_profile_summary_lines <- function(characterization, cluster_res,
+                                      time_desc = NULL, time_map = NULL) {
   ct <- cluster_res$clusters
   ind <- cluster_res$ind_cluster
+  vars <- attr(characterization, "vars")
   vapply(ct$cluster, function(cc) {
     rc <- characterization[characterization$cluster == cc, , drop = FALSE]
+    tvars <- unlist(vars[characterization$cluster == cc])
     si <- ct[ct$cluster == cc, , drop = FALSE]
     n_amb <- sum(ind$cluster == cc & ind$is_ambiguous)
     head_txt <- sprintf("Cluster %d (n = %d, %.1f%% of the data, %s)", cc,
@@ -103,6 +135,9 @@ ilm_profile_summary_lines <- function(characterization, cluster_res) {
     else sprintf("%s is characterised by %s.", head_txt,
                  paste0("dim ", rc$dim, " (", rc$top_variables, ")",
                         collapse = "; "))
+    ## a date it was characterised by, said in dates
+    tl <- ilm_time_sentence(tvars, time_map, time_desc, cc)
+    if (length(tl <- tl[nzchar(tl)])) body <- paste(body, paste(tl, collapse = " "))
     notes <- character()
     if (isTRUE(si$anomalous))
       notes <- c(notes, sprintf(
@@ -142,7 +177,17 @@ ilm_profile_summary_lines <- function(characterization, cluster_res) {
 #' the variable's own correlation on that dimension, since a dimension can run
 #' either way. Categorical variables are named without a direction.
 #'
+#' A date is described as a date. The reduction used it as numbers (see `time`),
+#' but a cluster is named by "later day", not by the number, and its sentence
+#' ends with the dates themselves: the middle half of the cluster against the
+#' middle half of all rows, and for any cycle the stretch of it where the
+#' cluster stands out -- "94% from the 29th to the 31st of the month (all rows
+#' 11%)", or "only 3% on Sat-Sun (all rows 29%)". The same, for every cluster
+#' and aspect, is in `time`.
+#'
 #' @inheritParams ilm_reduce
+#' @param time What to do with date and date-time columns; passed to
+#'   [ilm_reduce()], which describes the choices.
 #' @param ... Passed to [ilm_cluster()], for instance `k`, `k_max`, `method`,
 #'   `B` or `seed`.
 #' @param vtest_threshold Smallest `|vtest|` for a dimension to count toward a
@@ -160,7 +205,9 @@ ilm_profile_summary_lines <- function(characterization, cluster_res) {
 #' @param var_contrib_B Permutations for that check.
 #' @return An object of class `"ilm_profile"`: `reduce`, `cluster`,
 #'   `characterization` (one row per dimension that characterises a cluster),
-#'   `var_contrib` (or `NULL`) and `summary`, one sentence per cluster.
+#'   `var_contrib` (or `NULL`), `time` (for data with dates, one row per
+#'   cluster, date and aspect of it, described in dates; otherwise `NULL`) and
+#'   `summary`, one sentence per cluster.
 #' @seealso [ilm_reduce()], [ilm_cluster()], [ilm_plot_profile()],
 #'   [ilm_profile_na()].
 #' @examples
@@ -168,7 +215,8 @@ ilm_profile_summary_lines <- function(characterization, cluster_res) {
 #' cat(p$summary, sep = "\n")
 #' @export
 ilm_profile <- function(data, cols = NULL, ndim = 5,
-                        method = c("pcamix", "glrm"), ...,
+                        method = c("pcamix", "glrm"),
+                        time = c("cycles", "elapsed", "drop"), ...,
                         vtest_threshold = 1.96, top_n_vars = 2,
                         var_contrib = TRUE, var_contrib_B = 199L) {
   ## An ilm_anomaly() result is accepted directly: the flagged rows are what
@@ -176,7 +224,8 @@ ilm_profile <- function(data, cols = NULL, ndim = 5,
   ## `row` is both a papercut and a chance to line the wrong rows up.
   if (inherits(data, "ilm_anomaly"))
     data <- ilm_from_anomaly(data, "ilm_profile")
-  rr <- ilm_reduce(data, cols = cols, ndim = ndim, method = method)
+  rr <- ilm_reduce(data, cols = cols, ndim = ndim, method = method,
+                   time = match.arg(time))
   cr <- ilm_cluster(rr, ...)
   ch <- ilm_characterize_clusters(rr, cr, vtest_threshold, top_n_vars,
                                   ilm_label_var_direction)
@@ -189,17 +238,20 @@ ilm_profile <- function(data, cols = NULL, ndim = 5,
   ##
   ## It is cheap -- eta squared and Cramer's V on permuted labels, no models
   ## refitted -- so it costs a fraction of the clustering it follows.
+  rows <- cr$ind_cluster$row_id
+  dsub <- if (!is.null(rows) && length(rows) == nrow(cr$ind_cluster) &&
+              max(rows) <= nrow(data)) data[rows, , drop = FALSE] else data
   vc <- if (isFALSE(var_contrib)) NULL else {
-    rows <- cr$ind_cluster$row_id
-    dsub <- if (!is.null(rows) && length(rows) == nrow(cr$ind_cluster) &&
-                max(rows) <= nrow(data)) data[rows, , drop = FALSE] else data
-    tryCatch(ilm_var_contrib(structure(list(cluster = cr), class = "ilm_profile"),
+    tryCatch(ilm_var_contrib(structure(list(reduce = rr, cluster = cr),
+                                       class = "ilm_profile"),
                              dsub, B = var_contrib_B),
              error = function(e) NULL)
   }
+  td <- if (length(rr$time) && nrow(dsub) == nrow(cr$ind_cluster))
+    ilm_time_describe(dsub, rr$time, cr$ind_cluster$cluster)
   out <- structure(list(reduce = rr, cluster = cr, characterization = ch,
-                        var_contrib = vc,
-                        summary = ilm_profile_summary_lines(ch, cr)),
+                        var_contrib = vc, time = td,
+                        summary = ilm_profile_summary_lines(ch, cr, td, rr$time)),
                    class = "ilm_profile")
   ## The dominance case is a warning rather than a line of output: a clustering
   ## that is one variable's levels under another name will otherwise have its

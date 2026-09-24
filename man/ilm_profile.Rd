@@ -10,6 +10,7 @@ ilm_profile(
   cols = NULL,
   ndim = 5,
   method = c("pcamix", "glrm"),
+  time = c("cycles", "elapsed", "drop"),
   ...,
   vtest_threshold = 1.96,
   top_n_vars = 2,
@@ -32,6 +33,9 @@ model instead, which uses a loss appropriate to each column's type rather
 than squared error on one-hot indicators, and reconstructs a category as a
 category. It costs an iterative fit, and on all-numeric data the two are
 the same model -- see \code{\link[=ilm_glrm]{ilm_glrm()}} for when it is worth that.}
+
+\item{time}{What to do with date and date-time columns; passed to
+\code{\link[=ilm_reduce]{ilm_reduce()}}, which describes the choices.}
 
 \item{...}{Passed to \code{\link[=ilm_cluster]{ilm_cluster()}}, for instance \code{k}, \code{k_max}, \code{method},
 \code{B} or \code{seed}.}
@@ -56,7 +60,9 @@ of the clustering at 500 rows and five columns.}
 \value{
 An object of class \code{"ilm_profile"}: \code{reduce}, \code{cluster},
 \code{characterization} (one row per dimension that characterises a cluster),
-\code{var_contrib} (or \code{NULL}) and \code{summary}, one sentence per cluster.
+\code{var_contrib} (or \code{NULL}), \code{time} (for data with dates, one row per
+cluster, date and aspect of it, described in dates; otherwise \code{NULL}) and
+\code{summary}, one sentence per cluster.
 }
 \description{
 Runs \code{\link[=ilm_reduce]{ilm_reduce()}}, then \code{\link[=ilm_cluster]{ilm_cluster()}} on the dimensions it produces,
@@ -82,6 +88,14 @@ that the partition is real -- the stability and silhouette figures in
 For numeric variables the reported direction combines the v-test's sign with
 the variable's own correlation on that dimension, since a dimension can run
 either way. Categorical variables are named without a direction.
+
+A date is described as a date. The reduction used it as numbers (see \code{time}),
+but a cluster is named by "later day", not by the number, and its sentence
+ends with the dates themselves: the middle half of the cluster against the
+middle half of all rows, and for any cycle the stretch of it where the
+cluster stands out -- "94\% from the 29th to the 31st of the month (all rows
+11\%)", or "only 3\% on Sat-Sun (all rows 29\%)". The same, for every cluster
+and aspect, is in \code{time}.
 }
 
 \examples{
