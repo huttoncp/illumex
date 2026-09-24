@@ -15,7 +15,7 @@ squared error, which is where this reduces to ordinary PCA."><meta property="og:
 
     <a class="navbar-brand me-2" href="../index.html">illumex</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.0.7.9000</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.0.8.9000</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -67,7 +67,8 @@ squared error, which is where this reduces to ordinary PCA.</p>
 <span>  maxit <span class="op">=</span> <span class="fl">300L</span>,</span>
 <span>  tol <span class="op">=</span> <span class="fl">1e-07</span>,</span>
 <span>  seed <span class="op">=</span> <span class="fl">1L</span>,</span>
-<span>  progress <span class="op">=</span> <span class="cn">NULL</span></span>
+<span>  progress <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  time <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"cycles"</span>, <span class="st">"elapsed"</span>, <span class="st">"drop"</span><span class="op">)</span></span>
 <span><span class="op">)</span></span></code></pre></div>
     </div>
 
@@ -129,6 +130,26 @@ the ones it has to reconstruct.</p></dd>
 
 <dt id="arg-progress">progress<a class="anchor" aria-label="anchor" href="#arg-progress"></a></dt>
 <dd><p>Show a progress bar; see <a href="ilm_progress_arg.html">ilm_progress_arg</a>.</p></dd>
+
+
+<dt id="arg-time">time<a class="anchor" aria-label="anchor" href="#arg-time"></a></dt>
+<dd><p>What to do with date and date-time columns, which are given
+the quadratic loss. <code>"cycles"</code>, the
+default, uses each as the time since its earliest value – its order and
+spacing, in one column – and adds the time of day, the day of the week,
+the day of the month and the time of year, each as a sine and cosine so
+that the ends of the cycle meet, but only the cycles some other column
+varies with, and only where the data cover two of the cycle. A cycle
+nothing else follows is noise to a clustering: on two known clusters,
+every cycle given unasked took recovery from 0.38 to 0.10 where the date
+meant nothing, while the tested ones left it at 0.36 there and, where a
+rhythm was real, raised it from 0.36 to between 0.58 (month-end) and
+0.94 (winter against summer). The test looks at no more than 5,000 rows
+and takes a second or two on wide data. <code>"elapsed"</code> is the time since the
+earliest value alone – it cannot see a rhythm, since a number that only
+grows puts every Monday somewhere new – and skips the test, for very
+large data or when only order matters. <code>"drop"</code> leaves dates out. A
+duration (<code>difftime</code>) is used as its number of days.</p></dd>
 
 </dl></div>
     <div class="section level2">

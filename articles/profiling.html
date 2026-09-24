@@ -25,7 +25,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">illumex</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.0.7.9000</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.0.8.9000</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -157,17 +157,28 @@ everything printed is solid.</p>
 <div class="section level2">
 <h2 id="characterising">Characterising<a class="anchor" aria-label="anchor" href="#characterising"></a>
 </h2>
-<p>The step people usually do by hand, badly. For each cluster and each
-variable it asks whether that cluster’s mean (or its proportion in a
-category) differs from the overall one by more than sampling would
-explain, and reports a v-test.</p>
+<p>The step people usually do by hand, badly. Each cluster is compared
+with all rows on every variable the clustering used, and described in
+that variable’s own units: a number by its middle half against
+everyone’s, a category by the value whose share in the cluster sits
+furthest from its share among all rows, a date by its middle half and by
+any stretch of the week, month or year where the cluster stands out.</p>
 <div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">pr</span><span class="op">$</span><span class="va">characterization</span></span>
-<span><span class="va">pr</span><span class="op">$</span><span class="va">summary</span>                    <span class="co"># in words</span></span></code></pre></div>
-<p>The summary lines name the two variables that most distinguish each
-cluster and the direction, which is what a cluster is for: “high on
-income and education, low on commute time” is a finding, and “cluster 3”
-is not.</p>
+<code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/cat.html" class="external-link">cat</a></span><span class="op">(</span><span class="va">pr</span><span class="op">$</span><span class="va">summary</span>, sep <span class="op">=</span> <span class="st">"\n\n"</span><span class="op">)</span>   <span class="co"># a paragraph per cluster</span></span>
+<span><span class="va">pr</span><span class="op">$</span><span class="va">characterization</span>               <span class="co"># every comparison behind them</span></span>
+<span><span class="va">pr</span><span class="op">$</span><span class="va">frequencies</span>                    <span class="co"># every value of every category, per cluster</span></span>
+<span><span class="va">pr</span><span class="op">$</span><span class="va">by_cluster</span>                     <span class="co"># ilm_describe_all(), by cluster</span></span></code></pre></div>
+<p>The variables are ranked by a v-test – how far the cluster’s mean or
+share sits from everyone’s, in standard errors of a subset that size –
+and named, strongest first, when it clears 1.96 and the difference is
+big enough to matter: 0.2 standard deviations for a number, 10
+percentage points for a share. With many rows a chance difference clears
+1.96 on its own, which is what the second bar is for. Variables that set
+no cluster apart are said to, after the paragraphs.</p>
+<p>That is what a cluster is for: “older, mostly retired, living alone
+or in twos” is a finding, and “cluster 3” is not. The v-test ranks the
+differences; it does not test them, since the clusters were found from
+these same variables.</p>
 </div>
 <div class="section level2">
 <h2 id="what-this-is-and-is-not">What this is, and is not<a class="anchor" aria-label="anchor" href="#what-this-is-and-is-not"></a>

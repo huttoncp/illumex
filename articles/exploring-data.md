@@ -634,13 +634,13 @@ cars$am  <- factor(cars$am)
 
 p <- ilm_profile(cars, k_max = 5, B = 25, seed = 1)
 cat(p$summary, sep = "\n\n")
-#> Cluster 1 (n = 5, 15.6% of the data, stable) is characterised by dim 2 (high gear, low qsec).
+#> Cluster 1 holds 5 rows, 15.6% of the data (stable). What sets it apart: carb is higher: the middle half 4 to 6, against 2 to 4 overall; qsec is lower: the middle half 14.6 to 16.5, against 16.9 to 18.9 overall; gear is higher: the middle half 4 to 5, against 3 to 4 overall; and am is '0' for none of them, against 59% overall. Less strongly, 2 more variables set it apart as well.
 #> 
-#> Cluster 2 (n = 7, 21.9% of the data, moderate) is characterised by dim 3 (cyl, high carb); dim 2 (low gear, high qsec). 1 of its members sits close enough to another cluster to be uncertain.
+#> Cluster 2 holds 7 rows, 21.9% of the data (moderate). What sets it apart: qsec is higher: the middle half 18.9 to 20.2, against 16.9 to 18.9 overall; vs is higher: the middle half 1 to 1, against 0 to 1 overall; cyl is '8' for none of them, against 44% overall; and am is '0' for 100% of them, against 59% overall. 1 of its members sits close enough to another cluster to be uncertain.
 #> 
-#> Cluster 3 (n = 12, 37.5% of the data, stable) is characterised by dim 1 (cyl, high disp).
+#> Cluster 3 holds 12 rows, 37.5% of the data (stable). What sets it apart: cyl is '8' for 100% of them, against 44% overall; disp is higher: the middle half  276 to 400, against  120 to 318 overall; gear is lower: the middle half 3 to 3, against 3 to 4 overall; and wt is higher: the middle half 3.52 to 4.07, against 2.46 to 3.57 overall. Less strongly, 5 more variables set it apart as well.
 #> 
-#> Cluster 4 (n = 8, 25.0% of the data, stable) is characterised by dim 1 (cyl, low disp); dim 3 (cyl, low carb).
+#> Cluster 4 holds 8 rows, 25.0% of the data (stable). What sets it apart: cyl is '4' for 100% of them, against 34% overall; mpg is higher: the middle half 22.8 to 30.4, against 15.2 to 22.8 overall; wt is lower: the middle half 1.62 to  2.2, against 2.46 to 3.57 overall; and am is '0' for none of them, against 59% overall. Less strongly, 6 more variables set it apart as well.
 ```
 
 The reduction picks its own method from the column types: PCA when they
@@ -771,9 +771,9 @@ pn <- ilm_profile_na(airquality, k_max = 4, B = 25, seed = 1)
 #> selector can also lock onto the number of category combinations rather than the
 #> number of clusters; plot(x) shows the gap curve.
 cat(pn$summary[1:2], sep = "\n\n")
-#> Cluster 1 (n = 35, 22.9% of the data, stable) is characterised by dim 2 (missing: Ozone, missing: Solar.R).
+#> Cluster 1 holds 35 rows, 22.9% of the data (stable). What sets it apart: Ozone is missing for 100% of them, against 24% overall.
 #> 
-#> Cluster 2 (n = 2, 1.3% of the data, stable) is characterised by dim 1 (missing: Ozone, missing: Solar.R). It is a small cluster, 1.3% of observations: possibly a real minority pattern, possibly a data problem, but worth looking at either way.
+#> Cluster 2 holds 2 rows, 1.3% of the data (stable). What sets it apart: Solar.R is missing for 100% of them, against 5% overall; and Ozone is missing for 100% of them, against 24% overall. It is a small cluster, 1.3% of observations: possibly a real minority pattern, possibly a data problem, but worth looking at either way.
 ```
 
 The same reduce-cluster-describe pipeline, pointed at present/missing

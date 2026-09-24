@@ -7,8 +7,8 @@ runs
 then
 [`ilm_cluster_na()`](https://huttoncp.github.io/illumex/reference/ilm_cluster_na.md),
 and describes each cluster of rows by which columns' *missingness* sets
-it apart – "cluster 2 is characterised by dim 1 (missing: income,
-missing: age)" rather than by those columns' values.
+it apart – "income is missing for 92% of them, against 18% overall" –
+rather than by those columns' values.
 
 ## Usage
 
@@ -19,7 +19,7 @@ ilm_profile_na(
   ndim = 5,
   ...,
   vtest_threshold = 1.96,
-  top_n_vars = 2
+  top_n_vars = 4
 )
 ```
 
@@ -47,11 +47,13 @@ ilm_profile_na(
 
 - vtest_threshold:
 
-  Smallest `|vtest|` for a dimension to count.
+  Smallest `|v-test|` for a column to be named in a cluster's
+  description; see
+  [`ilm_profile()`](https://huttoncp.github.io/illumex/reference/ilm_profile.md).
 
 - top_n_vars:
 
-  How many top-loading indicators to name per dimension.
+  Most columns to name for one cluster.
 
 ## Value
 
@@ -79,8 +81,8 @@ p <- ilm_profile_na(airquality, k_max = 4, B = 25, seed = 1)
 #> ilm_reduce_na(): dropping column(s) whose missingness never varies (always or never missing): Wind, Temp, Month, Day
 #> Warning: k was chosen as 4, which is the largest value searched. The curve had not turned, so this is where the search stopped rather than where the evidence pointed. Raise `k_max`, or set `k` from what the design says. On mixed data a selector can also lock onto the number of category combinations rather than the number of clusters; plot(x) shows the gap curve.
 cat(p$summary, sep = "\n")
-#> Cluster 1 (n = 35, 22.9% of the data, stable) is characterised by dim 2 (missing: Ozone, missing: Solar.R).
-#> Cluster 2 (n = 2, 1.3% of the data, stable) is characterised by dim 1 (missing: Ozone, missing: Solar.R). It is a small cluster, 1.3% of observations: possibly a real minority pattern, possibly a data problem, but worth looking at either way.
-#> Cluster 3 (n = 111, 72.5% of the data, stable) is characterised by dim 1 (missing: Ozone, missing: Solar.R).
-#> Cluster 4 (n = 5, 3.3% of the data, stable) is characterised by dim 2 (missing: Ozone, missing: Solar.R). It is a small cluster, 3.3% of observations: possibly a real minority pattern, possibly a data problem, but worth looking at either way.
+#> Cluster 1 holds 35 rows, 22.9% of the data (stable). What sets it apart: Ozone is missing for 100% of them, against 24% overall.
+#> Cluster 2 holds 2 rows, 1.3% of the data (stable). What sets it apart: Solar.R is missing for 100% of them, against 5% overall; and Ozone is missing for 100% of them, against 24% overall. It is a small cluster, 1.3% of observations: possibly a real minority pattern, possibly a data problem, but worth looking at either way.
+#> Cluster 3 holds 111 rows, 72.5% of the data (stable). What sets it apart: Ozone is missing for none of them, against 24% overall.
+#> Cluster 4 holds 5 rows, 3.3% of the data (stable). What sets it apart: Solar.R is missing for 100% of them, against 5% overall. It is a small cluster, 3.3% of observations: possibly a real minority pattern, possibly a data problem, but worth looking at either way.
 ```
