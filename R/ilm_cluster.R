@@ -316,7 +316,10 @@ ilm_cluster <- function(x, k = NULL, k_max = 10, method = c("kmeans", "hclust"),
                  dist_method = if (method == "hclust") dist_method else NA_character_,
                  hclust_method = if (method == "hclust") hclust_method else NA_character_,
                  small_cluster_frac = small_cluster_frac,
-                 ambiguous_threshold = ambiguous_threshold),
+                 ambiguous_threshold = ambiguous_threshold,
+                 ## which coordinates came from which date, for describing the
+                 ## clusters in dates again
+                 time = if (inherits(x, "ilm_reduce")) x$time),
             class = "ilm_cluster")
 }
 

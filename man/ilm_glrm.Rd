@@ -15,7 +15,8 @@ ilm_glrm(
   maxit = 300L,
   tol = 1e-07,
   seed = 1L,
-  progress = NULL
+  progress = NULL,
+  time = c("cycles", "elapsed", "drop")
 )
 }
 \arguments{
@@ -54,6 +55,24 @@ the ones it has to reconstruct.}
 \item{seed}{Random seed for the starting point.}
 
 \item{progress}{Show a progress bar; see \link{ilm_progress_arg}.}
+
+\item{time}{What to do with date and date-time columns, which are given
+the quadratic loss. \code{"cycles"}, the
+default, uses each as the time since its earliest value -- its order and
+spacing, in one column -- and adds the time of day, the day of the week,
+the day of the month and the time of year, each as a sine and cosine so
+that the ends of the cycle meet, but only the cycles some other column
+varies with, and only where the data cover two of the cycle. A cycle
+nothing else follows is noise to a clustering: on two known clusters,
+every cycle given unasked took recovery from 0.38 to 0.10 where the date
+meant nothing, while the tested ones left it at 0.36 there and, where a
+rhythm was real, raised it from 0.36 to between 0.58 (month-end) and
+0.94 (winter against summer). The test looks at no more than 5,000 rows
+and takes a second or two on wide data. \code{"elapsed"} is the time since the
+earliest value alone -- it cannot see a rhythm, since a number that only
+grows puts every Monday somewhere new -- and skips the test, for very
+large data or when only order matters. \code{"drop"} leaves dates out. A
+duration (\code{difftime}) is used as its number of days.}
 }
 \value{
 An object of class \code{"ilm_glrm"} with \code{scores} (one row per

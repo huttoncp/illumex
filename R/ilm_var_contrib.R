@@ -92,17 +92,36 @@ ilm_var_contrib <- function(x, data, B = 199L, seed = 1L) {
          "built from; if rows were dropped for missing values, ",
          "ilm_impute() keeps them and the two then match.", call. = FALSE)
   }
+  ## A date is scored on each aspect of it the clustering used -- its time
+  ## line, and any cycle it was given -- and by whichever separates the
+  ## clusters best. The permutation reference takes the same maximum, so
+  ## having several aspects to choose from is paid for. A clustering that
+  ## split on the day of the week and was then scored on the time line alone
+  ## would call its own defining variable no better than chance.
+  tmap <- ilm_var_contrib_time(x)
   use <- names(data)[vapply(data, function(v)
-    is.numeric(v) || is.factor(v) || is.character(v) || is.logical(v), TRUE)]
+    is.numeric(v) || is.factor(v) || is.character(v) || is.logical(v) ||
+      ilm_is_time(v), TRUE)]
   if (!length(use)) stop("no usable columns in `data`", call. = FALSE)
   set.seed(seed)
   res <- do.call(rbind, lapply(use, function(v) {
-    obs <- ilm_var_sep(data[[v]], cl)
-    nul <- vapply(seq_len(B), function(b)
-      ilm_var_sep(data[[v]], sample(cl)), 0)
+    x <- data[[v]]
+    tm <- ilm_is_time(x)
+    parts <- if (tm) ilm_time_parts(x, v, tmap[[v]]) else list(x)
+    score <- function(s) {
+      r <- vapply(parts, ilm_var_sep, 0, cl = s)
+      if (all(is.na(r))) NA_real_ else max(r, na.rm = TRUE)
+    }
+    each <- vapply(parts, ilm_var_sep, 0, cl = cl)
+    obs <- score(cl)
+    nul <- vapply(seq_len(B), function(b) score(sample(cl)), 0)
     p <- (1 + sum(nul >= obs)) / (B + 1)
+    best <- if (tm && !all(is.na(each))) names(parts)[which.max(each)] else ""
     data.frame(variable = v,
-               type = if (is.numeric(data[[v]])) "numeric" else "categorical",
+               type = if (!tm) { if (is.numeric(x)) "numeric" else "categorical" }
+                      else if (best == "duration") "duration"
+                      else if (best %in% c("", "elapsed")) "date"
+                      else paste0("date: ", ilm_time_words[[best]]),
                separation = obs, permuted = mean(nul), p = p,
                stringsAsFactors = FALSE)
   }))
@@ -126,12 +145,48 @@ ilm_var_contrib <- function(x, data, B = 199L, seed = 1L) {
             k = length(unique(cl)), dominated_by = if (dom) res$variable[1])
 }
 
+## A date's aspects as the clustering saw them: its time line always, and a
+## sine-cosine pair for each cycle among the aspects it was encoded with.
+#' @keywords internal
+#' @noRd
+ilm_time_parts <- function(x, name, used) {
+  if (inherits(x, "difftime")) return(list(duration = as.numeric(x)))
+  f <- ilm_time_features(x, name, cycles = TRUE)
+  out <- list(elapsed = f[[paste0(name, "_elapsed")]])
+  for (a in intersect(c("hour", "wday", "mday", "yday"), used)) {
+    s <- paste0(name, "_", a, c("_sin", "_cos"))
+    if (all(s %in% names(f))) out[[a]] <- cbind(f[[s[1]]], f[[s[2]]])
+  }
+  out
+}
+
+#' @keywords internal
+#' @noRd
+ilm_var_contrib_time <- function(x) {
+  if (inherits(x, "ilm_profile")) return(x$reduce$time)
+  if (inherits(x, "ilm_cluster")) return(x$time)
+  NULL
+}
+
 ## Between-cluster share of variance, on one 0-1 scale for both types so the
 ## two can be ranked against each other: eta squared for a numeric variable,
-## Cramer's V for a categorical one.
+## Cramer's V for a categorical one. A matrix -- the sine and cosine of a
+## cycle -- is scored as one variable: the between-cluster share of its
+## total variance, which does not depend on where the cycle was started.
 #' @keywords internal
 #' @noRd
 ilm_var_sep <- function(v, cl) {
+  if (is.matrix(v)) {
+    ok <- stats::complete.cases(v) & !is.na(cl)
+    if (sum(ok) < 3L || length(unique(cl[ok])) < 2L) return(NA_real_)
+    v <- v[ok, , drop = FALSE]; g <- factor(cl[ok])
+    gm <- colMeans(v)
+    mu <- rowsum(v, g) / as.vector(table(g))
+    ssb <- sum(as.vector(table(g)) * rowSums(sweep(mu, 2L, gm)^2))
+    sst <- sum(sweep(v, 2L, gm)^2)
+    if (!is.finite(sst) || sst <= 0) return(NA_real_)
+    return(ssb / sst)
+  }
   ok <- !is.na(v) & !is.na(cl)
   if (sum(ok) < 3L || length(unique(cl[ok])) < 2L) return(NA_real_)
   v <- v[ok]; cl <- factor(cl[ok])
@@ -159,6 +214,11 @@ ilm_var_contrib_labels <- function(x) {
 
 #' @export
 print.ilm_var_contrib <- function(x, ...) {
+  ## a subset of the columns keeps the class but not what this layout reads,
+  ## and stopped on round() of a column that was not there; it is a plain
+  ## table, so print it as one
+  if (!all(c("variable", "separation", "permuted", "p", "p_adj", "verdict") %in% names(x)))
+    return(NextMethod())
   d <- as.data.frame(x); class(d) <- "data.frame"
   cat(sprintf("Variable contribution to %d clusters (%d permutations)\n",
               attr(x, "k"), attr(x, "B")))

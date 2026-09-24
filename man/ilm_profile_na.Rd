@@ -11,7 +11,7 @@ ilm_profile_na(
   ndim = 5,
   ...,
   vtest_threshold = 1.96,
-  top_n_vars = 2
+  top_n_vars = 4
 )
 }
 \arguments{
@@ -25,9 +25,10 @@ regular expression, a predicate function such as \code{is.numeric}, or
 
 \item{...}{Passed to \code{\link[=ilm_cluster_na]{ilm_cluster_na()}}.}
 
-\item{vtest_threshold}{Smallest \verb{|vtest|} for a dimension to count.}
+\item{vtest_threshold}{Smallest \verb{|v-test|} for a column to be named in a
+cluster's description; see \code{\link[=ilm_profile]{ilm_profile()}}.}
 
-\item{top_n_vars}{How many top-loading indicators to name per dimension.}
+\item{top_n_vars}{Most columns to name for one cluster.}
 }
 \value{
 An object of class \code{"ilm_profile_na"}, which is also an
@@ -36,8 +37,8 @@ An object of class \code{"ilm_profile_na"}, which is also an
 \description{
 The missingness counterpart to \code{\link[=ilm_profile]{ilm_profile()}}: runs \code{\link[=ilm_reduce_na]{ilm_reduce_na()}} then
 \code{\link[=ilm_cluster_na]{ilm_cluster_na()}}, and describes each cluster of rows by which columns'
-\emph{missingness} sets it apart -- "cluster 2 is characterised by dim 1 (missing:
-income, missing: age)" rather than by those columns' values.
+\emph{missingness} sets it apart -- "income is missing for 92\% of them, against
+18\% overall" -- rather than by those columns' values.
 }
 \details{
 This is how a structured gap shows itself: a block of variables that go

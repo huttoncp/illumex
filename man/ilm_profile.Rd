@@ -10,9 +10,10 @@ ilm_profile(
   cols = NULL,
   ndim = 5,
   method = c("pcamix", "glrm"),
+  time = c("cycles", "elapsed", "drop"),
   ...,
   vtest_threshold = 1.96,
-  top_n_vars = 2,
+  top_n_vars = 4,
   var_contrib = TRUE,
   var_contrib_B = 199L
 )
@@ -33,13 +34,16 @@ than squared error on one-hot indicators, and reconstructs a category as a
 category. It costs an iterative fit, and on all-numeric data the two are
 the same model -- see \code{\link[=ilm_glrm]{ilm_glrm()}} for when it is worth that.}
 
+\item{time}{What to do with date and date-time columns; passed to
+\code{\link[=ilm_reduce]{ilm_reduce()}}, which describes the choices.}
+
 \item{...}{Passed to \code{\link[=ilm_cluster]{ilm_cluster()}}, for instance \code{k}, \code{k_max}, \code{method},
 \code{B} or \code{seed}.}
 
-\item{vtest_threshold}{Smallest \verb{|vtest|} for a dimension to count toward a
+\item{vtest_threshold}{Smallest \verb{|v-test|} for a variable to be named in a
 cluster's description.}
 
-\item{top_n_vars}{How many top-loading variables to name per dimension.}
+\item{top_n_vars}{Most variables to name for one cluster.}
 
 \item{var_contrib}{Run \code{\link[=ilm_var_contrib]{ilm_var_contrib()}} on the result and report it.
 Nothing in this pipeline selects variables, and an irrelevant one is not
@@ -55,33 +59,50 @@ of the clustering at 500 rows and five columns.}
 }
 \value{
 An object of class \code{"ilm_profile"}: \code{reduce}, \code{cluster},
-\code{characterization} (one row per dimension that characterises a cluster),
-\code{var_contrib} (or \code{NULL}) and \code{summary}, one sentence per cluster.
+\code{characterization} (one row per cluster and variable -- and per aspect of
+a date -- with its v-test, the size of the difference and the words for
+it), \code{frequencies} (every value of every categorical variable, per
+cluster: its count, its share, and its share among all rows),
+\code{by_cluster} (\code{\link[=ilm_describe_all]{ilm_describe_all()}} of the variables, by cluster),
+\code{var_contrib} (or \code{NULL}), \code{summary} (a paragraph per cluster) and
+\code{not_distinctive} (the variables that set no cluster apart).
 }
 \description{
 Runs \code{\link[=ilm_reduce]{ilm_reduce()}}, then \code{\link[=ilm_cluster]{ilm_cluster()}} on the dimensions it produces,
-then says what distinguishes each cluster -- which dimensions it sits
-unusually far along, and which original variables those dimensions are made
-of. The result is a sentence per cluster rather than a column of numbers.
+then says what sets each cluster apart, in the variables' own units -- a
+paragraph per cluster such as "employment is 'retired' for 86\% of them,
+against 21\% overall; age is higher: the middle half 64 to 72, against 29
+to 54 overall". The aim is the one profiling exists for: to find the
+subgroups in a sample and learn what each of them is.
 }
-\section{How a cluster gets characterised}{
+\section{How a cluster gets described}{
 
 
-By a v-test: for cluster \code{c} and dimension \code{d},
-\code{(mean_c - mean_overall) / (sd_overall / sqrt(n_c))}. It measures how
-surprising the cluster's average position on that dimension would be if
-membership had nothing to do with it.
+Each cluster is compared with all rows on every variable the clustering
+used. A number is described by its middle half (its quartiles) in the
+cluster against the same among all rows; a category by the value whose
+share in the cluster sits furthest from its share among all rows; a date by
+its middle half, and by the stretch of any cycle the reduction used (see
+\code{time}) where the cluster stands out -- "falls on Sat-Sun for 87\% of them,
+against 50\% overall".
 
-It is \strong{not a p-value}. The clusters were found from the very coordinates
-being tested, so the usual sampling argument does not apply and the 1.96
-default is a threshold that behaves sensibly rather than a 5\% test. Treat a
-characterisation as a description of the partition you have, not as evidence
-that the partition is real -- the stability and silhouette figures in
-\code{\link[=ilm_cluster]{ilm_cluster()}} are what speak to that.
+The variables are ranked by a v-test -- how far the cluster's mean or share
+sits from everyone's, in standard errors of a subset that size (Lebart's,
+as in FactoMineR's \code{catdes()}) -- and named, strongest first, up to
+\code{top_n_vars}, when the v-test clears \code{vtest_threshold} and the difference
+is big enough to matter: 0.2 standard deviations for a number, 10
+percentage points for a share. With many rows a chance difference clears
+1.96 on its own: on 1,200 rows, a variable that was noise by construction
+did in two clusters of three, by 3 and 6 points. The variables that set no
+cluster apart are named after the paragraphs, or counted when there are
+many; every value of every categorical variable, per cluster, is in
+\code{frequencies}.
 
-For numeric variables the reported direction combines the v-test's sign with
-the variable's own correlation on that dimension, since a dimension can run
-either way. Categorical variables are named without a direction.
+It is \strong{not a p-value}. The clusters were found from these same
+variables, so the ones the clustering used will differ between the
+clusters they helped make. Treat a profile as a description of the
+partition you have, not as evidence that the partition is real -- the
+stability and silhouette figures in \code{\link[=ilm_cluster]{ilm_cluster()}} are what speak to that.
 }
 
 \examples{
