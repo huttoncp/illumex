@@ -81,8 +81,8 @@ p <- ilm_profile_na(airquality, k_max = 4, B = 25, seed = 1)
 #> ilm_reduce_na(): dropping column(s) whose missingness never varies (always or never missing): Wind, Temp, Month, Day
 #> Warning: k was chosen as 4, which is the largest value searched. The curve had not turned, so this is where the search stopped rather than where the evidence pointed. Raise `k_max`, or set `k` from what the design says. On mixed data a selector can also lock onto the number of category combinations rather than the number of clusters; plot(x) shows the gap curve.
 cat(p$summary, sep = "\n")
-#> Cluster 1 holds 35 rows, 22.9% of the data (stable). What sets it apart: Ozone is missing for 100% of them, against 24% overall.
+#> Cluster 1 holds 111 rows, 72.5% of the data (stable). What sets it apart: Ozone is missing for none of them, against 24% overall.
 #> Cluster 2 holds 2 rows, 1.3% of the data (stable). What sets it apart: Solar.R is missing for 100% of them, against 5% overall; and Ozone is missing for 100% of them, against 24% overall. It is a small cluster, 1.3% of observations: possibly a real minority pattern, possibly a data problem, but worth looking at either way.
-#> Cluster 3 holds 111 rows, 72.5% of the data (stable). What sets it apart: Ozone is missing for none of them, against 24% overall.
-#> Cluster 4 holds 5 rows, 3.3% of the data (stable). What sets it apart: Solar.R is missing for 100% of them, against 5% overall. It is a small cluster, 3.3% of observations: possibly a real minority pattern, possibly a data problem, but worth looking at either way.
+#> Cluster 3 holds 5 rows, 3.3% of the data (stable). What sets it apart: Solar.R is missing for 100% of them, against 5% overall. It is a small cluster, 3.3% of observations: possibly a real minority pattern, possibly a data problem, but worth looking at either way.
+#> Cluster 4 holds 35 rows, 22.9% of the data (stable). What sets it apart: Ozone is missing for 100% of them, against 24% overall.
 ```

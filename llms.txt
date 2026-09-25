@@ -87,10 +87,10 @@ vignette("exploring-data", package = "illumex")
 ## How this package was built
 
 `illumex` was developed in collaboration with [Claude Opus
-5.5](https://www.anthropic.com), run at maximum reasoning effort, under
-a human-in-the-loop model, as part of `illume`, from which it was later
-split. The division of labour was consistent throughout and is worth
-stating plainly rather than leaving to be inferred.
+5.5](https://www.anthropic.com) under a human-in-the-loop model, as part
+of `illume`, from which it was later split. The division of labour was
+consistent throughout and is worth stating plainly rather than leaving
+to be inferred.
 
 **What the model did.** Prototyped and drafted the implementation, the
 documentation and the simulation studies. Proposed designs, and argued
