@@ -15,7 +15,8 @@ ilm_profile(
   vtest_threshold = 1.96,
   top_n_vars = 4,
   var_contrib = TRUE,
-  var_contrib_B = 199L
+  var_contrib_B = 199L,
+  cols_negate = FALSE
 )
 }
 \arguments{
@@ -57,6 +58,10 @@ would all be true and all about that variable. It adds to the time the
 clustering takes; \code{var_contrib = FALSE} leaves it out.}
 
 \item{var_contrib_B}{Permutations for that check.}
+
+\item{cols_negate}{If \code{TRUE}, \code{cols} names the columns to leave out, and every
+other eligible column is used; see \link{ilm_selection}. It needs \code{cols}. A
+\code{by} argument is never negated.}
 }
 \value{
 An object of class \code{"ilm_profile"}: \code{reduce}, \code{cluster},

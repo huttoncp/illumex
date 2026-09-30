@@ -240,6 +240,7 @@ ilm_boot_ci <- function(data, y = NULL, by = NULL, stat = "mean",
     if (!is.data.frame(data))
       stop("`data` must be a data frame, or a numeric vector with `y` left out",
            call. = FALSE)
+    ilm_check_by(data, by)
     miss <- setdiff(by, names(data))
     if (!is.null(y)) miss <- c(setdiff(y, names(data)), miss)
     if (length(miss))
@@ -697,6 +698,7 @@ ilm_boot_diff_infer <- function(D, dh, conf, ci_type, adjust) {
 ilm_describe_na <- function(data, y = NULL, by = NULL, digits = 4) {
   if (is.null(y) && !is.data.frame(data)) { v <- data; data <- NULL } else {
     if (is.null(y)) stop("`y` must name a column, or pass a vector", call. = FALSE)
+    ilm_check_by(data, by)
     miss <- setdiff(c(y, by), names(data))
     if (length(miss))
       stop("column(s) not found in the data: ", paste(miss, collapse = ", "),
@@ -733,6 +735,7 @@ ilm_describe_na <- function(data, y = NULL, by = NULL, digits = 4) {
 #' @export
 ilm_describe_na_all <- function(data, by = NULL, digits = 4, sort = TRUE) {
   if (!is.data.frame(data)) stop("`data` must be a data frame", call. = FALSE)
+  ilm_check_by(data, by)
   miss <- setdiff(by, names(data))
   if (length(miss))
     stop("`by` variable(s) not found in the data: ", paste(miss, collapse = ", "),

@@ -13,7 +13,8 @@ ilm_plot_var_all(
   nrow = NULL,
   ncol = NULL,
   verbose = FALSE,
-  ...
+  ...,
+  cols_negate = FALSE
 )
 }
 \arguments{
@@ -32,6 +33,10 @@ regular expression, a predicate function such as \code{is.numeric}, or
 \item{verbose}{Say which plot was chosen and why.}
 
 \item{...}{Passed to the underlying plot function.}
+
+\item{cols_negate}{If \code{TRUE}, \code{cols} names the columns to leave out, and every
+other eligible column is used; see \link{ilm_selection}. It needs \code{cols}. A
+\code{by} argument is never negated.}
 }
 \value{
 \code{NULL}, invisibly.

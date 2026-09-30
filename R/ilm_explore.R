@@ -95,6 +95,7 @@ ilm_counts_tb <- function(y, n = 10L, na.rm = TRUE) {
 ilm_counts_all <- function(data, by = NULL, n = "all", order = c("d", "a", "i"),
                            na.rm = TRUE) {
   order <- match.arg(order)
+  ilm_check_by(data, by)
   miss <- setdiff(by, names(data))
   if (length(miss))
     stop("`by` variable(s) not found in the data: ", paste(miss, collapse = ", "),
@@ -635,7 +636,11 @@ ilm_recode_errors_vec <- function(x, errors, replacement = NA) {
 #' @param data A vector, data frame or matrix.
 #' @param errors Values to recode.
 #' @param replacement What to put in their place. `NA` by default.
-#' @param rows,cols Restrict the replacement (data frame or matrix input).
+#' @param rows,cols Restrict the replacement (data frame or matrix input):
+#'   the cells recoded are those in these rows and columns. `cols` here takes
+#'   column names or positions only -- it addresses cells rather than choosing
+#'   columns for an analysis, so the patterns, predicates and `cols_negate` of
+#'   [ilm_selection] do not apply.
 #' @param ind Restrict the replacement (vector input).
 #' @return An object of the same shape as `data`.
 #' @examples

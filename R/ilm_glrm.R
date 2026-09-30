@@ -171,6 +171,7 @@ logspace_add0 <- function(u) ifelse(u > 30, u, log1p(exp(pmin(u, 30))))
 #' the same machinery serves `illume::ilm_impute()`.
 #'
 #' @param data A data frame.
+#' @inheritParams ilm_reduce
 #' @param cols Columns to use; see [ilm_selection].
 #' @param rank Number of dimensions.
 #' @param loss Optional named character vector overriding the automatic choice
@@ -230,12 +231,13 @@ logspace_add0 <- function(u) ifelse(u > 30, u, log1p(exp(pmin(u, 30))))
 #' @export
 ilm_glrm <- function(data, cols = NULL, rank = 2L, loss = NULL, lambda = NULL,
                      weights = NULL, maxit = 300L, tol = 1e-7, seed = 1L,
-                     progress = NULL, time = c("cycles", "elapsed", "drop")) {
+                     progress = NULL, time = c("cycles", "elapsed", "drop"),
+                     cols_negate = FALSE) {
   ilm_rng_restore(seed)                  # the user's random stream, put back on exit
   time <- match.arg(time)
   if (!is.data.frame(data))
     stop("`data` must be a data frame; it is ", class(data)[1], call. = FALSE)
-  keep <- ilm_resolve_cols(data, cols)
+  keep <- ilm_resolve_cols(data, cols, negate = cols_negate)
   ilm_stop_not_utf8_names(keep, "ilm_glrm")
   sub <- ilm_time_encode(data[keep], time, "ilm_glrm")
   tmap <- attr(sub, "time_map")

@@ -122,7 +122,7 @@ test_that("the EDA plots draw and check their columns", {
                            ilm_plot_bar(mtcars, "am"), nrow = 1))
 
   expect_error(ilm_plot_histogram("nope", "mpg"), "must be a data frame")
-  expect_error(ilm_plot_histogram(mtcars, "nosuch"), "column not found")
+  expect_error(ilm_plot_histogram(mtcars, "nosuch"), "`x` takes column names; nosuch is not one", fixed = TRUE)
   expect_error(ilm_plot_histogram(mtcars, c("a", "b")), "single column name")
   expect_error(ilm_plot_na(airquality, "Ozone"), "`by` is required")
   expect_error(ilm_plot_var_pairs(mtcars, cols = "mpg"), "at least 2 columns")

@@ -267,6 +267,7 @@ ilm_plot <- function(data, x, y = NULL, by = NULL, geom = "auto",
   }
   ## checked here, before anything is drawn, as the other columns are
   if (!is.null(facet)) ilm_facet_vec(data, facet)
+  ilm_check_by(data, by)
   miss <- setdiff(c(x, y, by), names(data))
   if (length(miss))
     stop("column(s) not found in the data: ", paste(miss, collapse = ", "),
@@ -453,6 +454,7 @@ ilm_plot_all <- function(data, by = NULL, class = "all", max_panels = 12L,
          ". Options are ", paste(sQuote(c("all", ILM_CLASSES)), collapse = ", "),
          ".", call. = FALSE)
   data <- ilm_plot_frame(data)
+  ilm_check_by(data, by)
   cand <- setdiff(names(data), by)
   cl <- vapply(data[cand], ilm_class_of, "")
   if (!identical(class, "all")) cand <- cand[cl %in% class]

@@ -16,8 +16,8 @@
 
 #' How columns can be chosen
 #'
-#' Wherever illumex takes a `cols` or `by` argument, it accepts any of four
-#' things. All are ordinary values, so any of them can be held in a variable and
+#' Wherever illumex takes a `cols` argument, it accepts any of four things.
+#' All are ordinary values, so any of them can be held in a variable and
 #' passed along -- which a bare-name interface cannot.
 #'
 #' * `NULL`, meaning every eligible column.
@@ -27,12 +27,29 @@
 #'   name: `"^score_"` takes every column whose name starts with `score_`.
 #'   Matching nothing is an error rather than a silent empty selection.
 #' * A **predicate function** applied to each column: `is.numeric`, or
-#'   `function(v) is.numeric(v) && !anyNA(v)`.
+#'   `function(v) is.numeric(v) && !anyNA(v)`. A column on which the function
+#'   fails counts as not matching.
 #'
 #' The one ambiguity is a single string, which could be a name or a pattern.
 #' A name wins: `cols = "score"` selects the column called `score` even if
 #' `scores_2024` also exists. Anything that is not a column name is read as a
 #' pattern.
+#'
+#' **Leaving columns out.** With `cols_negate = TRUE`, `cols` says which columns to
+#' leave out, and every other eligible column is used: `cols = c("id",
+#' "site")` uses all but `id` and `site`; `cols = "^score_"` all but the
+#' columns whose names start with `score_`; `cols = is.numeric` all but the
+#' numeric columns, which is every column of another type. The selection is
+#' made within the columns the function can use (a numeric-only function
+#' leaves out text columns either way), so `cols_negate = TRUE` takes exactly
+#' the eligible columns that `cols_negate = FALSE` would not. A column on which a
+#' predicate fails counts as not matching, so `cols_negate = TRUE` selects
+#' it. `cols_negate = TRUE` needs `cols`, and leaving out every eligible column is an
+#' error naming them.
+#'
+#' A `by` argument takes column names. [ilm_outliers_all()]'s `by` also takes
+#' a pattern or a predicate, as `cols` does; elsewhere a pattern or a function
+#' given as `by` is an error. `by` is never negated.
 #'
 #' @name ilm_selection
 #' @examples
@@ -40,23 +57,46 @@
 #'                 label = letters[1:5])
 #' ilm_outliers_all(d, cols = "^score_")
 #' ilm_outliers_all(d, cols = is.numeric)
+#' ## leaving columns out
+#' ilm_outliers_all(d, cols = "id", cols_negate = TRUE)
+#' ilm_outliers_all(d, cols = "^score_", cols_negate = TRUE)
+#' ilm_outliers_all(d, cols = function(v) all(v == round(v)), cols_negate = TRUE)
 NULL
 
 #' @keywords internal
 #' @noRd
 ilm_resolve_cols <- function(data, cols, exclude = character(),
-                             arg = "cols", eligible = NULL) {
+                             arg = "cols", eligible = NULL, negate = FALSE) {
   nms <- setdiff(names(data), exclude)
   if (!is.null(eligible)) nms <- intersect(nms, eligible)
+  if (isTRUE(negate) && is.null(cols))
+    stop("`", arg, "_negate = TRUE` needs `", arg, "` to say which columns to leave out",
+         call. = FALSE)
   if (is.null(cols)) return(nms)
+  hit <- ilm_select_matches(data, cols, nms, arg, negate = isTRUE(negate))
+  if (!isTRUE(negate)) return(hit)
+  ## the eligible columns the same `cols` would not select
+  out <- setdiff(nms, hit)
+  if (!length(out))
+    stop("`", arg, "_negate = TRUE` left no column to use: `", arg, "` covers every eligible ",
+         "column (", paste(nms, collapse = ", "), ")", call. = FALSE)
+  out
+}
 
+## the eligible columns (`nms`) that `cols` selects. A typo'd name is an error
+## either way; an empty selection is an error unless it is about to be negated
+## (a predicate that matches nothing, or names only of columns not eligible,
+## leave every column in)
+#' @keywords internal
+#' @noRd
+ilm_select_matches <- function(data, cols, nms, arg, negate = FALSE) {
   if (is.function(cols)) {
     keep <- vapply(nms, function(v) {
       ok <- tryCatch(cols(data[[v]]), error = function(e) FALSE)
       isTRUE(ok)
     }, TRUE)
     out <- nms[keep]
-    if (!length(out))
+    if (!length(out) && !negate)
       stop("`", arg, "` is a function that matched no column", call. = FALSE)
     return(out)
   }
@@ -69,7 +109,7 @@ ilm_resolve_cols <- function(data, cols, exclude = character(),
   known <- cols %in% names(data)
   if (all(known)) {
     out <- intersect(cols, nms)
-    if (!length(out))
+    if (!length(out) && !negate)
       stop("`", arg, "` named only columns that are excluded here: ",
            paste(cols, collapse = ", "), call. = FALSE)
     return(out)
@@ -82,7 +122,8 @@ ilm_resolve_cols <- function(data, cols, exclude = character(),
                            "regular expression: ", cols, call. = FALSE))
     ## A single unknown string is ambiguous: a typo'd name and a pattern that
     ## matches nothing look identical from here, so the message covers both
-    ## readings rather than guessing which the user meant.
+    ## readings rather than guessing which the user meant -- negated or not,
+    ## since leaving out a typo would silently leave out nothing.
     if (!length(out))
       stop("column not found in the data, and matched nothing as a pattern ",
            "either: ", cols, ". Available: ",
@@ -92,4 +133,23 @@ ilm_resolve_cols <- function(data, cols, exclude = character(),
   stop("column(s) not found in the data: ",
        paste(cols[!known], collapse = ", "), ". Available: ",
        paste(utils::head(names(data), 12), collapse = ", "), call. = FALSE)
+}
+
+## A `by` that is not ilm_outliers_all()'s takes column names only: a
+## function, or a string that is not a column (a pattern, or a typo), is one
+## clear error rather than a failure deep inside the function
+#' @keywords internal
+#' @noRd
+ilm_check_by <- function(data, by, arg = "by") {
+  if (is.null(by)) return(invisible(by))
+  if (is.function(by))
+    stop("`", arg, "` takes column names; a function is not one", call. = FALSE)
+  if (!is.character(by))
+    stop("`", arg, "` takes column names; it is ", class(by)[1], call. = FALSE)
+  bad <- by[!by %in% names(data)]
+  if (length(bad))
+    stop("`", arg, "` takes column names; ", paste(bad, collapse = ", "),
+         if (length(bad) == 1L) " is not one" else " are not", ". Available: ",
+         paste(utils::head(names(data), 12), collapse = ", "), call. = FALSE)
+  invisible(by)
 }

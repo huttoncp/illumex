@@ -19,10 +19,12 @@ ilm_col_vec <- function(data, nm, arg, required = FALSE, discrete = FALSE) {
       stop("`", arg, "` must name a column of `data`", call. = FALSE)
     return(NULL)
   }
+  if (is.function(nm))
+    stop("`", arg, "` takes column names; a function is not one", call. = FALSE)
   if (!is.character(nm) || length(nm) != 1L)
     stop("`", arg, "` must be a single column name, as a string", call. = FALSE)
   if (!nm %in% names(data))
-    stop("column not found in the data: ", nm, ". Available: ",
+    stop("`", arg, "` takes column names; ", nm, " is not one. Available: ",
          paste(utils::head(names(data), 12), collapse = ", "), call. = FALSE)
   v <- data[[nm]]
   ## A grouping column for a discrete geometry is a factor whatever it is

@@ -1,5 +1,17 @@
 # illumex 0.0.8.9003
 
+* Every function that takes `cols` takes `cols_negate`: with `cols_negate = TRUE`,
+  `cols` names the columns to leave out -- `cols = c("id", "site")`,
+  `cols = "^score_"` or `cols = is.numeric` -- and every other column the
+  function can use is used (item 276). `by` is never negated. See
+  `?ilm_selection`.
+* A `by` argument takes column names, as the help now says; only
+  `ilm_outliers_all()`'s also takes a pattern or a predicate. A pattern or a
+  function given as `by` elsewhere is one clear error ("`by` takes column
+  names; ^grp is not one") rather than a message from deep inside the call.
+* `ilm_reduce_na()`, `ilm_profile_na()`, `ilm_plot_var_all()` and
+  `ilm_plot_var_pairs()` take a pattern or a predicate as `cols`, as the help
+  always said; they took names only.
 * Numbers are written in full with at most 15 figures before the point
   and, below 1, at most 6 decimals, after rounding, and in R's scientific
   notation beyond, so sentences and reports match R's printed tables (item

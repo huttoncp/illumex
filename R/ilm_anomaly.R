@@ -343,6 +343,7 @@ ilm_anomaly_iforest <- function(data, sel, ntrees, alpha, seed,
 #' at 50,000.
 #'
 #' @param data A data frame or matrix.
+#' @inheritParams ilm_reduce
 #' @param cols Columns to use; see [ilm_selection]. Under the default method,
 #'   numeric columns only -- the reconstruction is a projection, and a category
 #'   has no residual along a direction. Anything else is dropped with a note.
@@ -417,7 +418,7 @@ ilm_anomaly_iforest <- function(data, sel, ntrees, alpha, seed,
 ilm_anomaly <- function(data, cols = NULL, method = c("reconstruction", "iforest"),
                         rank = NULL, trim = 0.25, ntrees = 500L,
                         B = 39L, alpha = 0.05, seed = 1L, keep_data = TRUE,
-                        progress = NULL) {
+                        progress = NULL, cols_negate = FALSE) {
   ilm_rng_restore(seed)                  # the user's random stream, put back on exit
   method <- match.arg(method)
   ## The scan says WHICH rows are odd; the next question is always whether
@@ -434,7 +435,7 @@ ilm_anomaly <- function(data, cols = NULL, method = c("reconstruction", "iforest
     stop("`trim` must be a single number in [0, 0.5): it is the share of rows ",
          "held out of the FIT, and trimming half of them leaves the structure ",
          "defined by whichever half happened to fit first.", call. = FALSE)
-  sel <- ilm_resolve_cols(data, cols)
+  sel <- ilm_resolve_cols(data, cols, negate = cols_negate)
   if (method == "iforest")
     return(ilm_seed_mark(ilm_anomaly_iforest(data, sel, ntrees, alpha, seed, .keep), seed))
   num <- sel[vapply(sel, function(v) is.numeric(data[[v]]), TRUE)]

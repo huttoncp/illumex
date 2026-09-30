@@ -16,7 +16,8 @@ ilm_glrm(
   tol = 1e-07,
   seed = 1L,
   progress = NULL,
-  time = c("cycles", "elapsed", "drop")
+  time = c("cycles", "elapsed", "drop"),
+  cols_negate = FALSE
 )
 }
 \arguments{
@@ -73,6 +74,10 @@ earliest value alone -- it cannot see a rhythm, since a number that only
 grows puts every Monday somewhere new -- and skips the test, for very
 large data or when only order matters. \code{"drop"} leaves dates out. A
 duration (\code{difftime}) is used as its number of days.}
+
+\item{cols_negate}{If \code{TRUE}, \code{cols} names the columns to leave out, and every
+other eligible column is used; see \link{ilm_selection}. It needs \code{cols}. A
+\code{by} argument is never negated.}
 }
 \value{
 An object of class \code{"ilm_glrm"} with \code{scores} (one row per

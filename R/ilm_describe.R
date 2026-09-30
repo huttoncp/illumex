@@ -566,6 +566,7 @@ ilm_describe <- function(data, y = NULL, by = NULL, digits = 3,
   }
 
   if (is.null(by)) return(ilm_describe_result(one(x), "ilm_describe", y, by, digits))
+  ilm_check_by(data, by)
   miss <- setdiff(by, names(data))
   if (length(miss))
     stop("`by` variable(s) not found in the data: ", paste(miss, collapse = ", "),
@@ -665,6 +666,7 @@ ilm_describe_all <- function(data, by = NULL, digits = 3,
     stop("unknown `class`: ", paste(sQuote(bad), collapse = ", "),
          ". Options are ", paste(sQuote(c("all", ILM_CLASSES)), collapse = ", "),
          ".", call. = FALSE)
+  ilm_check_by(data, by)
   miss <- setdiff(by, names(data))
   if (length(miss))
     stop("`by` variable(s) not found in the data: ", paste(miss, collapse = ", "),

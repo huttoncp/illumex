@@ -11,7 +11,8 @@ ilm_reduce(
   ndim = 5,
   method = c("famd", "glrm", "pcamix"),
   time = c("cycles", "elapsed", "drop"),
-  ...
+  ...,
+  cols_negate = FALSE
 )
 }
 \arguments{
@@ -49,6 +50,10 @@ large data or when only order matters. \code{"drop"} leaves dates out. A
 duration (\code{difftime}) is used as its number of days.}
 
 \item{...}{Passed to \code{\link[=ilm_glrm]{ilm_glrm()}} when \code{method = "glrm"}.}
+
+\item{cols_negate}{If \code{TRUE}, \code{cols} names the columns to leave out, and every
+other eligible column is used; see \link{ilm_selection}. It needs \code{cols}. A
+\code{by} argument is never negated.}
 }
 \value{
 An object of class \code{"ilm_reduce"}: \code{method} (\code{"pca"}, \code{"mca"} or
