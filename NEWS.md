@@ -1,5 +1,13 @@
 # illumex 0.0.8.9003
 
+* `ilm_describe_all()`, `ilm_describe_na_all()`, `ilm_counts_all()`,
+  `ilm_counts_tb_all()`, `ilm_plot_all()` and `ilm_plot_na_all()` take `cols`
+  and `cols_negate`, as `ilm_outliers_all()` does (item 278). Where `class`
+  already narrows the columns, `cols` chooses among those. `cols` comes right
+  after `by` (after `data` in `ilm_counts_tb_all()`, which has no `by`), so a
+  call that passed the next argument by position now needs its name:
+  `ilm_describe_all(d, "grp", 2)` becomes `ilm_describe_all(d, "grp", digits
+  = 2)`.
 * Every function that takes `cols` takes `cols_negate`: with `cols_negate = TRUE`,
   `cols` names the columns to leave out -- `cols = c("id", "site")`,
   `cols = "^score_"` or `cols = is.numeric` -- and every other column the

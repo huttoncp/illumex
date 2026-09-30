@@ -142,3 +142,54 @@ test_that("a by outside ilm_outliers_all() takes names, and says so for anything
   expect_identical(q(ilm_outliers_all(d, by = "^gr", flagged_only = FALSE)),
                    q(ilm_outliers_all(d, by = "grp", flagged_only = FALSE)))
 })
+
+test_that("the _all functions take cols and cols_negate, after by (item 278)", {
+  d <- neg_data()
+  d$note <- ifelse(seq_len(nrow(d)) %% 5 == 0, NA, "x")
+  q <- function(e) suppressMessages(suppressWarnings(e))
+  vars <- function(res) unique(unlist(lapply(if (is.data.frame(res)) list(res) else res,
+                                                function(t) t$variable)))
+  ## describe_all: cols, a pattern, a predicate, and their complements
+  expect_identical(vars(q(ilm_describe_all(d, cols = c("score", "grp")))), c("score", "grp"))
+  expect_setequal(vars(q(ilm_describe_all(d, cols = "^score"))), c("score", "score_b"))
+  expect_setequal(vars(q(ilm_describe_all(d, cols = "^score|^id|note", cols_negate = TRUE))),
+                  c("income", "grp", "label"))
+  ## within class: numeric columns but id; a text column named with a numeric
+  ## class leaves every numeric one
+  expect_setequal(vars(q(ilm_describe_all(d, class = "numeric", cols = "id", cols_negate = TRUE))),
+                  c("score", "score_b", "income"))
+  expect_setequal(vars(q(ilm_describe_all(d, class = "numeric", cols = "label", cols_negate = TRUE))),
+                  c("id", "score", "score_b", "income"))
+  expect_error(q(ilm_describe_all(d, class = "numeric", cols = "label")), "excluded here")
+  ## by is never negated, and never among the columns
+  r <- q(ilm_describe_all(d, by = "grp", cols = "^score", cols_negate = TRUE, class = "numeric"))
+  expect_setequal(vars(r), c("id", "income"))
+  ## describe_na_all
+  expect_identical(sort(q(ilm_describe_na_all(d, cols = c("note", "id")))$variable), c("id", "note"))
+  expect_false("note" %in% q(ilm_describe_na_all(d, cols = "note", cols_negate = TRUE))$variable)
+  expect_identical(sort(unique(q(ilm_describe_na_all(d, by = "grp", cols = is.character,
+                                                     cols_negate = TRUE))$variable)),
+                   sort(c("id", "score", "score_b", "income")))
+  ## counts_all and counts_tb_all
+  expect_identical(unique(q(ilm_counts_all(d, cols = "label"))$variable), "label")
+  expect_identical(unique(q(ilm_counts_all(d, by = "grp", cols = is.numeric, cols_negate = TRUE))$variable),
+                   c("label", "note"))
+  expect_identical(unique(q(ilm_counts_tb_all(d, cols = "^label|note"))$variable), c("label", "note"))
+  expect_identical(unique(q(ilm_counts_tb_all(d, cols = is.numeric, cols_negate = TRUE))$variable),
+                   c("grp", "label", "note"))
+  ## the plots
+  grDevices::pdf(NULL); on.exit(grDevices::dev.off(), add = TRUE)
+  expect_no_error(q(ilm_plot_all(d, cols = "^score")))
+  expect_no_error(q(ilm_plot_all(d, class = "numeric", cols = "id", cols_negate = TRUE)))
+  expect_error(q(ilm_plot_all(d, class = "numeric", cols = names(d)[vapply(d, is.numeric, TRUE)],
+                              cols_negate = TRUE)), "left no column")
+  expect_no_error(q(ilm_plot_na_all(d, cols = c("note", "label"))))
+  expect_no_error(q(ilm_plot_na_all(d, by = "grp", cols = "note", cols_negate = TRUE)))
+  ## the errors are the resolver's
+  for (f in list(function(...) ilm_describe_all(d, ...), function(...) ilm_describe_na_all(d, ...),
+                 function(...) ilm_counts_all(d, ...), function(...) ilm_counts_tb_all(d, ...),
+                 function(...) ilm_plot_all(d, ...), function(...) ilm_plot_na_all(d, ...))) {
+    expect_error(q(f(cols_negate = TRUE)), "needs `cols`")
+    expect_error(q(f(cols = "labl")), "matched nothing as a pattern")
+  }
+})

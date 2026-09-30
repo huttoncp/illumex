@@ -5,7 +5,14 @@
 \alias{iml_plot_na_all}
 \title{Missing values by column}
 \usage{
-ilm_plot_na_all(data, by = NULL, stat = c("p_na", "na", "n"), ...)
+ilm_plot_na_all(
+  data,
+  by = NULL,
+  cols = NULL,
+  stat = c("p_na", "na", "n"),
+  ...,
+  cols_negate = FALSE
+)
 }
 \arguments{
 \item{data}{A data frame.}
@@ -14,10 +21,18 @@ ilm_plot_na_all(data, by = NULL, stat = c("p_na", "na", "n"), ...)
 drawn per group, which is how you see whether missingness is concentrated
 somewhere.}
 
+\item{cols}{Columns to plot. A character vector of names, a regular
+expression, a predicate function such as \code{is.numeric}, or \code{NULL} for all
+of them -- see \link{ilm_selection}. \code{by} columns are never among them.}
+
 \item{stat}{\code{"p_na"} (proportion missing), \code{"na"} (count missing) or \code{"n"}
 (count present).}
 
 \item{...}{Passed to \code{\link[tinyplot:tinyplot]{tinyplot::tinyplot()}}.}
+
+\item{cols_negate}{If \code{TRUE}, \code{cols} names the columns to leave out, and every
+other eligible column is used; see \link{ilm_selection}. It needs \code{cols}. A
+\code{by} argument is never negated.}
 }
 \value{
 \code{NULL}, invisibly.

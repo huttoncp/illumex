@@ -8,17 +8,24 @@
 ilm_plot_all(
   data,
   by = NULL,
+  cols = NULL,
   class = "all",
   max_panels = 12L,
   n_max = 5000L,
   verdict = FALSE,
-  ...
+  ...,
+  cols_negate = FALSE
 )
 }
 \arguments{
 \item{data}{A data frame.}
 
 \item{by}{Optional grouping variable, drawn as colour with a legend.}
+
+\item{cols}{Columns to plot. A character vector of names, a regular
+expression, a predicate function such as \code{is.numeric}, or \code{NULL} for all
+of them -- see \link{ilm_selection}. \code{by} columns are never among them, and the choice is made
+among the columns \code{class} allows.}
 
 \item{class}{\code{"all"}, or one or more of \code{"numeric"}, \code{"categorical"},
 \code{"logical"}, \code{"time"}.}
@@ -30,6 +37,10 @@ ilm_plot_all(
 \item{verdict}{Annotate the plot with the diagnostic verdict.}
 
 \item{...}{Passed to \code{\link[tinyplot:tinyplot]{tinyplot::tinyplot()}}.}
+
+\item{cols_negate}{If \code{TRUE}, \code{cols} names the columns to leave out, and every
+other eligible column is used; see \link{ilm_selection}. It needs \code{cols}. A
+\code{by} argument is never negated.}
 }
 \value{
 Invisibly, a list of the per-panel results.

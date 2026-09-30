@@ -5,16 +5,31 @@
 \alias{iml_describe_na_all}
 \title{Missingness in every variable}
 \usage{
-ilm_describe_na_all(data, by = NULL, digits = 4, sort = TRUE)
+ilm_describe_na_all(
+  data,
+  by = NULL,
+  cols = NULL,
+  digits = 4,
+  sort = TRUE,
+  cols_negate = FALSE
+)
 }
 \arguments{
 \item{data}{A data frame, or a vector when \code{y} is \code{NULL}.}
 
 \item{by}{Optional grouping columns.}
 
+\item{cols}{Columns to describe. A character vector of names, a regular
+expression, a predicate function such as \code{is.numeric}, or \code{NULL} for all
+of them -- see \link{ilm_selection}. \code{by} columns are never among them.}
+
 \item{digits}{Rounding for \code{p_na}.}
 
 \item{sort}{Sort by proportion missing, descending.}
+
+\item{cols_negate}{If \code{TRUE}, \code{cols} names the columns to leave out, and every
+other eligible column is used; see \link{ilm_selection}. It needs \code{cols}. A
+\code{by} argument is never negated.}
 }
 \value{
 A data frame with \code{variable}, \code{obs}, \code{n}, \code{na} and \code{p_na}.

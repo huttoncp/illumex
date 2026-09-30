@@ -39,6 +39,10 @@ ilm_na_summary <- function(data, cols, g = character()) {
 #' @param by Optional grouping column(s), as a character vector -- bars are
 #'   drawn per group, which is how you see whether missingness is concentrated
 #'   somewhere.
+#' @inheritParams ilm_reduce
+#' @param cols Columns to plot. A character vector of names, a regular
+#'   expression, a predicate function such as `is.numeric`, or `NULL` for all
+#'   of them -- see [ilm_selection]. `by` columns are never among them.
 #' @param stat `"p_na"` (proportion missing), `"na"` (count missing) or `"n"`
 #'   (count present).
 #' @param ... Passed to [tinyplot::tinyplot()].
@@ -49,7 +53,8 @@ ilm_na_summary <- function(data, cols, g = character()) {
 #' ilm_plot_na_all(airquality)
 #' ilm_plot_na_all(airquality, by = "Month")
 #' @export
-ilm_plot_na_all <- function(data, by = NULL, stat = c("p_na", "na", "n"), ...) {
+ilm_plot_na_all <- function(data, by = NULL, cols = NULL, stat = c("p_na", "na", "n"), ...,
+                            cols_negate = FALSE) {
   stat <- match.arg(stat)
   data <- ilm_plot_frame(data)
   ilm_check_by(data, by)
@@ -58,10 +63,10 @@ ilm_plot_na_all <- function(data, by = NULL, stat = c("p_na", "na", "n"), ...) {
   if (length(miss))
     stop("column(s) not found in the data: ", paste(miss, collapse = ", "),
          call. = FALSE)
-  cols <- setdiff(names(data), g)
-  if (!length(cols))
+  if (length(setdiff(names(data), g)) == 0L)
     stop("no columns left to plot once `by` is set aside", call. = FALSE)
-  s <- ilm_na_summary(data, cols, g)
+  use <- ilm_resolve_cols(data, cols, exclude = g, negate = cols_negate)
+  s <- ilm_na_summary(data, use, g)
   tinyplot::tinyplot(x = s$variable, y = s[[stat]],
                      by = if (length(g)) s$group else NULL,
                      type = if (length(g)) tinyplot::type_barplot(beside = TRUE)

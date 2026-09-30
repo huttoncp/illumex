@@ -439,6 +439,11 @@ ilm_bin2d <- function(x, y, bins = 60L, xlab = "", ylab = "", main = "", sub = "
 #' variable with [ilm_plot()] when you need one.
 #'
 #' @inheritParams ilm_plot
+#' @inheritParams ilm_reduce
+#' @param cols Columns to plot. A character vector of names, a regular
+#'   expression, a predicate function such as `is.numeric`, or `NULL` for all
+#'   of them -- see [ilm_selection]. `by` columns are never among them, and the choice is made
+#'   among the columns `class` allows.
 #' @param class `"all"`, or one or more of `"numeric"`, `"categorical"`,
 #'   `"logical"`, `"time"`.
 #' @param max_panels Stop after this many variables.
@@ -446,8 +451,8 @@ ilm_bin2d <- function(x, y, bins = 60L, xlab = "", ylab = "", main = "", sub = "
 #' @examples
 #' ilm_plot_all(ilm_sim(), class = "numeric", max_panels = 4)
 #' @export
-ilm_plot_all <- function(data, by = NULL, class = "all", max_panels = 12L,
-                         n_max = 5000L, verdict = FALSE, ...) {
+ilm_plot_all <- function(data, by = NULL, cols = NULL, class = "all", max_panels = 12L,
+                         n_max = 5000L, verdict = FALSE, ..., cols_negate = FALSE) {
   bad <- setdiff(class, c("all", ILM_CLASSES))
   if (length(bad))
     stop("unknown `class`: ", paste(sQuote(bad), collapse = ", "),
@@ -458,6 +463,10 @@ ilm_plot_all <- function(data, by = NULL, class = "all", max_panels = 12L,
   cand <- setdiff(names(data), by)
   cl <- vapply(data[cand], ilm_class_of, "")
   if (!identical(class, "all")) cand <- cand[cl %in% class]
+  ## `cols` chooses among the columns `class` allows, and `cols_negate`
+  ## leaves its choice out of those
+  if (!is.null(cols) || isTRUE(cols_negate))
+    cand <- ilm_resolve_cols(data, cols, exclude = by, eligible = cand, negate = cols_negate)
   if (!length(cand)) stop("no columns of class ",
                           paste(sQuote(class), collapse = ", "), " in the data",
                           call. = FALSE)
