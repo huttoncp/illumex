@@ -222,9 +222,12 @@ ilm_selection_info <- function(data, cols, used, by = character(), negate = FALS
     predicate = NULL,
     pattern = list(pattern = cols),
     names = list(names = as.list(cols)))
+  ## the N and n of "Columns: n of N", the by columns set aside
+  given <- setdiff(names(data), by)
   c(list(form = form), spec,
     list(negate = isTRUE(negate), fixed = isTRUE(fixed),
-         columns_excluded = as.list(setdiff(names(data), c(used, by)))))
+         n_cols_given = length(given), n_cols_kept = length(used),
+         columns_excluded = as.list(setdiff(given, used))))
 }
 
 ## The two lines a result prints above itself when a call chose its rows or
@@ -240,7 +243,7 @@ ilm_select_lines <- function(sel) {
   cols <- if (!is.null(c_)) {
     ex <- unlist(c_$columns_excluded)
     shown <- utils::head(ex, 8L)
-    paste0("Columns: ", sel$n_cols_used, " of ", sel$n_cols_used + length(ex),
+    paste0("Columns: ", c_$n_cols_kept, " of ", c_$n_cols_given,
            if (length(ex)) paste0(" (excluded: ", paste(shown, collapse = ", "),
                                   if (length(ex) > 8L) paste0(", and ", length(ex) - 8L, " more"),
                                   ")"))
@@ -324,8 +327,7 @@ ilm_subset <- function(data, subset = NULL, subset_negate = FALSE, subset_fixed 
   attr(out, "ilm_rows") <- NULL
   sel <- list(subset = rs$subset,
               selection = ilm_selection_info(data, cols, use, negate = cols_negate,
-                                             fixed = cols_fixed),
-              n_cols_used = length(use))
+                                             fixed = cols_fixed))
   if (!is.null(sel$subset) || !is.null(sel$selection)) attr(out, "ilm_select") <- sel
   out
 }
@@ -339,8 +341,7 @@ ilm_select_finish <- function(x, data, rs, cols, used, by = character(),
                               cols_negate = FALSE, cols_fixed = FALSE) {
   ilm_select_mark(x, list(
     subset = rs$subset,
-    selection = ilm_selection_info(data, cols, used, by, cols_negate, cols_fixed),
-    n_cols_used = length(used)))
+    selection = ilm_selection_info(data, cols, used, by, cols_negate, cols_fixed)))
 }
 
 ## For a plot, which returns nothing to print: the same lines, as a message,
@@ -353,8 +354,7 @@ ilm_select_note <- function(fn, data, rs, cols = NULL, used = NULL, by = charact
   if (is.null(rs$subset)) return(invisible(NULL))
   sel <- list(subset = rs$subset,
               selection = if (!is.null(used))
-                ilm_selection_info(data, cols, used, by, cols_negate, cols_fixed),
-              n_cols_used = length(used))
+                ilm_selection_info(data, cols, used, by, cols_negate, cols_fixed))
   lines <- ilm_select_lines(sel)
   if (length(lines)) message(fn, "(): ", paste(lines, collapse = "; "))
   invisible(sel)

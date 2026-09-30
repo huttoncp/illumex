@@ -427,8 +427,9 @@ ilm_reduce_glrm <- function(data, cols, ndim, ..., cols_negate = FALSE, cols_fix
   co <- as.data.frame(sv$u[, seq_len(k), drop = FALSE] *
                         rep(sv$d[seq_len(k)], each = n))
   names(co) <- paste0("dim", seq_len(k))
-  ## after a subset, the rows are named by the data's own row numbers
-  if (!is.null(attr(data, "ilm_rows"))) rownames(co) <- ilm_orig_rows(data, seq_len(n))
+  ## a row_id first, as the FAMD route and the help give it: the data's own
+  ## row numbers, which a subset keeps
+  co <- cbind(row_id = ilm_orig_rows(data, seq_len(n)), co)
   structure(list(method = "glrm", eig = eig, ind_coord = co,
                  var_contrib = vc, n = n, ndim = k, ndim_fitted = k_fitted,
                  cols = g$columns, fit = g, time = g$time), class = "ilm_reduce")

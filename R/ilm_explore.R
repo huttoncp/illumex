@@ -223,13 +223,12 @@ ilm_copies_run <- function(rsel, cols, cols_negate, cols_fixed, filter, na_last,
                             list(na.last = na_last)))
     out <- out[ord, , drop = FALSE]
   }
-  rownames(out) <- NULL
+  ## the rows keep the data's own row numbers (or names), to join back on
   attr(out, "ilm_rows") <- NULL
   ## what was chosen, as ilm_subset() keeps it
   sel <- list(subset = rsel$subset,
               selection = if (keyed) ilm_selection_info(data, cols, vars, negate = cols_negate,
-                                                        fixed = cols_fixed),
-              n_cols_used = length(vars))
+                                                        fixed = cols_fixed))
   if (!is.null(sel$subset) || !is.null(sel$selection)) attr(out, "ilm_select") <- sel
   out
 }

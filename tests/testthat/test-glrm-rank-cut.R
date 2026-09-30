@@ -11,7 +11,7 @@ test_that("a dimension with no variation is not kept, printed or recorded", {
   r <- q(ilm_reduce(dd, method = "glrm", progress = FALSE))
   ## this case, the one the print test holds: 5 fitted, 4 with variation
   expect_identical(c(r$ndim_fitted, r$ndim), c(5L, 4L))
-  expect_identical(ncol(r$ind_coord), 4L)
+  expect_identical(names(r$ind_coord), c("row_id", paste0("dim", 1:4)))
   expect_identical(nrow(r$eig), 4L)
   expect_identical(sort(unique(r$var_contrib$dim)), 1:4)
   expect_identical(r$fit$rank_kept, 4L)

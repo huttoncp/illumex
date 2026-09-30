@@ -102,7 +102,7 @@ test_that("results keep the data's own row numbers", {
   expect_identical(p$cluster$ind_cluster$row_id, keep)
   g <- q(ilm_reduce(d[c("score", "income", "visits")], subset = keep, method = "glrm",
                     ndim = 2, lambda = 0.1, progress = FALSE))
-  expect_identical(as.integer(rownames(g$ind_coord)), keep)
+  expect_identical(g$ind_coord$row_id, keep)
   ## subset on an anomaly result is refused
   expect_error(q(ilm_reduce(a, subset = 1:5)), "subset the data before ilm_anomaly()")
   expect_error(q(ilm_describe_all(a, subset = 1:5)), "subset the data before ilm_anomaly()")
@@ -139,6 +139,8 @@ test_that("a result says which rows and columns it used, and keeps what was chos
   sel <- attr(q(ilm_describe_all(d, cols = is.numeric, cols_negate = TRUE, by = "site")),
               "ilm_select")$selection
   expect_identical(sel$form, "predicate")
+  ## flag, the one column neither numeric nor the grouping
+  expect_identical(c(sel$n_cols_given, sel$n_cols_kept), c(7L, 1L))
   expect_true(sel$negate)
   expect_false("site" %in% unlist(sel$columns_excluded))
   ## a plot says it in a message
@@ -270,6 +272,9 @@ test_that("ilm_copies() and ilm_dupes() take their key as cols, in every form (i
   expect_identical(nrow(q(ilm_dupes(d, cols = "n", cols_negate = TRUE))), 2L)
   expect_identical(nrow(q(ilm_dupes(d, cols = is.character))), 4L)
   expect_identical(nrow(q(ilm_copies(d, "a", filter = "first", subset = 3:5))), 2L)
+  ## the rows returned keep the data's own numbers, subset or not
+  expect_identical(rownames(q(ilm_dupes(d, "a", subset = 2:5))), c("3", "4"))
+  expect_identical(rownames(q(ilm_copies(d, "a", filter = "last"))), c("2", "4", "5"))
   expect_identical(attr(q(ilm_copies(d, "b", subset = 1:4)), "ilm_select")$subset$n_rows_kept, 4L)
   expect_message(ilm_dupes(d, cols = "^a$"), "ilm_copies(d, \"a\", filter = \"first\")", fixed = TRUE)
 })

@@ -147,7 +147,7 @@ test_that("ilm_reduce(method = 'glrm') reports an orthogonal rotation of the fit
   d <- glrm_mixed(seed = 5L)
   d$h <- factor(sample(c("x", "y", "z"), nrow(d), TRUE))
   r <- ilm_reduce(d, ndim = 3L, method = "glrm", progress = FALSE)
-  Q <- as.matrix(r$ind_coord)
+  Q <- as.matrix(r$ind_coord[paste0("dim", 1:3)])
   ## orthogonal coordinates, so the shares add up rather than overlap
   expect_lt(max(abs(crossprod(Q)[upper.tri(diag(3))])), 1e-8)
   ## and the fitted low-rank product is the rotated one plus column means
@@ -164,7 +164,7 @@ test_that("ilm_reduce(method = 'glrm') reports an orthogonal rotation of the fit
                    tol = 1e-12, progress = FALSE)
   expect_equal(rg$eig$pct_var, rp$eig$pct_var[1:2], tolerance = 1e-4)
   expect_gt(min(abs(diag(stats::cor(as.matrix(rp$ind_coord[c("dim1", "dim2")]),
-                                     as.matrix(rg$ind_coord))))), 0.9999)
+                                     as.matrix(rg$ind_coord[c("dim1", "dim2")]))))), 0.9999)
   expect_true(all(is.na(rg$eig$pct_categorical)))
   out <- utils::capture.output(print(rg))
   expect_true(any(grepl("numeric columns' variance", out)))

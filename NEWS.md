@@ -36,6 +36,11 @@
     `keep_all = FALSE` returns only the chosen rows and columns.
   - `ilm_check_missing()`'s `covariates` takes every form of `cols`, with
     `covariates_negate` and `covariates_fixed`.
+* `ilm_copies()` and `ilm_dupes()` return rows with the data's own row
+  numbers (or names) as row names, where they were numbered afresh, so the
+  rows found join back onto the data.
+* `ilm_reduce(method = "glrm")`'s `ind_coord` starts with `row_id`, as its
+  help says and as the other routes give it; it had only the dimensions.
 * `ilm_wash_df()` takes neither `subset` nor `cols`, and its help says to
   choose the part to wash with `ilm_subset()` first.
 * Every `ilm_plot_*()` that passes `...` to tinyplot now has its own

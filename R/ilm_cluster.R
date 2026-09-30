@@ -479,14 +479,10 @@ ILM_KMEANS_NOT_CONVERGED <- paste0(
   "  %s of %s k-means starts stopped at the %d-iteration limit before settling. ",
   "Each fit keeps the best of its starts; a larger nstart gives it more to choose from.")
 
-## the rows a clustering names: a reduction's own row numbers (its row_id,
-## or the row names the GLRM route gives after a subset), else positions
+## the rows a clustering names: a reduction's own row numbers, its row_id
 #' @keywords internal
 #' @noRd
 ilm_reduce_row_ids <- function(x, n) {
-  if (!inherits(x, "ilm_reduce")) return(seq_len(n))
   ic <- x$ind_coord
-  if (length(ic$row_id) == n) return(ic$row_id)
-  if (.row_names_info(ic) > 0L && nrow(ic) == n) return(as.integer(rownames(ic)))
-  seq_len(n)
+  if (inherits(x, "ilm_reduce") && length(ic$row_id) == n) ic$row_id else seq_len(n)
 }
