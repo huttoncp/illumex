@@ -54,7 +54,10 @@ ilm_na_summary <- function(data, cols, g = character()) {
 #' ilm_plot_na_all(airquality, by = "Month")
 #' @export
 ilm_plot_na_all <- function(data, by = NULL, cols = NULL, stat = c("p_na", "na", "n"), ...,
-                            cols_negate = FALSE) {
+                            cols_negate = FALSE,
+                            cols_fixed = FALSE, subset = NULL, subset_negate = FALSE, subset_fixed = FALSE) {
+  rsel <- ilm_select_rows(data, subset, subset_negate, subset_fixed)
+  data <- rsel$data
   stat <- match.arg(stat)
   data <- ilm_plot_frame(data)
   ilm_check_by(data, by)
@@ -65,7 +68,8 @@ ilm_plot_na_all <- function(data, by = NULL, cols = NULL, stat = c("p_na", "na",
          call. = FALSE)
   if (length(setdiff(names(data), g)) == 0L)
     stop("no columns left to plot once `by` is set aside", call. = FALSE)
-  use <- ilm_resolve_cols(data, cols, exclude = g, negate = cols_negate)
+  use <- ilm_resolve_cols(data, cols, exclude = g, negate = cols_negate, fixed = cols_fixed)
+  ilm_select_note("ilm_plot_na_all", data, rsel, cols, use, g, cols_negate, cols_fixed)
   s <- ilm_na_summary(data, use, g)
   tinyplot::tinyplot(x = s$variable, y = s[[stat]],
                      by = if (length(g)) s$group else NULL,
@@ -90,8 +94,13 @@ ilm_plot_na_all <- function(data, by = NULL, cols = NULL, stat = c("p_na", "na",
 #' @seealso [ilm_plot_na_all()], [ilm_check_missing()].
 #' @examples
 #' ilm_plot_na(airquality, "Ozone", by = "Month")
+#' @inheritParams ilm_reduce
 #' @export
-ilm_plot_na <- function(data, x, by = NULL, stat = c("p_na", "na", "n"), ...) {
+ilm_plot_na <- function(data, x, by = NULL, stat = c("p_na", "na", "n"), ...,
+                        subset = NULL, subset_negate = FALSE, subset_fixed = FALSE) {
+  rsel <- ilm_select_rows(data, subset, subset_negate, subset_fixed)
+  data <- rsel$data
+  ilm_select_note("ilm_plot_na", data, rsel)
   stat <- match.arg(stat)
   data <- ilm_plot_frame(data)
   if (is.null(by))
@@ -137,9 +146,14 @@ ilm_classify_var <- function(v)
 #' @examples
 #' ilm_plot_var(mtcars, "mpg")
 #' ilm_plot_var(mtcars, "mpg", "cyl", verbose = TRUE)
+#' @inheritParams ilm_reduce
 #' @export
 ilm_plot_var <- function(data, var1, var2 = NULL, by = NULL, verbose = FALSE,
-                         ...) {
+                         ...,
+                         subset = NULL, subset_negate = FALSE, subset_fixed = FALSE) {
+  rsel <- ilm_select_rows(data, subset, subset_negate, subset_fixed)
+  data <- rsel$data
+  ilm_select_note("ilm_plot_var", data, rsel)
   data <- ilm_plot_frame(data)
   ilm_check_by(data, var2, "var2")
   ilm_check_by(data, by)
@@ -203,12 +217,18 @@ ilm_panel_grid <- function(n, nrow, ncol) {
 #' @export
 ilm_plot_var_all <- function(data, var2 = NULL, by = NULL, cols = NULL,
                              nrow = NULL, ncol = NULL, verbose = FALSE, ...,
-                             cols_negate = FALSE) {
+                             cols_negate = FALSE,
+                             cols_fixed = FALSE, subset = NULL, subset_negate = FALSE, subset_fixed = FALSE) {
+  rsel <- ilm_select_rows(data, subset, subset_negate, subset_fixed)
+  data <- rsel$data
   data <- ilm_plot_frame(data)
   ilm_check_by(data, var2, "var2")
   ilm_check_by(data, by)
   g <- if (is.null(by)) character() else by
-  target <- ilm_resolve_cols(data, cols, exclude = c(var2, g), negate = cols_negate)
+  target <- ilm_resolve_cols(data, cols, exclude = c(var2, g), negate = cols_negate,
+                             fixed = cols_fixed)
+  ilm_select_note("ilm_plot_var_all", data, rsel, cols, target, c(var2, g), cols_negate,
+                  cols_fixed)
   if (!length(target)) stop("no columns to plot", call. = FALSE)
   ## several grouping columns become one real column on a local copy, since the
   ## single-variable plotters each take one `by` column by name
@@ -243,11 +263,15 @@ ilm_plot_var_all <- function(data, var2 = NULL, by = NULL, cols = NULL,
 #' @examples
 #' ilm_plot_var_pairs(mtcars, cols = c("mpg", "wt", "hp"), by = "cyl")
 #' @export
-ilm_plot_var_pairs <- function(data, cols = NULL, by = NULL, ..., cols_negate = FALSE) {
+ilm_plot_var_pairs <- function(data, cols = NULL, by = NULL, ..., cols_negate = FALSE,
+                               cols_fixed = FALSE, subset = NULL, subset_negate = FALSE, subset_fixed = FALSE) {
+  rsel <- ilm_select_rows(data, subset, subset_negate, subset_fixed)
+  data <- rsel$data
   data <- ilm_plot_frame(data)
   ilm_check_by(data, by)
   g <- if (is.null(by)) character() else by
-  target <- ilm_resolve_cols(data, cols, exclude = g, negate = cols_negate)
+  target <- ilm_resolve_cols(data, cols, exclude = g, negate = cols_negate, fixed = cols_fixed)
+  ilm_select_note("ilm_plot_var_pairs", data, rsel, cols, target, g, cols_negate, cols_fixed)
   if (length(target) < 2L)
     stop("at least 2 columns are needed to plot pairs of them; ",
          length(target), " given", call. = FALSE)

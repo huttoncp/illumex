@@ -246,7 +246,7 @@ ilm_anomaly_iforest <- function(data, sel, ntrees, alpha, seed,
   ## No null, so no p-value. `alpha` is read as the share of rows the user is
   ## willing to call anomalous, which is what a forest's score can support.
   cut <- stats::quantile(score, 1 - alpha, na.rm = TRUE)
-  out <- data.frame(row = which(keep), score = score, p = NA_real_,
+  out <- data.frame(row = ilm_orig_rows(data, which(keep)), score = score, p = NA_real_,
                     p_adj = NA_real_, flag = score > cut, driver = drv,
                     stringsAsFactors = FALSE, row.names = NULL)
   ## most anomalous first, as the reconstruction returns them -- the print
@@ -418,7 +418,8 @@ ilm_anomaly_iforest <- function(data, sel, ntrees, alpha, seed,
 ilm_anomaly <- function(data, cols = NULL, method = c("reconstruction", "iforest"),
                         rank = NULL, trim = 0.25, ntrees = 500L,
                         B = 39L, alpha = 0.05, seed = 1L, keep_data = TRUE,
-                        progress = NULL, cols_negate = FALSE) {
+                        progress = NULL, cols_negate = FALSE, cols_fixed = FALSE,
+                        subset = NULL, subset_negate = FALSE, subset_fixed = FALSE) {
   ilm_rng_restore(seed)                  # the user's random stream, put back on exit
   method <- match.arg(method)
   ## The scan says WHICH rows are odd; the next question is always whether
@@ -435,9 +436,16 @@ ilm_anomaly <- function(data, cols = NULL, method = c("reconstruction", "iforest
     stop("`trim` must be a single number in [0, 0.5): it is the share of rows ",
          "held out of the FIT, and trimming half of them leaves the structure ",
          "defined by whichever half happened to fit first.", call. = FALSE)
-  sel <- ilm_resolve_cols(data, cols, negate = cols_negate)
+  ## the rows first, then the columns; `.keep` stays the data as given, which
+  ## the result's row numbers index
+  rs <- ilm_select_rows(data, subset, subset_negate, subset_fixed)
+  data <- rs$data
+  sel <- ilm_resolve_cols(data, cols, negate = cols_negate, fixed = cols_fixed)
+  done <- function(res) ilm_select_finish(res, data, rs, cols, attr(res, "columns"),
+                                          cols_negate = cols_negate, cols_fixed = cols_fixed)
   if (method == "iforest")
-    return(ilm_seed_mark(ilm_anomaly_iforest(data, sel, ntrees, alpha, seed, .keep), seed))
+    return(done(ilm_seed_mark(ilm_anomaly_iforest(data, sel, ntrees, alpha, seed, .keep),
+                              seed)))
   num <- sel[vapply(sel, function(v) is.numeric(data[[v]]), TRUE)]
   drop <- setdiff(sel, num)
   if (length(drop))
@@ -490,16 +498,16 @@ ilm_anomaly <- function(data, cols = NULL, method = c("reconstruction", "iforest
   padj <- stats::p.adjust(pv, "BH")
   drv <- colnames(Z)[max.col(abs(obs$residual), ties.method = "first")]
 
-  out <- data.frame(row = which(keep), score = obs$score, p = pv,
+  out <- data.frame(row = ilm_orig_rows(data, which(keep)), score = obs$score, p = pv,
                     p_adj = padj, flag = padj < alpha, driver = drv,
                     stringsAsFactors = FALSE, row.names = NULL)
   out <- out[order(-out$score), , drop = FALSE]
-  ilm_seed_mark(structure(out, class = c("ilm_anomaly", "data.frame"), rank = k,
+  done(ilm_seed_mark(structure(out, class = c("ilm_anomaly", "data.frame"), rank = k,
             data = .keep,
             method = "reconstruction", calibrated = TRUE,
             null_curve = ref$curve,
             residual = obs$residual, columns = num, trim = trim,
-            n_null = length(null), alpha = alpha, dropped = drop), seed)
+            n_null = length(null), alpha = alpha, dropped = drop), seed))
 }
 
 ## The null: the same structure, the same noise, no anomalies. Returns the

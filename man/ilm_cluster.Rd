@@ -18,12 +18,19 @@ ilm_cluster(
   small_cluster_frac = 0.05,
   ambiguous_threshold = 0.1,
   seed = NULL,
-  progress = NULL
+  progress = NULL,
+  cols = NULL,
+  cols_negate = FALSE,
+  cols_fixed = FALSE,
+  subset = NULL,
+  subset_negate = FALSE,
+  subset_fixed = FALSE
 )
 }
 \arguments{
 \item{x}{An \code{\link[=ilm_reduce]{ilm_reduce()}} result, or a numeric matrix or data frame of
-coordinates with one row per observation.}
+coordinates with one row per observation, or a data frame with
+non-numeric columns, which is reduced first.}
 
 \item{k}{Number of clusters. Omit to choose it by the gap statistic.}
 
@@ -59,6 +66,32 @@ flagged individually.}
 \item{progress}{Show a progress bar. Defaults to \code{\link[=interactive]{interactive()}}, so a
 bar appears when someone is watching and nothing is written in a
 script or a knitted document. See \link{ilm_progress_arg}.}
+
+\item{cols}{Which columns to use, before any reduction: on a data frame
+that is reduced here, the variables that go into the reduction; on a
+matrix or data frame of coordinates, those coordinates. A reduction's
+dimensions are chosen after it, with \code{ndim} in \code{\link[=ilm_reduce]{ilm_reduce()}}, so \code{cols}
+on an \code{\link[=ilm_reduce]{ilm_reduce()}} result is an error. See \link{ilm_selection}.}
+
+\item{cols_negate}{If \code{TRUE}, \code{cols} names the columns to leave out, and every
+other eligible column is used; see \link{ilm_selection}. It needs \code{cols}. A
+\code{by} argument is never negated.}
+
+\item{cols_fixed}{If \code{TRUE}, a \code{cols} string read as a pattern is matched
+literally, as a substring (as \code{grepl(fixed = TRUE)} does); a column name
+still wins. It changes nothing when \code{cols} is names or a predicate.}
+
+\item{subset}{Which rows to use, before anything else: a logical vector
+(one value per row; \code{NA} is left out), row positions, named patterns
+(\code{c(site = "^north")}), or \code{\link[=ilm_sample]{ilm_sample()}}. See \link{ilm_selection}. Results
+keep the data's own row numbers.}
+
+\item{subset_negate}{If \code{TRUE}, the rows \code{subset} would not take: the other
+rows, or the rows not sampled (a holdout). With a logical \code{subset}, rows
+where it is \code{NA} stay out either way.}
+
+\item{subset_fixed}{If \code{TRUE}, \code{subset}'s patterns are matched literally,
+as substrings. It changes nothing for a logical, positions or a sample.}
 }
 \value{
 An object of class \code{"ilm_cluster"}: \code{method}, \code{k}, \code{gap} (the

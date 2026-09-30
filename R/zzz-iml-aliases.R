@@ -321,6 +321,11 @@ iml_reduce_na <- ilm_reduce_na
 #' @export
 iml_sim <- ilm_sim
 
+#' @rdname ilm_subset
+#' @usage NULL
+#' @export
+iml_subset <- ilm_subset
+
 #' @rdname ilm_translate
 #' @usage NULL
 #' @export

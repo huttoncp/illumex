@@ -1,5 +1,45 @@
 # illumex 0.0.8.9003
 
+* Choosing rows (items 277, 279 and 280). Every function that acts on a data
+  frame takes `subset`, applied first, before `cols`, `by` and everything
+  else: a logical vector (`NA` left out), row positions, named patterns
+  (`subset = c(site = "^north")`), or `ilm_sample()`. `subset_negate = TRUE`
+  takes the other rows -- a holdout -- and `subset_fixed = TRUE` matches the
+  patterns literally. Results name rows by the data's own row numbers, so
+  they join back as they are. A subset of an `ilm_anomaly()` result is an
+  error: subset the data before `ilm_anomaly()`. See `?ilm_selection`.
+* `ilm_sample(n, prop, by, seed)`, new, draws rows for `subset`: `n` of them,
+  or a share `prop`; with `by`, whole groups, so a holdout never splits one.
+  A seed draws the same rows every time and leaves your random stream as it
+  was.
+* `ilm_subset()`, new, returns the rows and columns a function would use,
+  rows first, with the original row numbers as row names.
+* `cols_fixed = TRUE` matches a `cols` pattern literally, as a substring; a
+  column name still wins.
+* A result made from chosen rows or columns says so above what it prints --
+  `119 of 600 rows (subset)`, `481 of 600 rows (subset, negated)`, `Columns:
+  5 of 8 (excluded: id, name, date)`, with more than eight excluded names cut
+  to "and N more" -- and a plot says it in a message when rows were left out.
+* `ilm_cluster()` takes `cols` and `subset`: on a data frame it reduces, or
+  on coordinates, `cols` chooses the columns before any reduction; on an
+  `ilm_reduce()` result, whose dimensions `ndim` chose, `cols` is an error.
+  `ilm_cluster_na()` takes `subset`.
+* Pre-release changes to arguments:
+  - `ilm_copies()` and `ilm_dupes()` take their key columns as `cols`, in
+    every form and with `cols_negate`, in place of `...`: `ilm_copies(d, "id")`
+    still works; `ilm_copies(d, "id", "date")` becomes
+    `ilm_copies(d, c("id", "date"))`.
+  - `ilm_recode_errors()`'s `rows` is renamed `subset`, and it takes
+    `subset_negate`, `subset_fixed`, `cols` in every form, `cols_negate` and
+    `cols_fixed` (a random sample is refused there). `keep_all = TRUE`, the
+    default, returns every row and column with the chosen cells recoded;
+    `keep_all = FALSE` returns only the chosen rows and columns.
+  - `ilm_check_missing()`'s `covariates` takes every form of `cols`, with
+    `covariates_negate` and `covariates_fixed`.
+* `ilm_wash_df()` takes neither `subset` nor `cols`, and its help says to
+  choose the part to wash with `ilm_subset()` first.
+* Every `ilm_plot_*()` that passes `...` to tinyplot now has its own
+  `subset`, which takes the place of tinyplot's.
 * `ilm_describe_all()`, `ilm_describe_na_all()`, `ilm_counts_all()`,
   `ilm_counts_tb_all()`, `ilm_plot_all()` and `ilm_plot_na_all()` take `cols`
   and `cols_negate`, as `ilm_outliers_all()` does (item 278). Where `class`

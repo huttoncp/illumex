@@ -45,6 +45,18 @@
 #' @param cols_negate If `TRUE`, `cols` names the columns to leave out, and every
 #'   other eligible column is used; see [ilm_selection]. It needs `cols`. A
 #'   `by` argument is never negated.
+#' @param cols_fixed If `TRUE`, a `cols` string read as a pattern is matched
+#'   literally, as a substring (as `grepl(fixed = TRUE)` does); a column name
+#'   still wins. It changes nothing when `cols` is names or a predicate.
+#' @param subset Which rows to use, before anything else: a logical vector
+#'   (one value per row; `NA` is left out), row positions, named patterns
+#'   (`c(site = "^north")`), or [ilm_sample()]. See [ilm_selection]. Results
+#'   keep the data's own row numbers.
+#' @param subset_negate If `TRUE`, the rows `subset` would not take: the other
+#'   rows, or the rows not sampled (a holdout). With a logical `subset`, rows
+#'   where it is `NA` stay out either way.
+#' @param subset_fixed If `TRUE`, `subset`'s patterns are matched literally,
+#'   as substrings. It changes nothing for a logical, positions or a sample.
 #' @param method `"famd"` (the default) for PCA, MCA or FAMD depending on
 #'   the column types, in closed form; `"pcamix"`, its name from when
 #'   PCAmixdata computed it, is still accepted and means the same. `"glrm"` fits a generalized low rank
@@ -107,20 +119,32 @@
 #' @export
 ilm_reduce <- function(data, cols = NULL, ndim = 5,
                        method = c("famd", "glrm", "pcamix"),
-                       time = c("cycles", "elapsed", "drop"), ..., cols_negate = FALSE) {
+                       time = c("cycles", "elapsed", "drop"), ..., cols_negate = FALSE,
+                       cols_fixed = FALSE, subset = NULL, subset_negate = FALSE,
+                       subset_fixed = FALSE) {
   method <- match.arg(method)
   if (method == "pcamix") method <- "famd"   # the former name, still accepted
   time <- match.arg(time)
   ## An ilm_anomaly() result is accepted directly: the flagged rows are what
   ## the user wants to look at next, and rebuilding that subset by hand from
   ## `row` is both a papercut and a chance to line the wrong rows up.
-  if (inherits(data, "ilm_anomaly"))
+  if (inherits(data, "ilm_anomaly")) {
+    if (!is.null(subset) || isTRUE(subset_negate))
+      stop("`subset` cannot be applied to an ilm_anomaly() result: subset the data ",
+           "before ilm_anomaly(), or use the rows its result gives", call. = FALSE)
     data <- ilm_from_anomaly(data, "ilm_reduce")
-  if (method == "glrm")
-    return(ilm_reduce_glrm(data, cols, ndim, time = time, cols_negate = cols_negate, ...))
+  }
   if (!is.data.frame(data))
     stop("`data` must be a data frame; it is ", class(data)[1], call. = FALSE)
-  keep <- ilm_resolve_cols(data, cols, negate = cols_negate)
+  rs <- ilm_select_rows(data, subset, subset_negate, subset_fixed)
+  data <- rs$data
+  if (method == "glrm") {
+    out <- ilm_reduce_glrm(data, cols, ndim, time = time, cols_negate = cols_negate,
+                           cols_fixed = cols_fixed, ...)
+    return(ilm_select_finish(out, data, rs, cols, out$cols, cols_negate = cols_negate,
+                             cols_fixed = cols_fixed))
+  }
+  keep <- ilm_resolve_cols(data, cols, negate = cols_negate, fixed = cols_fixed)
   ilm_stop_not_utf8_names(keep, "ilm_reduce")
   sub <- ilm_time_encode(data[keep], time, "ilm_reduce")
   tmap <- attr(sub, "time_map")
@@ -180,7 +204,8 @@ ilm_reduce <- function(data, cols = NULL, ndim = 5,
 
   ic <- as.data.frame(fit$ind$coord)
   names(ic) <- paste0("dim", seq_len(ncol(ic)))
-  ind_coord <- cbind(row_id = seq_len(nrow(ic)), ic)
+  ## the data's own row numbers, which a subset keeps
+  ind_coord <- cbind(row_id = ilm_orig_rows(data, seq_len(nrow(ic))), ic)
   rownames(ind_coord) <- NULL
 
   sq <- fit$sqload
@@ -194,11 +219,13 @@ ilm_reduce <- function(data, cols = NULL, ndim = 5,
                              drop = FALSE]
   rownames(var_contrib) <- NULL
 
-  structure(list(method = method, eig = eig, ind_coord = ind_coord,
+  out <- structure(list(method = method, eig = eig, ind_coord = ind_coord,
                  var_contrib = var_contrib, n = nrow(sub), ndim = ndim,
                  ## no dimension is cut here (item 265's cut is the GLRM's)
                  ndim_fitted = ndim,
                  cols = keep, fit = fit, time = tmap), class = "ilm_reduce")
+  ilm_select_finish(out, data, rs, cols, keep, cols_negate = cols_negate,
+                    cols_fixed = cols_fixed)
 }
 
 #' @export
@@ -291,18 +318,29 @@ ilm_build_na_indicator <- function(data, cols) {
 #' r <- ilm_reduce_na(airquality)
 #' r
 #' @export
-ilm_reduce_na <- function(data, cols = NULL, ndim = 5, cols_negate = FALSE) {
+ilm_reduce_na <- function(data, cols = NULL, ndim = 5, cols_negate = FALSE,
+                          cols_fixed = FALSE, subset = NULL, subset_negate = FALSE,
+                          subset_fixed = FALSE) {
   ## An ilm_anomaly() result is accepted directly: the flagged rows are what
   ## the user wants to look at next, and rebuilding that subset by hand from
   ## `row` is both a papercut and a chance to line the wrong rows up.
-  if (inherits(data, "ilm_anomaly"))
+  if (inherits(data, "ilm_anomaly")) {
+    if (!is.null(subset) || isTRUE(subset_negate))
+      stop("`subset` cannot be applied to an ilm_anomaly() result: subset the data ",
+           "before ilm_anomaly(), or use the rows its result gives", call. = FALSE)
     data <- ilm_from_anomaly(data, "ilm_reduce_na")
+  }
   if (!is.data.frame(data))
     stop("`data` must be a data frame; it is ", class(data)[1], call. = FALSE)
-  keep <- ilm_resolve_cols(data, cols, negate = cols_negate)
-  out <- ilm_reduce(ilm_build_na_indicator(data, keep), ndim = ndim)
+  rs <- ilm_select_rows(data, subset, subset_negate, subset_fixed)
+  data <- rs$data
+  keep <- ilm_resolve_cols(data, cols, negate = cols_negate, fixed = cols_fixed)
+  ind <- ilm_build_na_indicator(data, keep)
+  attr(ind, "ilm_rows") <- attr(data, "ilm_rows")    # row numbers carried through
+  out <- ilm_select_unmark(ilm_reduce(ind, ndim = ndim))
   class(out) <- c("ilm_reduce_na", class(out))
-  out
+  ilm_select_finish(out, data, rs, cols, out$cols, cols_negate = cols_negate,
+                    cols_fixed = cols_fixed)
 }
 
 ## ---- the generalized low rank route ----------------------------------------
@@ -332,8 +370,9 @@ ilm_reduce_na <- function(data, cols = NULL, ndim = 5, cols_negate = FALSE) {
 
 #' @keywords internal
 #' @noRd
-ilm_reduce_glrm <- function(data, cols, ndim, ..., cols_negate = FALSE) {
-  g <- ilm_glrm(data, cols = cols, rank = ndim, cols_negate = cols_negate, ...)
+ilm_reduce_glrm <- function(data, cols, ndim, ..., cols_negate = FALSE, cols_fixed = FALSE) {
+  g <- ilm_glrm(data, cols = cols, rank = ndim, cols_negate = cols_negate,
+                cols_fixed = cols_fixed, ...)
   k <- g$rank
   n <- nrow(g$scores)
   P <- as.matrix(g$scores) %*% g$archetypes
@@ -388,6 +427,8 @@ ilm_reduce_glrm <- function(data, cols, ndim, ..., cols_negate = FALSE) {
   co <- as.data.frame(sv$u[, seq_len(k), drop = FALSE] *
                         rep(sv$d[seq_len(k)], each = n))
   names(co) <- paste0("dim", seq_len(k))
+  ## after a subset, the rows are named by the data's own row numbers
+  if (!is.null(attr(data, "ilm_rows"))) rownames(co) <- ilm_orig_rows(data, seq_len(n))
   structure(list(method = "glrm", eig = eig, ind_coord = co,
                  var_contrib = vc, n = n, ndim = k, ndim_fitted = k_fitted,
                  cols = g$columns, fit = g, time = g$time), class = "ilm_reduce")

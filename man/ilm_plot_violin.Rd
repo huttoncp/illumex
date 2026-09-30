@@ -13,7 +13,10 @@ ilm_plot_violin(
   ...,
   pch = NULL,
   facet = NULL,
-  legend = NULL
+  legend = NULL,
+  subset = NULL,
+  subset_negate = FALSE,
+  subset_fixed = FALSE
 )
 }
 \arguments{
@@ -38,6 +41,18 @@ string the way \code{by} is: \code{facet = "site"}.}
 \item{legend}{Passed to \code{\link[tinyplot:tinyplot]{tinyplot::tinyplot()}}, in any form it takes. With
 \code{by}, the legend is titled with the \code{by} column's name unless you
 give a title.}
+
+\item{subset}{Which rows to use, before anything else: a logical vector
+(one value per row; \code{NA} is left out), row positions, named patterns
+(\code{c(site = "^north")}), or \code{\link[=ilm_sample]{ilm_sample()}}. See \link{ilm_selection}. Results
+keep the data's own row numbers.}
+
+\item{subset_negate}{If \code{TRUE}, the rows \code{subset} would not take: the other
+rows, or the rows not sampled (a holdout). With a logical \code{subset}, rows
+where it is \code{NA} stay out either way.}
+
+\item{subset_fixed}{If \code{TRUE}, \code{subset}'s patterns are matched literally,
+as substrings. It changes nothing for a logical, positions or a sample.}
 }
 \value{
 \code{NULL}, invisibly.

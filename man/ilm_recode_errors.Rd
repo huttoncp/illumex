@@ -9,9 +9,14 @@ ilm_recode_errors(
   data,
   errors,
   replacement = NA,
-  rows = NULL,
+  subset = NULL,
   cols = NULL,
-  ind = NULL
+  ind = NULL,
+  keep_all = TRUE,
+  subset_negate = FALSE,
+  subset_fixed = FALSE,
+  cols_negate = FALSE,
+  cols_fixed = FALSE
 )
 }
 \arguments{
@@ -21,16 +26,24 @@ ilm_recode_errors(
 
 \item{replacement}{What to put in their place. \code{NA} by default.}
 
-\item{rows, cols}{Restrict the replacement (data frame or matrix input):
-the cells recoded are those in these rows and columns. \code{cols} here takes
-column names or positions only -- it addresses cells rather than choosing
-columns for an analysis, so the patterns, predicates and \code{cols_negate} of
-\link{ilm_selection} do not apply.}
+\item{subset, subset_negate, subset_fixed}{The rows whose cells are recoded
+(data frame or matrix input): a logical vector, row positions or named
+patterns, as in \link{ilm_selection}. A random sample (\code{\link[=ilm_sample]{ilm_sample()}}) makes
+no sense here and is refused.}
+
+\item{cols, cols_negate, cols_fixed}{The columns whose cells are recoded
+(data frame or matrix input): names, positions, a pattern or a
+predicate, as in \link{ilm_selection}.}
 
 \item{ind}{Restrict the replacement (vector input).}
+
+\item{keep_all}{\code{TRUE} (the default) returns every row and column, with
+only the chosen cells recoded; \code{FALSE} returns just the chosen rows and
+columns, recoded.}
 }
 \value{
-An object of the same shape as \code{data}.
+An object of the same shape as \code{data}, or with \code{keep_all = FALSE}
+the chosen rows and columns of it.
 }
 \description{
 Sentinels such as 999, -1 or \code{"unknown"} mean missing in one column and can
@@ -39,6 +52,8 @@ restricted to particular rows and columns.
 }
 \examples{
 ilm_recode_errors(c(1, 2, 999, -1), errors = c(999, -1))
-d <- data.frame(x = c(1, 999, 3), y = c(999, 2, 3))
+d <- data.frame(x = c(1, 999, 3), y = c(999, 2, 3), site = c("a", "b", "a"))
 ilm_recode_errors(d, errors = 999, cols = "x")
+## only at site a, and only there returned
+ilm_recode_errors(d, errors = 999, subset = c(site = "^a$"), keep_all = FALSE)
 }

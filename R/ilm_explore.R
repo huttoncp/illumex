@@ -97,27 +97,31 @@ ilm_counts_tb <- function(y, n = 10L, na.rm = TRUE) {
 #' ilm_counts_all(ilm_sim()[, c("grp", "site")], n = 2)
 #' @export
 ilm_counts_all <- function(data, by = NULL, cols = NULL, n = "all",
-                           order = c("d", "a", "i"), na.rm = TRUE, cols_negate = FALSE) {
+                           order = c("d", "a", "i"), na.rm = TRUE, cols_negate = FALSE,
+                           cols_fixed = FALSE, subset = NULL, subset_negate = FALSE, subset_fixed = FALSE) {
+  rsel <- ilm_select_rows(data, subset, subset_negate, subset_fixed)
+  data <- rsel$data
   order <- match.arg(order)
   ilm_check_by(data, by)
   miss <- setdiff(by, names(data))
   if (length(miss))
     stop("`by` variable(s) not found in the data: ", paste(miss, collapse = ", "),
          call. = FALSE)
-  use <- ilm_resolve_cols(data, cols, exclude = by, negate = cols_negate)
+  use <- ilm_resolve_cols(data, cols, exclude = by, negate = cols_negate, fixed = cols_fixed)
+  fin <- function(out) ilm_select_finish(out, data, rsel, cols, use, by, cols_negate, cols_fixed)
   one <- function(d, vars) do.call(rbind, lapply(vars, function(cn) {
     tb <- ilm_counts(d[[cn]], n = n, order = order, na.rm = na.rm)
     data.frame(variable = cn, value = as.character(tb$value), n = tb$n,
                stringsAsFactors = FALSE)
   }))
-  if (is.null(by)) return(one(data, use))
+  if (is.null(by)) return(fin(one(data, use)))
   g <- interaction(data[by], drop = TRUE)
   parts <- lapply(split(seq_len(nrow(data)), g),
                   function(i) one(data[i, , drop = FALSE], use))
   res <- do.call(rbind, parts)
-  cbind(setNames(data.frame(rep(names(parts), vapply(parts, nrow, 1L)),
-                            stringsAsFactors = FALSE), paste(by, collapse = ".")),
-        res, row.names = NULL)
+  fin(cbind(setNames(data.frame(rep(names(parts), vapply(parts, nrow, 1L)),
+                                stringsAsFactors = FALSE), paste(by, collapse = ".")),
+            res, row.names = NULL))
 }
 
 #' Most and least frequent values for every column
@@ -133,9 +137,11 @@ ilm_counts_all <- function(data, by = NULL, cols = NULL, n = "all",
 #' ilm_counts_tb_all(ilm_sim()[, c("grp", "site")], n = 2)
 #' @export
 ilm_counts_tb_all <- function(data, cols = NULL, n = 10L, na.rm = TRUE,
-                              cols_negate = FALSE) {
-  use <- ilm_resolve_cols(data, cols, negate = cols_negate)
-  do.call(rbind, lapply(use, function(cn) {
+                              cols_negate = FALSE, cols_fixed = FALSE, subset = NULL, subset_negate = FALSE, subset_fixed = FALSE) {
+  rsel <- ilm_select_rows(data, subset, subset_negate, subset_fixed)
+  data <- rsel$data
+  use <- ilm_resolve_cols(data, cols, negate = cols_negate, fixed = cols_fixed)
+  out <- do.call(rbind, lapply(use, function(cn) {
     tb <- ilm_counts_tb(data[[cn]], n = n, na.rm = na.rm)
     if (!nrow(tb)) return(NULL)
     ## assigned by name rather than with transform(), whose non-standard
@@ -144,6 +150,8 @@ ilm_counts_tb_all <- function(data, cols = NULL, n = 10L, na.rm = TRUE,
     tb$bot_value <- as.character(tb$bot_value)
     cbind(variable = cn, tb, stringsAsFactors = FALSE, row.names = NULL)
   }))
+  ilm_select_finish(out, data, rsel, cols, use, cols_negate = cols_negate,
+                    cols_fixed = cols_fixed)
 }
 
 ## ---- copies / dupes --------------------------------------------------------
@@ -155,7 +163,9 @@ ilm_counts_tb_all <- function(data, cols = NULL, n = 10L, na.rm = TRUE,
 #' copies. `ilm_copies(data, filter = "first")` keeps one of each.
 #'
 #' @param data A data frame.
-#' @param ... Columns defining a duplicate. All columns if none are given.
+#' @param cols The columns that define a copy: names, a pattern or a
+#'   predicate, as in [ilm_selection]; all columns if `NULL`.
+#' @inheritParams ilm_reduce
 #' @param filter `"all"` appends `copy_number` and `n_copies`; `"dupes"` keeps
 #'   only repeated rows; `"first"`, `"last"` and `"unique"` filter rows.
 #' @param na_last Sort missing values last.
@@ -169,10 +179,13 @@ ilm_counts_tb_all <- function(data, cols = NULL, n = 10L, na.rm = TRUE,
 #' ilm_copies(d)
 #' ilm_copies(d, filter = "unique")
 #' @export
-ilm_copies <- function(data, ..., filter = c("all", "dupes", "first", "last", "unique"),
-                       na_last = TRUE, sort_by = TRUE) {
+ilm_copies <- function(data, cols = NULL,
+                       filter = c("all", "dupes", "first", "last", "unique"),
+                       na_last = TRUE, sort_by = TRUE, cols_negate = FALSE, cols_fixed = FALSE,
+                       subset = NULL, subset_negate = FALSE, subset_fixed = FALSE) {
   filter <- match.arg(filter)
-  ilm_copies_run(data, as.character(unlist(list(...))), filter, na_last, sort_by,
+  rsel <- ilm_select_rows(data, subset, subset_negate, subset_fixed)
+  ilm_copies_run(rsel, cols, cols_negate, cols_fixed, filter, na_last, sort_by,
                  ilm_copies_arg_name(substitute(data)))
 }
 
@@ -181,13 +194,12 @@ ilm_copies <- function(data, ..., filter = c("all", "dupes", "first", "last", "u
 ## wrote it
 #' @keywords internal
 #' @noRd
-ilm_copies_run <- function(data, vars, filter, na_last, sort_by, data_name) {
-  keyed <- length(vars) > 0L
-  if (!length(vars)) vars <- names(data)
-  miss <- setdiff(vars, names(data))
-  if (length(miss))
-    stop("column(s) not found in the data: ", paste(miss, collapse = ", "),
-         call. = FALSE)
+ilm_copies_run <- function(rsel, cols, cols_negate, cols_fixed, filter, na_last, sort_by,
+                           data_name) {
+  data <- rsel$data
+  ## the key: the columns `cols` chooses, or every column
+  keyed <- !is.null(cols) || isTRUE(cols_negate)
+  vars <- ilm_resolve_cols(data, cols, negate = cols_negate, fixed = cols_fixed)
 
   key <- data[vars]
   g <- group(key)                       # integer group id per row
@@ -212,6 +224,13 @@ ilm_copies_run <- function(data, vars, filter, na_last, sort_by, data_name) {
     out <- out[ord, , drop = FALSE]
   }
   rownames(out) <- NULL
+  attr(out, "ilm_rows") <- NULL
+  ## what was chosen, as ilm_subset() keeps it
+  sel <- list(subset = rsel$subset,
+              selection = if (keyed) ilm_selection_info(data, cols, vars, negate = cols_negate,
+                                                        fixed = cols_fixed),
+              n_cols_used = length(vars))
+  if (!is.null(sel$subset) || !is.null(sel$selection)) attr(out, "ilm_select") <- sel
   out
 }
 
@@ -228,7 +247,7 @@ ilm_ave_seq <- function(g) {
 
 #' Duplicated rows only
 #'
-#' A shorthand for `ilm_copies(data, ..., filter = "dupes")`.
+#' A shorthand for `ilm_copies(data, cols, filter = "dupes")`.
 #'
 #' @inheritParams ilm_copies
 #' @return A data frame of repeated rows with `n_copies` appended, and the
@@ -236,8 +255,11 @@ ilm_ave_seq <- function(g) {
 #' @examples
 #' ilm_dupes(data.frame(a = c(1, 1, 2), b = c("x", "x", "y")))
 #' @export
-ilm_dupes <- function(data, ..., na_last = TRUE) {
-  ilm_copies_run(data, as.character(unlist(list(...))), "dupes", na_last, TRUE,
+ilm_dupes <- function(data, cols = NULL, na_last = TRUE, cols_negate = FALSE,
+                      cols_fixed = FALSE, subset = NULL, subset_negate = FALSE,
+                      subset_fixed = FALSE) {
+  rsel <- ilm_select_rows(data, subset, subset_negate, subset_fixed)
+  ilm_copies_run(rsel, cols, cols_negate, cols_fixed, "dupes", na_last, TRUE,
                  ilm_copies_arg_name(substitute(data)))
 }
 
@@ -417,6 +439,10 @@ ilm_retype <- function(v) {
 #' e with an accent becomes e, a sharp s ss, the oe ligature oe); letters of
 #' other scripts are kept as they are; a name starting with a digit gains an
 #' `x`; and a repeated name gains `_2`, `_3` and so on, as janitor numbers it.
+#'
+#' It washes the whole data frame, and takes no `subset` or `cols`: a column
+#' has one type, which retyping decides from all of its rows. To wash part of
+#' a data frame, choose it with [ilm_subset()] first.
 #'
 #' @param data A data frame.
 #' @param clean_names Standardise column names to snake_case.
@@ -646,66 +672,67 @@ ilm_recode_errors_vec <- function(x, errors, replacement = NA) {
 #' @param data A vector, data frame or matrix.
 #' @param errors Values to recode.
 #' @param replacement What to put in their place. `NA` by default.
-#' @param rows,cols Restrict the replacement (data frame or matrix input):
-#'   the cells recoded are those in these rows and columns. `cols` here takes
-#'   column names or positions only -- it addresses cells rather than choosing
-#'   columns for an analysis, so the patterns, predicates and `cols_negate` of
-#'   [ilm_selection] do not apply.
+#' @param subset,subset_negate,subset_fixed The rows whose cells are recoded
+#'   (data frame or matrix input): a logical vector, row positions or named
+#'   patterns, as in [ilm_selection]. A random sample ([ilm_sample()]) makes
+#'   no sense here and is refused.
+#' @param cols,cols_negate,cols_fixed The columns whose cells are recoded
+#'   (data frame or matrix input): names, positions, a pattern or a
+#'   predicate, as in [ilm_selection].
 #' @param ind Restrict the replacement (vector input).
-#' @return An object of the same shape as `data`.
+#' @param keep_all `TRUE` (the default) returns every row and column, with
+#'   only the chosen cells recoded; `FALSE` returns just the chosen rows and
+#'   columns, recoded.
+#' @return An object of the same shape as `data`, or with `keep_all = FALSE`
+#'   the chosen rows and columns of it.
 #' @examples
 #' ilm_recode_errors(c(1, 2, 999, -1), errors = c(999, -1))
-#' d <- data.frame(x = c(1, 999, 3), y = c(999, 2, 3))
+#' d <- data.frame(x = c(1, 999, 3), y = c(999, 2, 3), site = c("a", "b", "a"))
 #' ilm_recode_errors(d, errors = 999, cols = "x")
+#' ## only at site a, and only there returned
+#' ilm_recode_errors(d, errors = 999, subset = c(site = "^a$"), keep_all = FALSE)
 #' @export
 ilm_recode_errors <- function(data, errors, replacement = NA,
-                              rows = NULL, cols = NULL, ind = NULL) {
+                              subset = NULL, cols = NULL, ind = NULL, keep_all = TRUE,
+                              subset_negate = FALSE, subset_fixed = FALSE,
+                              cols_negate = FALSE, cols_fixed = FALSE) {
   if (missing(errors) || !length(errors))
     stop("`errors` must contain at least one value to recode", call. = FALSE)
 
   if (is.data.frame(data) || is.matrix(data)) {
     if (!is.null(ind))
-      stop("`ind` applies to vector input; use `rows` and `cols` for a ",
+      stop("`ind` applies to vector input; use `subset` and `cols` for a ",
            if (is.matrix(data)) "matrix" else "data frame", call. = FALSE)
-    nms <- if (is.data.frame(data)) names(data) else colnames(data)
-    ci <- if (is.null(cols)) seq_along(nms) else {
-      if (is.character(cols)) {
-        miss <- setdiff(cols, nms)
-        if (length(miss))
-          stop("column(s) not found: ", paste(miss, collapse = ", "),
-               ". Available: ", paste(nms, collapse = ", "), call. = FALSE)
-        match(cols, nms)
-      } else {
-        bad <- cols[cols < 1 | cols > length(nms)]
-        if (length(bad))
-          stop("column index out of range: ", paste(bad, collapse = ", "),
-               " (data has ", length(nms), " columns)", call. = FALSE)
-        as.integer(cols)
-      }
-    }
-    ri <- if (is.null(rows)) seq_len(nrow(data)) else {
-      bad <- rows[rows < 1 | rows > nrow(data)]
+    ## both chosen as everywhere else, on the table as a data frame
+    df <- as.data.frame(data, stringsAsFactors = FALSE)
+    if (is.matrix(data) && is.null(colnames(data))) names(df) <- paste0("V", seq_len(ncol(df)))
+    nms <- names(df)
+    if (is.numeric(cols)) {
+      bad <- cols[cols < 1 | cols > length(nms) | cols != round(cols)]
       if (length(bad))
-        stop("row index out of range: ", paste(bad, collapse = ", "),
-             " (data has ", nrow(data), " rows)", call. = FALSE)
-      as.integer(rows)
+        stop("column index out of range: ", paste(bad, collapse = ", "),
+             " (data has ", length(nms), " columns)", call. = FALSE)
+      cols <- nms[cols]
     }
+    ci <- match(ilm_resolve_cols(df, cols, negate = cols_negate, fixed = cols_fixed), nms)
+    ri <- ilm_resolve_rows(df, subset, subset_negate, subset_fixed, allow_sample = FALSE,
+                           fn = "ilm_recode_errors")$rows
     if (is.matrix(data)) {
       sub <- data[ri, ci, drop = FALSE]
       sub[sub %in% errors] <- replacement
       data[ri, ci] <- sub
-      return(data)
+      return(if (isTRUE(keep_all)) data else data[ri, ci, drop = FALSE])
     }
     for (j in ci) {
       v <- data[[j]]
       v[ri] <- ilm_recode_errors_vec(v[ri], errors, replacement)
       data[[j]] <- v
     }
-    return(data)
+    return(if (isTRUE(keep_all)) data else data[ri, ci, drop = FALSE])
   }
 
-  if (!is.null(rows) || !is.null(cols))
-    stop("`rows` and `cols` apply to data frame or matrix input; use `ind` ",
+  if (!is.null(subset) || !is.null(cols))
+    stop("`subset` and `cols` apply to data frame or matrix input; use `ind` ",
          "for a vector", call. = FALSE)
   if (is.null(ind)) return(ilm_recode_errors_vec(data, errors, replacement))
   bad <- ind[ind < 1 | ind > length(data)]

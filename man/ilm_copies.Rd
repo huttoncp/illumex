@@ -7,16 +7,22 @@
 \usage{
 ilm_copies(
   data,
-  ...,
+  cols = NULL,
   filter = c("all", "dupes", "first", "last", "unique"),
   na_last = TRUE,
-  sort_by = TRUE
+  sort_by = TRUE,
+  cols_negate = FALSE,
+  cols_fixed = FALSE,
+  subset = NULL,
+  subset_negate = FALSE,
+  subset_fixed = FALSE
 )
 }
 \arguments{
 \item{data}{A data frame.}
 
-\item{...}{Columns defining a duplicate. All columns if none are given.}
+\item{cols}{The columns that define a copy: names, a pattern or a
+predicate, as in \link{ilm_selection}; all columns if \code{NULL}.}
 
 \item{filter}{\code{"all"} appends \code{copy_number} and \code{n_copies}; \code{"dupes"} keeps
 only repeated rows; \code{"first"}, \code{"last"} and \code{"unique"} filter rows.}
@@ -24,6 +30,26 @@ only repeated rows; \code{"first"}, \code{"last"} and \code{"unique"} filter row
 \item{na_last}{Sort missing values last.}
 
 \item{sort_by}{Sort the result by the key columns.}
+
+\item{cols_negate}{If \code{TRUE}, \code{cols} names the columns to leave out, and every
+other eligible column is used; see \link{ilm_selection}. It needs \code{cols}. A
+\code{by} argument is never negated.}
+
+\item{cols_fixed}{If \code{TRUE}, a \code{cols} string read as a pattern is matched
+literally, as a substring (as \code{grepl(fixed = TRUE)} does); a column name
+still wins. It changes nothing when \code{cols} is names or a predicate.}
+
+\item{subset}{Which rows to use, before anything else: a logical vector
+(one value per row; \code{NA} is left out), row positions, named patterns
+(\code{c(site = "^north")}), or \code{\link[=ilm_sample]{ilm_sample()}}. See \link{ilm_selection}. Results
+keep the data's own row numbers.}
+
+\item{subset_negate}{If \code{TRUE}, the rows \code{subset} would not take: the other
+rows, or the rows not sampled (a holdout). With a logical \code{subset}, rows
+where it is \code{NA} stay out either way.}
+
+\item{subset_fixed}{If \code{TRUE}, \code{subset}'s patterns are matched literally,
+as substrings. It changes nothing for a logical, positions or a sample.}
 }
 \value{
 A data frame; the columns depend on \code{filter}. With \code{"all"} or

@@ -47,6 +47,37 @@
 #' it. `cols_negate = TRUE` needs `cols`, and leaving out every eligible column is an
 #' error naming them.
 #'
+#' **Matching literally.** With `cols_fixed = TRUE`, a `cols` string read as
+#' a pattern is matched as it is written, as a substring: `cols = "wt.",
+#' cols_fixed = TRUE` takes `wt.kg` and `wt.lb` but not `wt_2`. A column name
+#' still wins, and names or a predicate are unaffected.
+#'
+#' **Choosing rows.** A function that takes `subset` uses only the rows it
+#' gives, before `cols`, `by` and everything else -- `dplyr::filter()` before
+#' the call, as an ordinary value. `subset` is one of:
+#'
+#' * A **logical vector**, one value per row: `subset = d$age >= 18`. Rows
+#'   where it is `NA` are left out, as in `dplyr::filter()`.
+#' * **Row positions**, positive whole numbers: `subset = 1:100`. A number on
+#'   its own always means a position.
+#' * **Named patterns**, one per column: `subset = c(site = "^north", arm =
+#'   "drug")` keeps the rows where every named column matches; a missing
+#'   value matches nothing. `subset_fixed = TRUE` matches them literally.
+#' * A **random sample**, [ilm_sample()]: `subset = ilm_sample(prop = 0.2,
+#'   seed = 1)`, or whole groups with `by`.
+#'
+#' `subset_negate = TRUE` takes the rows `subset` would not: the other rows,
+#' or the rows not sampled, a holdout. For a logical `subset`, rows where it
+#' is `NA` stay out either way. A subset that keeps no row is an error saying
+#' what it was. Results name rows by the data's own row numbers, never by
+#' their place in the subset, so they join back onto the data as they are.
+#' [ilm_subset()] returns the rows and columns themselves.
+#'
+#' A result made from a subset, or from a choice of columns, says so above
+#' what it prints -- `119 of 600 rows (subset)` and `Columns: 5 of 8
+#' (excluded: id, name, date)` -- and keeps what was chosen in its attribute
+#' `"ilm_select"`. A plot says the same in a message.
+#'
 #' A `by` argument takes column names. [ilm_outliers_all()]'s `by` also takes
 #' a pattern or a predicate, as `cols` does; elsewhere a pattern or a function
 #' given as `by` is an error. `by` is never negated.
@@ -61,19 +92,25 @@
 #' ilm_outliers_all(d, cols = "id", cols_negate = TRUE)
 #' ilm_outliers_all(d, cols = "^score_", cols_negate = TRUE)
 #' ilm_outliers_all(d, cols = function(v) all(v == round(v)), cols_negate = TRUE)
+#' ## choosing rows
+#' ilm_outliers_all(d, subset = d$id > 2)
+#' ilm_outliers_all(d, subset = c(label = "^[ab]$"), subset_negate = TRUE)
+#' ilm_outliers_all(d, subset = ilm_sample(3, seed = 1))
 NULL
 
 #' @keywords internal
 #' @noRd
 ilm_resolve_cols <- function(data, cols, exclude = character(),
-                             arg = "cols", eligible = NULL, negate = FALSE) {
+                             arg = "cols", eligible = NULL, negate = FALSE,
+                             fixed = FALSE) {
   nms <- setdiff(names(data), exclude)
   if (!is.null(eligible)) nms <- intersect(nms, eligible)
   if (isTRUE(negate) && is.null(cols))
     stop("`", arg, "_negate = TRUE` needs `", arg, "` to say which columns to leave out",
          call. = FALSE)
   if (is.null(cols)) return(nms)
-  hit <- ilm_select_matches(data, cols, nms, arg, negate = isTRUE(negate))
+  hit <- ilm_select_matches(data, cols, nms, arg, negate = isTRUE(negate),
+                            fixed = isTRUE(fixed))
   if (!isTRUE(negate)) return(hit)
   ## the eligible columns the same `cols` would not select
   out <- setdiff(nms, hit)
@@ -89,7 +126,7 @@ ilm_resolve_cols <- function(data, cols, exclude = character(),
 ## leave every column in)
 #' @keywords internal
 #' @noRd
-ilm_select_matches <- function(data, cols, nms, arg, negate = FALSE) {
+ilm_select_matches <- function(data, cols, nms, arg, negate = FALSE, fixed = FALSE) {
   if (is.function(cols)) {
     keep <- vapply(nms, function(v) {
       ok <- tryCatch(cols(data[[v]]), error = function(e) FALSE)
@@ -116,7 +153,7 @@ ilm_select_matches <- function(data, cols, nms, arg, negate = FALSE) {
   }
   ## a single string that is not a column name: read it as a pattern
   if (length(cols) == 1L) {
-    out <- tryCatch(grep(cols, nms, value = TRUE),
+    out <- tryCatch(grep(cols, nms, value = TRUE, fixed = fixed),
                     error = function(e)
                       stop("`", arg, "` is neither a column name nor a valid ",
                            "regular expression: ", cols, call. = FALSE))

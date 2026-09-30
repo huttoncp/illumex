@@ -72,6 +72,10 @@ janitor, and no letter is dropped: \code{"\%"} becomes \code{percent} and \code{
 e with an accent becomes e, a sharp s ss, the oe ligature oe); letters of
 other scripts are kept as they are; a name starting with a digit gains an
 \code{x}; and a repeated name gains \verb{_2}, \verb{_3} and so on, as janitor numbers it.
+
+It washes the whole data frame, and takes no \code{subset} or \code{cols}: a column
+has one type, which retyping decides from all of its rows. To wash part of
+a data frame, choose it with \code{\link[=ilm_subset]{ilm_subset()}} first.
 }
 \examples{
 m <- data.frame("Col One" = c("1", "2", ""), someFlag = c("TRUE", "FALSE", ""),
