@@ -39,6 +39,7 @@ reference:
   - ilm_counts_all
   - ilm_counts_tb
   - ilm_counts_tb_all
+  - ilm_describe_clusters
   - ilm_dupes
 - title: "Cleaning"
   desc: >

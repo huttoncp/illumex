@@ -81,6 +81,11 @@ iml_describe <- ilm_describe
 #' @export
 iml_describe_all <- ilm_describe_all
 
+#' @rdname ilm_describe_clusters
+#' @usage NULL
+#' @export
+iml_describe_clusters <- ilm_describe_clusters
+
 #' @rdname ilm_describe_na
 #' @usage NULL
 #' @export

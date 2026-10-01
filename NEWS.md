@@ -13,6 +13,13 @@
   patterns literally. Results name rows by the data's own row numbers, so
   they join back as they are. A subset of an `ilm_anomaly()` result is an
   error: subset the data before `ilm_anomaly()`. See `?ilm_selection`.
+* `ilm_describe_clusters()`, new, for data whose rows sit in clusters --
+  patients within sites, visits within people (item 121). It counts the
+  clusters and the rows in each, and describes each variable that is the
+  same on every row of a cluster once per cluster, where described over the
+  rows a large cluster would count many times over. The variables that vary
+  within clusters are named, for `ilm_describe_all()`. It takes `cols` and
+  `subset` as every function does.
 * A model is a fifth form of `subset`, for the rows it analysed (items 146
   and 150): `ilm_describe_all(d, subset = fit)` describes the rows a fit from
   illume's `ilm_model()` used, without the ones it dropped, and an
