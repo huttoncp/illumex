@@ -1,5 +1,10 @@
 # illumex 0.0.8.9003
 
+* A description by two variables compares, with `smd`, the second's groups
+  within each level of the first -- exposure within a modifier, controls
+  split by exposure -- and names a level of the second as the reference:
+  exposed against unexposed controls, never cases against controls. Only
+  `smd` changes; every other print is as before.
 * Choosing rows (items 277, 279 and 280). Every function that acts on a data
   frame takes `subset`, applied first, before `cols`, `by` and everything
   else: a logical vector (`NA` left out), row positions, named patterns

@@ -30,7 +30,10 @@ ilm_describe_all(
 \arguments{
 \item{data}{A data frame, or a vector when \code{y} is \code{NULL}.}
 
-\item{by}{Optional character vector of grouping columns.}
+\item{by}{Optional character vector of grouping columns. With two, the
+second's groups are read within each level of the first -- exposure
+within a modifier, controls split by exposure: each row is one
+combination, and \code{smd} compares within each level of the first.}
 
 \item{cols}{Columns to describe. A character vector of names, a regular
 expression, a predicate function such as \code{is.numeric}, or \code{NULL} for all
@@ -70,7 +73,11 @@ variances (Austin 2009); a binary's, the difference in proportions over
 the square root of the average of their p(1 - p); a category of more
 than two levels, Yang and Dalton's (2012) multivariate difference, which
 has no sign. A date is compared as a number. Each group's uses its
-non-missing values. The reference group's own row has none.}
+non-missing values. The reference group's own row has none. With two
+\code{by} variables, each combination is compared with the reference level of
+the second variable within the same level of the first, so \code{smd} names a
+level of the second ("unexposed", say): exposed against unexposed
+controls, never cases against controls.}
 
 \item{cols_negate}{If \code{TRUE}, \code{cols} names the columns to leave out, and every
 other eligible column is used; see \link{ilm_selection}. It needs \code{cols}. A
