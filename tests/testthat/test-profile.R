@@ -290,7 +290,10 @@ test_that("the v-tests and the words for them", {
 test_that("the numbers in the profile prose carry no padding", {
   ## formatC()'s "fg" pads to a common width, which in a sentence is a run of
   ## spaces
+  ## (item 256: an estimate keeps its trailing zeros; a whole data value is
+  ## whole)
   expect_identical(ilm_fmt_num(c(2.1, 0.61, 15.2, 1234.5)),
-                   c("2.1", "0.61", "15.2", "1,230"))
-  expect_identical(ilm_fmt_num(c(5, 287, 1230)), c("5", "287", "1,230"))
+                   c("2.10", "0.610", "15.2", "1,230"))
+  expect_identical(ilm_fmt_num(c(5, 287, 1230)), c("5.00", "287", "1,230"))
+  expect_identical(ilm_fmt_data(c(5, 287, 1230, 2.5)), c("5", "287", "1,230", "2.50"))
 })

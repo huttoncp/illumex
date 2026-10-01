@@ -31,41 +31,36 @@
 ## make; the v-test ranks the differences, it does not certify them.
 ## ---------------------------------------------------------------------------
 
-## Numbers as a reader writes them: whole numbers stay whole, large ones get a
-## thousands separator, the rest three significant figures. Trimmed, because
-## formatC()'s "fg" pads to a common width -- 2.1 comes back as " 2.1" --
-## which in a sentence is a run of spaces.
+## Numbers as a reader writes them (ilm_disp() in R/shared-helpers.R, which
+## illume shares; Craig's item 256): an estimate at three significant figures,
+## trailing zeros kept (51.0, 2.50), thousands grouped from 1,000, rounded half
+## away from zero; a count whole ("fixed" with 0 digits); a data value whole
+## when it is a whole number, else at three figures. Each value's text depends
+## on it alone, and on the kind of value its caller says it is.
 #' @keywords internal
 #' @noRd
-ilm_fmt_num <- function(v) {
-  if (all(abs(v - round(v)) < 1e-9, na.rm = TRUE))
-    return(trimws(formatC(round(v), format = "d", big.mark = ",")))
-  trimws(formatC(ilm_signif_away(v, 3), format = "fg", digits = 3, big.mark = ","))
+ilm_fmt_num <- function(v) ilm_disp(v, "signif", 3L)$text
+#' @keywords internal
+#' @noRd
+ilm_fmt_count <- function(v) ilm_disp(v, "fixed", 0L)$text
+#' @keywords internal
+#' @noRd
+ilm_fmt_data <- function(v) {
+  out <- ilm_fmt_num(v)
+  w <- ilm_is_whole(v)
+  out[w] <- ilm_fmt_count(v[w])
+  out
 }
-
-## Rounding half away from zero, after clearing the floating-point noise
-## that makes 100 x 0.2725 come out 27.250000000000004: R's own round() and
-## sprintf() round a tie to even.
+## a value that is a whole number, to rounding noise
 #' @keywords internal
 #' @noRd
-ilm_round_away <- function(x, decimals) {
-  m <- 10^decimals
-  y <- abs(x) * m
-  sign(x) * floor(y + 0.5 + 1e-9 * pmax(1, y)) / m
-}
+ilm_is_whole <- function(v) !is.na(v) & is.finite(v) & abs(v - round(v)) < 1e-9 * pmax(1, abs(v))
 
+## a proportion as a percentage, `decimals` after the point (the "percent"
+## rule; ilm_disp() in R/shared-helpers.R, which illume shares)
 #' @keywords internal
 #' @noRd
-ilm_signif_away <- function(x, digits) {
-  e <- ifelse(x == 0 | !is.finite(x), 0, floor(log10(abs(x))))
-  ilm_round_away(x, digits - 1 - e)
-}
-
-## a proportion as a percentage, `decimals` after the point (the "percent" rule)
-#' @keywords internal
-#' @noRd
-ilm_fmt_pct <- function(p, decimals = 0L)
-  paste0(formatC(ilm_round_away(100 * p, decimals), format = "f", digits = decimals), "%")
+ilm_fmt_pct <- function(p, decimals = 0L) ilm_disp(p, "percent", decimals)$text
 
 ## The v-test of the rows in `m` against all rows, for a mean and for a share.
 #' @keywords internal
@@ -117,7 +112,7 @@ ilm_middle_half <- function(num, m, fmt) {
 #' @keywords internal
 #' @noRd
 ilm_share_phrase <- function(pc, pa) {
-  k <- ilm_round_away(100 * pc, 0)
+  k <- ilm_disp_round(100 * pc, 0)
   sprintf("%s, against %s across all rows",
           if (!k) "none of them" else if (pc < pa) sprintf("only %s of them", ilm_fmt_pct(pc))
           else sprintf("%s of them", ilm_fmt_pct(pc)),
@@ -178,7 +173,7 @@ ilm_profile_characterize <- function(data, cl, map = NULL, missing = FALSE) {
             eligible = TRUE,
             description = sprintf("%s is %s: %s", v,
                                   if (isTRUE(z > 0)) "higher" else "lower",
-                                  ilm_middle_half(x, m, ilm_fmt_num)))
+                                  ilm_middle_half(x, m, ilm_fmt_data)))
       }
     } else if (is.factor(x) || is.character(x) || is.logical(x)) {
       f <- factor(x)
@@ -292,7 +287,7 @@ ilm_profile_sentences <- function(tab, cluster_res, top_n_vars, vtest_threshold)
     more <- length(setdiff(unique(tab$variable[r]), unique(tab$variable[shown])))
     si <- ct[ct$cluster == cc, , drop = FALSE]
     n_amb <- sum(ind$cluster == cc & ind$is_ambiguous)
-    c(sprintf("Cluster %d holds %s rows, %s of the data (%s).", cc, ilm_fmt_num(si$size),
+    c(sprintf("Cluster %d holds %s rows, %s of the data (%s).", cc, ilm_fmt_count(si$size),
               ilm_fmt_pct(si$pct / 100, 1L), as.character(si$stability)),
       if (!length(shown)) "Nothing sets it clearly apart from the rest."
       else paste0("What sets it apart: ", ilm_join_and(tab$description[shown]), "."),

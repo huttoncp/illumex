@@ -422,7 +422,7 @@ print.ilm_cluster <- function(x, ...) {
                 na_, x$ambiguous_threshold))
   nc <- x$kmeans_not_converged %||% 0L
   if (nc > 0L)
-    cat(sprintf(ILM_KMEANS_NOT_CONVERGED, ilm_fmt_num(nc), ilm_fmt_num(x$kmeans_starts),
+    cat(sprintf(ILM_KMEANS_NOT_CONVERGED, ilm_fmt_count(nc), ilm_fmt_count(x$kmeans_starts),
                 ILM_KMEANS_ITER_MAX), "\n", sep = "")
   invisible(x)
 }
