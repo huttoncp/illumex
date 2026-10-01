@@ -604,3 +604,66 @@ ilm_select_unmark <- function(x) {
   class(x) <- setdiff(class(x), "ilm_selected")
   x
 }
+
+## What a sample left of the grouping columns named (item 284), for the
+## result's sample report and for illume's memory check, which calls this
+## on a model's grouping factors: per column, the levels given and kept and
+## the fewest and median rows per kept level; per pair of columns, whether
+## the graph of their levels -- joined where a kept row has both -- is still
+## in one piece, and how many pieces it is in. A level left with fewer than
+## 2 rows gives a warning with counts, never the levels' values.
+#' @keywords internal
+#' @noRd
+ilm_sample_report <- function(data, rows, cols, warn = TRUE) {
+  miss <- setdiff(cols, names(data))
+  if (length(miss))
+    stop("the sample's report names column(s) not in the data: ",
+         paste(miss, collapse = ", "), call. = FALSE)
+  key <- function(v) { v <- as.character(v); v[is.na(v)] <- "<NA>"; v }
+  per <- lapply(cols, function(cn) {
+    all_v <- key(data[[cn]])
+    kept <- table(all_v[rows])
+    kept <- kept[kept > 0L]
+    list(column = cn, levels_given = length(unique(all_v)), levels_kept = length(kept),
+         rows_min = if (length(kept)) as.integer(min(kept)) else 0L,
+         rows_median = if (length(kept)) as.numeric(stats::median(kept)) else 0,
+         levels_below_2 = sum(kept < 2L))
+  })
+  pairs <- if (length(cols) >= 2L) {
+    cmb <- utils::combn(cols, 2L, simplify = FALSE)
+    lapply(cmb, function(p) {
+      a <- paste0("a:", key(data[[p[1]]])[rows]); b <- paste0("b:", key(data[[p[2]]])[rows])
+      pieces <- ilm_graph_pieces(a, b)
+      list(columns = as.list(p), connected = pieces == 1L, pieces = pieces)
+    })
+  }
+  if (warn) {
+    low <- Filter(function(x) x$levels_below_2 > 0L, per)
+    if (length(low))
+      warning("after sampling, ", paste(vapply(low, function(x)
+        sprintf("%d of %d %s levels", x$levels_below_2, x$levels_kept, x$column), ""),
+        collapse = " and "), " have fewer than 2 rows", call. = FALSE)
+    split_up <- Filter(function(x) !x$connected, pairs %||% list())
+    if (length(split_up))
+      warning("after sampling, ", paste(vapply(split_up, function(x)
+        sprintf("%s and %s fall into %d unconnected pieces", x$columns[[1]], x$columns[[2]],
+                x$pieces), ""), collapse = "; "), call. = FALSE)
+  }
+  list(columns = per, pairs = pairs)
+}
+
+## the number of connected pieces of the graph whose edges join a[i] to b[i]
+#' @keywords internal
+#' @noRd
+ilm_graph_pieces <- function(a, b) {
+  if (!length(a)) return(0L)
+  nodes <- unique(c(a, b))
+  parent <- seq_along(nodes)
+  find <- function(i) { while (parent[i] != i) { parent[i] <<- parent[parent[i]]; i <- parent[i] }; i }
+  e <- unique(data.frame(a = match(a, nodes), b = match(b, nodes)))
+  for (k in seq_len(nrow(e))) {
+    ra <- find(e$a[k]); rb <- find(e$b[k])
+    if (ra != rb) parent[ra] <- rb
+  }
+  length(unique(vapply(seq_along(nodes), find, 1L)))
+}

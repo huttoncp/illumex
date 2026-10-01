@@ -433,3 +433,26 @@ test_that("crossed sampling restores the stream, negates, and says what it needs
   expect_identical(rec$factors[[2]][c("column", "whole", "levels_kept")],
                    list(column = "item", whole = TRUE, levels_kept = 20L))
 })
+
+test_that("the sample's report counts levels and rows, and tells a split design (item 284)", {
+  d <- expand.grid(rater = paste0("r", 1:6), item = paste0("i", 1:8), stringsAsFactors = FALSE)
+  ## all rows: every level kept, one row per pair, one piece
+  rep_all <- ilm_sample_report(d, seq_len(nrow(d)), c("rater", "item"))
+  expect_identical(vapply(rep_all$columns, `[[`, 1L, "levels_kept"), c(6L, 8L))
+  expect_identical(rep_all$columns[[1]]$rows_min, 8L)
+  expect_true(rep_all$pairs[[1]]$connected)
+  ## two blocks with no rater or item in common: two pieces, and a warning
+  blocks <- which((d$rater %in% c("r1", "r2", "r3") & d$item %in% c("i1", "i2", "i3", "i4")) |
+                  (d$rater %in% c("r4", "r5", "r6") & d$item %in% c("i5", "i6", "i7", "i8")))
+  expect_warning(r2 <- ilm_sample_report(d, blocks, c("rater", "item")), "2 unconnected pieces")
+  expect_identical(r2$pairs[[1]]$pieces, 2L)
+  ## a level left with one row: a warning with counts, never the level
+  one <- c(which(d$rater == "r1"), which(d$rater == "r2")[1])
+  w <- tryCatch(ilm_sample_report(d, one, "rater"), warning = conditionMessage)
+  expect_identical(w, "after sampling, 1 of 2 rater levels have fewer than 2 rows")
+  expect_false(grepl("r2", w, fixed = TRUE))
+  quiet <- ilm_sample_report(d, one, "rater", warn = FALSE)
+  expect_identical(quiet$columns[[1]][c("levels_given", "levels_kept", "rows_min", "rows_median")],
+                   list(levels_given = 6L, levels_kept = 2L, rows_min = 1L, rows_median = 4.5))
+  expect_error(ilm_sample_report(d, one, "nope"), "not in the data: nope")
+})
