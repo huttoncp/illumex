@@ -1,0 +1,473 @@
+# Changelog
+
+## illumex 0.0.8.9001
+
+- `ilm_reduce(method = "glrm")` keeps only the dimensions that carry
+  variation (Craig’s item 265): a singular value of the centred low-rank
+  product at or below `sqrt(.Machine$double.eps)` times the first, the
+  numerical-rank cut
+  [`MASS::ginv()`](https://rdrr.io/pkg/MASS/man/ginv.html) uses, is zero
+  to rounding. Heavy shrinkage can leave fewer such dimensions than were
+  fitted, and a zero singular value’s direction is arbitrary, so its
+  loadings differed from one platform to the next (0.964 on one, 0.930
+  on another, for the same fit). The print says so (“4 dimensions carry
+  variation (5 fitted; after shrinkage the 5th has none)”), the
+  coordinates and loadings cover the dimensions kept, and
+  [`ilm_glrm()`](https://huttoncp.github.io/illumex/reference/ilm_glrm.md)
+  reports its own (`rank_kept`).
+
+- [`ilm_cluster()`](https://huttoncp.github.io/illumex/reference/ilm_cluster.md),
+  and so
+  [`ilm_profile()`](https://huttoncp.github.io/illumex/reference/ilm_profile.md),
+  lets each k-means start run to 100 iterations, where
+  [`stats::kmeans()`](https://rdrr.io/r/stats/kmeans.html) stops at 10.
+  On the gap statistic’s reference sets the old limit stopped some
+  starts early and warned once for each – 128 warnings on one census
+  study – though the chosen number of clusters was the same
+  (`dev/studies/kmeans_iter.R`). A start that still stops at the limit
+  is now counted, and the printed result says so once.
+
+- The note on incomplete rows (from
+  [`ilm_cluster()`](https://huttoncp.github.io/illumex/reference/ilm_cluster.md)
+  and
+  [`ilm_anomaly()`](https://huttoncp.github.io/illumex/reference/ilm_anomaly.md))
+  no longer rounds a share to a limit it has not reached: 99.8% of rows
+  complete printed as “only 100%”, and a column 0.2% missing as “0%”.
+
+- The help of
+  [`ilm_cluster()`](https://huttoncp.github.io/illumex/reference/ilm_cluster.md),
+  [`ilm_profile()`](https://huttoncp.github.io/illumex/reference/ilm_profile.md),
+  [`ilm_profile_na()`](https://huttoncp.github.io/illumex/reference/ilm_profile_na.md),
+  [`ilm_anomaly()`](https://huttoncp.github.io/illumex/reference/ilm_anomaly.md)
+  and
+  [`ilm_reduce()`](https://huttoncp.github.io/illumex/reference/ilm_reduce.md)
+  says how large a data set each handles, measured on one core of a 16
+  GB Windows machine at 10,000 to 250,000 rows
+  (`dev/studies/scale_check.R`, results beside it):
+
+  | function | 10,000 rows | 50,000 | 100,000 | 250,000 |
+  |----|----|----|----|----|
+  | describe, frame checks, counts, outliers, missing-data check, cleaning, plots | under 1 s | under 4 s | under 6 s | under 16 s |
+  | [`ilm_boot_ci()`](https://huttoncp.github.io/illumex/reference/ilm_boot_ci.md) (2,000 resamples) | 2 s | 14 s | 24 s | 53 s |
+  | [`ilm_reduce()`](https://huttoncp.github.io/illumex/reference/ilm_reduce.md), the default | under 1 s | under 1 s | under 1 s | under 1 s |
+  | [`ilm_var_contrib()`](https://huttoncp.github.io/illumex/reference/ilm_var_contrib.md) | 5 s | 17 s | 33 s | 83 s |
+  | [`ilm_anomaly()`](https://huttoncp.github.io/illumex/reference/ilm_anomaly.md) | 32 s | 13 min | over 15 min | – |
+  | `ilm_anomaly(method = "iforest")` | 3.5 min | over 15 min | – | – |
+  | `ilm_reduce(method = "glrm")` | 5 min | over 15 min | – | – |
+  | [`ilm_cluster()`](https://huttoncp.github.io/illumex/reference/ilm_cluster.md) with `k` given | 35 s, 1.2 GB | fails: 9.3 GB | – | – |
+  | [`ilm_cluster()`](https://huttoncp.github.io/illumex/reference/ilm_cluster.md), `k` chosen (the default); [`ilm_profile()`](https://huttoncp.github.io/illumex/reference/ilm_profile.md), [`ilm_profile_na()`](https://huttoncp.github.io/illumex/reference/ilm_profile_na.md) | over 15 min | – | – | – |
+
+  Every clustering computes silhouettes from a full distance matrix,
+  which is what stops it at about 40,000 rows on 16 GB.
+
+- The development version moves to 0.0.8.9001, so that a package needing
+  this cycle’s changes can require them. Builds made before these
+  changes also called themselves 0.0.8.9000, among them ones whose
+  [`ilm_reduce()`](https://huttoncp.github.io/illumex/reference/ilm_reduce.md)
+  still needs PCAmixdata.
+
+- [`ilm_describe()`](https://huttoncp.github.io/illumex/reference/ilm_describe.md)’s
+  `skew` and `kurt` are now the type 2 estimators of Joanes and Gill
+  (1998), the ones SAS and SPSS report, where they were type 3 (e1071’s
+  default). Type 2 kurtosis is unbiased for normal data; type 3 averages
+  -0.54 at n = 20 and -0.24 at n = 50. The same kurtosis decides
+  `gauss_note`’s “heavy-tailed” and “light-tailed”, so a small sample is
+  called light-tailed less often: in the recorded prints, one group of
+  20 (excess kurtosis -1.045 before, -0.715 now) no longer is.
+
+- The help for
+  [`ilm_copies()`](https://huttoncp.github.io/illumex/reference/ilm_copies.md),
+  [`ilm_counts()`](https://huttoncp.github.io/illumex/reference/ilm_counts.md),
+  [`ilm_describe()`](https://huttoncp.github.io/illumex/reference/ilm_describe.md)
+  and
+  [`ilm_boot_ci()`](https://huttoncp.github.io/illumex/reference/ilm_boot_ci.md)
+  says when each is worth running and what to read in it: copies before
+  and after a join, errors at the two ends of a count, codes for a
+  missing value at the minimum or maximum, what the 95% of a bootstrap
+  interval means, and the median and quartiles when `gauss_note` says
+  skewed.
+
+- `ilm_boot_ci(ci_type = "bca")` warns when its interval cannot be
+  relied on, naming the groups and the remedy: below 8 rows, where its
+  corrections are estimated too poorly to help (measured: at 3 and 5
+  rows the median’s BCa interval covered 70% and 82% against the
+  percentile interval’s 79% and 94%), or when its bias correction or
+  acceleration is undefined. The intervals themselves are unchanged.
+
+- [`ilm_boot_ci()`](https://huttoncp.github.io/illumex/reference/ilm_boot_ci.md)
+  takes several columns in `y`, or none for every numeric column besides
+  `by`, and returns one long table led by a `variable` column, as
+  [`ilm_counts_tb_all()`](https://huttoncp.github.io/illumex/reference/ilm_counts_tb_all.md)
+  does. Each column starts from `seed`, so its rows are the ones it gets
+  alone; each is checked against
+  [`boot::boot.ci()`](https://rdrr.io/pkg/boot/man/boot.ci.html).
+
+- The exploring-data vignette gains four sections: a worked cleaning of
+  a messy copy of mtcars, from the copies to the cleaned table checked
+  against the original; a median for each group with its BCa interval;
+  Anscombe’s four data sets, the same summary drawn four ways; and
+  change over time, with what a line hides about how many rows lie
+  behind each point.
+
+- [`ilm_copies()`](https://huttoncp.github.io/illumex/reference/ilm_copies.md)
+  and
+  [`ilm_dupes()`](https://huttoncp.github.io/illumex/reference/ilm_dupes.md)
+  say so when rows are copies, and give the call that keeps one of each:
+  “22 of 44 rows share their values with another row; ilm_copies(data,
+  filter =”first”) keeps one of each, leaving 32.” The call names the
+  data and the key columns as they were given.
+
+- [`ilm_wash_df()`](https://huttoncp.github.io/illumex/reference/ilm_wash_df.md)’s
+  names follow janitor’s `make_clean_names()`, in base R, and no letter
+  is dropped: “%” becomes `percent` and “#” `number` (they were dropped,
+  so “% change” became `change`), accented Latin letters become plain
+  ones through an explicit table (an accented e becomes e, where before
+  the letter was dropped and a word split around it), letters of other
+  scripts are kept, acronyms split (`html_parser`), a name starting with
+  a digit gains an `x`, an empty one is `x` (it was `v`), and a repeated
+  name gains `_2` where it gained `_1`. On 73 test names illumex gives
+  janitor 2.2.0’s result for 66; the other 7 are the deliberate
+  departures, letters of other scripts and two ligatures.
+
+- `ilm_wash_df(data)` with no other argument is tested on a messy copy
+  of mtcars, a tibble, zero rows, all-empty columns and factors. A
+  factor column of blanks now counts as empty, as a text one does, and a
+  data frame whose every column is empty now has no rows left either.
+  Its help says that a text column of whole numbers becomes integer,
+  with the values unchanged.
+
+- [`ilm_wash_df()`](https://huttoncp.github.io/illumex/reference/ilm_wash_df.md)
+  returns a tibble for a tibble and a data.table for a data.table, as it
+  was given (a plain data.frame with `column_to_rownames`, since neither
+  keeps row names); any other data frame comes back a data.frame. It
+  returned a data.frame for all of them.
+
+- [`ilm_recode_errors()`](https://huttoncp.github.io/illumex/reference/ilm_recode_errors.md)
+  no longer changes the type of columns it finds nothing to recode in:
+  recoding `"six"` to `"6"` across a data frame turned every numeric
+  column into text, because R converts a vector when a text value is
+  assigned to none of its elements.
+
+- [`ilm_plot()`](https://huttoncp.github.io/illumex/reference/ilm_plot.md)
+  and the named plots
+  ([`ilm_plot_histogram()`](https://huttoncp.github.io/illumex/reference/ilm_plot_histogram.md),
+  `_density()`, `_box()`, `_violin()`, `_scatter()`, `_bar()`, `_line()`
+  and `_stat_error()`, and so
+  [`ilm_plot_var()`](https://huttoncp.github.io/illumex/reference/ilm_plot_var.md))
+  gain `facet`, a column named as a string the way `by` is:
+  `facet = "site"` draws one panel per level. Each is tested against
+  tinyplot drawing the same panels from its own formula interface, the
+  two images identical byte for byte. A formula (`facet = ~site`) is an
+  error that shows the string form. The binned density
+  [`ilm_plot()`](https://huttoncp.github.io/illumex/reference/ilm_plot.md)
+  switches to above `n_max` points has no panels and says so.
+
+- [`ilm_plot_scatter()`](https://huttoncp.github.io/illumex/reference/ilm_plot_scatter.md)
+  gains `trend = "gam"`, `mgcv::gam(y ~ s(x), method = "REML")` with
+  mgcv’s credible band, held to mgcv’s own predictions in the tests.
+  mgcv, which comes with R, joins Suggests. Its help says how each
+  trend’s band is made: lm’s confidence band from
+  [`predict.lm()`](https://rdrr.io/r/stats/predict.lm.html), loess’s and
+  gam’s fit plus or minus t or z standard errors.
+
+- [`ilm_plot_scatter()`](https://huttoncp.github.io/illumex/reference/ilm_plot_scatter.md)
+  with a trend now draws the points with the line over them; it drew the
+  line and band alone. The axis is drawn to hold the band as well as the
+  points, so a band is no longer cut off at the edge of the plot.
+
+- The named plots title a `by` legend with the column’s name; they
+  printed the code that picked the column, such as
+  `ilm_col_vec(data, by, "by")`. They gain `legend`, which takes
+  anything tinyplot’s does, a title of your own included.
+
+- [`ilm_plot_box()`](https://huttoncp.github.io/illumex/reference/ilm_plot_box.md)
+  and
+  [`ilm_plot_violin()`](https://huttoncp.github.io/illumex/reference/ilm_plot_violin.md)
+  label the horizontal axis with the column’s name; they printed the
+  code that picked the column.
+
+- [`ilm_describe()`](https://huttoncp.github.io/illumex/reference/ilm_describe.md)
+  and
+  [`ilm_describe_all()`](https://huttoncp.github.io/illumex/reference/ilm_describe_all.md)
+  gain `smd`. With `by`, `smd = TRUE` adds each group’s standardised
+  difference from the first group, and `smd = "control"` from the group
+  named: for a number, the difference in means over the square root of
+  the average of the two groups’ variances (Austin 2009); for a binary,
+  the difference in proportions over the square root of the average of
+  their p(1 - p); for a category of more than two levels, Yang and
+  Dalton’s multivariate difference. They agree with tableone’s to 1e-12
+  (`dev/studies/make_smd_fixtures.R`).
+
+- `ilm_anomaly(method = "iforest")` names a row’s driver differently:
+  each column is replaced by the value the other columns predict for it
+  – a number by regression on them, a category by the commonest level
+  among the row’s nearest rows – where it was replaced by its median or
+  commonest level. Against planted anomalies
+  (`dev/studies/driver_redesign.R`, 50 replicates), a row whose category
+  contradicts its numbers was attributed to that category for 0.34 to
+  0.38 of such rows, where it was 0.17 to 0.25; rows pushed out of a
+  column’s range and rare pairings of categories were attributed as well
+  or better (0.85 to 0.99, 0.90 to 0.95); a scan takes about half as
+  long again. Two in three rows whose category contradicts their numbers
+  are still attributed elsewhere, and the help says so. An earlier
+  comment’s “94%” for that case was not what the studies measured. Above
+  2,000 rows a category’s nearest rows are searched among 2,000 drawn
+  under the scan’s seed, which at 10,000 rows gave the same driver as
+  searching every row for 0.998 to 1.000 of flagged rows
+  (`dev/studies/driver_pool.R`). These rates are the forest’s; the
+  default method’s driver, the column with the largest residual, is
+  unchanged and has not been measured against planted anomalies.
+
+- [`ilm_reduce()`](https://huttoncp.github.io/illumex/reference/ilm_reduce.md)
+  computes the factor analysis of mixed data itself, rather than through
+  PCAmixdata, which is no longer used: the same eigenvalues, coordinates
+  and loadings to within 4e-12, faster from 2,000 rows up, and nothing
+  to install. Each dimension’s sign is now fixed by a rule – the column
+  that loads most on it loads positively – so a coordinate may have the
+  opposite sign to before and a map may be mirrored; distances, clusters
+  and descriptions are unchanged, though on data with many tied rows,
+  such as
+  [`ilm_cluster_na()`](https://huttoncp.github.io/illumex/reference/ilm_cluster_na.md)’s
+  markers of missingness, k-means may number the same clusters
+  differently. The agreement with FactoMineR and PCAmixdata is tested
+  against their stored outputs. The method is now called `"famd"` in
+  [`ilm_reduce()`](https://huttoncp.github.io/illumex/reference/ilm_reduce.md)
+  and
+  [`ilm_profile()`](https://huttoncp.github.io/illumex/reference/ilm_profile.md);
+  `"pcamix"`, its former name, is still accepted and means the same, so
+  no call breaks.
+
+- The gaussian index (`gauss`, from
+  [`ilm_gauss_check()`](https://huttoncp.github.io/illumex/reference/ilm_gauss_check.md)
+  and the describe functions) reaches 0 at an excess distance of 0.06
+  rather than 0.12, so clear departures sit at the bottom of the scale:
+  with 500 rows, t with 3 degrees of freedom scored 0.52 and a
+  two-humped mixture 0.14, and now score 0.07 and 0
+  (`dev/studies/gauss_cap.R`). Normal data still score 1. The help says
+  what the index is for: the size of a departure, while `gauss_note` and
+  a plot show its kind. The index and the distance are now kept whole,
+  as the describe functions’ values are, and print as before;
+  [`ilm_gauss_check()`](https://huttoncp.github.io/illumex/reference/ilm_gauss_check.md)
+  returns a list of class `"ilm_gauss"`.
+
+- Results that were plain data frames or lists now carry a class of
+  their own, in front of `data.frame` (or `list`):
+  [`ilm_describe()`](https://huttoncp.github.io/illumex/reference/ilm_describe.md)
+  (and a single table from
+  [`ilm_describe_all()`](https://huttoncp.github.io/illumex/reference/ilm_describe_all.md)),
+  [`ilm_describe_all()`](https://huttoncp.github.io/illumex/reference/ilm_describe_all.md),
+  [`ilm_frame_issues()`](https://huttoncp.github.io/illumex/reference/ilm_frame_issues.md),
+  [`ilm_describe_na()`](https://huttoncp.github.io/illumex/reference/ilm_describe_na.md)
+  and
+  [`ilm_describe_na_all()`](https://huttoncp.github.io/illumex/reference/ilm_describe_na_all.md),
+  [`ilm_outliers()`](https://huttoncp.github.io/illumex/reference/ilm_outliers.md),
+  [`ilm_outliers_all()`](https://huttoncp.github.io/illumex/reference/ilm_outliers_all.md),
+  [`ilm_boot_ci()`](https://huttoncp.github.io/illumex/reference/ilm_boot_ci.md)
+  and
+  [`ilm_boot_diff()`](https://huttoncp.github.io/illumex/reference/ilm_boot_diff.md).
+  They print, subset and combine as before; what changes is
+  [`class()`](https://rdrr.io/r/base/class.html), and
+  [`identical()`](https://rdrr.io/r/base/identical.html) against a plain
+  data frame.
+  [`ilm_outliers_all()`](https://huttoncp.github.io/illumex/reference/ilm_outliers_all.md)
+  also keeps the method, the threshold in effect, the grouping and how
+  many values each column had checked, and the bootstrap results the
+  seed they drew with.
+
+- [`ilm_cluster()`](https://huttoncp.github.io/illumex/reference/ilm_cluster.md)’s
+  `clusters` (`pct`, `jaccard`, `mean_silhouette`) and
+  `ind_cluster$silhouette`, and
+  [`ilm_reduce()`](https://huttoncp.github.io/illumex/reference/ilm_reduce.md)’s
+  `eig` and `var_contrib` on the default method, now hold full
+  precision: they were rounded when stored, so `r$eig` and `cl$clusters`
+  show more digits than before. Printing rounds as it did, and prints
+  the same.
+  [`ilm_describe()`](https://huttoncp.github.io/illumex/reference/ilm_describe.md),
+  [`ilm_describe_all()`](https://huttoncp.github.io/illumex/reference/ilm_describe_all.md),
+  [`ilm_describe_na()`](https://huttoncp.github.io/illumex/reference/ilm_describe_na.md)
+  and
+  [`ilm_describe_na_all()`](https://huttoncp.github.io/illumex/reference/ilm_describe_na_all.md)
+  likewise keep their values whole: `digits` now sets how they print,
+  not what they store.
+
+- A function given a seed puts the user’s random-number stream back as
+  it leaves – as it was, or absent if it was absent. Every function with
+  a `seed` argument set it and left the stream there, so the user’s next
+  random draw came out the same whatever came before it. Seeded results
+  are unchanged. The seven functions:
+  [`ilm_anomaly()`](https://huttoncp.github.io/illumex/reference/ilm_anomaly.md),
+  [`ilm_boot_ci()`](https://huttoncp.github.io/illumex/reference/ilm_boot_ci.md),
+  [`ilm_boot_diff()`](https://huttoncp.github.io/illumex/reference/ilm_boot_diff.md),
+  [`ilm_cluster()`](https://huttoncp.github.io/illumex/reference/ilm_cluster.md),
+  [`ilm_glrm()`](https://huttoncp.github.io/illumex/reference/ilm_glrm.md),
+  [`ilm_sim()`](https://huttoncp.github.io/illumex/reference/ilm_sim.md)
+  and
+  [`ilm_var_contrib()`](https://huttoncp.github.io/illumex/reference/ilm_var_contrib.md);
+  a test fails if a new seeded function does not do the same. With
+  `seed = NULL`,
+  [`ilm_anomaly()`](https://huttoncp.github.io/illumex/reference/ilm_anomaly.md),
+  [`ilm_glrm()`](https://huttoncp.github.io/illumex/reference/ilm_glrm.md),
+  [`ilm_sim()`](https://huttoncp.github.io/illumex/reference/ilm_sim.md)
+  and
+  [`ilm_var_contrib()`](https://huttoncp.github.io/illumex/reference/ilm_var_contrib.md)
+  now draw from the user’s stream, as the other three already did; they
+  called `set.seed(NULL)`, which re-seeds from the clock, so a
+  [`set.seed()`](https://rdrr.io/r/base/Random.html) of the user’s own
+  before the call fixed nothing. One consequence:
+  `ilm_profile(method = "glrm")` without a `seed` used to cluster from
+  the stream
+  [`ilm_glrm()`](https://huttoncp.github.io/illumex/reference/ilm_glrm.md)
+  left behind, and so gave the same clusters every time by accident; it
+  now draws from the user’s stream, as the default method always did.
+  Pass `seed` for a fixed answer.
+
+- [`ilm_profile()`](https://huttoncp.github.io/illumex/reference/ilm_profile.md)
+  computes the v-test for a categorical value as FactoMineR’s `catdes()`
+  does, from the hypergeometric probability of the cluster’s count,
+  rather than by a normal approximation to it; the two differed by up to
+  0.18 on a thin level. Numeric v-tests were already the same. Both are
+  now held to stored `catdes()` output in the tests, as are
+  [`ilm_reduce()`](https://huttoncp.github.io/illumex/reference/ilm_reduce.md)’s
+  eigenvalues and coordinates to `FAMD()`’s.
+
+- `ilm_reduce(method = "glrm")` now reports an orthogonal rotation of
+  the fitted low-rank model, as principal components are, rather than
+  the optimiser’s own factors. Those factors are not unique – any
+  rotation of one can be undone in the other – so their dimensions
+  overlapped, and a share of variance per dimension double-counted, with
+  the cumulative share able to pass 100%. `pct_var` and `cum_pct_var`
+  are now shares of the numeric columns’ variance and add up exactly;
+  the categorical columns, fitted on the logit scale, get their own
+  `pct_categorical` and `cum_pct_categorical`. The reconstruction is
+  unchanged and `fit` keeps the original factors, but the coordinates
+  and contributions change, and so do any clusters built on a low-rank
+  reduction. On numeric data with no penalty the shares now match
+  principal components’.
+
+- [`ilm_frame_issues()`](https://huttoncp.github.io/illumex/reference/ilm_frame_issues.md)
+  checks the structure that breaks a model matrix and that no pair of
+  numeric correlations shows: categorical columns that are the same
+  grouping under different labels (`aliased_factors`), one grouping
+  inside another (`nested`, which is expected for random effects and a
+  trap for fixed ones), categorical pairs with Cramer’s V at or above
+  the new `v_cut` (default 0.95, `redundant_categories`), and columns
+  that are an exact linear combination of others, found from a pivoted
+  QR of the model matrix and named with what they are made of
+  (`rank_deficient`). Every row now carries a `remedy`, and an identical
+  pair is reported once, as a duplicate, rather than again as collinear.
+
+- The version moves in step with `illume` 0.0.8.9000, which now requires
+  `illumex (>= 0.0.8.9000)`.
+
+- Dates are used in clustering rather than dropped.
+  [`ilm_reduce()`](https://huttoncp.github.io/illumex/reference/ilm_reduce.md),
+  [`ilm_glrm()`](https://huttoncp.github.io/illumex/reference/ilm_glrm.md)
+  and
+  [`ilm_profile()`](https://huttoncp.github.io/illumex/reference/ilm_profile.md)
+  gain `time`. By default (`"cycles"`) a date or date-time column
+  becomes the time since its earliest value – R’s own number for it,
+  which keeps order and spacing in one column – plus the time of day,
+  the day of the week, the day of the month and the time of year as
+  sine-cosine pairs, so that 23:00 sits next to midnight and December
+  next to January; but only the cycles some other column varies with,
+  since a cycle nothing else follows is noise the clustering will split
+  on. A cycle is let in when that variation stands five standard
+  deviations above what shuffled dates give, a bar set from its measured
+  errors: at the usual p \< 0.01 chance let a cycle in for 3 of 160 data
+  sets with no rhythm, and one such admission took a clustering from
+  0.36 to 0.00. `"elapsed"` keeps the time line alone and skips the
+  test, for very large data; `"drop"` is the old behaviour. A duration
+  is used as its number of days.
+
+- Measured on two known clusters (400 rows, 20 replicates, adjusted Rand
+  index): elapsed time costs nothing where the date is irrelevant (0.38
+  to 0.36) but cannot see a rhythm; every cycle given unasked took
+  recovery to 0.10 where the date meant nothing; the tested cycles left
+  it at 0.36 there and raised it from 0.36 to 0.94 for winter against
+  summer, 0.93 for night against day, 0.79 for weekends and 0.58 for
+  month-ends. Expanding a date into year, month, day and weekday numbers
+  instead scored 0.00 to 0.02 in all of those: the year and the date
+  count the trend twice and take over the reduction, and a numbered
+  month puts December as far from January as it can.
+
+- [`ilm_profile()`](https://huttoncp.github.io/illumex/reference/ilm_profile.md)
+  and
+  [`ilm_profile_na()`](https://huttoncp.github.io/illumex/reference/ilm_profile_na.md)
+  describe each cluster by the original variables that set it apart, in
+  their own units, rather than by the reduction’s dimensions:
+  “employment is ‘retired’ for 86% of them, against 21% across all rows;
+  age is higher: the middle 50% of its values lie between 64 and 72,
+  against 29 to 54 across all rows”. The dimension-based sentences named
+  which variables a cluster’s position was made of without saying which
+  way the cluster lay on them: on a sample with three known subgroups,
+  which the clustering recovered almost exactly, two of the three got
+  the same sentence word for word. Variables are ranked by a v-test
+  against all rows (as FactoMineR’s `catdes()`) and named when it clears
+  `vtest_threshold` and the difference is big enough to matter, 0.2
+  standard deviations or 10 percentage points – on 1,200 rows a column
+  of pure noise cleared 1.96 in two clusters of three. A date is
+  described in dates, down to the stretch of a cycle where a cluster
+  stands out (“falls on Sat-Sun for 87% of them, against 50% across all
+  rows”); markers of missingness as “income is missing for 92% of them”.
+  The variables that set no cluster apart are named after the
+  paragraphs, or counted when there are many.
+
+- [`ilm_profile()`](https://huttoncp.github.io/illumex/reference/ilm_profile.md)’s
+  `characterization` is now one row per cluster and variable (and aspect
+  of a date); `frequencies` is new (every value of every categorical
+  variable, per cluster, with its count, its share and its share among
+  all rows), as is `by_cluster`
+  ([`ilm_describe_all()`](https://huttoncp.github.io/illumex/reference/ilm_describe_all.md)
+  of the variables, by cluster). `top_n_vars` now caps the variables
+  named for one cluster, and defaults to 4.
+
+- [`ilm_var_contrib()`](https://huttoncp.github.io/illumex/reference/ilm_var_contrib.md)
+  scores a date on the aspects the clustering used, its time line or a
+  cycle, and says which in `type` (“date: day of the week”). Scored on
+  the time line alone, a clustering that split on the day of the week
+  called its own defining variable no better than chance.
+
+- `print.ilm_var_contrib()` prints a subset of its columns as the plain
+  table it is, rather than stopping on a column that is not there.
+
+- A variable that
+  [`ilm_var_contrib()`](https://huttoncp.github.io/illumex/reference/ilm_var_contrib.md)
+  cannot score, such as a constant column, has no verdict. The advice
+  under its table, and under a profile’s print, named such a variable
+  “NA” as one that separates the clusters no better than chance, and
+  said to drop it; it now leaves it out.
+
+## illumex 0.0.7.9000
+
+- First version: the exploratory half of `illume` 0.0.7.9000, split out
+  into a package of its own. Every function keeps its name, its
+  arguments and its behaviour, and `illume` attaches `illumex`, so code
+  written against `illume` runs unchanged.
+- What moved: description and cleaning (`ilm_describe*()`,
+  `ilm_counts*()`,
+  [`ilm_dupes()`](https://huttoncp.github.io/illumex/reference/ilm_dupes.md),
+  [`ilm_copies()`](https://huttoncp.github.io/illumex/reference/ilm_copies.md),
+  [`ilm_wash_df()`](https://huttoncp.github.io/illumex/reference/ilm_wash_df.md),
+  `ilm_recode_errors*()`,
+  [`ilm_translate()`](https://huttoncp.github.io/illumex/reference/ilm_translate.md),
+  [`ilm_frame_issues()`](https://huttoncp.github.io/illumex/reference/ilm_frame_issues.md),
+  [`ilm_gauss_check()`](https://huttoncp.github.io/illumex/reference/ilm_gauss_check.md));
+  bootstrap intervals without a model
+  ([`ilm_boot_ci()`](https://huttoncp.github.io/illumex/reference/ilm_boot_ci.md),
+  [`ilm_boot_diff()`](https://huttoncp.github.io/illumex/reference/ilm_boot_diff.md));
+  outliers and multivariate anomalies; dimension reduction, clustering
+  and profiling,
+  [`ilm_glrm()`](https://huttoncp.github.io/illumex/reference/ilm_glrm.md)
+  included; describing missing values
+  ([`ilm_check_missing()`](https://huttoncp.github.io/illumex/reference/ilm_check_missing.md)
+  and the `*_na()` functions); the plots of data rather than of a model;
+  and the example data,
+  [`ilm_sim()`](https://huttoncp.github.io/illumex/reference/ilm_sim.md).
+- What stayed in `illume`: everything that fits or reads a model,
+  including imputation and pooling (`ilm_impute()`, `ilm_mi_pool()`),
+  which need one.
+- It needs neither TMB nor RTMB. Its only imports are `collapse`,
+  `tinyplot` and base R’s own packages, and `cluster`, `isotree` and
+  `PCAmixdata` are used where they are installed.
+- illumex has a hex sticker of its own. It is shown in the README and on
+  the pkgdown site, and the site’s favicons are made from it.
