@@ -58,6 +58,11 @@ grp <- list(
        function(x) grepl("^ilm_(plot|pick_geom|geom_spec)", x),
        c("ilm_plot", "ilm_plot_all", "ilm_pick_geom", "ilm_geom_spec")),
 
+  list("Choosing rows and columns",
+       "Which rows and columns a function uses: `subset` and `cols` with their options, a random sample of rows, and the data a call would use.",
+       function(x) x %in% c("ilm_selection", "ilm_subset", "ilm_sample"),
+       c("ilm_selection", "ilm_subset", "ilm_sample")),
+
   list("Example data",
        "A grouped data set with a known structure, used throughout the examples.",
        function(x) x == "ilm_sim")
