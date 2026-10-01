@@ -11,7 +11,8 @@ ilm_wash_df(
   retype = TRUE,
   drop_empty = TRUE,
   column_to_rownames = FALSE,
-  names_col = NULL
+  names_col = NULL,
+  encoding = NULL
 )
 }
 \arguments{
@@ -26,6 +27,11 @@ ilm_wash_df(
 \item{column_to_rownames}{Use a column's values as row names.}
 
 \item{names_col}{The column to use when \code{column_to_rownames = TRUE}.}
+
+\item{encoding}{The encoding the file was saved in, such as
+\code{"windows-1252"} (or \code{"latin1"}), to convert the text that is not valid
+UTF-8 from. \code{NULL}, the default, converts nothing. \code{\link[=iconvlist]{iconvlist()}} lists
+the encodings this system knows.}
 }
 \value{
 A cleaned data frame, of the input's class for a tibble or a
@@ -33,7 +39,7 @@ data.table (a plain data.frame when \code{column_to_rownames = TRUE}, since
 neither keeps row names) and a plain data.frame for any other. When
 some text is not valid UTF-8, \code{attr(x, "not_utf8")} is a data frame of
 the columns holding it (by their cleaned names): \code{column}, \code{n}, and the
-first \code{rows} of \code{data} where it is.
+first \code{rows} of \code{data} where it is. With \code{encoding}, \code{attr(x, "converted")} gives the values converted per column (\code{column}, \code{n}).
 }
 \description{
 Removes empty rows and columns, standardises names to snake_case, and
@@ -52,6 +58,13 @@ holding such text, with its count and first rows, and says how to read
 the file in its own encoding; the result keeps the same table as
 \code{attr(x, "not_utf8")}. A column name that is not valid UTF-8 is cleaned
 with each stray byte written out (\code{caf_e9}).
+
+Given the file's encoding, \code{encoding = "windows-1252"} say, the text that
+is not valid UTF-8 -- values, factor levels and column names -- is
+converted from it, and a message says how many values were converted in
+each column. Nothing that is already valid UTF-8 is touched, and no
+encoding is ever guessed. A value that does not convert, or does not
+convert back to the same bytes, is left as it is and reported as above.
 
 Names follow the rules of janitor's \code{make_clean_names()}, without needing
 janitor, and no letter is dropped: \code{"\%"} becomes \code{percent} and \code{"#"}

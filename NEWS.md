@@ -10,6 +10,14 @@
     encoding or convert it with `iconv()`; the result keeps the same table
     as `attr(x, "not_utf8")`. A column name that is not valid UTF-8 is
     cleaned with its stray byte spelled out (`caf_e9`).
+  - `ilm_wash_df(encoding = )` converts such text, given the file's encoding
+    (item 298): `encoding = "windows-1252"` converts the values, factor
+    levels and column names that are not valid UTF-8 from it, and a message
+    says how many values were converted in each column (also
+    `attr(x, "converted")`). Valid text is never touched and no encoding is
+    guessed. A value that does not convert, or does not convert back to the
+    same bytes, is left as it is and reported. Without the argument, the
+    warning suggests it by name.
   - `ilm_describe()` and `ilm_describe_all()` describe such a column, and
     its note says how many values are not valid UTF-8.
   - Plots draw such text with its stray bytes spelled out (`caf<e9>`):

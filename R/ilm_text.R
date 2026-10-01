@@ -86,13 +86,15 @@ ilm_not_utf8_cols <- function(d, first = 5L) {
              stringsAsFactors = FALSE)
 }
 
-## What to do about text that is not valid UTF-8, for a message.
+## What to do about text that is not valid UTF-8, for a message: first the
+## argument that converts it, by name.
 #' @keywords internal
 #' @noRd
 ILM_UTF8_REMEDY <- paste0(
-  "The file was probably saved in another encoding, such as Windows-1252: read it ",
-  "again in that encoding (read.csv(file, fileEncoding = \"windows-1252\"), or readr's ",
-  "locale(encoding = \"windows-1252\")), or convert a column with ",
+  "The file was probably saved in another encoding, usually Windows-1252: ",
+  "ilm_wash_df(data, encoding = \"windows-1252\") converts such text, or read the ",
+  "file again in its encoding (read.csv(file, fileEncoding = \"windows-1252\"), or ",
+  "readr's locale(encoding = \"windows-1252\")), or convert a column with ",
   "iconv(x, from = \"windows-1252\", to = \"UTF-8\").")
 
 ## The data a plot draws from, safe to draw. R's graphics devices cannot
@@ -138,4 +140,62 @@ ilm_stop_not_utf8_names <- function(nms, fn) {
        if (length(bad) == 1L) "it" else "them", ": ilm_wash_df() cleans such names. ",
        ILM_UTF8_REMEDY,
        call. = FALSE)
+}
+
+## Convert the values of x that are not valid UTF-8 from `encoding` to
+## UTF-8 (Craig's item 298). A value converts only when the result is valid
+## UTF-8 and converts back to the same bytes: Windows' iconv() maps what it
+## cannot convert to something near it ("caf" and an e9 byte, read as
+## ASCII, becomes "cafi"), and a value so mangled is not converted but left
+## as it is. Returns x and the positions converted.
+#' @keywords internal
+#' @noRd
+ilm_utf8_from <- function(x, encoding) {
+  bad <- which(!validUTF8(x))
+  if (!length(bad)) return(list(x = x, done = integer(0)))
+  y <- iconv(x[bad], from = encoding, to = "UTF-8")
+  back <- iconv(y, from = "UTF-8", to = encoding)
+  ok <- !is.na(y) & validUTF8(y) & !is.na(back) &
+    vapply(seq_along(bad), function(i)
+      !is.na(back[i]) && identical(charToRaw(back[i]), charToRaw(x[bad[i]])), TRUE)
+  x[bad[ok]] <- y[ok]
+  list(x = x, done = bad[ok])
+}
+
+## ilm_wash_df(encoding = ): convert, from `encoding`, the column names,
+## text values and factor levels that are not valid UTF-8. Returns the data
+## and the count converted per column (by the converted names). Never
+## guesses: without `encoding` nothing is converted.
+#' @keywords internal
+#' @noRd
+ilm_wash_convert <- function(d, encoding) {
+  if (!is.character(encoding) || length(encoding) != 1L || is.na(encoding) ||
+      !nzchar(encoding))
+    stop("`encoding` must be the name of one encoding, such as \"windows-1252\"",
+         call. = FALSE)
+  known <- tryCatch({ iconv("a", encoding, "UTF-8"); TRUE }, error = function(e) FALSE)
+  if (!known)
+    stop("`encoding = \"", encoding, "\"` is not an encoding this system's iconv() ",
+         "knows; iconvlist() lists those it does", call. = FALSE)
+  nm <- ilm_utf8_from(names(d), encoding)
+  names(d) <- nm$x
+  n <- integer(0)
+  for (j in seq_along(d)) {
+    v <- d[[j]]
+    if (is.factor(v)) {
+      r <- ilm_utf8_from(levels(v), encoding)
+      if (!length(r$done)) next
+      k <- sum(as.integer(v) %in% r$done)
+      ## a level that converts to one already there joins it
+      levels(v) <- r$x
+    } else if (is.character(v)) {
+      r <- ilm_utf8_from(v, encoding)
+      if (!length(r$done)) next
+      k <- length(r$done)
+      v <- r$x
+    } else next
+    d[[j]] <- v
+    n[names(d)[j]] <- k
+  }
+  list(data = d, converted = n, names = length(nm$done))
 }

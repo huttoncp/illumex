@@ -125,3 +125,72 @@ test_that("a model on columns so named stops and names them", {
   expect_error(ilm_glrm(d), "the column name b_caf<e9> is not valid UTF-8", fixed = TRUE)
   expect_no_error(suppressWarnings(ilm_reduce(ilm_wash_df(d))))
 })
+
+## ---- encoding = (Craig's item 298) --------------------------------------
+
+test_that("without encoding, the warning names the argument that converts", {
+  d <- data.frame(t = c("a", cafe), stringsAsFactors = FALSE)
+  expect_warning(ilm_wash_df(d), "ilm_wash_df(data, encoding = \"windows-1252\") converts",
+                 fixed = TRUE)
+})
+
+test_that("encoding converts the text that is not valid UTF-8, and says how much", {
+  d <- data.frame(t = c("a", cafe, cafe, NA),
+                  f = factor(c("north", cafe, "north", cafe)),
+                  stringsAsFactors = FALSE)
+  expect_message(w <- ilm_wash_df(d, encoding = "windows-1252"),
+                 "converted from windows-1252 to UTF-8: t (2 values) and f (2 values).",
+                 fixed = TRUE)
+  expect_no_warning(suppressMessages(ilm_wash_df(d, encoding = "windows-1252")))
+  expect_identical(w$t, c("a", "caf\u00e9", "caf\u00e9", NA))
+  expect_true(all(validUTF8(w$t)))
+  expect_identical(as.character(w$f), c("north", "caf\u00e9", "north", "caf\u00e9"))
+  expect_identical(attr(w, "converted"),
+                   data.frame(column = c("t", "f"), n = c(2L, 2L), stringsAsFactors = FALSE))
+  expect_null(attr(w, "not_utf8"))
+  ## latin1 names the same bytes
+  w1 <- suppressMessages(ilm_wash_df(d, encoding = "latin1"))
+  expect_identical(w1$t, w$t)
+})
+
+test_that("a factor level that converts to one already there joins it", {
+  f <- factor(c("caf\u00e9", cafe, "tea"))
+  w <- suppressMessages(ilm_wash_df(data.frame(f = f), encoding = "windows-1252"))
+  expect_identical(levels(w$f), c("caf\u00e9", "tea"))
+  expect_identical(as.integer(table(w$f)), c(2L, 1L))
+})
+
+test_that("valid text is never touched, and nothing is converted without encoding", {
+  d <- data.frame(t = c("caf\u00e9", " x ", cafe), stringsAsFactors = FALSE)
+  w <- suppressMessages(ilm_wash_df(d, encoding = "windows-1252"))
+  expect_identical(w$t, c("caf\u00e9", "x", "caf\u00e9"))
+  w0 <- suppressWarnings(ilm_wash_df(d))
+  expect_identical(bytes(w0$t[3]), bytes(cafe))
+})
+
+test_that("a column name is converted too", {
+  d <- data.frame(a = 1:2)
+  names(d) <- paste0("note ", cafe)
+  expect_message(w <- ilm_wash_df(d, encoding = "windows-1252"), "1 column name", fixed = TRUE)
+  expect_identical(names(w), "note_cafe")
+})
+
+test_that("a value that does not convert is left as it is and counted", {
+  ## e9 is no ASCII character: glibc's iconv() refuses it and Windows' maps
+  ## it to "i", which does not convert back to e9; either way it stays
+  d <- data.frame(t = c("a", cafe), stringsAsFactors = FALSE)
+  expect_warning(w <- suppressMessages(ilm_wash_df(d, encoding = "ASCII")),
+                 "t (1 value; row 2)", fixed = TRUE)
+  expect_warning(suppressMessages(ilm_wash_df(d, encoding = "ASCII")),
+                 "did not convert from ASCII", fixed = TRUE)
+  expect_identical(bytes(w$t[2]), bytes(cafe))
+  expect_identical(attr(w, "not_utf8")$n, 1L)
+  expect_null(attr(w, "converted"))
+})
+
+test_that("an encoding iconv() does not know is an error, as is anything but one name", {
+  d <- data.frame(t = cafe, stringsAsFactors = FALSE)
+  expect_error(ilm_wash_df(d, encoding = "no-such-encoding"), "iconvlist()", fixed = TRUE)
+  expect_error(ilm_wash_df(d, encoding = c("latin1", "windows-1252")), "the name of one encoding")
+  expect_error(ilm_wash_df(d, encoding = NA_character_), "the name of one encoding")
+})
