@@ -1,0 +1,8 @@
+recorded at 3be317e by dev/make_print_fixtures.R
+re-recorded at the FAMD switch (the sign rule), deliberately: cluster_na.txt and profile_na.txt, the same four clusters numbered differently, one bootstrap stability 0.999 now 1.000
+re-recorded at the gauss cap (0.06), deliberately: describe_all.txt, describe_all_numeric.txt, describe_all_by.txt (the gauss column)
+gauss_normal, gauss_lognormal, gauss_mixture, describe_gauss_both recorded at 98636ef, before the index and distance were stored whole
+re-recorded at the profile wording (Craig's items 112 and 134), deliberately: profile.txt and profile_na.txt, "across all rows" for "overall", "the middle 50% of its values lie between" for "the middle half", "of the rows" for "of observations"
+re-recorded at the type 2 kurtosis (Craig's item 205), deliberately: describe_all_by.txt, gamma1's note drops "light-tailed / flat" (income in group gamma, n = 20: excess kurtosis -1.045 under type 3, -0.715 under type 2)
+re-recorded at the GLRM rank cut (Craig's item 265), deliberately: reduce_glrm.txt, the 5th dimension, whose singular value was zero to rounding (its loading 0.964 here, 0.930 on CI), no longer printed, and the header says 4 dimensions carry variation of 5 fitted
+re-recorded at bdc6262 by dev/make_print_fixtures.R, deliberately: describe_gauss_both.txt (why: the case changed to 119 rows, because with 120 its median 34420.195 sits on a decimal tie that x86 prints as 34420.19 and macOS arm64 as 34420.2; a replay of formatReal on every print case found no other value at risk)

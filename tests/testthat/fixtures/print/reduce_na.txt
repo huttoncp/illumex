@@ -1,0 +1,6 @@
+<ilm_reduce_na> method = mca, n = 153, 2 dimension(s) retained
+  first 2 dimension(s) explain 100.0% of the variance
+
+  strongest variable per dimension (squared loading)
+    dim 1   Ozone                    0.511
+    dim 2   Ozone                    0.489

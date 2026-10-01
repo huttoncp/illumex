@@ -1,0 +1,138 @@
+---
+title: "Validated against FactoMineR and PCAmixdata"
+---
+
+```{r setup, include = FALSE}
+knitr::opts_chunk$set(collapse = TRUE, comment = "#>")
+library(illumex)
+## differences this small are what the page is about, so they are written
+## out rather than rounded to zero
+sci <- function(x) formatC(x, format = "e", digits = 1)
+## the stored references live with the tests in the package's source
+fixtures <- file.path("..", "..", "tests", "testthat", "fixtures")
+source(file.path("..", "..", "tests", "testthat", "helper-famd-cases.R"))
+```
+
+`ilm_reduce()`, and so `ilm_cluster()` and `ilm_profile()`, compute their
+dimensions by factor analysis of mixed data (Pagès 2004): principal
+components when every column is a number, multiple correspondence analysis
+when every column is a category, and the mixed method in between. illumex
+computes it itself. It used to call `PCAmixdata::PCAmix()`, and before
+relying on its own it was held to that and to `FactoMineR::FAMD()`, the two
+established implementations. The outputs of both are stored with the
+package's tests, so every check of the package repeats the comparison
+without either being installed. This page runs it again as the site is
+built.
+
+## Against PCAmixdata
+
+Four kinds of data from `ilm_sim()`: mixed (four numbers, two categories),
+numbers only, categories only, and mixed with missing values. The largest
+difference from what `PCAmix()` gave, on every eigenvalue, every coordinate
+of every row on every retained dimension, and every squared loading:
+
+```{r pcamix, echo = FALSE}
+ref <- utils::read.csv(file.path(fixtures, "pcamix_cases.csv"), comment.char = "#",
+                       colClasses = c(row = "character"))
+cases <- famd_cases()
+tab <- do.call(rbind, lapply(names(cases), function(nm) {
+  cs <- cases[[nm]]; r <- ref[ref$case == nm, ]
+  f <- illumex:::ilm_famd(cs$quanti, cs$quali, ndim = cs$ndim)
+  eig <- r$value[r$what == "eigenvalue"]
+  co <- r[r$what == "coord", ]
+  d_co <- max(vapply(unique(co$dim), function(k) {
+    theirs <- co$value[co$dim == k]; mine <- f$ind$coord[, k]
+    max(abs(sign(sum(mine * theirs)) * mine - theirs))
+  }, 0))
+  sq <- r[r$what == "sqload", ]
+  d_sq <- max(abs(mapply(function(v, k) f$sqload[v, k], sq$row, sq$dim) - sq$value))
+  data.frame(data = nm, rows = nrow(f$ind$coord),
+             eigenvalues = sci(max(abs(f$eig[seq_along(eig), 1] - eig))),
+             coordinates = sci(d_co), loadings = sci(d_sq))
+}))
+knitr::kable(tab, align = "lrrrr")
+```
+
+A coordinate's sign is arbitrary in any implementation -- the same
+dimension read from the other end -- so coordinates are compared after
+turning each of illumex's dimensions to face the same way as PCAmix's.
+illumex fixes its own signs by a rule, so the same data always give the
+same coordinates: the column that loads most on a dimension loads
+positively.
+
+## Against FactoMineR
+
+Five columns of `ilm_sim()`, through `ilm_reduce()` itself, against what
+`FactoMineR::FAMD()` gave: its first five eigenvalues, and every row's
+coordinates on the first three dimensions.
+
+```{r factominer, echo = FALSE}
+fa <- utils::read.csv(file.path(fixtures, "famd_ilm_sim.csv"))
+d <- ilm_sim()[c("score", "income", "visits", "claims", "grp")]
+r <- suppressMessages(ilm_reduce(d, ndim = 5))
+co <- vapply(1:3, function(k) {
+  theirs <- fa$value[fa$what == "coord" & fa$dim == k]
+  mine <- r$ind_coord[[paste0("dim", k)]]
+  max(abs(sign(sum(mine * theirs)) * mine - theirs))
+}, 0)
+knitr::kable(data.frame(
+  quantity = c("eigenvalues 1 to 5", "coordinates, dimensions 1 to 3"),
+  largest_difference = sci(c(max(abs(r$eig$eigenvalue[1:5] - fa$value[fa$what == "eigenvalue"])),
+                             max(co)))), align = "lr")
+```
+
+`ilm_profile()` describes each cluster by v-tests, as `FactoMineR::catdes()`
+does: for a number, how far the cluster's mean sits from the overall mean in
+standard errors; for a category, the hypergeometric probability of the
+cluster's count on the normal scale. Against `catdes()` on a fixed partition
+of the same data:
+
+```{r catdes, echo = FALSE}
+cd <- utils::read.csv(file.path(fixtures, "catdes_ilm_sim.csv"), stringsAsFactors = FALSE)
+dd <- ilm_sim()
+cl <- cut(dd$score, stats::quantile(dd$score, 0:3 / 3), include.lowest = TRUE, labels = FALSE)
+num <- cd[is.na(cd$level), ]; cat_ <- cd[!is.na(cd$level), ]
+v_num <- mapply(function(k, v) illumex:::ilm_vtest_mean(dd[[v]], cl == k), num$cluster, num$variable)
+v_cat <- mapply(function(k, v, l) illumex:::ilm_vtest_share(dd[[v]] == l, cl == k),
+                cat_$cluster, cat_$variable, cat_$level)
+knitr::kable(data.frame(
+  v_test = c("numeric variables", "categories"),
+  compared = c(nrow(num), nrow(cat_)),
+  largest_difference = sci(c(max(abs(v_num - num$v_test)), max(abs(v_cat - cat_$v_test))))),
+  align = "lrr")
+```
+
+## Speed
+
+Measured once by `dev/studies/famd_own.R` in the package's source, on one
+core, as the median ratio of illumex's time to PCAmix's over repeated runs
+(below 1 is faster); FactoMineR's is beside it:
+
+| rows | columns | illumex / PCAmix | FactoMineR / PCAmix |
+|---:|---:|---:|---:|
+| 200 | 12 | 1.25 | 1.50 |
+| 2,000 | 12 | 0.35 | 0.83 |
+| 2,000 | 120 | 0.62 | 0.97 |
+| 20,000 | 12 | 0.19 | 0.80 |
+| 20,000 | 120 | 0.51 | 0.96 |
+| 100,000 | 20 | 0.22 | 0.81 |
+
+## Checking it yourself
+
+The comparisons above run in the package's tests, `test-famd.R` and
+`test-factominer-agreement.R`, on every check. The references were recorded
+by `dev/studies/make_pcamix_fixtures.R` (PCAmixdata 3.1) and
+`dev/studies/make_factominer_fixtures.R` (FactoMineR 2.11); run them again
+if either package changes its method.
+
+## References
+
+Pagès, J. (2004). Analyse factorielle de données mixtes. *Revue de
+Statistique Appliquée* 52(4), 93-111.
+
+Chavent, M., Kuentz-Simonet, V., Labenne, A. and Saracco, J. (2014).
+Multivariate analysis of mixed data: the PCAmixdata R package.
+arXiv:1411.4911.
+
+Lê, S., Josse, J. and Husson, F. (2008). FactoMineR: an R package for
+multivariate analysis. *Journal of Statistical Software* 25(1), 1-18.

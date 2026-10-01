@@ -1,0 +1,9 @@
+$gauss
+[1] 0.651
+
+$ks_d
+[1] 0.0612
+
+$gauss_note
+[1] "departs from normal, no single dominant cause"
+

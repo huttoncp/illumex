@@ -1,0 +1,5 @@
+    grp stat observed    lower    upper conf   R    ci_type  n
+1 alpha mean 51.02051 49.57078 52.36819 0.95 200 percentile 59
+2  beta mean 51.70658 50.08522 53.37852 0.95 200 percentile 38
+3 gamma mean 50.79050 47.37358 53.96690 0.95 200 percentile 20
+4 delta mean 50.34667 43.47000 61.48000 0.95 200 percentile  3

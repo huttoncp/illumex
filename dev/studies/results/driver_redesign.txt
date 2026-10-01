@@ -1,0 +1,50 @@
+## dev/studies/driver_redesign.R, run at scale on 2026-09-27 with R 4.4.3, 50 replicates
+## (design as committed at 5392f12; run tree driver-run at 5392f12; pinned library lib_driver)
+## Printed output, verbatim, with the library's provenance before and after:
+
+## run tree <scratchpad>/runtree_drv at 5392f12 (claims-studies)
+## before: 2026-09-27 16:30:43, R version 4.4.3 (2025-02-28 ucrt)
+## .libPaths(): <scratchpad>/lib_driver ; C:/Program Files/R/R-4.4.3/library 
+##   pkgload      1.3.4        <scratchpad>/lib_driver installed 2026-09-27 16:29
+##   collapse     2.1.8        <scratchpad>/lib_driver installed 2026-09-27 16:29
+##   tinyplot     0.7.0        <scratchpad>/lib_driver installed 2026-09-27 16:29
+##   isotree      0.6.1-5      <scratchpad>/lib_driver installed 2026-09-27 16:29
+##   cluster      2.1.6        <scratchpad>/lib_driver installed 2026-09-27 16:29
+
+the current arm reproduces ilm_anomaly()'s drivers exactly: 400 of 400 datasets
+
+share of planted rows whose driver is right, and seconds per scan; mean (Monte Carlo SE) over 50 replicates
+       kind shift   n              arm         right       seconds
+   marginal     2 150          current 0.843 (0.022) 0.223 (0.007)
+   marginal     2 150 best_alternative 0.853 (0.021) 1.445 (0.021)
+   marginal     2 150      conditional 0.857 (0.021) 0.346 (0.008)
+   marginal     4 150          current 0.980 (0.009) 0.212 (0.004)
+   marginal     4 150 best_alternative 0.983 (0.007) 1.437 (0.018)
+   marginal     4 150      conditional 0.980 (0.008) 0.342 (0.007)
+   marginal     2 400          current 0.825 (0.013) 0.601 (0.011)
+   marginal     2 400 best_alternative 0.848 (0.012) 4.045 (0.042)
+   marginal     2 400      conditional 0.851 (0.012) 0.910 (0.014)
+   marginal     4 400          current 0.978 (0.005) 0.535 (0.007)
+   marginal     4 400 best_alternative 0.981 (0.004) 3.630 (0.034)
+   marginal     4 400      conditional 0.985 (0.004) 0.828 (0.010)
+ cross_type    NA 150          current 0.170 (0.023) 0.170 (0.003)
+ cross_type    NA 150 best_alternative 0.313 (0.026) 1.170 (0.013)
+ cross_type    NA 150      conditional 0.343 (0.028) 0.272 (0.004)
+ rare_combo    NA 150          current 0.830 (0.025) 0.163 (0.002)
+ rare_combo    NA 150 best_alternative 0.890 (0.020) 1.097 (0.010)
+ rare_combo    NA 150      conditional 0.903 (0.018) 0.261 (0.003)
+ cross_type    NA 400          current 0.251 (0.016) 0.537 (0.005)
+ cross_type    NA 400 best_alternative 0.364 (0.018) 3.617 (0.022)
+ cross_type    NA 400      conditional 0.383 (0.019) 0.821 (0.007)
+ rare_combo    NA 400          current 0.818 (0.016) 0.498 (0.006)
+ rare_combo    NA 400 best_alternative 0.931 (0.008) 3.412 (0.043)
+ rare_combo    NA 400      conditional 0.950 (0.008) 0.762 (0.009)
+
+## after: 2026-09-27 16:58:59, R version 4.4.3 (2025-02-28 ucrt)
+## .libPaths(): <scratchpad>/lib_driver ; C:/Program Files/R/R-4.4.3/library 
+##   pkgload      1.3.4        <scratchpad>/lib_driver installed 2026-09-27 16:29
+##   collapse     2.1.8        <scratchpad>/lib_driver installed 2026-09-27 16:29
+##   tinyplot     0.7.0        <scratchpad>/lib_driver installed 2026-09-27 16:29
+##   isotree      0.6.1-5      <scratchpad>/lib_driver installed 2026-09-27 16:29
+##   cluster      2.1.6        <scratchpad>/lib_driver installed 2026-09-27 16:29
+## library unchanged during the run

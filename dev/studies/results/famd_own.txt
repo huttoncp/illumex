@@ -1,0 +1,37 @@
+## dev/studies/famd_own.R, run at scale on 2026-09-26 with R 4.4.3, 20 replicates (5 at 100,000 rows)
+## (design and ilm_famd() as committed at ec73f0e; pinned library lib_round2)
+## Printed output, verbatim, with the library's provenance before and after:
+
+## run tree <scratchpad>/runtree_famd at ec73f0e (famd-run)
+## before: 2026-09-26 02:16:53, R version 4.4.3 (2025-02-28 ucrt)
+## .libPaths(): <scratchpad>/lib_round2 ; C:/Program Files/R/R-4.4.3/library 
+##   pkgload      1.3.4        <scratchpad>/lib_round2 installed 2024-04-29 04:33
+##   PCAmixdata   3.1          <scratchpad>/lib_round2 installed 2024-04-29 04:41
+##   FactoMineR   2.11         <scratchpad>/lib_round2 installed 2024-04-29 04:41
+##   collapse     2.1.8        <scratchpad>/lib_round2 installed 2026-09-19 23:49
+##   tinyplot     0.7.0        <scratchpad>/lib_round2 installed 2026-09-20 01:34
+
+agreement of ilm_famd() with PCAmix and FactoMineR, largest absolute difference
+             data pcamix_eig pcamix_coord pcamix_sqload factominer_eig factominer_coord
+            mixed   3.33e-15     1.63e-13      1.12e-14       2.22e-15         1.36e-13
+     numeric_only   8.88e-16     6.75e-14      4.66e-15       2.66e-15         3.80e-14
+ categorical_only   7.55e-15     4.39e-12      7.68e-14       7.33e-15         1.72e-12
+  mixed_with_gaps   3.33e-15     1.93e-13      1.14e-14             NA               NA
+
+time relative to PCAmix (median ratio, below 1 is faster; one session, one core), and the worst disagreement with PCAmix
+     n   p reps pcamix_seconds own_vs_pcamix own_vs_pcamix_mc_se factominer_vs_pcamix factominer_vs_pcamix_mc_se worst_diff_vs_pcamix
+ 2e+02  12   20           0.02         1.250             0.17566                1.500                     0.2448             2.14e-13
+ 2e+03  12   20           0.13         0.345             0.02302                0.832                     0.0523             2.20e-12
+ 2e+03 120   20           2.36         0.616             0.01927                0.973                     0.0246             4.46e-12
+ 2e+04  12   20           1.48         0.194             0.00689                0.798                     0.0268             2.74e-12
+ 2e+04 120   20          24.09         0.512             0.00719                0.959                     0.0160             9.08e-12
+ 1e+05  20    5          13.09         0.224             0.00925                0.811                     0.0241             6.29e-12
+
+## after: 2026-09-26 02:44:26, R version 4.4.3 (2025-02-28 ucrt)
+## .libPaths(): <scratchpad>/lib_round2 ; C:/Program Files/R/R-4.4.3/library 
+##   pkgload      1.3.4        <scratchpad>/lib_round2 installed 2024-04-29 04:33
+##   PCAmixdata   3.1          <scratchpad>/lib_round2 installed 2024-04-29 04:41
+##   FactoMineR   2.11         <scratchpad>/lib_round2 installed 2024-04-29 04:41
+##   collapse     2.1.8        <scratchpad>/lib_round2 installed 2026-09-19 23:49
+##   tinyplot     0.7.0        <scratchpad>/lib_round2 installed 2026-09-20 01:34
+## library unchanged during the run

@@ -1,0 +1,16 @@
+## dev/studies/gauss_cap.R, run at scale on 2026-09-25 with R 4.4.3, 200 replicates
+## (designs as committed at dcf8d02, mixed_clustering with the ce9efa7 fix;
+##  package code as main plus 0f56b82, the catdes v-test)
+## Printed output, verbatim:
+
+ distribution      n reps    excess excess_mc_se gauss_at_cap_0.12 gauss_mc_se
+       normal    500  200 -0.012105     0.000499             0.998     0.00189
+       normal 100000   10 -0.000998     0.000110             1.000     0.00000
+    lognormal    500  200  0.182154     0.001928             0.000     0.00000
+    lognormal 100000   10  0.225060     0.000829             0.000     0.00000
+           t3    500  200  0.055739     0.002008             0.522     0.02656
+           t3 100000   10  0.084752     0.000616             0.274     0.01939
+      bimodal    500  200  0.103865     0.000523             0.137     0.00983
+      bimodal 100000   10  0.129696     0.000104             0.000     0.00000
+      poisson    500  200  0.094241     0.000737             0.233     0.01413
+      poisson 100000   10  0.125801     0.000291             0.000     0.00000

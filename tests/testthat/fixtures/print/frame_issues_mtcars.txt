@@ -1,0 +1,12 @@
+              issue       columns
+1 duplicate_columns  wt = wt_copy
+2   aliased_factors cyl_f = cyl_g
+3    rank_deficient   cyl_f ~ cyl
+                                                      detail
+1                                           identical values
+2                   the same 3 groups under different labels
+3 the levels of cyl_f are an exact linear combination of cyl
+                                                                                                    remedy
+1                                                                                     Keep one of the two.
+2                                            Keep one of the two; a model cannot tell their effects apart.
+3 Leave out cyl_f or one of the columns it is built from; with all of them a model has no unique solution.

@@ -1,0 +1,4 @@
+  obs   n na     sum   mean    sd    se    p0    p50  p100 p_zero dispersion
+1 120 120  0 6141.91 51.183 6.174 0.564 32.84 51.515 65.01      0         NA
+  gauss gauss_note
+1     1           

@@ -1,0 +1,4 @@
+<ilm_cluster> method = kmeans, k = 1 (chosen by gap statistic)
+
+  cluster   size    pct  jaccard  stability     sil
+        1    120  100.0    1.000     stable       -

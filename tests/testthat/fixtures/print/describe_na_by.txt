@@ -1,0 +1,5 @@
+    grp obs  n na   p_na
+1 alpha  59 52  7 0.1186
+2  beta  38 32  6 0.1579
+3 gamma  20 19  1 0.0500
+4 delta   3  3  0 0.0000

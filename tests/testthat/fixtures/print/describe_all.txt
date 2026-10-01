@@ -1,0 +1,54 @@
+$numeric
+   variable obs   n na        sum      mean        sd       se      p0
+1        id 120 120  0    1260.00    10.500     5.790    0.529    1.00
+2     score 120 120  0    6141.91    51.183     6.174    0.564   32.84
+3    income 120 120  0 4878897.65 40657.480 21874.964 1996.902 7755.86
+4    visits 120 120  0     409.00     3.408     1.872    0.171    0.00
+5    claims 120 120  0     507.00     4.225     4.992    0.456    0.00
+6  downtime 120 120  0     165.00     1.375     2.208    0.202    0.00
+7 lab_value 120 106 14     779.87     7.357     1.044    0.101    5.05
+        p50      p100 p_zero dispersion gauss
+1    10.500     20.00  0.000      3.193 1.000
+2    51.515     65.01  0.000         NA 1.000
+3 34420.195 109151.48  0.000         NA 0.403
+4     3.000     10.00  0.017      1.028 0.000
+5     3.000     30.00  0.142      5.897 0.000
+6     0.000      8.00  0.675      3.545 0.000
+7     7.380     10.12  0.000         NA 1.000
+                                      gauss_note
+1                                               
+2                                               
+3                                   right-skewed
+4 discrete (10 distinct values); bounded at zero
+5 discrete (18 distinct values); bounded at zero
+6  discrete (9 distinct values); bounded at zero
+7                                               
+
+$time
+  variable obs   n na n_unique      start        end span_days spacing regular
+1     date 120 120  0        6 2024-01-01 2024-06-01       152 monthly    TRUE
+  n_gaps n_dup_times   tz
+1      0         114 <NA>
+                                                     note
+1 repeated dates: 6 unique across 120 rows (long format?)
+
+$categorical
+  variable obs   n na n_empty n_unique ordered p_max n_rare n_unused
+1      grp 120 120  0       0        4   FALSE 0.492      1        1
+2     site 120 120  0       6        6   FALSE 0.358      0        0
+  case_variants                   counts_tb
+1             0 alpha_59, beta_38, gamma_20
+2             1 North_43, South_34, East_24
+                                              note
+1 1 unused levels; 1 rare levels (separation risk)
+2  6 empty strings (not NA); 1 case/space variants
+
+$logical
+  variable obs   n na n_TRUE n_FALSE p_TRUE note
+1     flag 120 120  0     51      69  0.425     
+
+$constant
+   variable       class obs   n na value
+1 consented     logical 120 120  0  TRUE
+2    cohort categorical 120 120  0  2024
+

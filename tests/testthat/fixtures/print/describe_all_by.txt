@@ -1,0 +1,51 @@
+       variable   grp obs  n na        sum      mean        sd        se
+alpha     score alpha  59 59  0    3010.21    51.021     5.958     0.776
+beta      score  beta  38 38  0    1964.85    51.707     6.040     0.980
+gamma     score gamma  20 20  0    1015.81    50.791     6.960     1.556
+delta     score delta   3  3  0     151.04    50.347     9.730     5.618
+alpha1   income alpha  59 59  0 2343844.44 39726.177 22815.921  2970.380
+beta1    income  beta  38 38  0 1612876.31 42444.113 22764.844  3692.945
+gamma1   income gamma  20 20  0  795926.47 39796.324 18768.197  4196.696
+delta1   income delta   3  3  0  126250.43 42083.477 18566.853 10719.577
+alpha2   visits alpha  59 59  0     207.00     3.508     1.775     0.231
+beta2    visits  beta  38 38  0     124.00     3.263     2.088     0.339
+gamma2   visits gamma  20 20  0      60.00     3.000     1.451     0.324
+delta2   visits delta   3  3  0      18.00     6.000     2.000     1.155
+alpha3   claims alpha  59 59  0     200.00     3.390     3.562     0.464
+beta3    claims  beta  38 38  0     222.00     5.842     6.934     1.125
+gamma3   claims gamma  20 20  0      75.00     3.750     3.864     0.864
+delta3   claims delta   3  3  0      10.00     3.333     3.055     1.764
+             p0       p50      p100 p_zero dispersion gauss
+alpha     32.84    51.180     63.46  0.000         NA 1.000
+beta      33.60    52.235     62.58  0.000         NA 1.000
+gamma     38.11    50.860     65.01  0.000         NA 1.000
+delta     43.47    46.090     61.48  0.000         NA    NA
+alpha1  7755.86 38116.800 109151.48  0.000         NA 1.000
+beta1   9360.13 34247.655  93869.88  0.000         NA 0.654
+gamma1 15885.71 32502.360  76754.52  0.000         NA 0.392
+delta1 21515.97 47126.880  57607.58  0.000         NA    NA
+alpha2     0.00     3.000     10.00  0.017      0.898 0.000
+beta2      0.00     3.000      8.00  0.026      1.337 0.843
+gamma2     1.00     3.000      6.00  0.000      0.702 1.000
+delta2     4.00     6.000      8.00  0.000      0.667    NA
+alpha3     0.00     2.000     15.00  0.169      3.744 0.000
+beta3      0.00     4.000     30.00  0.053      8.230 0.000
+gamma3     0.00     2.500     14.00  0.200      3.982 0.572
+delta3     0.00     4.000      6.00  0.333      2.800    NA
+                                           gauss_note
+alpha                                                
+beta                                                 
+gamma                                                
+delta                           n too small to assess
+alpha1                                               
+beta1                                    right-skewed
+gamma1                                   right-skewed
+delta1                          n too small to assess
+alpha2 discrete (10 distinct values); bounded at zero
+beta2   discrete (9 distinct values); bounded at zero
+gamma2                                               
+delta2                          n too small to assess
+alpha3 discrete (13 distinct values); bounded at zero
+beta3  discrete (14 distinct values); bounded at zero
+gamma3 discrete (10 distinct values); bounded at zero
+delta3                          n too small to assess

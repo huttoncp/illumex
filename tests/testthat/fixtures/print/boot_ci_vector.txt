@@ -1,0 +1,2 @@
+  stat observed    lower    upper conf   R    ci_type   n
+1 mean 51.18258 50.12095 52.29606 0.95 200 percentile 120

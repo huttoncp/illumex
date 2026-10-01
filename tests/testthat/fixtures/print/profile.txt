@@ -1,0 +1,42 @@
+<ilm_profile> 
+
+<ilm_reduce> method = famd, n = 120, 5 dimension(s) retained
+  first 3 dimension(s) explain 51.6% of the variance
+
+  strongest variable per dimension (squared loading)
+    dim 1   claims                   0.417
+    dim 2   grp                      0.707
+    dim 3   grp                      0.816
+    dim 4   income                   0.750
+    dim 5   grp                      0.557
+
+<ilm_cluster> method = kmeans, k = 3 (as given)
+
+  cluster   size    pct  jaccard  stability     sil
+        1     23   19.2    0.714   moderate   0.216
+        2     38   31.7    0.652   moderate   0.219
+        3     59   49.2    0.712   moderate   0.350
+  6 observation(s) sit between clusters (silhouette below 0.10) and may be misassigned
+
+  what each cluster is
+    Cluster 1 holds 23 rows, 19.2% of the data (moderate). What sets it
+    apart: grp is 'gamma' for 87% of them, against 17% across all rows. 3
+    of its members sit close enough to another cluster to be uncertain. 
+
+    Cluster 2 holds 38 rows, 31.7% of the data (moderate). What sets it
+    apart: grp is 'beta' for 100% of them, against 32% across all rows; and
+    claims is higher: the middle 50% of its values lie between 2 and 7,
+    against 1 to 6 across all rows. 2 of its members sit close enough to
+    another cluster to be uncertain. 
+
+    Cluster 3 holds 59 rows, 49.2% of the data (moderate). What sets it
+    apart: grp is 'alpha' for 100% of them, against 49% across all rows. 1
+    of its members sits close enough to another cluster to be uncertain. 
+
+    Not distinctive in any cluster: score, income, and visits. 
+
+  ! this clustering is a re-labelling of `grp`: it separates
+    the clusters almost perfectly while nothing else does, so the
+    descriptions above are all about that one variable. Exclude it
+    with cols = if it is not the grouping you wanted.
+    ilm_var_contrib() for the full table.

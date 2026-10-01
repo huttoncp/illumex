@@ -1,0 +1,8 @@
+  stat group  from    to   observed      lower     upper conf   R ci_type
+1 mean   grp alpha  beta  0.6860705  -1.745131  3.117272 0.95 200   max_t
+2 mean   grp alpha gamma -0.2300085  -4.226034  3.766017 0.95 200   max_t
+3 mean   grp alpha delta -0.6738418 -11.632411 10.284727 0.95 200   max_t
+  adjust n_comparisons n_from n_to p_value p_adj p_superiority excludes_zero
+1  max_t             3     59   38   0.535  0.93          0.71         FALSE
+2  max_t             3     59   20   0.900  1.00          0.48         FALSE
+3  max_t             3     59    3   0.825  1.00          0.43         FALSE

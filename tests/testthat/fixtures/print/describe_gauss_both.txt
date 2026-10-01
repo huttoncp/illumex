@@ -1,0 +1,4 @@
+  obs   n na     sum     mean       sd       se      p0      p50     p100
+1 119 119  0 4808845 40410.46 21798.74 1998.287 7755.86 34258.11 109151.5
+  p_zero dispersion gauss   ks_d   gauss_note
+1      0         NA 0.406 0.1182 right-skewed

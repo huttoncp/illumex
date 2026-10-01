@@ -1,0 +1,15 @@
+     grp row_id  variable value score is_outlier
+1  alpha     66     score 32.84 1.938       TRUE
+2  alpha    111    visits  8.00 2.000       TRUE
+3  alpha    116    visits 10.00 3.000       TRUE
+4  alpha     11    claims 15.00 2.500       TRUE
+5  alpha    111    claims 14.00 2.250       TRUE
+6  alpha    113    claims 12.00 1.750       TRUE
+7  alpha      6  downtime  8.00 1.667       TRUE
+8  alpha     21 lab_value 10.12 2.153       TRUE
+9  alpha     95 lab_value  5.05 1.542       TRUE
+10  beta     67     score 33.60 2.051       TRUE
+11  beta     52    claims 18.00 2.200       TRUE
+12  beta    108    claims 30.00 4.600       TRUE
+13  beta    117    claims 29.00 4.400       TRUE
+14  beta     92 lab_value 10.05 1.664       TRUE

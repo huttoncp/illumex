@@ -1,0 +1,6 @@
+     issue   columns                                 detail
+1 constant consented zero variance; breaks the model matrix
+2 constant    cohort zero variance; breaks the model matrix
+                                                          remedy
+1 Leave it out: a column with one value cannot explain anything.
+2 Leave it out: a column with one value cannot explain anything.

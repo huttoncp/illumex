@@ -1,0 +1,16 @@
+   row_id  variable     value score is_outlier
+1      32    income 109151.48 1.501       TRUE
+2     116    visits     10.00 2.200       TRUE
+3       7    claims     14.00 1.600       TRUE
+4      11    claims     15.00 1.800       TRUE
+5      35    claims     14.00 1.600       TRUE
+6      52    claims     18.00 2.400       TRUE
+7      74    claims     14.00 1.600       TRUE
+8     108    claims     30.00 4.800       TRUE
+9     111    claims     14.00 1.600       TRUE
+10    117    claims     29.00 4.600       TRUE
+11      6  downtime      8.00 1.667       TRUE
+12     21 lab_value     10.12 1.643       TRUE
+13     54 lab_value      9.97 1.527       TRUE
+14     84 lab_value      9.96 1.519       TRUE
+15     92 lab_value     10.05 1.589       TRUE

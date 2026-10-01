@@ -1,0 +1,8 @@
+## dev/studies/kmeans_iter.R, run 2026-09-28 22:17 to 23:23, R 4.4.3, one core, illumex main ff5e579 plus this branch's
+## k-means changes (loaded with pkgload), library lib_census
+simulated continuum, 5,000 x 5; gap statistic with B = 100 
+ iter_max starts_not_converged starts k_chosen max_gap_shift_in_se seconds
+       10                  128  22725        1         0.001384529   876.7
+       30                    0  22725        1         0.000000000   930.4
+      100                    0  22725        1         0.000000000   880.6
+     1000                    0  22725        1         0.000000000  1005.7

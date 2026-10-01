@@ -1,0 +1,4 @@
+  obs   n na n_empty n_unique ordered p_max n_rare n_unused case_variants
+1 120 120  0       0        4   FALSE 0.492      1        1             0
+                    counts_tb                                             note
+1 alpha_59, beta_38, gamma_20 1 unused levels; 1 rare levels (separation risk)

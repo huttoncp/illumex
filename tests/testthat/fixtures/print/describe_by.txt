@@ -1,0 +1,10 @@
+        grp obs  n na     sum   mean    sd    se    p0    p50  p100 p_zero
+alpha alpha  59 59  0 3010.21 51.021 5.958 0.776 32.84 51.180 63.46      0
+beta   beta  38 38  0 1964.85 51.707 6.040 0.980 33.60 52.235 62.58      0
+gamma gamma  20 20  0 1015.81 50.791 6.960 1.556 38.11 50.860 65.01      0
+delta delta   3  3  0  151.04 50.347 9.730 5.618 43.47 46.090 61.48      0
+      dispersion gauss            gauss_note
+alpha         NA     1                      
+beta          NA     1                      
+gamma         NA     1                      
+delta         NA    NA n too small to assess

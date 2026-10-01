@@ -1,0 +1,9 @@
+<ilm_reduce> method = famd, n = 120, 5 dimension(s) retained
+  first 3 dimension(s) explain 51.6% of the variance
+
+  strongest variable per dimension (squared loading)
+    dim 1   claims                   0.417
+    dim 2   grp                      0.707
+    dim 3   grp                      0.816
+    dim 4   income                   0.750
+    dim 5   grp                      0.557
