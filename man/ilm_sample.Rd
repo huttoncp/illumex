@@ -10,7 +10,8 @@ ilm_sample(
   by = NULL,
   seed = NULL,
   within = NULL,
-  min = 2L
+  min = 2L,
+  report_by = NULL
 )
 }
 \arguments{
@@ -34,6 +35,10 @@ sampled inside and all kept. A missing value is a cluster of its own.}
 
 \item{min}{With \code{within}, the fewest rows any cluster keeps (all of a
 cluster with fewer). A whole number of at least 1; 2 by default.}
+
+\item{report_by}{Grouping columns to report on after the draw: their
+levels and rows kept, and whether each pair is still connected. \code{NULL}
+reports nothing.}
 }
 \value{
 An object of class \code{"ilm_sample"}, which does nothing until it is
@@ -87,6 +92,15 @@ keeps the seed and the generator's kind.
 
 A number given to \code{subset} on its own always means row positions:
 \code{subset = 10} is row 10, and \code{subset = ilm_sample(10)} is ten rows drawn.
+
+\strong{What a sample leaves.} Sampling rows can thin a grouping out: a rater
+left with one row, or raters and items that no longer meet. With
+\code{report_by = c("rater", "item")}, after any of the four ways, the result
+keeps, in its \code{"ilm_select"} attribute, for each column the levels given and kept and the fewest and median
+rows per kept level, and for each pair whether their levels, joined where
+a kept row has both, are still in one piece. A level left with fewer than
+2 rows, or a pair split into pieces, gives a warning -- with counts, never
+the levels' values.
 }
 \examples{
 d <- ilm_sim()
@@ -96,6 +110,9 @@ ilm_describe(d, "score", subset = ilm_sample(5, by = "id", seed = 1),
              subset_negate = TRUE)
 ## half the ids and every site: the rows of the ids drawn
 ilm_describe(d, "score", subset = ilm_sample(by = c(id = 0.5, site = "all"), seed = 1))
+## a fifth of the rows, and what it leaves of each id and site
+ilm_describe(d, "score", subset = ilm_sample(prop = 0.2, seed = 1,
+                                             report_by = c("id", "site")))
 ## a third of every site's rows, at least 2 from each
 ilm_describe(d, "score", subset = ilm_sample(prop = 1/3, within = "site", seed = 1))
 }

@@ -456,3 +456,35 @@ test_that("the sample's report counts levels and rows, and tells a split design 
                    list(levels_given = 6L, levels_kept = 2L, rows_min = 1L, rows_median = 4.5))
   expect_error(ilm_sample_report(d, one, "nope"), "not in the data: nope")
 })
+
+test_that("report_by reports what any sample left, on the result, on the rows kept", {
+  d <- expand.grid(rater = paste0("r", 1:6), item = paste0("i", 1:30), stringsAsFactors = FALSE)
+  d$y <- seq_len(nrow(d))
+  s <- ilm_sample(prop = 0.5, seed = 3, report_by = c("rater", "item"))
+  expect_output(print(s), "reports on rater, item")
+  r <- suppressWarnings(ilm_resolve_rows(d, s))
+  rp <- r$info$sample$report
+  expect_identical(vapply(rp$columns, `[[`, "", "column"), c("rater", "item"))
+  expect_identical(rp$columns[[1]]$levels_kept, length(unique(d$rater[r$rows])))
+  expect_identical(rp$columns[[1]]$rows_min, as.integer(min(table(d$rater[r$rows]))))
+  expect_true(is.logical(rp$pairs[[1]]$connected))
+  ## negated, the report is of the rows not drawn
+  rn <- suppressWarnings(ilm_resolve_rows(d, s, negate = TRUE))
+  expect_identical(rn$info$sample$report$columns[[1]]$rows_min,
+                   as.integer(min(table(d$rater[rn$rows]))))
+  ## a level thinned below 2 rows warns with counts only
+  w <- tryCatch(ilm_resolve_rows(d, ilm_sample(n = 20, seed = 1, report_by = "item")),
+                warning = conditionMessage)
+  expect_match(w, "^after sampling, [0-9]+ of [0-9]+ item levels have fewer than 2 rows$")
+  ## every form takes it; a two-way draw reports its own factors
+  rf <- ilm_resolve_rows(d, ilm_sample(by = c(rater = 3, item = "all"), seed = 1,
+                                       report_by = c("rater", "item")))
+  expect_identical(rf$info$sample$report$columns[[2]]$levels_kept, 30L)
+  expect_true(rf$info$sample$report$pairs[[1]]$connected)
+  ## on the result
+  rec <- attr(suppressWarnings(suppressMessages(ilm_describe(d, "y", subset = s))),
+              "ilm_select")$subset$sample$report
+  expect_identical(rec$columns[[2]]$column, "item")
+  expect_error(ilm_sample(prop = 0.5, report_by = c("rater", NA)), "each once")
+  expect_error(ilm_resolve_rows(d, ilm_sample(prop = 0.5, report_by = "nope")), "not in the data: nope")
+})

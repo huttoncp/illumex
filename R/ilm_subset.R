@@ -59,6 +59,15 @@
 #' A number given to `subset` on its own always means row positions:
 #' `subset = 10` is row 10, and `subset = ilm_sample(10)` is ten rows drawn.
 #'
+#' **What a sample leaves.** Sampling rows can thin a grouping out: a rater
+#' left with one row, or raters and items that no longer meet. With
+#' `report_by = c("rater", "item")`, after any of the four ways, the result
+#' keeps, in its `"ilm_select"` attribute, for each column the levels given and kept and the fewest and median
+#' rows per kept level, and for each pair whether their levels, joined where
+#' a kept row has both, are still in one piece. A level left with fewer than
+#' 2 rows, or a pair split into pieces, gives a warning -- with counts, never
+#' the levels' values.
+#'
 #' @param n A number of rows (or of groups, with `by`) to draw: a whole
 #'   number, at most the number there are. With `within`, the total to share
 #'   out across the clusters; the floor `min` can raise it.
@@ -74,6 +83,9 @@
 #'   sampled inside and all kept. A missing value is a cluster of its own.
 #' @param min With `within`, the fewest rows any cluster keeps (all of a
 #'   cluster with fewer). A whole number of at least 1; 2 by default.
+#' @param report_by Grouping columns to report on after the draw: their
+#'   levels and rows kept, and whether each pair is still connected. `NULL`
+#'   reports nothing.
 #' @return An object of class `"ilm_sample"`, which does nothing until it is
 #'   given as `subset`.
 #' @seealso [ilm_selection] for `subset` and `cols`, [ilm_subset()] for the
@@ -87,11 +99,14 @@
 #'              subset_negate = TRUE)
 #' ## half the ids and every site: the rows of the ids drawn
 #' ilm_describe(d, "score", subset = ilm_sample(by = c(id = 0.5, site = "all"), seed = 1))
+#' ## a fifth of the rows, and what it leaves of each id and site
+#' ilm_describe(d, "score", subset = ilm_sample(prop = 0.2, seed = 1,
+#'                                              report_by = c("id", "site")))
 #' ## a third of every site's rows, at least 2 from each
 #' ilm_describe(d, "score", subset = ilm_sample(prop = 1/3, within = "site", seed = 1))
 #' @export
 ilm_sample <- function(n = NULL, prop = NULL, by = NULL, seed = NULL, within = NULL,
-                       min = 2L) {
+                       min = 2L, report_by = NULL) {
   ## by named with each factor's share: a crossed design, drawn by factor
   factors <- ilm_sample_factors(by)
   if (!is.null(factors)) {
@@ -124,9 +139,14 @@ ilm_sample <- function(n = NULL, prop = NULL, by = NULL, seed = NULL, within = N
     stop("`min` must be a whole number of at least 1", call. = FALSE)
   if (!is.null(seed) && !(is.numeric(seed) && length(seed) == 1L && is.finite(seed)))
     stop("`seed` must be a single number, or NULL", call. = FALSE)
+  ## the argument's name lives here and in the help only (Craig may rename
+  ## it); inside, the sample keeps it as `report`
+  if (!is.null(report_by) && !(is.character(report_by) && length(report_by) >= 1L &&
+                               !anyNA(report_by) && !anyDuplicated(report_by)))
+    stop("`report_by` names the grouping columns to report on, each once", call. = FALSE)
   structure(list(n = if (!is.null(n)) as.integer(n), prop = prop, by = by, factors = factors,
                  within = within, min = if (!is.null(within)) as.integer(min),
-                 seed = if (!is.null(seed)) as.integer(seed)),
+                 seed = if (!is.null(seed)) as.integer(seed), report = report_by),
             class = "ilm_sample")
 }
 
@@ -167,7 +187,8 @@ print.ilm_sample <- function(x, ...) {
              else paste0(format(100 * s$prop), "%"))
     }, "")
     cat("<ilm_sample> rows whose levels were all drawn: ", paste(each, collapse = ", "),
-        ", seed ", if (is.null(x$seed)) "none" else x$seed, "\n", sep = "")
+        ", seed ", if (is.null(x$seed)) "none" else x$seed, ilm_sample_report_note(x), "\n",
+        sep = "")
     return(invisible(x))
   }
   unit <- if (!is.null(x$by)) "groups" else "rows"
@@ -177,10 +198,15 @@ print.ilm_sample <- function(x, ...) {
            paste0(" inside every ", paste(x$within, collapse = " / "), ", at least ", x$min,
                   " from each")
          else ""
-  cat("<ilm_sample> ", what, how, ", seed ", if (is.null(x$seed)) "none" else x$seed, "\n",
-      sep = "")
+  cat("<ilm_sample> ", what, how, ", seed ", if (is.null(x$seed)) "none" else x$seed,
+      ilm_sample_report_note(x), "\n", sep = "")
   invisible(x)
 }
+
+#' @keywords internal
+#' @noRd
+ilm_sample_report_note <- function(x)
+  if (length(x$report)) paste0("; reports on ", paste(x$report, collapse = ", ")) else ""
 
 ## The rows `subset` keeps, as positions in `data` in the data's own order,
 ## and an account of them for the result to keep. `allow_sample` is
@@ -259,6 +285,10 @@ ilm_resolve_rows <- function(data, subset, negate = FALSE, fixed = FALSE,
   }
   if (negate) keep <- !keep
   rows <- which(keep)
+  ## what the sample left of the grouping columns asked for, on the rows
+  ## kept -- after negation, the rows not drawn
+  if (inherits(subset, "ilm_sample") && length(subset$report) && length(rows))
+    info$sample$report <- ilm_sample_report(data, rows, subset$report)
   ## each kept row's chance of being kept, when a sample inside clusters
   ## drew it (or, negated, of being left out)
   inclusion <- if (!is.null(incl)) (if (negate) 1 - incl else incl)[rows]

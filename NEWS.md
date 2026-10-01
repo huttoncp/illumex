@@ -22,6 +22,10 @@
   draws a share (or a count) of each factor's levels on its own and keeps
   the rows whose levels were all drawn; 1 or `"all"` keeps a factor whole.
   `within` is for nested levels only, and points a crossed pair to `by`.
+  `report_by = c("rater", "item")` reports what a sample left of those
+  columns -- levels and rows kept, and whether each pair is still connected
+  -- on the result, with a warning (counts only) when a level is left with
+  fewer than 2 rows or a pair falls apart.
   A seed draws the same rows every time and leaves your random stream as it
   was.
 * `ilm_subset()`, new, returns the rows and columns a function would use,
