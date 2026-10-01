@@ -36,6 +36,8 @@ ilm_plot_reduce <- function(x, dims = c(1, 2), by = NULL, ...) {
     stop("those dimensions were not retained; the reduction kept ", x$ndim,
          call. = FALSE)
   pct <- x$eig$pct_var
+  ## text that is not valid UTF-8 cannot be drawn (see ilm_plot_frame())
+  by <- ilm_show_text(by)
   tinyplot::tinyplot(x = x$ind_coord[[d1]], y = x$ind_coord[[d2]], by = by,
                      type = "points",
                      xlab = sprintf("Dim %d (%.1f%%)", dims[1], pct[dims[1]]),
@@ -95,7 +97,8 @@ ilm_plot_reduce_contrib <- function(x, dim = 1, top_n = 10, ...) {
          call. = FALSE)
   d <- d[order(-ilm_tie(d$sqload)), , drop = FALSE]
   d <- d[seq_len(min(top_n, nrow(d))), , drop = FALSE]
-  d$variable <- factor(d$variable, levels = rev(d$variable))
+  v <- ilm_show_text(as.character(d$variable))
+  d$variable <- factor(v, levels = rev(v))
   tinyplot::tinyplot(x = d$sqload, y = d$variable, type = "points",
                      xlab = "squared loading", ylab = "",
                      main = sprintf("Dimension %d", dim), ...)

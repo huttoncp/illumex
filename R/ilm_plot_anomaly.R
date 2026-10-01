@@ -386,7 +386,7 @@ ilm_anom_line_label <- function(x, label) {
   u <- graphics::par("usr")
   y <- u[4] - 0.04 * (u[4] - u[3])
   if (graphics::par("ylog")) y <- 10^y
-  graphics::text(x, y, label, pos = 4, cex = 0.8, col = "grey20")
+  graphics::text(x, y, ilm_show_text(label), pos = 4, cex = 0.8, col = "grey20")
 }
 
 ## ---- "drivers" ---------------------------------------------------------------
@@ -457,7 +457,7 @@ ilm_plot_anom_drivers <- function(x, d, top_n, main, ...) {
                main = if (is.null(main)) "Which column drives each flag" else main,
                sub = v$sub)
   do.call(tinyplot::tinyplot, utils::modifyList(args, list(...)))
-  graphics::axis(2, at = seq_len(k), labels = tab$column, las = 1, tick = FALSE)
+  graphics::axis(2, at = seq_len(k), labels = ilm_show_text(tab$column), las = 1, tick = FALSE)
   graphics::segments(tab$expected, seq_len(k) - 0.35, tab$expected,
                      seq_len(k) + 0.35, col = "firebrick", lwd = 2)
   if (!is.null(v$message)) message(v$message)
@@ -541,7 +541,7 @@ ilm_plot_anom_map <- function(x, d, data, main, pch, ...) {
     ## label of a large point sits underneath the point
     if (sum(fl) <= 12L)
       for (j in seq_along(s))
-        graphics::text(co$dim1[fl][j], co$dim2[fl][j], labels = rows[fl][j],
+        graphics::text(co$dim1[fl][j], co$dim2[fl][j], labels = ilm_show_text(rows[fl][j]),
                        pos = 4, offset = 0.3 + 0.35 * cx[j], cex = 0.7,
                        col = "firebrick4")
   }
@@ -645,7 +645,7 @@ ilm_plot_anom_row <- function(x, d, row, top_n, data, main, ...) {
             "grey is the z-score, red the residual.")
   }
   do.call(tinyplot::tinyplot, utils::modifyList(args, dots))
-  graphics::axis(2, at = seq_len(k), labels = lv, las = 1, tick = FALSE)
+  graphics::axis(2, at = seq_len(k), labels = ilm_show_text(lv), las = 1, tick = FALSE)
   graphics::abline(v = 0, col = "grey30")
   graphics::abline(v = c(-3, 3), lty = 3, col = "grey50")
   invisible(NULL)

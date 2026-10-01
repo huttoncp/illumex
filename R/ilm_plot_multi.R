@@ -51,7 +51,7 @@ ilm_na_summary <- function(data, cols, g = character()) {
 #' @export
 ilm_plot_na_all <- function(data, by = NULL, stat = c("p_na", "na", "n"), ...) {
   stat <- match.arg(stat)
-  ilm_plot_frame_check(data)
+  data <- ilm_plot_frame(data)
   g <- if (is.null(by)) character() else as.character(by)
   miss <- setdiff(g, names(data))
   if (length(miss))
@@ -87,7 +87,7 @@ ilm_plot_na_all <- function(data, by = NULL, stat = c("p_na", "na", "n"), ...) {
 #' @export
 ilm_plot_na <- function(data, x, by = NULL, stat = c("p_na", "na", "n"), ...) {
   stat <- match.arg(stat)
-  ilm_plot_frame_check(data)
+  data <- ilm_plot_frame(data)
   if (is.null(by))
     stop("`by` is required: without a grouping variable there is one bar. ",
          "Use ilm_plot_na_all() to compare columns instead.", call. = FALSE)
@@ -133,7 +133,7 @@ ilm_classify_var <- function(v)
 #' @export
 ilm_plot_var <- function(data, var1, var2 = NULL, by = NULL, verbose = FALSE,
                          ...) {
-  ilm_plot_frame_check(data)
+  data <- ilm_plot_frame(data)
   miss <- setdiff(c(var1, var2, by), names(data))
   if (length(miss))
     stop("column(s) not found in the data: ", paste(miss, collapse = ", "),
@@ -193,7 +193,7 @@ ilm_panel_grid <- function(n, nrow, ncol) {
 #' @export
 ilm_plot_var_all <- function(data, var2 = NULL, by = NULL, cols = NULL,
                              nrow = NULL, ncol = NULL, verbose = FALSE, ...) {
-  ilm_plot_frame_check(data)
+  data <- ilm_plot_frame(data)
   g <- if (is.null(by)) character() else as.character(by)
   miss <- setdiff(c(var2, g, cols), names(data))
   if (length(miss))
@@ -234,7 +234,7 @@ ilm_plot_var_all <- function(data, var2 = NULL, by = NULL, cols = NULL,
 #' ilm_plot_var_pairs(mtcars, cols = c("mpg", "wt", "hp"), by = "cyl")
 #' @export
 ilm_plot_var_pairs <- function(data, cols = NULL, by = NULL, ...) {
-  ilm_plot_frame_check(data)
+  data <- ilm_plot_frame(data)
   g <- if (is.null(by)) character() else as.character(by)
   miss <- setdiff(c(g, cols), names(data))
   if (length(miss))
@@ -295,7 +295,7 @@ ilm_plot_boot_diff <- function(x, row = 1L, type = c("density", "histogram"),
   d <- dr[, row]
   tinyplot::tinyplot(d,
     type = if (type == "histogram") tinyplot::type_histogram() else "density",
-    xlab = paste0(x$to[row], " - ", x$from[row], " (", x$stat[row], ")"),
+    xlab = ilm_show_text(paste0(x$to[row], " - ", x$from[row], " (", x$stat[row], ")")),
     main = sprintf("%d replicates; %.0f%% above %g", length(d),
                    100 * mean(d > ref_line), ref_line), ...)
   tinyplot::tinyplot_add(x = ref_line, type = "vline", lty = 2)

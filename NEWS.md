@@ -1,5 +1,22 @@
 # illumex 0.0.8.9001
 
+* Text that is not valid UTF-8 -- a file saved in Windows-1252 or Latin-1
+  and read as UTF-8 -- no longer stops illumex. One such value among 1.4
+  million rows stopped `ilm_wash_df()` ("input string 1328351 is invalid
+  UTF-8", from `trimws()`). Such text is now left as it is, its bytes
+  unchanged and no encoding guessed:
+  - `ilm_wash_df()` completes, and warns which columns hold such text, how
+    many values and their first rows, and how to read the file in its own
+    encoding or convert it with `iconv()`; the result keeps the same table
+    as `attr(x, "not_utf8")`. A column name that is not valid UTF-8 is
+    cleaned with its stray byte spelled out (`caf_e9`).
+  - `ilm_describe()` and `ilm_describe_all()` describe such a column, and
+    its note says how many values are not valid UTF-8.
+  - Plots draw such text with its stray bytes spelled out (`caf<e9>`):
+    R's graphics devices cannot draw it, and the pdf device crashed R.
+    Prints that list column names show them the same way.
+  - `ilm_reduce()` and `ilm_glrm()` stop, naming the columns, when a
+    column's name is not valid UTF-8, since no model can be built from it.
 * `ilm_reduce(method = "glrm")` keeps only the dimensions that carry
   variation (Craig's item 265): a singular value of the centred low-rank
   product at or below `sqrt(.Machine$double.eps)` times the first, the

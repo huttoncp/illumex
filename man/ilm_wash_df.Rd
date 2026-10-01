@@ -30,7 +30,10 @@ ilm_wash_df(
 \value{
 A cleaned data frame, of the input's class for a tibble or a
 data.table (a plain data.frame when \code{column_to_rownames = TRUE}, since
-neither keeps row names) and a plain data.frame for any other.
+neither keeps row names) and a plain data.frame for any other. When
+some text is not valid UTF-8, \code{attr(x, "not_utf8")} is a data frame of
+the columns holding it (by their cleaned names): \code{column}, \code{n}, and the
+first \code{rows} of \code{data} where it is.
 }
 \description{
 Removes empty rows and columns, standardises names to snake_case, and
@@ -41,6 +44,14 @@ Conversion happens only when every non-missing value converts cleanly, so a
 single stray \code{"n/a"} cannot silently turn a column into \code{NA}s. A text column
 of whole numbers becomes integer; the values are unchanged. Columns that
 are already numbers, and factors, are left as they are.
+
+Text that is not valid UTF-8 -- what a file saved in another encoding,
+such as Windows-1252, gives when read as UTF-8 -- is left as it is, its
+bytes unchanged: no encoding is guessed. A warning names each column
+holding such text, with its count and first rows, and says how to read
+the file in its own encoding; the result keeps the same table as
+\code{attr(x, "not_utf8")}. A column name that is not valid UTF-8 is cleaned
+with each stray byte written out (\code{caf_e9}).
 
 Names follow the rules of janitor's \code{make_clean_names()}, without needing
 janitor, and no letter is dropped: \code{"\%"} becomes \code{percent} and \code{"#"}

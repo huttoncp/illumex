@@ -369,7 +369,7 @@ print.ilm_missing <- function(x, ...) {
   v <- x$variables[x$variables$n_missing > 0, , drop = FALSE]
   cat("\n  missing by variable\n")
   for (i in seq_len(nrow(v)))
-    cat(sprintf("    %-20s %6d  %5.1f%%\n", v$variable[i], v$n_missing[i],
+    cat(sprintf("    %-20s %6d  %5.1f%%\n", ilm_show_text(v$variable[i]), v$n_missing[i],
                 100 * v$p_missing[i]))
   cat("\n  pattern:", if (isTRUE(x$monotone)) "monotone" else "non-monotone",
       sprintf("(%d distinct)\n", nrow(x$patterns)))
@@ -388,7 +388,7 @@ print.ilm_missing <- function(x, ...) {
     ot <- x$outcome_test
     for (i in seq_len(nrow(ot)))
       cat(sprintf("    %-16s partial r = %s, p = %s%s
-", ot$missing_in[i],
+", ilm_show_text(ot$missing_in[i]),
                   ifelse(is.na(ot$effect[i]), "-", sprintf("%.3f", ot$effect[i])),
                   format.pval(ot$p_adj[i], digits = 2, eps = 1e-4),
                   if (isTRUE(ot$flag[i])) "   <- yes" else ""))
@@ -398,8 +398,8 @@ print.ilm_missing <- function(x, ...) {
     if (nrow(f)) {
       cat("\n  strongest associations with missingness\n")
       for (i in seq_len(min(nrow(f), 8L)))
-        cat(sprintf("    %-16s <- %-16s %.3f%s\n", f$missing_in[i],
-                    f$related_to[i], f$effect[i],
+        cat(sprintf("    %-16s <- %-16s %.3f%s\n", ilm_show_text(f$missing_in[i]),
+                    ilm_show_text(f$related_to[i]), f$effect[i],
                     if (f$is_outcome[i]) "  (outcome)" else ""))
     }
   }

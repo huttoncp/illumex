@@ -269,7 +269,8 @@ ilm_copies_note <- function(n_copied, n_rows, n_distinct, data_name = "data",
 #' @keywords internal
 #' @noRd
 ilm_snake <- function(x) {
-  x <- enc2utf8(as.character(x))
+  ## a name that is not valid UTF-8 keeps its stray bytes as e9, never lost
+  x <- ilm_show_text(enc2utf8(as.character(x)))
   x[is.na(x)] <- "NA"
   x <- gsub("['\"]", "", x)
   x <- gsub("%", "_percent_", x, fixed = TRUE)
@@ -350,10 +351,13 @@ ilm_number_repeats <- function(x) {
 #' @noRd
 ilm_retype <- function(v) {
   if (!is.character(v)) return(v)
-  s <- trimws(v)
+  s <- ilm_trimws(v)
   s[!nzchar(s)] <- NA_character_
   obs <- s[!is.na(s)]
   if (!length(obs)) return(s)
+  ## text that is not valid UTF-8 is neither a number nor TRUE/FALSE, and
+  ## tolower() would stop on it: the column stays text
+  if (!all(validUTF8(obs))) return(s)
   lu <- tolower(obs)
   if (all(lu %in% c("true", "false", "t", "f"))) {
     r <- rep(NA, length(s))
@@ -381,6 +385,14 @@ ilm_retype <- function(v) {
 #' of whole numbers becomes integer; the values are unchanged. Columns that
 #' are already numbers, and factors, are left as they are.
 #'
+#' Text that is not valid UTF-8 -- what a file saved in another encoding,
+#' such as Windows-1252, gives when read as UTF-8 -- is left as it is, its
+#' bytes unchanged: no encoding is guessed. A warning names each column
+#' holding such text, with its count and first rows, and says how to read
+#' the file in its own encoding; the result keeps the same table as
+#' `attr(x, "not_utf8")`. A column name that is not valid UTF-8 is cleaned
+#' with each stray byte written out (`caf_e9`).
+#'
 #' Names follow the rules of janitor's `make_clean_names()`, without needing
 #' janitor, and no letter is dropped: `"%"` becomes `percent` and `"#"`
 #' `number`; camelCase is split; accented Latin letters become plain ones (an
@@ -396,7 +408,10 @@ ilm_retype <- function(v) {
 #' @param names_col The column to use when `column_to_rownames = TRUE`.
 #' @return A cleaned data frame, of the input's class for a tibble or a
 #'   data.table (a plain data.frame when `column_to_rownames = TRUE`, since
-#'   neither keeps row names) and a plain data.frame for any other.
+#'   neither keeps row names) and a plain data.frame for any other. When
+#'   some text is not valid UTF-8, `attr(x, "not_utf8")` is a data frame of
+#'   the columns holding it (by their cleaned names): `column`, `n`, and the
+#'   first `rows` of `data` where it is.
 #' @examples
 #' m <- data.frame("Col One" = c("1", "2", ""), someFlag = c("TRUE", "FALSE", ""),
 #'                 check.names = FALSE)
@@ -416,21 +431,33 @@ ilm_wash_df <- function(data, clean_names = TRUE, retype = TRUE,
     d[[names_col]] <- NULL
   } else rn <- NULL
 
-  blank <- function(v) is.na(v) |
-    ((is.character(v) || is.factor(v)) & !nzchar(trimws(as.character(v))))
+  ## text that is not valid UTF-8, found before anything is dropped, so
+  ## the rows named are the rows of `data`
+  bad <- ilm_not_utf8_cols(d)
+  bad_names <- names(d)[!validUTF8(names(d))]
+
+  ## a factor is judged by its levels, each once
+  blank <- function(v) {
+    if (is.factor(v)) return(is.na(v) | (!nzchar(ilm_trimws(levels(v))))[as.integer(v)] %in% TRUE)
+    if (is.character(v)) return(is.na(v) | !nzchar(ilm_trimws(v)))
+    is.na(v)
+  }
   if (drop_empty && nrow(d) && ncol(d)) {
     ## a row or column is empty when every cell is missing or whitespace
-    keep_col <- !vapply(d, function(v) all(blank(v)), TRUE)
+    b <- lapply(d, blank)
+    keep_col <- !vapply(b, all, TRUE)
     d <- d[, keep_col, drop = FALSE]
     ## with no column left, every row was empty
-    keep_row <- if (ncol(d)) !Reduce(`&`, lapply(d, blank)) else logical(nrow(d))
+    keep_row <- if (ncol(d)) !Reduce(`&`, b[keep_col]) else logical(nrow(d))
     d <- d[keep_row, , drop = FALSE]
     if (!is.null(rn)) rn <- rn[keep_row]
   }
   if (retype && ncol(d)) d[] <- lapply(d, ilm_retype)
+  old_names <- names(d)
   if (clean_names && ncol(d)) names(d) <- ilm_snake(names(d))
   if (!is.null(rn)) rownames(d) <- make.unique(rn) else rownames(d) <- NULL
-  ilm_wash_class(d, data, has_rownames = !is.null(rn))
+  out <- ilm_wash_class(d, data, has_rownames = !is.null(rn))
+  ilm_wash_utf8(out, bad, bad_names, old_names, names(d))
 }
 
 ## A tibble comes back a tibble and a data.table a data.table: the input's
@@ -447,6 +474,38 @@ ilm_wash_class <- function(d, data, has_rownames = FALSE) {
   if (inherits(data, "tbl_df") && requireNamespace("tibble", quietly = TRUE))
     return(tibble::as_tibble(d))
   d
+}
+
+## Text that is not valid UTF-8, reported: a warning naming each column and
+## its first rows, the remedy, and the same table on the result as
+## attr(, "not_utf8"). Columns are named as they are in the result.
+#' @keywords internal
+#' @noRd
+ilm_wash_utf8 <- function(out, bad, bad_names, old, new) {
+  if (is.null(bad) && !length(bad_names)) return(out)
+  now <- function(x) { i <- match(x, old); ifelse(is.na(i), x, new[i]) }
+  msg <- character(0)
+  if (!is.null(bad)) {
+    bad$column <- now(bad$column)
+    each <- sprintf("%s (%s %s; %s)", ilm_show_text(bad$column),
+                    format(bad$n, big.mark = ",", trim = TRUE),
+                    ifelse(bad$n == 1L, "value", "values"),
+                    vapply(seq_len(nrow(bad)), function(i)
+                      ilm_rows_text(as.integer(strsplit(bad$rows[i], ", ", fixed = TRUE)[[1]]),
+                                    bad$n[i]), ""))
+    msg <- c(msg, sprintf("text in %d %s is not valid UTF-8 and was left as it is: %s.",
+                          nrow(bad), if (nrow(bad) == 1L) "column" else "columns",
+                          ilm_and(each)))
+    attr(out, "not_utf8") <- bad
+  }
+  if (length(bad_names))
+    msg <- c(msg, sprintf("%d column %s not valid UTF-8, so %s written with each stray byte spelled out: %s.",
+                          length(bad_names),
+                          if (length(bad_names) == 1L) "name is" else "names are",
+                          if (length(bad_names) == 1L) "it is" else "they are",
+                          ilm_and(ilm_show_text(now(bad_names)))))
+  warning("ilm_wash_df(): ", paste(msg, collapse = " "), " ", ILM_UTF8_REMEDY, call. = FALSE)
+  out
 }
 
 ## ---- translate -------------------------------------------------------------
