@@ -1,4 +1,6 @@
 <ilm_cluster> method = kmeans, k = 1 (chosen by gap statistic)
 
-  cluster   size    pct  jaccard  stability     sil
-        1    120  100.0    1.000     stable       -
+  No distinct clusters: the gap statistic finds no grouping better than one
+  group, so the 120 rows form a continuum rather than groups. Describe them
+  as one group with ilm_describe_all(), or follow how they vary with
+  ilm_reduce().

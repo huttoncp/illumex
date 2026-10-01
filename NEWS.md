@@ -4,6 +4,12 @@
   `ilm_outliers_all()`'s) are no longer rounded in the result (item 289):
   they keep their full value, and their prints round them, to 4 and 3
   decimals, by the shared rule. What prints is unchanged.
+* At k = 1, `ilm_cluster()` prints "No distinct clusters" (item 259): the
+  one-row table and its stability, which said nothing, give way to what the
+  rows are -- a continuum, when the gap statistic finds no grouping better
+  than one group, to describe with `ilm_describe_all()` or follow with
+  `ilm_reduce()`. `ilm_profile()` then has no cluster to describe, and says
+  no more.
 * `ilm_anomaly()` keeps its default scoring and checks its own residuals
   (item 282): when their tails are heavier than all but 2 of 40 reference
   datasets' (p <= 0.05), it warns that on such data the scan flags rows
