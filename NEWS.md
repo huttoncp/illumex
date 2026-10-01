@@ -13,6 +13,14 @@
   patterns literally. Results name rows by the data's own row numbers, so
   they join back as they are. A subset of an `ilm_anomaly()` result is an
   error: subset the data before `ilm_anomaly()`. See `?ilm_selection`.
+* A model is a fifth form of `subset`, for the rows it analysed (items 146
+  and 150): `ilm_describe_all(d, subset = fit)` describes the rows a fit from
+  illume's `ilm_model()` used, without the ones it dropped, and an
+  `ilm_dag_model()` the rows every adjustment set used. `subset_negate =
+  TRUE` gives the rows the model dropped, to check whether they differ. The
+  result prints `297 of 300 rows (analysed by the model)` and keeps copies of
+  what identifies each fit, to check against it with `identical()`. `data`
+  must be the data the model was fitted to.
 * `ilm_sample(n, prop, by, seed, within, min)`, new, draws rows for
   `subset`: `n` of them, or a share `prop`; with `by`, whole groups, so a
   holdout never splits one; with `within`, rows inside every cluster, every
