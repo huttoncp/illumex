@@ -583,7 +583,7 @@ ilm_boot_diff.data.frame <- function(x, y = NULL, group = NULL, stat = "mean",
              adjust = adjust, n_comparisons = m,
              n_from = unname(ng[pr$i]), n_to = unname(ng[pr$j]),
              p_value = inf$p_value, p_adj = inf$p_adj,
-             p_superiority = round(inf$p_sup, 4),
+             p_superiority = inf$p_sup,
              excludes_zero = is.finite(lo) & (lo > 0 | up < 0),
              stringsAsFactors = FALSE, row.names = NULL)
   ## the replicate differences themselves, one column per comparison, so the

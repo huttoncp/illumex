@@ -1,5 +1,9 @@
 # illumex 0.0.8.9003
 
+* `ilm_boot_diff()`'s `p_superiority` and `ilm_outliers()`'s `score` (and
+  `ilm_outliers_all()`'s) are no longer rounded in the result (item 289):
+  they keep their full value, and their prints round them, to 4 and 3
+  decimals, by the shared rule. What prints is unchanged.
 * A description prints the same numbers on every computer (item 272).
   `ilm_describe()`, `ilm_describe_all()`, `ilm_describe_na()` and the
   clusters' table in `ilm_describe_clusters()` round by the shared display

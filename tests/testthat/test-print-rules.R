@@ -115,3 +115,19 @@ test_that("the gaussian check, and results with no print of their own, print one
   expect_identical(utils::capture.output(print(b))[2],
                    "1        x  34420.2   1.5 34500")
 })
+
+test_that("p_superiority and an outlier's score are kept whole, and print rounded (item 289)", {
+  set.seed(289)
+  d <- data.frame(y = c(stats::rnorm(30), stats::rnorm(30)), g = rep(c("a", "b"), each = 30))
+  b <- suppressMessages(ilm_boot_diff(d, "y", "g", R = 99, seed = 1))
+  p <- b$p_superiority
+  expect_true(p > 0 && p < 1)
+  expect_false(isTRUE(all.equal(p, round(p, 4), tolerance = 0)))
+  ## the print is what it was when the result held the rounded value
+  b4 <- b; b4$p_superiority <- round(b4$p_superiority, 4)
+  expect_identical(utils::capture.output(print(b)), utils::capture.output(print(b4)))
+  o <- ilm_outliers(c(stats::rnorm(50), 9.87654321))
+  expect_false(isTRUE(all.equal(o$score, round(o$score, 3), tolerance = 0)))
+  o3 <- o; o3$score <- round(o3$score, 3)
+  expect_identical(utils::capture.output(print(o)), utils::capture.output(print(o3)))
+})

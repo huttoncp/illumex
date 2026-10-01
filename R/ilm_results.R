@@ -94,13 +94,18 @@ ilm_gx <- function(x, d = 6L) {
 }
 
 ## A table's numeric columns as text, as R would print them, by the shared
-## rounding, for a result that has no print of its own
+## rounding, for a result that has no print of its own. `decimals` names
+## columns the result keeps whole but prints to so many decimals (Craig's
+## item 289), each value rounded once, from the value kept.
 #' @keywords internal
 #' @noRd
-ilm_print_plain <- function(x, ...) {
+ilm_print_plain <- function(x, ..., decimals = list()) {
   d <- as.data.frame(x)
   class(d) <- "data.frame"
-  print(ilm_print_text(d), ...)
+  raw <- d
+  for (cn in intersect(names(decimals), names(d)))
+    if (is.double(d[[cn]])) d[[cn]] <- ilm_disp_round(d[[cn]], decimals[[cn]])
+  print(ilm_print_text(d, raw), ...)
   invisible(x)
 }
 
@@ -108,13 +113,13 @@ ilm_print_plain <- function(x, ...) {
 print.ilm_boot_ci <- function(x, ...) ilm_print_plain(x, ...)
 
 #' @export
-print.ilm_boot_diff <- function(x, ...) ilm_print_plain(x, ...)
+print.ilm_boot_diff <- function(x, ...) ilm_print_plain(x, ..., decimals = list(p_superiority = 4))
 
 #' @export
-print.ilm_outliers <- function(x, ...) ilm_print_plain(x, ...)
+print.ilm_outliers <- function(x, ...) ilm_print_plain(x, ..., decimals = list(score = 3))
 
 #' @export
-print.ilm_outliers_all <- function(x, ...) ilm_print_plain(x, ...)
+print.ilm_outliers_all <- function(x, ...) ilm_print_plain(x, ..., decimals = list(score = 3))
 
 ## One numeric column as R would print it, by the shared rounding: see
 ## ilm_print_text()
