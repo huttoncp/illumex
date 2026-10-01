@@ -1,5 +1,14 @@
 # illumex 0.0.8.9003
 
+* A description prints the same numbers on every computer (item 272).
+  `ilm_describe()`, `ilm_describe_all()`, `ilm_describe_na()` and the
+  clusters' table in `ilm_describe_clusters()` round by the shared display
+  rules, half away from zero after clearing floating-point noise, and write
+  each column as text in the layout R's print gives it. R's own print could
+  show a value on a rounding boundary differently on an Intel machine and on
+  Apple silicon (a median of 34420.195 as 34420.2 or 34420.19); every value
+  is now rounded once, from the value kept, so 40410.4647 shown to two
+  decimals is 40410.46. Away from a boundary every print is as it was.
 * A description by two variables compares, with `smd`, the second's groups
   within each level of the first -- exposure within a modifier, controls
   split by exposure -- and names a level of the second as the reference:
