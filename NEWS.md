@@ -32,6 +32,18 @@
     an ordinal model)", and at the top, "20% are 3, far above the next
     value: a cap if a count (see ilm_censor()); if a rating, it can't
     separate people there (see an ordinal model)".
+  An ordered factor's bounds are its declared first and last levels: a pile
+  at the lowest level used, when the first is unused, is not called the
+  scale's lowest point. With `by`, each group is read against its
+  variable's scale, so a count is not read as a rating in a group whose
+  values happen to run from 1, and a rating's floor is its lowest point,
+  not a group's lowest value. A variable's name is not read: one named for
+  a measurement is classed by its values like any other.
+* `ilm_describe()`'s `dispersion` is left blank for a variable read as a
+  rating -- whole numbers from 1 spanning at most 10 points -- as it was
+  already for one centred on 0 (item 297): a variance-to-mean ratio means
+  nothing there. Counts keep it, and so do whole numbers from 0 to at most
+  10, which may be counts.
 * A description prints the same numbers on every computer (item 272).
   `ilm_describe()`, `ilm_describe_all()`, `ilm_describe_na()` and the
   clusters' table in `ilm_describe_clusters()` round by the shared display

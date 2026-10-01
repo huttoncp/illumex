@@ -118,3 +118,49 @@ test_that("the floor is checked before the note's other gates, and comes first",
   expect_true(grepl("^[0-9]+% are 0, far above.*; discrete", note_of(x)))
   expect_identical(ilm_gauss_assess(x)$kind, "floor")
 })
+
+test_that("an ordered factor's bounds are its declared end levels", {
+  set.seed(294)
+  lv <- c("Strongly disagree", "Disagree", "Neutral", "Agree", "Strongly agree")
+  ## "Strongly disagree" unused, 40% at "Disagree": a pile one step in, not
+  ## the scale's lowest point; the note counts the unused level instead
+  x <- factor(sample(lv[-1], 1000, TRUE, prob = c(0.4, 0.2, 0.2, 0.2)),
+              levels = lv, ordered = TRUE)
+  note <- ilm_describe(data.frame(x = x), "x")$note
+  expect_false(grepl("lowest point", note))
+  expect_match(note, "1 unused levels", fixed = TRUE)
+  ## the ceiling at the declared last level is still read
+  y <- factor(sample(lv[-1], 1000, TRUE, prob = c(0.1, 0.1, 0.2, 0.6)),
+              levels = lv, ordered = TRUE)
+  expect_match(ilm_describe(data.frame(y = y), "y")$note,
+               "sit at the scale's highest point (Strongly agree)", fixed = TRUE)
+})
+
+test_that("a variable read as a rating has no dispersion; a count keeps it (item 297)", {
+  set.seed(297)
+  disp <- function(v) ilm_describe(data.frame(v = v), "v", dispersion = TRUE)$dispersion
+  expect_true(is.na(disp(sample(1:7, 200, TRUE))))           # a rating from 1
+  expect_true(is.na(disp(sample(-3:3, 200, TRUE))))          # centred on 0
+  expect_false(is.na(disp(sample(0:6, 200, TRUE))))          # a count or a rating
+  expect_false(is.na(disp(stats::rpois(200, 8))))            # a count
+  expect_false(is.na(disp(sample(1:30, 200, TRUE))))         # past 10 points
+})
+
+test_that("with by, each group is read against its variable's scale", {
+  set.seed(298)
+  ## a count from 0 to 10 whose values in group b run from 1 to 6: still a
+  ## count there, so it keeps its dispersion
+  d <- data.frame(g = rep(c("a", "b"), each = 200),
+                  n = c(sample(0:10, 200, TRUE), sample(1:6, 200, TRUE)))
+  r <- ilm_describe(d, "n", by = "g", dispersion = TRUE)
+  expect_false(anyNA(r$dispersion))
+  ## a 1-7 rating whose group b runs from 3 to 7, piled at 3: not the
+  ## scale's lowest point, so no floor; group a's pile at 1 is one
+  d <- data.frame(g = rep(c("a", "b"), each = 400),
+                  r = c(sample(1:7, 400, TRUE, prob = c(0.4, rep(0.1, 6))),
+                        sample(3:7, 400, TRUE, prob = c(0.4, rep(0.15, 4)))))
+  r <- ilm_describe(d, "r", by = "g")
+  expect_match(r$gauss_note[1], "the scale's lowest point (1)", fixed = TRUE)
+  expect_false(grepl("lowest point|a floor", r$gauss_note[2]))
+  expect_true(all(is.na(r$dispersion)))
+})

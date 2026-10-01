@@ -51,7 +51,10 @@ note names both readings and both remedies.
 }
 
 An ordered factor is a rating scale: \code{\link[=ilm_describe]{ilm_describe()}}'s note for it
-leads with a floor or ceiling, named by the level's label.
+leads with a floor or ceiling, named by the level's label. Its bounds are
+its declared first and last levels; when the first is unused, a pile at
+the next is not called the scale's lowest point (the note counts the
+unused levels). A numeric variable's bounds are the values it takes.
 
 An ordinal model uses only the order of a scale's levels, so a scale
 centred on 0 needs no shifting to positive values before one is fitted.

@@ -97,7 +97,10 @@ ilm_n_modes <- function(x, rel = 0.10, drop = 0.5) {
 #'   note names both readings and both remedies.
 #'
 #' An ordered factor is a rating scale: [ilm_describe()]'s note for it
-#' leads with a floor or ceiling, named by the level's label.
+#' leads with a floor or ceiling, named by the level's label. Its bounds are
+#' its declared first and last levels; when the first is unused, a pile at
+#' the next is not called the scale's lowest point (the note counts the
+#' unused levels). A numeric variable's bounds are the values it takes.
 #'
 #' An ordinal model uses only the order of a scale's levels, so a scale
 #' centred on 0 needs no shifting to positive values before one is fitted.
@@ -181,8 +184,9 @@ ilm_kurt2 <- function(x) {
 ## short scale -- whole numbers spanning at most 10 points, or an ordered
 ## factor's levels (item 292) -- so that a scale of 0 to 3 is read, while a
 ## 3-point scale or a 0/1 variable, whose pile at an end is only its
-## coarseness, is not. Returns each bound's reason, worded by the variable's
-## kind, and its code.
+## coarseness, is not. A numeric variable's bounds are its lowest and
+## highest values; an ordered factor's, its declared first and last levels.
+## Returns each bound's reason, worded by the variable's kind, and its code.
 #' @keywords internal
 #' @noRd
 ILM_FLOOR_WORDS <- list(
@@ -213,26 +217,50 @@ ilm_floor_kind <- function(u, whole) {
   "continuous"
 }
 
+## A numeric variable's scale -- its kind and its lowest and highest values
+## -- read from the whole column. With `by`, each group is described against
+## it, so a count whose values in one group run from 1 to 6 is not read
+## there as a rating, and a rating's floor is its lowest point, not a
+## group's lowest value. NULL when there is nothing to read.
 #' @keywords internal
 #' @noRd
-ilm_floor_reasons <- function(x, labels = NULL) {
+ilm_floor_scale <- function(x) {
+  x <- x[is.finite(x)]
+  if (!length(x)) return(NULL)
+  u <- sort(unique(x))
+  list(kind = ilm_floor_kind(u, all(abs(x - round(x)) < 1e-8)),
+       lo = u[1L], hi = u[length(u)])
+}
+
+#' @keywords internal
+#' @noRd
+ilm_floor_reasons <- function(x, labels = NULL, scale = NULL) {
   none <- list(text = character(0), kind = character(0))
   n <- length(x)
   u <- sort(unique(x)); nu <- length(u)
   if (nu < 4L) return(none)
   ## an ordered factor arrives as its level codes, with the levels' labels
   kind <- if (!is.null(labels)) "rating"
+          else if (!is.null(scale)) scale$kind
           else ilm_floor_kind(u, all(abs(x - round(x)) < 1e-8))
   ## a short scale: a rating or a 0-to-10 reading, each at most 10 points
-  scale <- kind %in% c("rating", "either")
-  if (nu < 5L && !scale) return(none)
+  short <- kind %in% c("rating", "either")
+  if (nu < 5L && !short) return(none)
   cnt <- tabulate(match(x, u), nu)
   fires <- function(c1, c2)
     c1 >= 5 && c1 / n >= 0.02 && c1 >= 2 * c2 &&
       stats::pbinom(c1 - 1, c1 + c2, 0.5, lower.tail = FALSE) <= 0.001
   label <- function(i) if (!is.null(labels)) labels[u[i]] else ilm_print_num(u[i], 4L)
   text <- character(0); kinds <- character(0)
-  if (fires(cnt[1L], cnt[2L])) {
+  ## an ordered factor's bounds are its declared first and last levels: a
+  ## pile at the lowest level used, when the first is unused, is a pile one
+  ## step in, not at the scale's lowest point (the unused levels are noted)
+  ## and a group's, described against its variable's scale, that scale's
+  ## (a continuous variable has no scale beyond the values it takes)
+  on_scale <- !is.null(scale) && kind != "continuous"
+  at_lo <- if (!is.null(labels)) u[1L] == 1L else if (on_scale) u[1L] == scale$lo else TRUE
+  at_hi <- if (!is.null(labels)) u[nu] == length(labels) else if (on_scale) u[nu] == scale$hi else TRUE
+  if (at_lo && fires(cnt[1L], cnt[2L])) {
     w <- switch(kind, rating = "rating_floor", either = "either_floor",
                 count = if (u[1L] == 0) "zeros" else "floor", "floor")
     pct <- ilm_fx(100 * cnt[1L] / n, 0)
@@ -240,7 +268,7 @@ ilm_floor_reasons <- function(x, labels = NULL) {
                     else sprintf(ILM_FLOOR_WORDS[[w]], pct, label(1L)))
     kinds <- c(kinds, "floor")
   }
-  if (fires(cnt[nu], cnt[nu - 1L])) {
+  if (at_hi && fires(cnt[nu], cnt[nu - 1L])) {
     w <- switch(kind, rating = "rating_ceiling", either = "either_ceiling", "ceiling")
     text <- c(text, sprintf(ILM_FLOOR_WORDS[[w]], ilm_fx(100 * cnt[nu] / n, 0), label(nu)))
     kinds <- c(kinds, "ceiling")
@@ -253,9 +281,9 @@ ilm_floor_reasons <- function(x, labels = NULL) {
 ## what to do next. A floor or a ceiling comes first, whatever the score.
 #' @keywords internal
 #' @noRd
-ilm_gauss_assess <- function(x, min_n = 20L, cap = 0.06) {
+ilm_gauss_assess <- function(x, min_n = 20L, cap = 0.06, scale = NULL) {
   x <- x[is.finite(x)]; n <- length(x)
-  fl <- ilm_floor_reasons(x)
+  fl <- ilm_floor_reasons(x, scale = scale)
   ## the note: a floor or ceiling first, then the other reasons, two at most
   note_of <- function(text, kinds) {
     text <- c(fl$text, text); kinds <- c(fl$kind, kinds)
@@ -348,7 +376,8 @@ print.ilm_gauss <- function(x, ...) {
 ilm_describe_num <- function(x, digits = 3,
                              gauss = c("index", "ks_d", "both", "none"),
                              probs = c(0, 0.5, 1), skew = FALSE, kurt = FALSE,
-                             dispersion = TRUE, cap = 0.06, min_n = 20L) {
+                             dispersion = TRUE, cap = 0.06, min_n = 20L,
+                             scale = ilm_floor_scale(x)) {
   gauss <- match.arg(gauss)
   if (!is.numeric(probs) || any(probs < 0 | probs > 1))
     stop("`probs` must be numeric values between 0 and 1", call. = FALSE)
@@ -387,12 +416,16 @@ ilm_describe_num <- function(x, digits = 3,
   ## `dispersion = FALSE` turns the column off.
   if (dispersion) {
     is_count <- nn > 0 && all(abs(xv - round(xv)) < 1e-8) && all(xv >= 0)
+    ## a variable read as a rating -- whole numbers from 1 spanning at most
+    ## 10 points -- has no count's dispersion (Craig's item 297), as one
+    ## centred on 0 has none for its negative values
+    if (is_count) is_count <- !identical(scale$kind, "rating")
     out$dispersion <- if (is_count && is.finite(m) && m > 0)
       ilm_rd(fvar(xv) / m, digits) else NA_real_
   }
 
   if (gauss != "none") {
-    g <- ilm_gauss_assess(xv, min_n = min_n, cap = cap)
+    g <- ilm_gauss_assess(xv, min_n = min_n, cap = cap, scale = scale)
     if (gauss %in% c("index", "both")) out$gauss <- g$gauss
     if (gauss %in% c("ks_d", "both"))  out$ks_d  <- g$ks_d
     out$gauss_note <- g$note
@@ -575,9 +608,12 @@ ILM_CLASSES <- c("numeric", "categorical", "logical", "time")
 #'   describe the variable better than the mean and SD:
 #'   `probs = c(0.25, 0.5, 0.75)`.
 #' @param dispersion Add the variance-to-mean ratio for non-negative integer
-#'   variables. Meaningful only if you intend to model the variable as a count.
-#'   Shifting a rating scale's values (-3 to 3 into 1 to 7) changes this
-#'   column, not the scale.
+#'   variables. Meaningful only if you intend to model the variable as a count,
+#'   so it is left blank for a variable read as a rating: whole numbers from 1
+#'   spanning at most 10 points, or a scale centred on 0 (see
+#'   [ilm_gauss_check()]). Whole numbers from 0 to at most 10 may be either,
+#'   and keep it. Shifting a rating scale's values (-3 to 3 into 0 to 6)
+#'   changes this column, not the scale.
 #' @param rare_n Levels with fewer observations than this count as rare.
 #' @param cap,min_n Control the `gauss` index; see [ilm_gauss_check()].
 #' @param smd `FALSE` (the default), `TRUE`, or the name of a group. With `by`,
@@ -639,7 +675,7 @@ ilm_describe <- function(data, y = NULL, by = NULL, digits = 3,
     if (is.logical(v)) ilm_describe_lgl(v, NULL)
     else if (ilm_is_time(v)) ilm_describe_time(v, NULL)
     else if (is.numeric(v)) ilm_describe_num(v, NULL, gauss, probs, skew, kurt, dispersion,
-                                             cap, min_n)
+                                             cap, min_n, scale = sc)
     else ilm_describe_cat(v, NULL, rare_n = rare_n)
   }
 
@@ -688,6 +724,9 @@ ilm_describe <- function(data, y = NULL, by = NULL, digits = 3,
                                    "ilm_describe", NULL, by, digits)))
   }
 
+  ## a numeric variable's scale is its whole column's, so each group is read
+  ## against the same one (items 292 and 297)
+  sc <- if (is.numeric(x) && !is.logical(x)) ilm_floor_scale(x) else NULL
   if (is.null(by)) return(fin(ilm_describe_result(one(x), "ilm_describe", y, by, digits)))
   ilm_check_by(data, by)
   miss <- setdiff(by, names(data))
