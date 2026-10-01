@@ -330,8 +330,8 @@ ilm_plot_boot_diff <- function(x, row = 1L, type = c("density", "histogram"),
   tinyplot::tinyplot(d,
     type = if (type == "histogram") tinyplot::type_histogram() else "density",
     xlab = ilm_show_text(paste0(x$to[row], " - ", x$from[row], " (", x$stat[row], ")")),
-    main = sprintf("%d replicates; %.0f%% above %g", length(d),
-                   100 * mean(d > ref_line), ref_line), ...)
+    main = sprintf("%d replicates; %s%% above %s", length(d),
+                   ilm_fx(100 * mean(d > ref_line), 0), ilm_gx(ref_line)), ...)
   tinyplot::tinyplot_add(x = ref_line, type = "vline", lty = 2)
   tinyplot::tinyplot_add(x = c(x$lower[row], x$upper[row]), type = "vline",
                          lty = 3, col = "gray40")

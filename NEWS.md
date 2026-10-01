@@ -9,6 +9,13 @@
   Apple silicon (a median of 34420.195 as 34420.2 or 34420.19); every value
   is now rounded once, from the value kept, so 40410.4647 shown to two
   decimals is 40410.46. Away from a boundary every print is as it was.
+  The same rule covers every other print: the tables of `ilm_anomaly()`,
+  `ilm_var_contrib()`, `ilm_boot_ci()`, `ilm_boot_diff()`, `ilm_outliers()`
+  and `ilm_outliers_all()`, the gaussian check, and the numbers in the lines
+  of `ilm_cluster()`, `ilm_reduce()`, `ilm_glrm()`, `ilm_check_missing()`,
+  the notes and frame checks, and the plots' titles and labels, where
+  `sprintf()` rounded an exact tie by the C library's rule (a cluster of 49
+  rows in 400 is 12.3%, not 12.2%).
 * A description by two variables compares, with `smd`, the second's groups
   within each level of the first -- exposure within a modifier, controls
   split by exposure -- and names a level of the second as the reference:

@@ -564,8 +564,8 @@ print.ilm_anomaly <- function(x, n = 10L, ...) {
   class(d) <- "data.frame"
   nf <- sum(d$flag)
   iforest <- identical(attr(x, "method"), "iforest")
-  cat(sprintf("Multivariate anomalies: %d of %d rows flagged at %.3g\n",
-              nf, nrow(d), attr(x, "alpha")))
+  cat(sprintf("Multivariate anomalies: %d of %d rows flagged at %s\n",
+              nf, nrow(d), ilm_gx(attr(x, "alpha"), 3)))
   if (iforest) {
     cat(sprintf("  isolation forest, %d trees over %d columns, categories included\n",
                 attr(x, "ntrees"), length(attr(x, "columns"))))
@@ -583,8 +583,8 @@ print.ilm_anomaly <- function(x, n = 10L, ...) {
     cat(sprintf("  rank %d over %d columns, %s, %d null scores\n",
                 attr(x, "rank"), length(attr(x, "columns")),
                 if (attr(x, "trim") > 0)
-                  sprintf("fitted on the best %.0f%% of rows",
-                          100 * (1 - attr(x, "trim")))
+                  sprintf("fitted on the best %s%% of rows",
+                          ilm_fx(100 * (1 - attr(x, "trim")), 0))
                 else "fitted on every row",
                 attr(x, "n_null")))
     if (attr(x, "trim") <= 0)
@@ -592,9 +592,12 @@ print.ilm_anomaly <- function(x, n = 10L, ...) {
           "  are then scored against, and hide themselves in it.\n", sep = "")
   }
   show <- utils::head(d, max(n, nf))
-  show$score <- round(show$score, 3)
-  show$p <- signif(show$p, 3); show$p_adj <- signif(show$p_adj, 3)
-  print(show, row.names = FALSE)
+  ## by the shared rules, and written as text (ruling 272)
+  raw <- show
+  show$score <- ilm_disp_round(show$score, 3)
+  raw$p <- show$p <- ilm_disp_signif(show$p, 3)
+  raw$p_adj <- show$p_adj <- ilm_disp_signif(show$p_adj, 3)
+  print(ilm_print_text(show, raw), row.names = FALSE)
   if (nrow(d) > nrow(show))
     cat(sprintf("  ... %d more rows\n", nrow(d) - nrow(show)))
   if (nf)

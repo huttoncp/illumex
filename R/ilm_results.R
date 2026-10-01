@@ -64,15 +64,60 @@ ilm_describe_rounded <- function(x, digits = attr(x, "digits")) {
 ## is 40410.46, never 40410.47 by way of 40410.465. Columns of other kinds (counts, dates, words) print as they did.
 #' @keywords internal
 #' @noRd
-ilm_describe_text <- function(y, raw = y) {
+ilm_print_text <- function(y, raw = y) {
   for (cn in names(y))
     if (is.double(y[[cn]]) && !is.object(y[[cn]]))
       y[[cn]] <- ilm_print_num(y[[cn]], raw = raw[[cn]] %||% y[[cn]])
   y
 }
 
+## A number for a sentence or a fixed-width line, the same on every computer
+## (ruling 272): sprintf("%.1f") rounds an exact binary tie (12.25) by the C
+## library's rule, which differs between systems. ilm_fx() rounds by the
+## shared rule first and formats the rounded value, which leaves no tie to
+## split; ilm_gx() does the same for "%g" (significant figures, trailing
+## zeros dropped).
+#' @keywords internal
+#' @noRd
+ilm_fx <- function(x, d) {
+  out <- trimws(formatC(ilm_disp_round(x, d), format = "f", digits = d))
+  out[is.na(x)] <- "NA"
+  out
+}
+
+#' @keywords internal
+#' @noRd
+ilm_gx <- function(x, d = 6L) {
+  out <- trimws(formatC(ilm_disp_signif(x, d), format = "g", digits = d))
+  out[is.na(x)] <- "NA"
+  out
+}
+
+## A table's numeric columns as text, as R would print them, by the shared
+## rounding, for a result that has no print of its own
+#' @keywords internal
+#' @noRd
+ilm_print_plain <- function(x, ...) {
+  d <- as.data.frame(x)
+  class(d) <- "data.frame"
+  print(ilm_print_text(d), ...)
+  invisible(x)
+}
+
+#' @export
+print.ilm_boot_ci <- function(x, ...) ilm_print_plain(x, ...)
+
+#' @export
+print.ilm_boot_diff <- function(x, ...) ilm_print_plain(x, ...)
+
+#' @export
+print.ilm_outliers <- function(x, ...) ilm_print_plain(x, ...)
+
+#' @export
+print.ilm_outliers_all <- function(x, ...) ilm_print_plain(x, ...)
+
 ## One numeric column as R would print it, by the shared rounding: see
-## ilm_describe_text()
+## ilm_print_text()
 #' @keywords internal
 #' @noRd
 ilm_print_num <- function(v, digits = getOption("digits", 7L), raw = v) {
@@ -115,13 +160,13 @@ ilm_print_num <- function(v, digits = getOption("digits", 7L), raw = v) {
 
 #' @export
 print.ilm_describe <- function(x, ...) {
-  print(ilm_describe_text(ilm_describe_rounded(x), as.data.frame(x)), ...)
+  print(ilm_print_text(ilm_describe_rounded(x), as.data.frame(x)), ...)
   invisible(x)
 }
 
 #' @export
 print.ilm_describe_na <- function(x, ...) {
-  print(ilm_describe_text(ilm_describe_rounded(x), as.data.frame(x)), ...)
+  print(ilm_print_text(ilm_describe_rounded(x), as.data.frame(x)), ...)
   invisible(x)
 }
 
@@ -130,7 +175,7 @@ print.ilm_describe_na <- function(x, ...) {
 print.ilm_describe_all <- function(x, ...) {
   d <- attr(x, "digits")
   y <- lapply(unclass(x), function(t)
-    if (is.data.frame(t)) ilm_describe_text(ilm_describe_rounded(t, d), as.data.frame(t)) else t)
+    if (is.data.frame(t)) ilm_print_text(ilm_describe_rounded(t, d), as.data.frame(t)) else t)
   attributes(y) <- list(names = names(x))
   print(y, ...)
   invisible(x)

@@ -194,11 +194,11 @@ ilm_gauss_assess <- function(x, min_n = 20L, cap = 0.06) {
   if (!discrete && nu > 20L) {
     pmin_ <- fmean(x == min(x)); pmax_ <- fmean(x == max(x))
     if (pmin_ >= 0.02 && n * pmin_ >= 5)
-      why(sprintf("%.0f%% of values sit exactly at the minimum (%s): a floor, see ilm_censor()",
-                  100 * pmin_, format(min(x), digits = 4)), "floor")
+      why(sprintf("%s%% of values sit exactly at the minimum (%s): a floor, see ilm_censor()",
+                  ilm_fx(100 * pmin_, 0), ilm_print_num(min(x), 4L)), "floor")
     if (pmax_ >= 0.02 && n * pmax_ >= 5)
-      why(sprintf("%.0f%% of values sit exactly at the maximum (%s): a ceiling, see ilm_censor()",
-                  100 * pmax_, format(max(x), digits = 4)), "ceiling")
+      why(sprintf("%s%% of values sit exactly at the maximum (%s): a ceiling, see ilm_censor()",
+                  ilm_fx(100 * pmax_, 0), ilm_print_num(max(x), 4L)), "ceiling")
   }
   if (all(x >= 0) && (min(x) - 0) < 0.05 * s) why("bounded at zero", "bounded_zero")
   if (bow > 0.1) why("right-skewed", "skewed")
@@ -237,7 +237,9 @@ ilm_gauss_result <- function(gauss, ks_d, note)
 #' @export
 print.ilm_gauss <- function(x, ...) {
   y <- unclass(x)
-  y$gauss <- round(y$gauss, 3); y$ks_d <- round(y$ks_d, 4)
+  ## by the shared rounding (ruling 272); under 1 at 3 or 4 decimals, the
+  ## print then has no tie left to split
+  y$gauss <- ilm_disp_round(y$gauss, 3); y$ks_d <- ilm_disp_round(y$ks_d, 4)
   print(y, ...)
   invisible(x)
 }
@@ -368,14 +370,14 @@ ilm_label_spacing <- function(md, secs) {
     if (md == 1) return("1 sec"); if (md == 60) return("minutely")
     if (md == 3600) return("hourly"); if (md == 86400) return("daily")
     if (md == 604800) return("weekly")
-    return(sprintf("%g secs", md))
+    return(paste(ilm_gx(md), "secs"))
   }
   if (isTRUE(all.equal(md, 1))) return("daily")
   if (isTRUE(all.equal(md, 7))) return("weekly")
   if (md >= 28 && md <= 31) return("monthly")
   if (md >= 90 && md <= 92) return("quarterly")
   if (md >= 365 && md <= 366) return("yearly")
-  sprintf("%g days", md)
+  paste(ilm_gx(md), "days")
 }
 
 #' @keywords internal
@@ -909,7 +911,7 @@ ilm_frame_issues <- function(data, cor_cut = 0.999, v_cut = 0.95, cols = NULL,
       if (is.finite(r) && abs(r) >= cor_cut &&
           !paste(num[i], num[j]) %in% dups)
         add("collinear", paste(num[i], num[j], sep = " ~ "),
-            sprintf("r = %.4f; coefficients will be unstable", r),
+            sprintf("r = %s; coefficients will be unstable", ilm_fx(r, 4)),
             paste0("Keep one, or combine them into one column (their average, ",
                    "or a score from ilm_reduce()); their separate effects ",
                    "cannot be estimated reliably."))
@@ -978,7 +980,7 @@ ilm_frame_categories <- function(data, skip, v_cut, add) {
     V <- ilm_cramer_v(a, b)
     if (is.finite(V) && V >= v_cut)
       add("redundant_categories", paste(A, B, sep = " ~ "),
-          sprintf("Cramer's V = %.3f; each largely predicts the other", V),
+          sprintf("Cramer's V = %s; each largely predicts the other", ilm_fx(V, 3)),
           paste0("Keep one, or cross them into one factor with interaction(); ",
                  "their separate effects are barely distinguishable."))
   }

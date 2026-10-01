@@ -223,10 +223,13 @@ print.ilm_var_contrib <- function(x, ...) {
   d <- as.data.frame(x); class(d) <- "data.frame"
   cat(sprintf("Variable contribution to %d clusters (%d permutations)\n",
               attr(x, "k"), attr(x, "B")))
-  d$separation <- round(d$separation, 3)
-  d$permuted <- round(d$permuted, 3)
-  d$p <- signif(d$p, 3); d$p_adj <- signif(d$p_adj, 3)
-  print(d, row.names = FALSE)
+  ## by the shared rules, and written as text (ruling 272)
+  raw <- d
+  d$separation <- ilm_disp_round(d$separation, 3)
+  d$permuted <- ilm_disp_round(d$permuted, 3)
+  raw$p <- d$p <- ilm_disp_signif(d$p, 3)
+  raw$p_adj <- d$p_adj <- ilm_disp_signif(d$p_adj, 3)
+  print(ilm_print_text(d, raw), row.names = FALSE)
   dom <- attr(x, "dominated_by")
   ## which(): a variable that could not be scored (constant, say) has no
   ## verdict, and a logical index would name it here as "NA"

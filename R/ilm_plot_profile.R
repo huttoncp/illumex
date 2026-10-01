@@ -40,8 +40,8 @@ ilm_plot_reduce <- function(x, dims = c(1, 2), by = NULL, ...) {
   by <- ilm_show_text(by)
   tinyplot::tinyplot(x = x$ind_coord[[d1]], y = x$ind_coord[[d2]], by = by,
                      type = "points",
-                     xlab = sprintf("Dim %d (%.1f%%)", dims[1], pct[dims[1]]),
-                     ylab = sprintf("Dim %d (%.1f%%)", dims[2], pct[dims[2]]),
+                     xlab = sprintf("Dim %d (%s%%)", dims[1], ilm_fx(pct[dims[1]], 1)),
+                     ylab = sprintf("Dim %d (%s%%)", dims[2], ilm_fx(pct[dims[2]], 1)),
                      ...)
   tinyplot::tinyplot_add(x = 0, type = "vline", lty = 3, col = "gray70")
   tinyplot::tinyplot_add(y = 0, type = "hline", lty = 3, col = "gray70")
