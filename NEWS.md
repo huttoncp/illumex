@@ -17,8 +17,13 @@
   inside the finest; an id repeated across a coarser level, or crossed
   groupings, are refused for now. The result keeps the shares kept (the
   smallest, median and largest) and what derives each row's chance of being
-  kept, which `ilm_subset()` carries as `attr(, "ilm_inclusion")`. A seed
-  draws the same rows every time and leaves your random stream as it was.
+  kept, which `ilm_subset()` carries as `attr(, "ilm_inclusion")`. Crossed
+  factors are drawn by factor (item 284): `by = c(rater = 0.3, item = 0.2)`
+  draws a share (or a count) of each factor's levels on its own and keeps
+  the rows whose levels were all drawn; 1 or `"all"` keeps a factor whole.
+  `within` is for nested levels only, and points a crossed pair to `by`.
+  A seed draws the same rows every time and leaves your random stream as it
+  was.
 * `ilm_subset()`, new, returns the rows and columns a function would use,
   rows first, with the original row numbers as row names.
 * `cols_fixed = TRUE` matches a `cols` pattern literally, as a substring; a

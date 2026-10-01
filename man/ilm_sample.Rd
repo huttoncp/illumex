@@ -22,8 +22,10 @@ out across the clusters; the floor \code{min} can raise it.}
 and 1; the count is rounded, and must come to at least 1. With
 \code{within}, the share of each cluster's rows, rounded within each.}
 
-\item{by}{A column whose values are the groups to draw whole; \code{NULL} draws
-rows. A missing value is a group of its own.}
+\item{by}{A column whose values are the groups to draw whole; or, for
+crossed factors, each factor named with its share, count or \code{"all"}:
+\code{c(rater = 0.3, item = 0.2)}. \code{NULL} draws rows. A missing value is a
+group, or a level, of its own.}
 
 \item{seed}{An integer seed for the draw, or \code{NULL}.}
 
@@ -40,7 +42,7 @@ given as \code{subset}.
 \description{
 Given as \code{subset} to any illumex function that takes it, \code{ilm_sample()}
 draws the rows to use. Give \code{n} for a number of rows or \code{prop} for a share
-of them. It samples in one of three ways:
+of them. It samples in one of four ways:
 }
 \details{
 \itemize{
@@ -48,6 +50,13 @@ of them. It samples in one of three ways:
 \item \strong{Whole groups}, with \code{by}: \code{n} and \code{prop} count groups, every row of a
 group drawn is kept and the other groups are left out, so a grouped
 holdout (\code{subset_negate = TRUE}) never splits a group.
+\item \strong{Crossed factors}, with \code{by} naming each factor and its share:
+\code{by = c(rater = 0.3, item = 0.2)} draws 30\% of the raters and 20\% of
+the items, each on its own, and keeps the rows whose rater and item were
+both drawn -- a two-way design sampled as one. A factor takes a share
+between 0 and 1, a count of its levels (2 or more), or 1 (or \code{"all"})
+to keep it whole, which is how a factor with few levels is kept. \code{n} and
+\code{prop} are left out, since each factor carries its own.
 \item \strong{Inside every cluster}, with \code{within}: rows are drawn inside each
 cluster and every cluster is kept -- the remedy when data are too large
 to fit but each cluster must stay in the model. The draw is proportional:
@@ -67,8 +76,9 @@ classroom, and so every school, is kept. The levels must be nested: each
 classroom in one school. A classroom id that repeats across schools is
 refused, since the data cannot say whether it is a different classroom in
 each school (give them unique ids, such as \code{paste(school, classroom)}) or
-the same classroom across schools -- crossed groupings, which \code{within}
-does not support yet. \code{by} and \code{within} together are an error.
+the same classroom across schools -- a crossed design, for which \code{within}
+is not meant: draw each factor with \code{by = c(...)}, or rows with
+\code{ilm_sample(prop = )}. \code{by} and \code{within} together are an error.
 
 The draw follows the family's rule for random numbers: with a \code{seed}, the
 same rows every time, and your own random stream is left as it was; with
@@ -84,6 +94,8 @@ ilm_describe(d, "score", subset = ilm_sample(prop = 0.5, seed = 1))
 ## a grouped holdout: the ids not drawn
 ilm_describe(d, "score", subset = ilm_sample(5, by = "id", seed = 1),
              subset_negate = TRUE)
+## half the ids and every site: the rows of the ids drawn
+ilm_describe(d, "score", subset = ilm_sample(by = c(id = 0.5, site = "all"), seed = 1))
 ## a third of every site's rows, at least 2 from each
 ilm_describe(d, "score", subset = ilm_sample(prop = 1/3, within = "site", seed = 1))
 }

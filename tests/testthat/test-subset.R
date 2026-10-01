@@ -345,7 +345,7 @@ test_that("nested levels draw inside the finest, so every level above is kept", 
   expect_error(ilm_resolve_rows(d, ilm_sample(prop = 0.2, within = c("school", "room"))),
                "give them unique ids, such as paste(school, room)", fixed = TRUE)
   expect_error(ilm_resolve_rows(d, ilm_sample(prop = 0.2, within = c("school", "room"))),
-               "crossed, which within = does not support yet", fixed = TRUE)
+               "the design is crossed: draw each factor's levels with by = c(", fixed = TRUE)
   ## crossed groupings: raters who work in every school
   d$rater <- rep(c("r1", "r2", "r3", "r4"), length.out = 94)
   expect_error(ilm_resolve_rows(d, ilm_sample(prop = 0.2, within = c("school", "rater"))),
@@ -373,4 +373,63 @@ test_that("within = restores the stream with a seed, and negates to the rows not
     within = "school", seed = 9))), "ilm_select")$subset$sample
   expect_identical(rec[c("prop", "min")], list(prop = 0.3, min = 2L))
   expect_identical(rec$seed$value, 9L)
+})
+
+## ---- crossed factors drawn by factor (item 284) ---------------------------
+
+crossed_data <- function()
+  expand.grid(rater = paste0("r", 1:10), item = paste0("i", 1:20), rep = 1:2,
+              stringsAsFactors = FALSE)
+
+test_that("by = c(rater = , item = ) keeps the rows whose levels were all drawn", {
+  d <- crossed_data()
+  r <- ilm_resolve_rows(d, ilm_sample(by = c(rater = 0.3, item = 0.2), seed = 4))
+  raters <- unique(d$rater[r$rows]); items <- unique(d$item[r$rows])
+  expect_length(raters, 3L); expect_length(items, 4L)
+  ## the keep rule: every row of a drawn rater and a drawn item, no other
+  expect_identical(r$rows, which(d$rater %in% raters & d$item %in% items))
+  f <- r$info$sample$factors
+  expect_identical(vapply(f, `[[`, "", "column"), c("rater", "item"))
+  expect_identical(vapply(f, `[[`, 1L, "levels_kept"), c(3L, 4L))
+  expect_identical(vapply(f, `[[`, 1L, "levels_given"), c(10L, 20L))
+  expect_identical(r$info$sample$seed$value, 4L)
+  ## counts against shares: 3 raters by count is 3 by share of 0.3
+  rc <- ilm_resolve_rows(d, ilm_sample(by = c(rater = 3, item = 4), seed = 4))
+  expect_identical(lengths(lapply(list(d$rater[rc$rows], d$item[rc$rows]), unique)), c(3L, 4L))
+  expect_identical(rc$info$sample$factors[[1]]$n, 3L)
+  ## a factor kept whole, as 1 or "all"
+  for (whole in list(c(rater = 3, item = 1), c(rater = "3", item = "all"),
+                     list(rater = 3, item = "all"))) {
+    rw <- ilm_resolve_rows(d, ilm_sample(by = whole, seed = 1))
+    expect_length(unique(d$item[rw$rows]), 20L)
+    expect_length(unique(d$rater[rw$rows]), 3L)
+    expect_true(rw$info$sample$factors[[2]]$whole)
+  }
+  ## one factor named works as one group column did
+  expect_length(unique(d$rater[ilm_resolve_rows(d, ilm_sample(by = c(rater = 0.5), seed = 1))$rows]), 5L)
+})
+
+test_that("crossed sampling restores the stream, negates, and says what it needs", {
+  d <- crossed_data()
+  set.seed(8); before <- .Random.seed
+  a <- ilm_resolve_rows(d, ilm_sample(by = c(rater = 0.3, item = 0.2), seed = 4))
+  expect_identical(.Random.seed, before)
+  b <- ilm_resolve_rows(d, ilm_sample(by = c(rater = 0.3, item = 0.2), seed = 4), negate = TRUE)
+  expect_identical(sort(c(a$rows, b$rows)), seq_len(nrow(d)))
+  expect_error(ilm_sample(prop = 0.2, by = c(rater = 0.3)), "leave `n` and `prop` out")
+  expect_error(ilm_sample(by = c(rater = 0.3, 0.2)), "needs its own name")
+  expect_error(ilm_sample(by = c(rater = 1.5)), "a share between 0 and 1, a count")
+  expect_error(ilm_sample(by = c(rater = 0)), "a share between 0 and 1, a count")
+  expect_error(ilm_sample(by = c("rater", "item"), prop = 0.2), "names each with its share")
+  expect_error(ilm_resolve_rows(d, ilm_sample(by = c(rater = 11))), "11 levels of rater and there are 10")
+  expect_error(ilm_resolve_rows(d, ilm_sample(by = c(rater = 0.01))), "comes to none")
+  expect_error(ilm_sample(by = c(rater = 0.3), within = "item"), "not both")
+  ## within is for nested levels; a crossed pair is pointed to by = c(...)
+  expect_error(ilm_resolve_rows(d, ilm_sample(prop = 0.2, within = c("rater", "item"))),
+               "draw each factor's levels with by = c(", fixed = TRUE)
+  ## and the result keeps the factors
+  rec <- attr(suppressMessages(ilm_describe(transform(d, y = seq_len(nrow(d))), "y",
+    subset = ilm_sample(by = c(rater = 0.3, item = "all"), seed = 2))), "ilm_select")$subset$sample
+  expect_identical(rec$factors[[2]][c("column", "whole", "levels_kept")],
+                   list(column = "item", whole = TRUE, levels_kept = 20L))
 })

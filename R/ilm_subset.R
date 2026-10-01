@@ -16,12 +16,19 @@
 #'
 #' Given as `subset` to any illumex function that takes it, `ilm_sample()`
 #' draws the rows to use. Give `n` for a number of rows or `prop` for a share
-#' of them. It samples in one of three ways:
+#' of them. It samples in one of four ways:
 #'
 #' * **Rows**, the default: `n` rows, or a share `prop` of them.
 #' * **Whole groups**, with `by`: `n` and `prop` count groups, every row of a
 #'   group drawn is kept and the other groups are left out, so a grouped
 #'   holdout (`subset_negate = TRUE`) never splits a group.
+#' * **Crossed factors**, with `by` naming each factor and its share:
+#'   `by = c(rater = 0.3, item = 0.2)` draws 30% of the raters and 20% of
+#'   the items, each on its own, and keeps the rows whose rater and item were
+#'   both drawn -- a two-way design sampled as one. A factor takes a share
+#'   between 0 and 1, a count of its levels (2 or more), or 1 (or `"all"`)
+#'   to keep it whole, which is how a factor with few levels is kept. `n` and
+#'   `prop` are left out, since each factor carries its own.
 #' * **Inside every cluster**, with `within`: rows are drawn inside each
 #'   cluster and every cluster is kept -- the remedy when data are too large
 #'   to fit but each cluster must stay in the model. The draw is proportional:
@@ -40,8 +47,9 @@
 #' classroom in one school. A classroom id that repeats across schools is
 #' refused, since the data cannot say whether it is a different classroom in
 #' each school (give them unique ids, such as `paste(school, classroom)`) or
-#' the same classroom across schools -- crossed groupings, which `within`
-#' does not support yet. `by` and `within` together are an error.
+#' the same classroom across schools -- a crossed design, for which `within`
+#' is not meant: draw each factor with `by = c(...)`, or rows with
+#' `ilm_sample(prop = )`. `by` and `within` together are an error.
 #'
 #' The draw follows the family's rule for random numbers: with a `seed`, the
 #' same rows every time, and your own random stream is left as it was; with
@@ -57,8 +65,10 @@
 #' @param prop A share of rows (or of groups) to draw, strictly between 0
 #'   and 1; the count is rounded, and must come to at least 1. With
 #'   `within`, the share of each cluster's rows, rounded within each.
-#' @param by A column whose values are the groups to draw whole; `NULL` draws
-#'   rows. A missing value is a group of its own.
+#' @param by A column whose values are the groups to draw whole; or, for
+#'   crossed factors, each factor named with its share, count or `"all"`:
+#'   `c(rater = 0.3, item = 0.2)`. `NULL` draws rows. A missing value is a
+#'   group, or a level, of its own.
 #' @param seed An integer seed for the draw, or `NULL`.
 #' @param within One column, or nested columns, whose clusters are each
 #'   sampled inside and all kept. A missing value is a cluster of its own.
@@ -75,12 +85,21 @@
 #' ## a grouped holdout: the ids not drawn
 #' ilm_describe(d, "score", subset = ilm_sample(5, by = "id", seed = 1),
 #'              subset_negate = TRUE)
+#' ## half the ids and every site: the rows of the ids drawn
+#' ilm_describe(d, "score", subset = ilm_sample(by = c(id = 0.5, site = "all"), seed = 1))
 #' ## a third of every site's rows, at least 2 from each
 #' ilm_describe(d, "score", subset = ilm_sample(prop = 1/3, within = "site", seed = 1))
 #' @export
 ilm_sample <- function(n = NULL, prop = NULL, by = NULL, seed = NULL, within = NULL,
                        min = 2L) {
-  if (is.null(n) == is.null(prop))
+  ## by named with each factor's share: a crossed design, drawn by factor
+  factors <- ilm_sample_factors(by)
+  if (!is.null(factors)) {
+    if (!is.null(n) || !is.null(prop))
+      stop("with by = c(", names(by)[1L], " = ...), each factor's share or count is in `by`; ",
+           "leave `n` and `prop` out", call. = FALSE)
+    by <- NULL
+  } else if (is.null(n) == is.null(prop))
     stop("ilm_sample() takes `n` (a number of rows) or `prop` (a share of them), ",
          "one of the two", call. = FALSE)
   if (!is.null(n) && !(is.numeric(n) && length(n) == 1L && is.finite(n) &&
@@ -93,25 +112,64 @@ ilm_sample <- function(n = NULL, prop = NULL, by = NULL, seed = NULL, within = N
                           prop > 0 && prop < 1))
     stop("`prop` must be a share strictly between 0 and 1", call. = FALSE)
   if (!is.null(by) && !(is.character(by) && length(by) == 1L && !is.na(by)))
-    stop("`by` must name one column", call. = FALSE)
+    stop("`by` names one column whose groups are drawn whole, or, for crossed factors, ",
+         "names each with its share: by = c(rater = 0.3, item = 0.2)", call. = FALSE)
   if (!is.null(within) && !(is.character(within) && length(within) >= 1L &&
                             !anyNA(within) && !anyDuplicated(within)))
     stop("`within` must name one column, or several nested ones, each once", call. = FALSE)
-  if (!is.null(by) && !is.null(within))
+  if ((!is.null(by) || !is.null(factors)) && !is.null(within))
     stop("ilm_sample() takes `by` (whole groups, the rest left out) or `within` ",
          "(rows inside every cluster, all kept), not both", call. = FALSE)
   if (!(is.numeric(min) && length(min) == 1L && is.finite(min) && min >= 1 && min == round(min)))
     stop("`min` must be a whole number of at least 1", call. = FALSE)
   if (!is.null(seed) && !(is.numeric(seed) && length(seed) == 1L && is.finite(seed)))
     stop("`seed` must be a single number, or NULL", call. = FALSE)
-  structure(list(n = if (!is.null(n)) as.integer(n), prop = prop, by = by,
+  structure(list(n = if (!is.null(n)) as.integer(n), prop = prop, by = by, factors = factors,
                  within = within, min = if (!is.null(within)) as.integer(min),
                  seed = if (!is.null(seed)) as.integer(seed)),
             class = "ilm_sample")
 }
 
+## `by` with a share or count per factor (item 284): c(rater = 0.3, item =
+## 0.2), or a list; each value a share in (0, 1), a count of levels (a whole
+## number of at least 2), or 1 or "all" to keep the factor whole. NULL when
+## `by` names one column the old way.
+#' @keywords internal
+#' @noRd
+ilm_sample_factors <- function(by) {
+  if (is.null(by) || is.null(names(by))) return(NULL)
+  nm <- names(by)
+  if (any(is.na(nm) | !nzchar(nm)) || anyDuplicated(nm))
+    stop("every factor in `by` needs its own name: by = c(rater = 0.3, item = 0.2)",
+         call. = FALSE)
+  lapply(stats::setNames(seq_along(by), nm), function(i) {
+    v <- by[[i]]
+    bad <- function() stop("`by` gives ", nm[i], " = ", format(v), "; each factor takes a share ",
+                           "between 0 and 1, a count of levels (2 or more), or 1 or \"all\" to ",
+                           "keep it whole", call. = FALSE)
+    if (length(v) != 1L || is.na(v)) bad()
+    if (identical(tolower(as.character(v)), "all")) return(list(whole = TRUE))
+    x <- suppressWarnings(as.numeric(v))
+    if (is.na(x)) bad()
+    if (x == 1) list(whole = TRUE)
+    else if (x > 0 && x < 1) list(prop = x)
+    else if (x >= 2 && x == round(x)) list(n = as.integer(x))
+    else bad()
+  })
+}
+
 #' @export
 print.ilm_sample <- function(x, ...) {
+  if (!is.null(x$factors)) {
+    each <- vapply(names(x$factors), function(f) {
+      s <- x$factors[[f]]
+      paste0(f, " ", if (isTRUE(s$whole)) "all" else if (!is.null(s$n)) paste(s$n, "levels")
+             else paste0(format(100 * s$prop), "%"))
+    }, "")
+    cat("<ilm_sample> rows whose levels were all drawn: ", paste(each, collapse = ", "),
+        ", seed ", if (is.null(x$seed)) "none" else x$seed, "\n", sep = "")
+    return(invisible(x))
+  }
   unit <- if (!is.null(x$by)) "groups" else "rows"
   what <- if (!is.null(x$n)) paste(x$n, unit) else paste0(format(100 * x$prop), "% of ", unit)
   how <- if (!is.null(x$by)) paste0(" of ", x$by)
@@ -227,6 +285,7 @@ ilm_draw_sample <- function(data, s) {
   seed_rec <- c(if (!is.null(s$seed)) list(value = s$seed),
                 list(kind = kinds[1], normal_kind = kinds[2], sample_kind = kinds[3]))
   if (!is.null(s$within)) return(ilm_draw_within(data, s, seed_rec))
+  if (!is.null(s$factors)) return(ilm_draw_factors(data, s, seed_rec))
   units <- if (is.null(s$by)) seq_len(N) else {
     g <- data[[s$by]]
     match(g, unique(g))                   # NA is a group of its own
@@ -247,6 +306,45 @@ ilm_draw_sample <- function(data, s) {
   list(keep = units %in% chosen,
        sample = c(if (!is.null(s$n)) list(n = s$n), if (!is.null(s$prop)) list(prop = s$prop),
                   if (!is.null(s$by)) list(by = s$by), list(seed = seed_rec)))
+}
+
+## A crossed design drawn by factor (item 284): each factor's levels are
+## drawn on their own -- a share, a count, or all of them -- and a row is
+## kept when every one of its levels was drawn.
+#' @keywords internal
+#' @noRd
+ilm_draw_factors <- function(data, s, seed_rec) {
+  N <- nrow(data)
+  miss <- setdiff(names(s$factors), names(data))
+  if (length(miss))
+    stop("ilm_sample(by = ) names column(s) not in the data: ", paste(miss, collapse = ", "),
+         call. = FALSE)
+  if (!is.null(s$seed)) {
+    ilm_rng_restore(s$seed)
+    set.seed(s$seed)
+  }
+  keep <- rep(TRUE, N)
+  rec <- list()
+  for (f in names(s$factors)) {
+    sp <- s$factors[[f]]
+    g <- data[[f]]
+    u <- match(g, unique(g))              # NA is a level of its own
+    K <- max(u, 0L)
+    k <- if (isTRUE(sp$whole)) K else if (!is.null(sp$n)) sp$n else as.integer(round(sp$prop * K))
+    if (k > K)
+      stop("ilm_sample(by = ) asks for ", k, " levels of ", f, " and there are ", K, call. = FALSE)
+    if (k < 1L)
+      stop("ilm_sample(by = ) asks for ", format(sp$prop), " of ", f, "'s ", K,
+           " levels, which comes to none", call. = FALSE)
+    chosen <- if (k == K) seq_len(K) else sample.int(K, k)
+    keep <- keep & u %in% chosen
+    rec[[length(rec) + 1L]] <- c(list(column = f),
+                                 if (isTRUE(sp$whole)) list(whole = TRUE),
+                                 if (!is.null(sp$n)) list(n = sp$n),
+                                 if (!is.null(sp$prop)) list(prop = sp$prop),
+                                 list(levels_given = K, levels_kept = k))
+  }
+  list(keep = keep, sample = list(factors = rec, seed = seed_rec))
 }
 
 ## Rows drawn inside every cluster, all clusters kept (item 283): each
@@ -316,10 +414,13 @@ ilm_within_clusters <- function(data, within) {
         under <- sum(pairs$fine == rep_id[1L])
         stop(sprintf(paste0(
           "ilm_sample(within = ): `%s` values repeat across `%s` (\"%s\" is under %d of ",
-          "them), so the levels are not nested. If a `%s` value names a different unit ",
-          "under each `%s`, give them unique ids, such as paste(%s, %s); if it is the same ",
-          "unit across them, the groupings are crossed, which within = does not support yet."),
-          lv[i + 1L], lv[i], rep_id[1L], under, lv[i + 1L], lv[i], lv[i], lv[i + 1L]),
+          "them), so the levels are not nested, and within = is for nested levels only. If a ",
+          "`%s` value names a different unit under each `%s`, give them unique ids, such as ",
+          "paste(%s, %s). If it is the same unit across them, the design is crossed: draw ",
+          "each factor's levels with by = c(%s = 0.5, %s = 0.5), or rows with ",
+          "ilm_sample(prop = )."),
+          lv[i + 1L], lv[i], rep_id[1L], under, lv[i + 1L], lv[i], lv[i], lv[i + 1L],
+          lv[i], lv[i + 1L]),
           call. = FALSE)
       }
     }
