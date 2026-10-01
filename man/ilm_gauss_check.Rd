@@ -19,7 +19,8 @@ freedom all score 0.07 or less, while normal data score 1.}
 }
 \value{
 A list with \code{gauss} (0-1), \code{ks_d} (the raw distance) and
-\code{gauss_note} (empty when agreement is high).
+\code{gauss_note} (empty when agreement is high and there is no floor or
+ceiling).
 }
 \description{
 Reports an agreement index on 0-1 and, when it is low, the reason.
@@ -29,6 +30,18 @@ The index measures the size of the departure from normal, not its kind. A
 variable scoring 0.3 may be skewed, heavy-tailed, lumpy or piled on a few
 values; \code{gauss_note} names which, and a plot of it -- \code{ilm_plot(data, x)}
 -- shows it.
+
+A pile of values at a bound -- a detection limit, a capped scale, a
+count's excess zeros -- is named first, whatever the index, on any
+variable with at least 5 distinct values: when the count at the lowest
+(or highest) value is at least 5 and 2\% of the values, at least twice the
+count at the next value, and significantly above it (a one-sided exact
+test at 0.001). The advice follows the variable's kind. A continuous
+variable's floor or ceiling points to \code{illume::ilm_censor()}. A count's excess
+zeros point to a two-part or zero-inflated model. On a rating scale
+(whole numbers from 1 spanning at most 10 points, or 0 to 10), a floor or
+ceiling means the scale cannot separate people at that end, and points to
+an ordinal model.
 
 This deliberately does not report a normality test p-value. Any test of
 exact normality rejects everything once \code{n} is large, so the p-value answers

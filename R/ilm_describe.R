@@ -79,6 +79,18 @@ ilm_n_modes <- function(x, rel = 0.10, drop = 0.5) {
 #' values; `gauss_note` names which, and a plot of it -- `ilm_plot(data, x)`
 #' -- shows it.
 #'
+#' A pile of values at a bound -- a detection limit, a capped scale, a
+#' count's excess zeros -- is named first, whatever the index, on any
+#' variable with at least 5 distinct values: when the count at the lowest
+#' (or highest) value is at least 5 and 2% of the values, at least twice the
+#' count at the next value, and significantly above it (a one-sided exact
+#' test at 0.001). The advice follows the variable's kind. A continuous
+#' variable's floor or ceiling points to `illume::ilm_censor()`. A count's excess
+#' zeros point to a two-part or zero-inflated model. On a rating scale
+#' (whole numbers from 1 spanning at most 10 points, or 0 to 10), a floor or
+#' ceiling means the scale cannot separate people at that end, and points to
+#' an ordinal model.
+#'
 #' This deliberately does not report a normality test p-value. Any test of
 #' exact normality rejects everything once `n` is large, so the p-value answers
 #' a question nobody asked. What matters is how far from normal a variable is,
@@ -100,7 +112,8 @@ ilm_n_modes <- function(x, rel = 0.10, drop = 0.5) {
 #'   lognormal, a two-humped mixture, a Poisson count and t with 3 degrees of
 #'   freedom all score 0.07 or less, while normal data score 1.
 #' @return A list with `gauss` (0-1), `ks_d` (the raw distance) and
-#'   `gauss_note` (empty when agreement is high).
+#'   `gauss_note` (empty when agreement is high and there is no floor or
+#'   ceiling).
 #' @references
 #' Lilliefors, H. W. (1967). On the Kolmogorov-Smirnov test for normality with
 #' mean and variance unknown. Journal of the American Statistical Association,
@@ -145,23 +158,80 @@ ilm_kurt2 <- function(x) {
   ((n + 1) * g2 + 6) * (n - 1) / ((n - 2) * (n - 3))
 }
 
+## A floor or a ceiling (Craig's items 274 and 275): a pile of values at a
+## bound that no distribution's shape produces -- a detection limit, a
+## capped scale, a count with excess zeros. Checked on every numeric
+## variable with at least 5 distinct values, before the note's other checks,
+## by the rule the floor-rule studies confirmed (dev/studies/floor_rule3.R):
+## the count at the bound c1 is at least 5 and 2% of the values, at least
+## twice the count c2 at the next value inward, and significantly above it,
+## the one-sided exact test of c1 against c1 + c2 halves at 0.001. Returns
+## each bound's reason, worded by the variable's kind, and its code.
+#' @keywords internal
+#' @noRd
+ILM_FLOOR_WORDS <- list(
+  floor = "%s%% of values sit exactly at the minimum (%s): a floor, see ilm_censor()",
+  ceiling = "%s%% of values sit exactly at the maximum (%s): a ceiling, see ilm_censor()",
+  zeros = "%s%% of values are 0, far more than at the next value: excess zeros, see a two-part or zero-inflated model",
+  rating_floor = "%s%% of values sit at the scale's lowest point (%s): it cannot separate people there, see an ordinal model",
+  rating_ceiling = "%s%% of values sit at the scale's highest point (%s): it cannot separate people there, see an ordinal model")
+
+#' @keywords internal
+#' @noRd
+ilm_floor_reasons <- function(x) {
+  n <- length(x)
+  u <- sort(unique(x)); nu <- length(u)
+  if (nu < 5L) return(list(text = character(0), kind = character(0)))
+  cnt <- tabulate(match(x, u), nu)
+  fires <- function(c1, c2)
+    c1 >= 5 && c1 / n >= 0.02 && c1 >= 2 * c2 &&
+      stats::pbinom(c1 - 1, c1 + c2, 0.5, lower.tail = FALSE) <= 0.001
+  whole <- all(abs(x - round(x)) < 1e-8)
+  ## a rating scale as such scales are usually scored -- 1 to at most 11
+  ## points, or 0 to 10 -- and a count otherwise, when whole and not negative
+  ## (a scale scored from 0, as 0 to 4, reads as a count)
+  rating <- whole && ((u[1L] >= 1 && u[nu] - u[1L] <= 10) || (u[1L] == 0 && u[nu] == 10))
+  count <- whole && !rating && u[1L] >= 0
+  text <- character(0); kind <- character(0)
+  if (fires(cnt[1L], cnt[2L])) {
+    w <- if (rating) "rating_floor" else if (count && u[1L] == 0) "zeros" else "floor"
+    pct <- ilm_fx(100 * cnt[1L] / n, 0)
+    text <- c(text, if (w == "zeros") sprintf(ILM_FLOOR_WORDS[[w]], pct)
+                    else sprintf(ILM_FLOOR_WORDS[[w]], pct, ilm_print_num(u[1L], 4L)))
+    kind <- c(kind, "floor")
+  }
+  if (fires(cnt[nu], cnt[nu - 1L])) {
+    w <- if (rating) "rating_ceiling" else "ceiling"
+    text <- c(text, sprintf(ILM_FLOOR_WORDS[[w]], ilm_fx(100 * cnt[nu] / n, 0),
+                            ilm_print_num(u[nu], 4L)))
+    kind <- c(kind, "ceiling")
+  }
+  list(text = text, kind = kind)
+}
+
 ## The assessment behind ilm_gauss_check(): the score, the distance, and the
 ## note's reasons, the first of them the kind of departure that most changes
-## what to do next.
+## what to do next. A floor or a ceiling comes first, whatever the score.
 #' @keywords internal
 #' @noRd
 ilm_gauss_assess <- function(x, min_n = 20L, cap = 0.06) {
   x <- x[is.finite(x)]; n <- length(x)
+  fl <- ilm_floor_reasons(x)
+  ## the note: a floor or ceiling first, then the other reasons, two at most
+  note_of <- function(text, kinds) {
+    text <- c(fl$text, text); kinds <- c(fl$kind, kinds)
+    list(note = paste(utils::head(text, 2L), collapse = "; "),
+         kind = if (length(kinds)) kinds[1L] else "none")
+  }
   ## values so large their spread overflows (near 1e300, or 1e300 beside
   ## ordinary values) have no finite sd to assess a shape against
   if (n >= min_n && !is.finite(fsd(x)))
-    return(list(gauss = NA_real_, ks_d = NA_real_,
-                note = "values too large to assess", kind = "not_assessed"))
+    return(c(list(gauss = NA_real_, ks_d = NA_real_),
+             note_of("values too large to assess", "not_assessed")))
   if (n < min_n || fsd(x) == 0)
-    return(list(gauss = NA_real_, ks_d = NA_real_,
-                note = if (n >= min_n) "constant (zero variance)"
-                       else "n too small to assess",
-                kind = "not_assessed"))
+    return(c(list(gauss = NA_real_, ks_d = NA_real_),
+             note_of(if (n >= min_n) "constant (zero variance)" else "n too small to assess",
+                     "not_assessed")))
   D <- ilm_gauss_d(x)
   ## the 95th percentile of D for genuinely normal data of this size (0.887 to
   ## 0.905 times 1/sqrt(n) for n from 100 to 2,000; dev/studies/gauss_noise.R),
@@ -170,7 +240,7 @@ ilm_gauss_assess <- function(x, min_n = 20L, cap = 0.06) {
   score <- 1 - min(1, max(0, (D - Dref) / cap))
 
   if (score >= 0.95)
-    return(list(gauss = score, ks_d = D, note = "", kind = "none"))
+    return(c(list(gauss = score, ks_d = D), note_of(character(0), character(0))))
 
   s <- fsd(x)
   ku <- ilm_kurt2(x)
@@ -187,27 +257,15 @@ ilm_gauss_assess <- function(x, min_n = 20L, cap = 0.06) {
   ## (a kernel density over discrete values is spiky, so skip modes there)
   if (!discrete && ilm_n_modes(x) >= 2L) why("multimodal (check for subgroups)", "multimodal")
   if (discrete) why(sprintf("discrete (%d distinct values)", nu), "discrete")
-  ## A stack of identical values at one end of a continuous variable is not a
-  ## shape a distribution produces; it is a limit. A detection floor, an
-  ## instrument ceiling, a capped scale. It is worth naming before skewness is,
-  ## because the remedy is different: ilm_censor(), not a transformation.
-  if (!discrete && nu > 20L) {
-    pmin_ <- fmean(x == min(x)); pmax_ <- fmean(x == max(x))
-    if (pmin_ >= 0.02 && n * pmin_ >= 5)
-      why(sprintf("%s%% of values sit exactly at the minimum (%s): a floor, see ilm_censor()",
-                  ilm_fx(100 * pmin_, 0), ilm_print_num(min(x), 4L)), "floor")
-    if (pmax_ >= 0.02 && n * pmax_ >= 5)
-      why(sprintf("%s%% of values sit exactly at the maximum (%s): a ceiling, see ilm_censor()",
-                  ilm_fx(100 * pmax_, 0), ilm_print_num(max(x), 4L)), "ceiling")
-  }
+  ## (a floor or ceiling, checked first, is in ilm_floor_reasons())
   if (all(x >= 0) && (min(x) - 0) < 0.05 * s) why("bounded at zero", "bounded_zero")
   if (bow > 0.1) why("right-skewed", "skewed")
   if (bow < -0.1) why("left-skewed", "skewed")
   if (ku > 1) why("heavy-tailed", "heavy_tailed")
   if (ku < -1) why("light-tailed / flat", "light_tailed")
-  if (!length(reasons)) why("departs from normal, no single dominant cause", "unclear")
-  list(gauss = score, ks_d = D, note = paste(utils::head(reasons, 2L), collapse = "; "),
-       kind = kinds[1L])
+  if (!length(reasons) && !length(fl$text))
+    why("departs from normal, no single dominant cause", "unclear")
+  c(list(gauss = score, ks_d = D), note_of(reasons, kinds))
 }
 
 ## ---- describe --------------------------------------------------------------

@@ -4,6 +4,21 @@
   `ilm_outliers_all()`'s) are no longer rounded in the result (item 289):
   they keep their full value, and their prints round them, to 4 and 3
   decimals, by the shared rule. What prints is unchanged.
+* A floor or a ceiling is named first in `gauss_note`, whatever the index,
+  on every numeric variable with at least 5 distinct values (items 274 and
+  275): when the count at the bound is at least 5 and 2% of the values, at
+  least twice the next value's count, and significantly above it (one-sided
+  exact test at 0.001). The rule is the one the floor-rule studies
+  confirmed, at the stricter ratio of 2 (`dev/studies/floor_rule3.R`). It
+  was checked only on continuous variables with more than 20 distinct
+  values before. The advice follows the variable's kind:
+  - a continuous floor or ceiling: "12% of values sit exactly at the
+    minimum (0.5): a floor, see ilm_censor()", as before;
+  - a count's excess zeros: "68% of values are 0, far more than at the next
+    value: excess zeros, see a two-part or zero-inflated model";
+  - a rating scale's floor or ceiling: "30% of values sit at the scale's
+    lowest point (1): it cannot separate people there, see an ordinal
+    model", and the same at the highest point.
 * A description prints the same numbers on every computer (item 272).
   `ilm_describe()`, `ilm_describe_all()`, `ilm_describe_na()` and the
   clusters' table in `ilm_describe_clusters()` round by the shared display
