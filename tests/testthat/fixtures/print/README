@@ -9,3 +9,4 @@ re-recorded at bdc6262 by dev/make_print_fixtures.R, deliberately: describe_gaus
 re-recorded at the floor rule (Craig's items 274 and 275), deliberately: describe_all.txt and describe_all_numeric.txt, downtime's note leads with its excess zeros (68% are 0, far more than at the next value)
 re-recorded at the short scales (Craig's item 292), deliberately: describe_all.txt and describe_all_numeric.txt, downtime (whole, 0 to 8) may be a count or a rating, so its note names both readings (68% are 0, far above the next value: excess zeros if a count ...; if a rating, ...)
 re-recorded at no distinct clusters (Craig's item 259), deliberately: cluster.txt, k = 1 on the sample data, so the one-row table gives way to "No distinct clusters" and what describes a continuum
+re-recorded at small clusters (Craig's item 291), deliberately: profile_na.txt, clusters 2 and 3, marked small, open "is too small to describe reliably: 5 rows, 3.3% of the data"; every figure stays

@@ -1,5 +1,10 @@
 # illumex 0.0.8.9003
 
+* A cluster that `ilm_cluster()` marks small opens its paragraph in a
+  profile by saying it is too small to describe reliably (item 291):
+  "Cluster 3 is too small to describe reliably: 2 rows, 1.3% of the data
+  (stable)." Its figures are all still given; the closing sentence keeps
+  that it could be a real minority pattern or a data problem.
 * `ilm_boot_diff()`'s `p_superiority` and `ilm_outliers()`'s `score` (and
   `ilm_outliers_all()`'s) are no longer rounded in the result (item 289):
   they keep their full value, and their prints round them, to 4 and 3
