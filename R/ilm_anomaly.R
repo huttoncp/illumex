@@ -335,6 +335,24 @@ ilm_anomaly_iforest <- function(data, sel, ntrees, alpha, seed,
 #' little hot -- about 0.064 of clean rows fall below 0.05 rather than 0.05 of
 #' them -- so read it as a ranking rather than as a test.
 #'
+#' @section When it over-flags:
+#'
+#' The reference assumes normal noise around the structure, so the scan flags
+#' rows that are not anomalous when the noise has heavier tails, when the
+#' rows fall into clusters, and with few columns. On clean data with no
+#' anomalies, the share of datasets with at least one flagged row was 0.84
+#' to 1.00 with lognormal noise, 0.01 to 0.17 with clustered rows, and up to
+#' 0.125 with normal noise and 5 columns (150 to 1,000 rows, 5 to 15
+#' columns; `dev/studies/anomaly_calibration3.R`).
+#'
+#' The scan therefore checks its own residuals, and warns when their tails
+#' are heavier than all but 2 of 40 reference datasets' (p <= 0.05, with the
+#' default `B`). The warning covers heavy tails -- on clean t3 and lognormal
+#' data with 400 rows or more and 8 or more columns it fired in 0.99 to 1.00
+#' of datasets -- but not clustered data, whose residuals' tails are not
+#' heavier: there it fired about as often as on clean normal data (0.05 to
+#' 0.135). Rows that fall into groups are [ilm_cluster()]'s to find.
+#'
 #' @section Size:
 #' On one core of a 16 GB Windows machine (`dev/studies/scale_check.R` in the source) the
 #' default method took 32 seconds at 10,000 rows and 13 minutes at 50,000 --
@@ -492,6 +510,11 @@ ilm_anomaly <- function(data, cols = NULL, method = c("reconstruction", "iforest
   obs <- ilm_anom_score(Z, k, trim)
   ref <- ilm_anom_null(Z, k, trim, obs$score, B, progress)
   null <- ref$null
+  ## the tail check (Craig's items 88, 144 and 282): the residuals' tails
+  ## against the reference's, warned on at p <= 0.05
+  tail_p <- (1 + sum(ref$tail >= ilm_anom_tail(obs, k, trim))) / (B + 1)
+  if (tail_p <= 0.05)
+    warning(sprintf(ILM_ANOM_TAIL_WARNING, ilm_disp(tail_p, "p")$text), call. = FALSE)
 
   pv <- (1 + vapply(obs$score, function(s) sum(null >= s), 0L)) /
     (length(null) + 1)
@@ -507,7 +530,29 @@ ilm_anomaly <- function(data, cols = NULL, method = c("reconstruction", "iforest
             method = "reconstruction", calibrated = TRUE,
             null_curve = ref$curve,
             residual = obs$residual, columns = num, trim = trim,
-            n_null = length(null), alpha = alpha, dropped = drop), seed))
+            n_null = length(null), alpha = alpha, dropped = drop,
+            tail_p = tail_p), seed))
+}
+
+## The warning, one constant (Craig's item 282)
+ILM_ANOM_TAIL_WARNING <- paste0(
+  "ilm_anomaly(): the residuals have heavier tails than the reference assumes ",
+  "(tail check p = %s), and on such data the scan flags rows that are not ",
+  "anomalous. Read the flags as rows to look at, not as findings.")
+
+## How heavy the residuals' tails are: the 99th percentile of the absolute
+## residuals over the 75th, each column centred and scaled robustly, on the
+## rows the fit kept (the anomaly calibration's tail check, stage 2 and 3)
+#' @keywords internal
+#' @noRd
+ilm_anom_tail <- function(f, k, trim) {
+  R <- f$residual
+  nkeep <- max(k + 2L, floor(nrow(R) * (1 - trim)))
+  R <- R[order(f$score)[seq_len(nkeep)], , drop = FALSE]
+  s <- apply(R, 2L, stats::mad)
+  s[!is.finite(s) | s <= 0] <- 1
+  a <- abs(sweep(sweep(R, 2L, apply(R, 2L, stats::median), "-"), 2L, s, "/"))
+  unname(stats::quantile(a, 0.99) / stats::quantile(a, 0.75))
 }
 
 ## The null: the same structure, the same noise, no anomalies. Returns the
@@ -524,17 +569,15 @@ ilm_anom_null <- function(Z, k, trim, score, B, progress) {
   rvar <- apply(Rin, 2L, function(z) stats::mad(z)^2) * dfc
   rvar[!is.finite(rvar) | rvar <= 0] <- .Machine$double.eps
 
-  sim <- function(rv, reps) {
-    unlist(lapply(seq_len(reps), function(b) {
-      U <- matrix(stats::rnorm(n * k), n, k)
-      E <- vapply(seq_len(p),
-                  function(j) stats::rnorm(n, 0, sqrt(rv[j])), numeric(n))
-      ## standardised and scored exactly as the observed matrix was, so the
-      ## two are the same pipeline and not merely similar ones
-      ilm_anom_score(scale(U %*% diag(d / sqrt(n), k, k) %*% t(V) + E),
-                     k, trim)$score
-    }))
+  fit_one <- function(rv) {
+    U <- matrix(stats::rnorm(n * k), n, k)
+    E <- vapply(seq_len(p),
+                function(j) stats::rnorm(n, 0, sqrt(rv[j])), numeric(n))
+    ## standardised and scored exactly as the observed matrix was, so the
+    ## two are the same pipeline and not merely similar ones
+    ilm_anom_score(scale(U %*% diag(d / sqrt(n), k, k) %*% t(V) + E), k, trim)
   }
+  sim <- function(rv, reps) unlist(lapply(seq_len(reps), function(b) fit_one(rv)$score))
   pb <- ilm_progress(B + 3L, progress, "simulating the reference")
   cal <- sim(rvar, 3L); pb$tick(3L)
   mo <- stats::median(score); mc <- stats::median(cal)
@@ -542,7 +585,13 @@ ilm_anom_null <- function(Z, k, trim, score, B, progress) {
   ## Kept per simulated dataset rather than pooled, because the plot needs
   ## to know what score to EXPECT at each rank, not just the pooled null.
   nullm <- matrix(NA_real_, n, B)
-  for (b in seq_len(B)) { nullm[, b] <- sim(rvar, 1L); pb$tick(3L + b) }
+  tail <- numeric(B)
+  for (b in seq_len(B)) {
+    f <- fit_one(rvar)
+    nullm[, b] <- f$score
+    tail[b] <- ilm_anom_tail(f, k, trim)
+    pb$tick(3L + b)
+  }
   pb$done()
   null <- as.vector(nullm)
 
@@ -555,7 +604,7 @@ ilm_anom_null <- function(Z, k, trim, score, B, progress) {
   nullq <- t(apply(srt, 1L, stats::quantile, probs = c(0.025, 0.5, 0.975),
                    names = FALSE, na.rm = TRUE))
   colnames(nullq) <- c("lo", "mid", "hi")
-  list(null = null, curve = nullq)
+  list(null = null, curve = nullq, tail = tail)
 }
 
 #' @export
