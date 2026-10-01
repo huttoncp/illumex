@@ -5,20 +5,33 @@
   they keep their full value, and their prints round them, to 4 and 3
   decimals, by the shared rule. What prints is unchanged.
 * A floor or a ceiling is named first in `gauss_note`, whatever the index,
-  on every numeric variable with at least 5 distinct values (items 274 and
-  275): when the count at the bound is at least 5 and 2% of the values, at
-  least twice the next value's count, and significantly above it (one-sided
-  exact test at 0.001). The rule is the one the floor-rule studies
-  confirmed, at the stricter ratio of 2 (`dev/studies/floor_rule3.R`). It
-  was checked only on continuous variables with more than 20 distinct
-  values before. The advice follows the variable's kind:
+  on every numeric variable with at least 5 distinct values, or 4 on a
+  short scale (items 274, 275 and 292): when the count at the bound is at
+  least 5 and 2% of the values, at least twice the next value's count, and
+  significantly above it (one-sided exact test at 0.001). The rule is the
+  one the floor-rule studies confirmed, at the stricter ratio of 2
+  (`dev/studies/floor_rule3.R`). It was checked only on continuous
+  variables with more than 20 distinct values before. A short scale is
+  whole numbers spanning at most 10 points, read as below, or an ordered
+  factor; a 3-point scale or a 0/1 variable is not read. The advice follows
+  the variable's kind:
   - a continuous floor or ceiling: "12% of values sit exactly at the
     minimum (0.5): a floor, see ilm_censor()", as before;
-  - a count's excess zeros: "68% of values are 0, far more than at the next
-    value: excess zeros, see a two-part or zero-inflated model";
-  - a rating scale's floor or ceiling: "30% of values sit at the scale's
-    lowest point (1): it cannot separate people there, see an ordinal
-    model", and the same at the highest point.
+  - a count's excess zeros: "68% are 0, far above the next value: excess
+    zeros, see a two-part or zero-inflated model";
+  - a rating scale's floor or ceiling -- whole numbers from 1 spanning at
+    most 10 points, or symmetric about 0 (-3 to 3), or an ordered factor's
+    levels: "30% of values sit at the scale's lowest point (-3): it cannot
+    separate people there, see an ordinal model", and the same at the
+    highest point. An ordinal model uses only the order, so a scale
+    centred on 0 needs no shifting first;
+  - whole numbers from 0 to at most 10, which may be a count or a rating
+    (a 0-3 PHQ-9 item, a 0-3 count of visits), name both: "68% are 0, far
+    above the next value: excess zeros if a count (see a two-part or
+    zero-inflated model); if a rating, it can't separate people there (see
+    an ordinal model)", and at the top, "20% are 3, far above the next
+    value: a cap if a count (see ilm_censor()); if a rating, it can't
+    separate people there (see an ordinal model)".
 * A description prints the same numbers on every computer (item 272).
   `ilm_describe()`, `ilm_describe_all()`, `ilm_describe_na()` and the
   clusters' table in `ilm_describe_clusters()` round by the shared display

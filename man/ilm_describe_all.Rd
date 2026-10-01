@@ -56,7 +56,9 @@ describe the variable better than the mean and SD:
 \code{probs = c(0.25, 0.5, 0.75)}.}
 
 \item{dispersion}{Add the variance-to-mean ratio for non-negative integer
-variables. Meaningful only if you intend to model the variable as a count.}
+variables. Meaningful only if you intend to model the variable as a count.
+Shifting a rating scale's values (-3 to 3 into 1 to 7) changes this
+column, not the scale.}
 
 \item{class}{\code{"all"}, or one or more of \code{"numeric"}, \code{"categorical"},
 \code{"logical"}, \code{"time"}.}

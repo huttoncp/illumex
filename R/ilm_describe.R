@@ -80,16 +80,28 @@ ilm_n_modes <- function(x, rel = 0.10, drop = 0.5) {
 #' -- shows it.
 #'
 #' A pile of values at a bound -- a detection limit, a capped scale, a
-#' count's excess zeros -- is named first, whatever the index, on any
-#' variable with at least 5 distinct values: when the count at the lowest
-#' (or highest) value is at least 5 and 2% of the values, at least twice the
-#' count at the next value, and significantly above it (a one-sided exact
-#' test at 0.001). The advice follows the variable's kind. A continuous
-#' variable's floor or ceiling points to `illume::ilm_censor()`. A count's excess
-#' zeros point to a two-part or zero-inflated model. On a rating scale
-#' (whole numbers from 1 spanning at most 10 points, or 0 to 10), a floor or
-#' ceiling means the scale cannot separate people at that end, and points to
-#' an ordinal model.
+#' count's excess zeros -- is named first, whatever the index: when the
+#' count at the lowest (or highest) value is at least 5 and 2% of the
+#' values, at least twice the count at the next value, and significantly
+#' above it (a one-sided exact test at 0.001). It is looked for on a
+#' variable with at least 5 distinct values, or 4 on a short scale, so that
+#' a 0-3 item is read; a 3-point scale or a 0/1 variable is not. The advice
+#' follows the variable's kind:
+#' - a continuous variable's floor or ceiling points to `illume::ilm_censor()`;
+#' - a count's excess zeros point to a two-part or zero-inflated model;
+#' - on a rating scale -- whole numbers from 1 spanning at most 10 points,
+#'   or symmetric about 0 and spanning at most 10 (-3 to 3, say) -- a floor
+#'   or ceiling means the scale cannot separate people at that end, and
+#'   points to an ordinal model;
+#' - whole numbers from 0 to at most 10 may be a count or a rating, so the
+#'   note names both readings and both remedies.
+#'
+#' An ordered factor is a rating scale: [ilm_describe()]'s note for it
+#' leads with a floor or ceiling, named by the level's label.
+#'
+#' An ordinal model uses only the order of a scale's levels, so a scale
+#' centred on 0 needs no shifting to positive values before one is fitted.
+#' Shifting the values changes the dispersion column, not the scale.
 #'
 #' This deliberately does not report a normality test p-value. Any test of
 #' exact normality rejects everything once `n` is large, so the p-value answers
@@ -160,53 +172,80 @@ ilm_kurt2 <- function(x) {
 
 ## A floor or a ceiling (Craig's items 274 and 275): a pile of values at a
 ## bound that no distribution's shape produces -- a detection limit, a
-## capped scale, a count with excess zeros. Checked on every numeric
-## variable with at least 5 distinct values, before the note's other checks,
-## by the rule the floor-rule studies confirmed (dev/studies/floor_rule3.R):
-## the count at the bound c1 is at least 5 and 2% of the values, at least
-## twice the count c2 at the next value inward, and significantly above it,
-## the one-sided exact test of c1 against c1 + c2 halves at 0.001. Returns
-## each bound's reason, worded by the variable's kind, and its code.
+## capped scale, a count with excess zeros. Checked before the note's other
+## checks, by the rule the floor-rule studies confirmed
+## (dev/studies/floor_rule3.R): the count at the bound c1 is at least 5 and
+## 2% of the values, at least twice the count c2 at the next value inward,
+## and significantly above it, the one-sided exact test of c1 against
+## c1 + c2 halves at 0.001. It needs at least 5 distinct values, or 4 on a
+## short scale -- whole numbers spanning at most 10 points, or an ordered
+## factor's levels (item 292) -- so that a scale of 0 to 3 is read, while a
+## 3-point scale or a 0/1 variable, whose pile at an end is only its
+## coarseness, is not. Returns each bound's reason, worded by the variable's
+## kind, and its code.
 #' @keywords internal
 #' @noRd
 ILM_FLOOR_WORDS <- list(
   floor = "%s%% of values sit exactly at the minimum (%s): a floor, see ilm_censor()",
   ceiling = "%s%% of values sit exactly at the maximum (%s): a ceiling, see ilm_censor()",
-  zeros = "%s%% of values are 0, far more than at the next value: excess zeros, see a two-part or zero-inflated model",
+  zeros = "%s%% are 0, far above the next value: excess zeros, see a two-part or zero-inflated model",
   rating_floor = "%s%% of values sit at the scale's lowest point (%s): it cannot separate people there, see an ordinal model",
-  rating_ceiling = "%s%% of values sit at the scale's highest point (%s): it cannot separate people there, see an ordinal model")
+  rating_ceiling = "%s%% of values sit at the scale's highest point (%s): it cannot separate people there, see an ordinal model",
+  either_floor = "%s%% are 0, far above the next value: excess zeros if a count (see a two-part or zero-inflated model); if a rating, it can't separate people there (see an ordinal model)",
+  either_ceiling = "%s%% are %s, far above the next value: a cap if a count (see ilm_censor()); if a rating, it can't separate people there (see an ordinal model)")
+
+## The kind of variable a floor's advice follows (item 292). A rating:
+## whole numbers from 1 spanning at most 10 points, or symmetric about 0
+## and spanning at most 10 (-1 to 1 up to -5 to 5, a scale centred on its
+## neutral point), or an ordered factor. Whole numbers from 0 to at most 10
+## may be either a count or a rating (0 to 3 is a PHQ-9 item and a count of
+## visits alike), so both readings are named. A count: whole, from 0, past
+## 10. Anything else is continuous.
+#' @keywords internal
+#' @noRd
+ilm_floor_kind <- function(u, whole) {
+  nu <- length(u); span <- u[nu] - u[1L]
+  if (!whole) return("continuous")
+  if (u[1L] >= 1 && span <= 10) return("rating")
+  if (u[1L] < 0 && u[nu] == -u[1L] && span <= 10) return("rating")
+  if (u[1L] == 0 && u[nu] <= 10) return("either")
+  if (u[1L] >= 0) return("count")
+  "continuous"
+}
 
 #' @keywords internal
 #' @noRd
-ilm_floor_reasons <- function(x) {
+ilm_floor_reasons <- function(x, labels = NULL) {
+  none <- list(text = character(0), kind = character(0))
   n <- length(x)
   u <- sort(unique(x)); nu <- length(u)
-  if (nu < 5L) return(list(text = character(0), kind = character(0)))
+  if (nu < 4L) return(none)
+  ## an ordered factor arrives as its level codes, with the levels' labels
+  kind <- if (!is.null(labels)) "rating"
+          else ilm_floor_kind(u, all(abs(x - round(x)) < 1e-8))
+  ## a short scale: a rating or a 0-to-10 reading, each at most 10 points
+  scale <- kind %in% c("rating", "either")
+  if (nu < 5L && !scale) return(none)
   cnt <- tabulate(match(x, u), nu)
   fires <- function(c1, c2)
     c1 >= 5 && c1 / n >= 0.02 && c1 >= 2 * c2 &&
       stats::pbinom(c1 - 1, c1 + c2, 0.5, lower.tail = FALSE) <= 0.001
-  whole <- all(abs(x - round(x)) < 1e-8)
-  ## a rating scale as such scales are usually scored -- 1 to at most 11
-  ## points, or 0 to 10 -- and a count otherwise, when whole and not negative
-  ## (a scale scored from 0, as 0 to 4, reads as a count)
-  rating <- whole && ((u[1L] >= 1 && u[nu] - u[1L] <= 10) || (u[1L] == 0 && u[nu] == 10))
-  count <- whole && !rating && u[1L] >= 0
-  text <- character(0); kind <- character(0)
+  label <- function(i) if (!is.null(labels)) labels[u[i]] else ilm_print_num(u[i], 4L)
+  text <- character(0); kinds <- character(0)
   if (fires(cnt[1L], cnt[2L])) {
-    w <- if (rating) "rating_floor" else if (count && u[1L] == 0) "zeros" else "floor"
+    w <- switch(kind, rating = "rating_floor", either = "either_floor",
+                count = if (u[1L] == 0) "zeros" else "floor", "floor")
     pct <- ilm_fx(100 * cnt[1L] / n, 0)
-    text <- c(text, if (w == "zeros") sprintf(ILM_FLOOR_WORDS[[w]], pct)
-                    else sprintf(ILM_FLOOR_WORDS[[w]], pct, ilm_print_num(u[1L], 4L)))
-    kind <- c(kind, "floor")
+    text <- c(text, if (w %in% c("zeros", "either_floor")) sprintf(ILM_FLOOR_WORDS[[w]], pct)
+                    else sprintf(ILM_FLOOR_WORDS[[w]], pct, label(1L)))
+    kinds <- c(kinds, "floor")
   }
   if (fires(cnt[nu], cnt[nu - 1L])) {
-    w <- if (rating) "rating_ceiling" else "ceiling"
-    text <- c(text, sprintf(ILM_FLOOR_WORDS[[w]], ilm_fx(100 * cnt[nu] / n, 0),
-                            ilm_print_num(u[nu], 4L)))
-    kind <- c(kind, "ceiling")
+    w <- switch(kind, rating = "rating_ceiling", either = "either_ceiling", "ceiling")
+    text <- c(text, sprintf(ILM_FLOOR_WORDS[[w]], ilm_fx(100 * cnt[nu] / n, 0), label(nu)))
+    kinds <- c(kinds, "ceiling")
   }
-  list(text = text, kind = kind)
+  list(text = text, kind = kinds)
 }
 
 ## The assessment behind ilm_gauss_check(): the score, the distance, and the
@@ -389,6 +428,12 @@ ilm_describe_cat <- function(x, digits = 3, sep = "_", top = 3L, rare_n = 5L) {
                       collapse = ", "),
     stringsAsFactors = FALSE)
   z <- character(0)
+  ## an ordered factor is a rating scale: a pile at its lowest or highest
+  ## level comes first, as a numeric rating's does (item 292); its labels
+  ## shown so that one not valid UTF-8 can be printed
+  if (is.ordered(x) && nn > 0) {
+    z <- ilm_floor_reasons(match(vals, levels(x)), labels = ilm_show_text(levels(x)))$text
+  }
   n_bad <- sum(!validUTF8(vals))
   if (n_bad > 0)
     z <- c(z, sprintf("%d %s not valid UTF-8 (another encoding?)", n_bad,
@@ -497,7 +542,9 @@ ILM_CLASSES <- c("numeric", "categorical", "logical", "time")
 #'
 #' Summarises a vector, or one column of a data frame, with statistics chosen
 #' for its class. Numeric variables also get a gaussian agreement index and,
-#' where that is low, a plain-language reason.
+#' where that is low, a plain-language reason. A pile of values at a bound
+#' is named first; an ordered factor's note names one at its lowest or
+#' highest level (see [ilm_gauss_check()]).
 #'
 #' The default output is deliberately narrow. Quartiles, skewness and kurtosis
 #' are available on request, but `gauss` and `gauss_note` already say whether
@@ -529,6 +576,8 @@ ILM_CLASSES <- c("numeric", "categorical", "logical", "time")
 #'   `probs = c(0.25, 0.5, 0.75)`.
 #' @param dispersion Add the variance-to-mean ratio for non-negative integer
 #'   variables. Meaningful only if you intend to model the variable as a count.
+#'   Shifting a rating scale's values (-3 to 3 into 1 to 7) changes this
+#'   column, not the scale.
 #' @param rare_n Levels with fewer observations than this count as rare.
 #' @param cap,min_n Control the `gauss` index; see [ilm_gauss_check()].
 #' @param smd `FALSE` (the default), `TRUE`, or the name of a group. With `by`,
