@@ -23,8 +23,9 @@
   - Plots draw such text with its stray bytes spelled out (`caf<e9>`):
     R's graphics devices cannot draw it, and the pdf device crashed R.
     Prints that list column names show them the same way.
-  - `ilm_reduce()` and `ilm_glrm()` stop, naming the columns, when a
-    column's name is not valid UTF-8, since no model can be built from it.
+  - `ilm_reduce()`, `ilm_glrm()` and `ilm_anomaly(method = "iforest")`
+    stop, naming the columns, when a column's name is not valid UTF-8,
+    since no model can be built from it.
 * `ilm_reduce(method = "glrm")` keeps only the dimensions that carry
   variation (Craig's item 265): a singular value of the centred low-rank
   product at or below `sqrt(.Machine$double.eps)` times the first, the

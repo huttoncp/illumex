@@ -123,6 +123,9 @@ test_that("a model on columns so named stops and names them", {
   expect_error(ilm_reduce(d), "the column name b_caf<e9> is not valid UTF-8", fixed = TRUE)
   expect_error(ilm_reduce(d), "ilm_wash_df() cleans such names", fixed = TRUE)
   expect_error(ilm_glrm(d), "the column name b_caf<e9> is not valid UTF-8", fixed = TRUE)
+  if (requireNamespace("isotree", quietly = TRUE))
+    expect_error(ilm_anomaly(d, method = "iforest"),
+                 "ilm_anomaly(): the column name b_caf<e9> is not valid UTF-8", fixed = TRUE)
   expect_no_error(suppressWarnings(ilm_reduce(ilm_wash_df(d))))
 })
 
