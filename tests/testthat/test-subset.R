@@ -296,3 +296,81 @@ test_that("ilm_check_missing()'s covariates take every form (item 280)", {
 test_that("ilm_wash_df() takes neither subset nor cols (item 280)", {
   expect_false(any(c("subset", "cols") %in% names(formals(ilm_wash_df))))
 })
+
+## ---- sampling inside clusters (item 283) ---------------------------------
+
+within_data <- function() {
+  set.seed(283)
+  d <- data.frame(school = rep(c("s1", "s2", "s3"), c(60, 30, 4)), y = stats::rnorm(94),
+                  stringsAsFactors = FALSE)
+  d$room <- stats::ave(seq_len(94), d$school, FUN = function(i) (seq_along(i) - 1L) %/% 10L + 1L)
+  d$classroom <- paste(d$school, d$room, sep = "_")
+  d
+}
+
+test_that("within = keeps every cluster, in proportion, with the floor", {
+  d <- within_data()
+  ## prop: a share of each school's rows, rounded within each, at least min
+  r <- ilm_resolve_rows(d, ilm_sample(prop = 0.2, within = "school", seed = 1))
+  kept <- table(factor(d$school[r$rows], levels = c("s1", "s2", "s3")))
+  expect_identical(as.integer(kept), c(12L, 6L, 2L))
+  s <- r$info$sample
+  expect_identical(s$min, 2L)
+  expect_identical(unlist(s$within), "school")
+  expect_identical(c(s$fraction_min, s$fraction_max), c(0.2, 0.5))
+  expect_equal(s$fraction_median, 0.2)
+  expect_identical(s$n_clusters, 3L)
+  ## each kept row's chance is its cluster's share
+  expect_equal(r$inclusion, c(s1 = 0.2, s2 = 0.2, s3 = 0.5)[d$school[r$rows]], ignore_attr = TRUE)
+  ## n: shared out in proportion (60, 30, 4 of 94), the floor raising the smallest
+  r2 <- ilm_resolve_rows(d, ilm_sample(n = 20, within = "school", seed = 1))
+  expect_identical(as.integer(table(d$school[r2$rows])), c(13L, 6L, 2L))
+  ## a cluster smaller than min is kept whole
+  r3 <- ilm_resolve_rows(d, ilm_sample(prop = 0.1, within = "school", min = 5, seed = 1))
+  expect_identical(sum(d$school[r3$rows] == "s3"), 4L)
+  expect_identical(r3$info$sample$n_clusters_whole, 1L)
+  expect_identical(sum(d$school[r3$rows] == "s2"), 5L)
+  expect_error(ilm_sample(prop = 0.1, within = "school", min = 0), "whole number of at least 1")
+  expect_error(ilm_resolve_rows(d, ilm_sample(n = 200, within = "school")),
+               "asks for 200 rows and there are 94")
+})
+
+test_that("nested levels draw inside the finest, so every level above is kept", {
+  d <- within_data()
+  r <- ilm_resolve_rows(d, ilm_sample(prop = 0.2, within = c("classroom", "school"), seed = 2))
+  expect_setequal(unique(d$classroom[r$rows]), unique(d$classroom))
+  expect_true(all(table(d$classroom[r$rows]) >= 2L))
+  expect_identical(r$info$sample$n_clusters, length(unique(d$classroom)))
+  ## a room number reused across schools is refused, with both readings
+  expect_error(ilm_resolve_rows(d, ilm_sample(prop = 0.2, within = c("school", "room"))),
+               "give them unique ids, such as paste(school, room)", fixed = TRUE)
+  expect_error(ilm_resolve_rows(d, ilm_sample(prop = 0.2, within = c("school", "room"))),
+               "crossed, which within = does not support yet", fixed = TRUE)
+  ## crossed groupings: raters who work in every school
+  d$rater <- rep(c("r1", "r2", "r3", "r4"), length.out = 94)
+  expect_error(ilm_resolve_rows(d, ilm_sample(prop = 0.2, within = c("school", "rater"))),
+               "not nested")
+  expect_error(ilm_sample(prop = 0.2, by = "school", within = "room"), "not both")
+  expect_error(ilm_resolve_rows(d, ilm_sample(prop = 0.2, within = "nope")), "not in the data: nope")
+})
+
+test_that("within = restores the stream with a seed, and negates to the rows not drawn", {
+  d <- within_data()
+  set.seed(5); before <- .Random.seed
+  a <- ilm_resolve_rows(d, ilm_sample(prop = 0.3, within = "school", seed = 9))
+  expect_identical(.Random.seed, before)
+  expect_identical(ilm_resolve_rows(d, ilm_sample(prop = 0.3, within = "school", seed = 9))$rows,
+                   a$rows)
+  b <- ilm_resolve_rows(d, ilm_sample(prop = 0.3, within = "school", seed = 9), negate = TRUE)
+  expect_identical(sort(c(a$rows, b$rows)), seq_len(94))
+  ## the chance of being left out, for the rows left out
+  expect_equal(b$inclusion, 1 - c(s1 = 0.3, s2 = 0.3, s3 = 0.5)[d$school[b$rows]],
+               ignore_attr = TRUE)
+  ## ilm_subset() carries each row's chance; a result keeps the summary
+  s <- ilm_subset(d, subset = ilm_sample(prop = 0.3, within = "school", seed = 9))
+  expect_length(attr(s, "ilm_inclusion"), nrow(s))
+  rec <- attr(suppressMessages(ilm_describe(d, "y", subset = ilm_sample(prop = 0.3,
+    within = "school", seed = 9))), "ilm_select")$subset$sample
+  expect_identical(rec[c("prop", "min")], list(prop = 0.3, min = 2L))
+  expect_identical(rec$seed$value, 9L)
+})

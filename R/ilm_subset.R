@@ -16,9 +16,32 @@
 #'
 #' Given as `subset` to any illumex function that takes it, `ilm_sample()`
 #' draws the rows to use. Give `n` for a number of rows or `prop` for a share
-#' of them. With `by`, whole groups are drawn instead: `n` and `prop` then
-#' count groups, and every row of a group drawn is kept, so a grouped
-#' holdout (`subset_negate = TRUE`) never splits a group.
+#' of them. It samples in one of three ways:
+#'
+#' * **Rows**, the default: `n` rows, or a share `prop` of them.
+#' * **Whole groups**, with `by`: `n` and `prop` count groups, every row of a
+#'   group drawn is kept and the other groups are left out, so a grouped
+#'   holdout (`subset_negate = TRUE`) never splits a group.
+#' * **Inside every cluster**, with `within`: rows are drawn inside each
+#'   cluster and every cluster is kept -- the remedy when data are too large
+#'   to fit but each cluster must stay in the model. The draw is proportional:
+#'   a share `prop` of each cluster's rows, or `n` rows in all shared out in
+#'   proportion to the clusters' sizes. Every cluster keeps at least `min`
+#'   rows, or all of them when it has fewer than `min`. That floor makes a
+#'   small cluster's share larger than a large one's: a row's chance of being
+#'   kept is its cluster's rows kept over its cluster's rows, and the result
+#'   keeps the rule, the smallest, median and largest of those shares, and
+#'   what derives each row's (`within`, `min` and `n` or `prop`), so a
+#'   weighted analysis can be checked against an unweighted one.
+#'
+#' `within` may name nested levels, coarsest first or in any order:
+#' `within = c("school", "classroom")` draws inside each classroom, so every
+#' classroom, and so every school, is kept. The levels must be nested: each
+#' classroom in one school. A classroom id that repeats across schools is
+#' refused, since the data cannot say whether it is a different classroom in
+#' each school (give them unique ids, such as `paste(school, classroom)`) or
+#' the same classroom across schools -- crossed groupings, which `within`
+#' does not support yet. `by` and `within` together are an error.
 #'
 #' The draw follows the family's rule for random numbers: with a `seed`, the
 #' same rows every time, and your own random stream is left as it was; with
@@ -29,24 +52,34 @@
 #' `subset = 10` is row 10, and `subset = ilm_sample(10)` is ten rows drawn.
 #'
 #' @param n A number of rows (or of groups, with `by`) to draw: a whole
-#'   number, at most the number there are.
+#'   number, at most the number there are. With `within`, the total to share
+#'   out across the clusters; the floor `min` can raise it.
 #' @param prop A share of rows (or of groups) to draw, strictly between 0
-#'   and 1; the count is rounded, and must come to at least 1.
+#'   and 1; the count is rounded, and must come to at least 1. With
+#'   `within`, the share of each cluster's rows, rounded within each.
 #' @param by A column whose values are the groups to draw whole; `NULL` draws
 #'   rows. A missing value is a group of its own.
 #' @param seed An integer seed for the draw, or `NULL`.
+#' @param within One column, or nested columns, whose clusters are each
+#'   sampled inside and all kept. A missing value is a cluster of its own.
+#' @param min With `within`, the fewest rows any cluster keeps (all of a
+#'   cluster with fewer). A whole number of at least 1; 2 by default.
 #' @return An object of class `"ilm_sample"`, which does nothing until it is
 #'   given as `subset`.
 #' @seealso [ilm_selection] for `subset` and `cols`, [ilm_subset()] for the
-#'   data itself.
+#'   data itself, which with `within` also carries each row's chance of being
+#'   kept as the attribute `"ilm_inclusion"`.
 #' @examples
 #' d <- ilm_sim()
 #' ilm_describe(d, "score", subset = ilm_sample(prop = 0.5, seed = 1))
 #' ## a grouped holdout: the ids not drawn
 #' ilm_describe(d, "score", subset = ilm_sample(5, by = "id", seed = 1),
 #'              subset_negate = TRUE)
+#' ## a third of every site's rows, at least 2 from each
+#' ilm_describe(d, "score", subset = ilm_sample(prop = 1/3, within = "site", seed = 1))
 #' @export
-ilm_sample <- function(n = NULL, prop = NULL, by = NULL, seed = NULL) {
+ilm_sample <- function(n = NULL, prop = NULL, by = NULL, seed = NULL, within = NULL,
+                       min = 2L) {
   if (is.null(n) == is.null(prop))
     stop("ilm_sample() takes `n` (a number of rows) or `prop` (a share of them), ",
          "one of the two", call. = FALSE)
@@ -61,19 +94,33 @@ ilm_sample <- function(n = NULL, prop = NULL, by = NULL, seed = NULL) {
     stop("`prop` must be a share strictly between 0 and 1", call. = FALSE)
   if (!is.null(by) && !(is.character(by) && length(by) == 1L && !is.na(by)))
     stop("`by` must name one column", call. = FALSE)
+  if (!is.null(within) && !(is.character(within) && length(within) >= 1L &&
+                            !anyNA(within) && !anyDuplicated(within)))
+    stop("`within` must name one column, or several nested ones, each once", call. = FALSE)
+  if (!is.null(by) && !is.null(within))
+    stop("ilm_sample() takes `by` (whole groups, the rest left out) or `within` ",
+         "(rows inside every cluster, all kept), not both", call. = FALSE)
+  if (!(is.numeric(min) && length(min) == 1L && is.finite(min) && min >= 1 && min == round(min)))
+    stop("`min` must be a whole number of at least 1", call. = FALSE)
   if (!is.null(seed) && !(is.numeric(seed) && length(seed) == 1L && is.finite(seed)))
     stop("`seed` must be a single number, or NULL", call. = FALSE)
   structure(list(n = if (!is.null(n)) as.integer(n), prop = prop, by = by,
+                 within = within, min = if (!is.null(within)) as.integer(min),
                  seed = if (!is.null(seed)) as.integer(seed)),
             class = "ilm_sample")
 }
 
 #' @export
 print.ilm_sample <- function(x, ...) {
-  what <- if (!is.null(x$n)) paste(x$n, if (is.null(x$by)) "rows" else "groups")
-          else paste0(format(100 * x$prop), "% of ", if (is.null(x$by)) "rows" else "groups")
-  cat("<ilm_sample> ", what, if (!is.null(x$by)) paste0(" of ", x$by), ", seed ",
-      if (is.null(x$seed)) "none" else x$seed, "\n", sep = "")
+  unit <- if (!is.null(x$by)) "groups" else "rows"
+  what <- if (!is.null(x$n)) paste(x$n, unit) else paste0(format(100 * x$prop), "% of ", unit)
+  how <- if (!is.null(x$by)) paste0(" of ", x$by)
+         else if (!is.null(x$within))
+           paste0(" inside every ", paste(x$within, collapse = " / "), ", at least ", x$min,
+                  " from each")
+         else ""
+  cat("<ilm_sample> ", what, how, ", seed ", if (is.null(x$seed)) "none" else x$seed, "\n",
+      sep = "")
   invisible(x)
 }
 
@@ -93,12 +140,14 @@ ilm_resolve_rows <- function(data, subset, negate = FALSE, fixed = FALSE,
   }
   negate <- isTRUE(negate)
   info <- list(negate = negate, n_rows_given = N)
+  incl <- NULL
   if (inherits(subset, "ilm_sample")) {
     if (!allow_sample)
       stop("`subset` cannot be a random sample here", if (!is.null(fn)) paste0(" (", fn, ")"),
            ": give the rows as a condition, positions or patterns", call. = FALSE)
     s <- ilm_draw_sample(data, subset)
     keep <- s$keep
+    incl <- s$inclusion
     info$form <- "sample"
     info$sample <- s$sample
   } else if (is.logical(subset)) {
@@ -152,21 +201,32 @@ ilm_resolve_rows <- function(data, subset, negate = FALSE, fixed = FALSE,
   }
   if (negate) keep <- !keep
   rows <- which(keep)
+  ## each kept row's chance of being kept, when a sample inside clusters
+  ## drew it (or, negated, of being left out)
+  inclusion <- if (!is.null(incl)) (if (negate) 1 - incl else incl)[rows]
   if (!length(rows))
     stop("`subset` kept no rows: ", ilm_subset_describe(subset, info), call. = FALSE)
   info$n_rows_kept <- length(rows)
-  list(rows = rows, info = info[c("form", "negate", "n_rows_given", "n_rows_kept",
-                                  intersect(c("patterns", "sample"), names(info)))])
+  list(rows = rows, inclusion = inclusion,
+       info = info[c("form", "negate", "n_rows_given", "n_rows_kept",
+                     intersect(c("patterns", "sample"), names(info)))])
 }
 
-## the rows an ilm_sample() draws, and an account of the draw: its size, its
-## groups, and its seed with the generator's kinds
+## the rows an ilm_sample() draws, an account of the draw (its size, its
+## groups, and its seed with the generator's kinds), and, when it samples
+## inside clusters, each row's chance of being kept
 #' @keywords internal
 #' @noRd
 ilm_draw_sample <- function(data, s) {
   N <- nrow(data)
   if (!is.null(s$by) && !s$by %in% names(data))
     stop("ilm_sample(by = ) names a column not in the data: ", s$by, call. = FALSE)
+  ## the family's rule: a seed draws the same every time and puts the user's
+  ## stream back; no seed draws from the stream as any R code does
+  kinds <- RNGkind()
+  seed_rec <- c(if (!is.null(s$seed)) list(value = s$seed),
+                list(kind = kinds[1], normal_kind = kinds[2], sample_kind = kinds[3]))
+  if (!is.null(s$within)) return(ilm_draw_within(data, s, seed_rec))
   units <- if (is.null(s$by)) seq_len(N) else {
     g <- data[[s$by]]
     match(g, unique(g))                   # NA is a group of its own
@@ -179,9 +239,6 @@ ilm_draw_sample <- function(data, s) {
   if (k < 1L)
     stop("ilm_sample(prop = ", format(s$prop), ") comes to no ", what, " of ", K,
          call. = FALSE)
-  ## the family's rule: a seed draws the same every time and puts the user's
-  ## stream back; no seed draws from the stream as any R code does
-  kinds <- RNGkind()
   if (!is.null(s$seed)) {
     ilm_rng_restore(s$seed)
     set.seed(s$seed)
@@ -189,10 +246,86 @@ ilm_draw_sample <- function(data, s) {
   chosen <- sample.int(K, k)
   list(keep = units %in% chosen,
        sample = c(if (!is.null(s$n)) list(n = s$n), if (!is.null(s$prop)) list(prop = s$prop),
-                  if (!is.null(s$by)) list(by = s$by),
-                  list(seed = c(if (!is.null(s$seed)) list(value = s$seed),
-                                list(kind = kinds[1], normal_kind = kinds[2],
-                                     sample_kind = kinds[3])))))
+                  if (!is.null(s$by)) list(by = s$by), list(seed = seed_rec)))
+}
+
+## Rows drawn inside every cluster, all clusters kept (item 283): each
+## cluster keeps round(prop x its rows), or its share of `n` by the largest
+## remainders, but never fewer than `min` -- or all of it, when it has fewer.
+#' @keywords internal
+#' @noRd
+ilm_draw_within <- function(data, s, seed_rec) {
+  N <- nrow(data)
+  cl <- ilm_within_clusters(data, s$within)
+  sizes <- tabulate(cl, max(cl))
+  if (!is.null(s$n) && s$n > N)
+    stop("ilm_sample() asks for ", s$n, " rows and there are ", N, call. = FALSE)
+  want <- if (!is.null(s$prop)) round(s$prop * sizes) else {
+    exact <- s$n * sizes / N
+    base <- floor(exact)
+    extra <- s$n - sum(base)
+    if (extra > 0L) {
+      o <- order(-(exact - base), seq_along(exact))[seq_len(extra)]
+      base[o] <- base[o] + 1
+    }
+    base
+  }
+  m <- as.integer(pmin(sizes, pmax(want, pmin(s$min, sizes))))
+  if (!is.null(s$seed)) {
+    ilm_rng_restore(s$seed)
+    set.seed(s$seed)
+  }
+  idx <- split(seq_len(N), factor(cl, levels = seq_along(sizes)))
+  chosen <- unlist(lapply(seq_along(idx), function(c) {
+    r <- idx[[c]]
+    if (m[c] >= length(r)) r else r[sample.int(length(r), m[c])]
+  }), use.names = FALSE)
+  frac <- m / sizes
+  list(keep = seq_len(N) %in% chosen, inclusion = frac[cl],
+       sample = c(if (!is.null(s$n)) list(n = s$n), if (!is.null(s$prop)) list(prop = s$prop),
+                  list(within = as.list(s$within), min = s$min,
+                       n_clusters = length(sizes),
+                       n_clusters_whole = sum(m == sizes),
+                       fraction_min = min(frac), fraction_median = stats::median(frac),
+                       fraction_max = max(frac), seed = seed_rec)))
+}
+
+## Each row's cluster for `within`: one column's values, or nested columns'
+## finest level. Nesting is checked: each value of a finer column must sit
+## under one value of the coarser, else the levels are refused -- an id
+## repeated across them is either a different unit in each (give it a unique
+## id) or the same unit across them (crossed groupings, not supported yet),
+## and the data cannot say which.
+#' @keywords internal
+#' @noRd
+ilm_within_clusters <- function(data, within) {
+  miss <- setdiff(within, names(data))
+  if (length(miss))
+    stop("ilm_sample(within = ) names column(s) not in the data: ",
+         paste(miss, collapse = ", "), call. = FALSE)
+  ids <- lapply(data[within], function(v) { v <- as.character(v); v[is.na(v)] <- "<NA>"; v })
+  if (length(within) > 1L) {
+    ## coarsest first: the fewest distinct values
+    ord <- order(vapply(ids, function(v) length(unique(v)), 1L))
+    lv <- within[ord]
+    for (i in seq_len(length(lv) - 1L)) {
+      coarse <- ids[[lv[i]]]; fine <- ids[[lv[i + 1L]]]
+      pairs <- unique(data.frame(coarse = coarse, fine = fine, stringsAsFactors = FALSE))
+      rep_id <- pairs$fine[duplicated(pairs$fine)]
+      if (length(rep_id)) {
+        under <- sum(pairs$fine == rep_id[1L])
+        stop(sprintf(paste0(
+          "ilm_sample(within = ): `%s` values repeat across `%s` (\"%s\" is under %d of ",
+          "them), so the levels are not nested. If a `%s` value names a different unit ",
+          "under each `%s`, give them unique ids, such as paste(%s, %s); if it is the same ",
+          "unit across them, the groupings are crossed, which within = does not support yet."),
+          lv[i + 1L], lv[i], rep_id[1L], under, lv[i + 1L], lv[i], lv[i], lv[i + 1L]),
+          call. = FALSE)
+      }
+    }
+    finest <- ids[[lv[length(lv)]]]
+  } else finest <- ids[[1L]]
+  match(finest, unique(finest))
 }
 
 ## a subset in words, for an error that says what it was
@@ -285,7 +418,7 @@ ilm_select_rows <- function(data, subset, subset_negate = FALSE, subset_fixed = 
   r <- ilm_resolve_rows(data, subset, subset_negate, subset_fixed, allow_sample, fn)
   out <- data[r$rows, , drop = FALSE]
   attr(out, "ilm_rows") <- r$rows
-  list(data = out, rows = r$rows, subset = r$info)
+  list(data = out, rows = r$rows, subset = r$info, inclusion = r$inclusion)
 }
 
 ## the original row numbers of a subset's rows, given positions within it
@@ -325,6 +458,7 @@ ilm_subset <- function(data, subset = NULL, subset_negate = FALSE, subset_fixed 
   if (!is.null(rs$subset) && !.row_names_info(data) > 0L)
     rownames(out) <- rs$rows
   attr(out, "ilm_rows") <- NULL
+  if (!is.null(rs$inclusion)) attr(out, "ilm_inclusion") <- rs$inclusion
   sel <- list(subset = rs$subset,
               selection = ilm_selection_info(data, cols, use, negate = cols_negate,
                                              fixed = cols_fixed))

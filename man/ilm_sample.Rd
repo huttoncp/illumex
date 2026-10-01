@@ -4,19 +4,34 @@
 \alias{ilm_sample}
 \title{A random sample of rows, or of whole groups, for \code{subset}}
 \usage{
-ilm_sample(n = NULL, prop = NULL, by = NULL, seed = NULL)
+ilm_sample(
+  n = NULL,
+  prop = NULL,
+  by = NULL,
+  seed = NULL,
+  within = NULL,
+  min = 2L
+)
 }
 \arguments{
 \item{n}{A number of rows (or of groups, with \code{by}) to draw: a whole
-number, at most the number there are.}
+number, at most the number there are. With \code{within}, the total to share
+out across the clusters; the floor \code{min} can raise it.}
 
 \item{prop}{A share of rows (or of groups) to draw, strictly between 0
-and 1; the count is rounded, and must come to at least 1.}
+and 1; the count is rounded, and must come to at least 1. With
+\code{within}, the share of each cluster's rows, rounded within each.}
 
 \item{by}{A column whose values are the groups to draw whole; \code{NULL} draws
 rows. A missing value is a group of its own.}
 
 \item{seed}{An integer seed for the draw, or \code{NULL}.}
+
+\item{within}{One column, or nested columns, whose clusters are each
+sampled inside and all kept. A missing value is a cluster of its own.}
+
+\item{min}{With \code{within}, the fewest rows any cluster keeps (all of a
+cluster with fewer). A whole number of at least 1; 2 by default.}
 }
 \value{
 An object of class \code{"ilm_sample"}, which does nothing until it is
@@ -25,11 +40,36 @@ given as \code{subset}.
 \description{
 Given as \code{subset} to any illumex function that takes it, \code{ilm_sample()}
 draws the rows to use. Give \code{n} for a number of rows or \code{prop} for a share
-of them. With \code{by}, whole groups are drawn instead: \code{n} and \code{prop} then
-count groups, and every row of a group drawn is kept, so a grouped
-holdout (\code{subset_negate = TRUE}) never splits a group.
+of them. It samples in one of three ways:
 }
 \details{
+\itemize{
+\item \strong{Rows}, the default: \code{n} rows, or a share \code{prop} of them.
+\item \strong{Whole groups}, with \code{by}: \code{n} and \code{prop} count groups, every row of a
+group drawn is kept and the other groups are left out, so a grouped
+holdout (\code{subset_negate = TRUE}) never splits a group.
+\item \strong{Inside every cluster}, with \code{within}: rows are drawn inside each
+cluster and every cluster is kept -- the remedy when data are too large
+to fit but each cluster must stay in the model. The draw is proportional:
+a share \code{prop} of each cluster's rows, or \code{n} rows in all shared out in
+proportion to the clusters' sizes. Every cluster keeps at least \code{min}
+rows, or all of them when it has fewer than \code{min}. That floor makes a
+small cluster's share larger than a large one's: a row's chance of being
+kept is its cluster's rows kept over its cluster's rows, and the result
+keeps the rule, the smallest, median and largest of those shares, and
+what derives each row's (\code{within}, \code{min} and \code{n} or \code{prop}), so a
+weighted analysis can be checked against an unweighted one.
+}
+
+\code{within} may name nested levels, coarsest first or in any order:
+\code{within = c("school", "classroom")} draws inside each classroom, so every
+classroom, and so every school, is kept. The levels must be nested: each
+classroom in one school. A classroom id that repeats across schools is
+refused, since the data cannot say whether it is a different classroom in
+each school (give them unique ids, such as \code{paste(school, classroom)}) or
+the same classroom across schools -- crossed groupings, which \code{within}
+does not support yet. \code{by} and \code{within} together are an error.
+
 The draw follows the family's rule for random numbers: with a \code{seed}, the
 same rows every time, and your own random stream is left as it was; with
 \code{seed = NULL}, it draws from your stream as any R code does. The result
@@ -44,8 +84,11 @@ ilm_describe(d, "score", subset = ilm_sample(prop = 0.5, seed = 1))
 ## a grouped holdout: the ids not drawn
 ilm_describe(d, "score", subset = ilm_sample(5, by = "id", seed = 1),
              subset_negate = TRUE)
+## a third of every site's rows, at least 2 from each
+ilm_describe(d, "score", subset = ilm_sample(prop = 1/3, within = "site", seed = 1))
 }
 \seealso{
 \link{ilm_selection} for \code{subset} and \code{cols}, \code{\link[=ilm_subset]{ilm_subset()}} for the
-data itself.
+data itself, which with \code{within} also carries each row's chance of being
+kept as the attribute \code{"ilm_inclusion"}.
 }

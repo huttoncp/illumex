@@ -8,10 +8,17 @@
   patterns literally. Results name rows by the data's own row numbers, so
   they join back as they are. A subset of an `ilm_anomaly()` result is an
   error: subset the data before `ilm_anomaly()`. See `?ilm_selection`.
-* `ilm_sample(n, prop, by, seed)`, new, draws rows for `subset`: `n` of them,
-  or a share `prop`; with `by`, whole groups, so a holdout never splits one.
-  A seed draws the same rows every time and leaves your random stream as it
-  was.
+* `ilm_sample(n, prop, by, seed, within, min)`, new, draws rows for
+  `subset`: `n` of them, or a share `prop`; with `by`, whole groups, so a
+  holdout never splits one; with `within`, rows inside every cluster, every
+  cluster kept -- the remedy for data too large to fit (item 283). The draw
+  inside clusters is proportional, at least `min` rows from each (all of a
+  smaller one), and nested levels (`within = c("school", "classroom")`) draw
+  inside the finest; an id repeated across a coarser level, or crossed
+  groupings, are refused for now. The result keeps the shares kept (the
+  smallest, median and largest) and what derives each row's chance of being
+  kept, which `ilm_subset()` carries as `attr(, "ilm_inclusion")`. A seed
+  draws the same rows every time and leaves your random stream as it was.
 * `ilm_subset()`, new, returns the rows and columns a function would use,
   rows first, with the original row numbers as row names.
 * `cols_fixed = TRUE` matches a `cols` pattern literally, as a substring; a
