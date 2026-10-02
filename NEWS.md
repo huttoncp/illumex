@@ -1,3 +1,35 @@
+# illumex 0.0.8.9003
+
+* Numbers are written in full with at most 15 figures before the point
+  and, below 1, at most 6 decimals, after rounding, and in R's scientific
+  notation beyond, so sentences and reports match R's printed tables (item
+  290): "1.23e+300", "1.00e-05", "5.05e-08", with the exponent's sign and
+  at least two digits. To 3 figures, 0.0001 is "0.000100" and 0.00001 is
+  "1.00e-05"; the decimals are counted with the zeros at the end kept, so
+  dropping them does not move the switch. A value shown to significant
+  figures keeps them in the mantissa ("1.00e+15"). One shown to fixed
+  decimals keeps its declared decimals however small (0.0000001 to 8
+  decimals is "0.00000010"), and goes scientific only from 1e15, at 7
+  figures, as R prints it ("1.234568e+20"). p-values, clock times and
+  ordinals are unchanged.
+* A value just below a power of ten whose 15 figures are all nines keeps
+  them: 999,999,999,999,999 was shown as 1,000,000,000,000,000 when asked
+  for 15 figures, because `log10()` of it is 15.
+* The shared display rules take a group of numbers read together -- an
+  estimate with its interval, a list of predicted values -- and write every
+  value at the group's decimals (item 306): none when every value is whole;
+  otherwise enough for 3 figures at the group's median size, and for its
+  smallest value to show a figure, at most 6. A value that needs more than
+  6 decimals to show a figure, or is 1e15 or more, is written in
+  scientific notation at 3 figures and sets nothing, so it does not drag
+  the others to 6 decimals: 1.25, 0.00000004 and 3.5 read "1.25",
+  "4.00e-08" and "3.50". So 12.3456, 0.5 and 250.75 read "12.3", "0.5" and
+  "250.8", and -0.034, 0.0125 and -0.5 read "-0.0340", "0.0125" and
+  "-0.5000".
+* The development version moves to 0.0.8.9003, so that a package needing
+  the scientific notation and the group decimals of the shared display
+  rules can require them.
+
 # illumex 0.0.8.9002
 
 * The display rules every printed number follows live in

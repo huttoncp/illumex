@@ -49,8 +49,48 @@ test_that("the shared rounding agrees with half away on the 15-figure string", {
   x <- c(x, x4)
   d <- c(d, pmax(0, 14 - floor(log10(abs(x4))) - sample(1:14, 200, TRUE)))
   ref <- mapply(ref_fixed, x, d)
-  got <- vapply(seq_along(x), function(i) ilm_disp(x[i], "fixed", d[i], big_mark = "")$text, "")
+  ## the rounding core's text, in full at every size (ilm_disp() itself
+  ## writes 1e15 and up in scientific notation, item 290)
+  got <- vapply(seq_along(x), function(i)
+    ilm_disp_text(ilm_disp_digits(x[i], d[i]), d[i], big_mark = ""), "")
   expect_identical(got, ref)
+})
+
+test_that("numbers are written in full up to 15 figures before the point and 6 decimals below 1, and in R's scientific form beyond (item 290)", {
+  sci <- function(x, ...) ilm_disp(x, ...)$text
+  expect_identical(sci(999999999999999, "signif", 15), "999,999,999,999,999")
+  expect_identical(sci(1e15, "signif", 3), "1.00e+15")
+  expect_identical(sci(9.995e14, "signif", 3), "1.00e+15")          # a carry counts
+  ## below 1, at most 6 decimals, counting the zeros kept at the end
+  expect_identical(sci(0.0001, "signif", 3), "0.000100")
+  expect_identical(sci(0.00001, "signif", 3), "1.00e-05")
+  expect_identical(sci(0.000001, "signif", 3), "1.00e-06")
+  expect_identical(sci(0.000123, "signif", 3), "0.000123")
+  expect_identical(sci(0.0000123, "signif", 3), "1.23e-05")
+  ## so dropping the zeros does not move the switch
+  expect_identical(sci(c(0.0001, 1e15, 0.0000001), "signif", 3, trailing_zeros = FALSE),
+                   c("0.0001", "1e+15", "1e-07"))
+  ## 1 or more is never scientific for its decimals
+  expect_identical(sci(3.141592654, "signif", 10), "3.141592654")
+  expect_identical(sci(-1.2345e-30, "signif", 3), "-1.23e-30")
+  ## fixed and percent keep the decimals declared, however small the value,
+  ## and go scientific, at 7 figures, only from 1e15
+  expect_identical(sci(0.0000001, "fixed", 8), "0.00000010")
+  expect_identical(sci(0.0000001, "fixed", 2), "0.00")
+  expect_identical(sci(999999999999999, "fixed", 0), "999,999,999,999,999")
+  expect_identical(sci(1.234567891e20, "fixed", 2), "1.234568e+20")
+  expect_identical(sci(1e13, "percent", 1), "1e+15%")
+  ## p, clock and ordinal are as they were
+  expect_identical(sci(1e-12, "p"), "< 0.001")
+})
+
+test_that("15 nines just below a power of ten keep all 15 figures", {
+  ## log10(999999999999999) is 15: the mantissa was formed a place too low,
+  ## rounded up to exactly 10^14, and a figure was lost
+  expect_identical(ilm_disp_text(ilm_disp_digits(999999999999999, 0), 0), "999,999,999,999,999")
+  expect_identical(ilm_disp(99999999999999.9, "signif", 15)$text, "99,999,999,999,999.9")
+  expect_identical(ilm_disp(0.999999999999999, "fixed", 15)$text, "0.999999999999999")
+  expect_identical(ilm_disp_round(999999999999999, 0), 999999999999999)
 })
 
 test_that("rounding to a number goes by the same digits", {
@@ -69,10 +109,13 @@ test_that("the largest double and the subnormals round without error", {
   ## is, and the text is written from the rounded digits
   expect_identical(ilm_disp_signif(big, 2), big)
   expect_identical(ilm_disp_round(big, 0), big)
-  expect_identical(nchar(ilm_disp(big, "signif", 2)$text), 411L)
-  expect_true(startsWith(ilm_disp(big, "signif", 2)$text, "180,000,"))
-  for (v in c(5e-324, 1e-310, -1e-310)) {
+  expect_identical(ilm_disp(big, "signif", 2)$text, "1.8e+308")
+  ## in full, the core writes all 309 digits
+  full <- ilm_disp_text(ilm_disp_signif_digits(big, 2), 0)
+  expect_identical(nchar(full), 411L)
+  expect_true(startsWith(full, "180,000,"))
+  expect_identical(ilm_disp(c(2^-1074, 1e-310, -1e-310), "signif", 2)$text,
+                   c("4.9e-324", "1.0e-310", "-1.0e-310"))
+  for (v in c(2^-1074, 1e-310, -1e-310))
     expect_true(is.finite(ilm_disp_signif(v, 2)))
-    expect_true(grepl("^-?0[.]0+[1-9][0-9]?$", ilm_disp(v, "signif", 2)$text))
-  }
 })
