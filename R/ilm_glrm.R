@@ -236,6 +236,7 @@ ilm_glrm <- function(data, cols = NULL, rank = 2L, loss = NULL, lambda = NULL,
   if (!is.data.frame(data))
     stop("`data` must be a data frame; it is ", class(data)[1], call. = FALSE)
   keep <- ilm_resolve_cols(data, cols)
+  ilm_stop_not_utf8_names(keep, "ilm_glrm")
   sub <- ilm_time_encode(data[keep], time, "ilm_glrm")
   tmap <- attr(sub, "time_map")
   auto <- vapply(sub, ilm_glrm_loss_of, "")

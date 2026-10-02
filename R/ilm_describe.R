@@ -308,19 +308,26 @@ ilm_describe_cat <- function(x, digits = 3, sep = "_", top = 3L, rare_n = 5L) {
   out <- data.frame(
     obs = obs, n = nn, na = na,
     ## "" is not NA to R but is almost always missing to the analyst
-    n_empty = sum(trimws(vals) == ""),
+    n_empty = sum(ilm_trimws(vals) == ""),
     n_unique = nu,
     ordered = is.ordered(x),
     p_max = ilm_rd(if (nu) max(tb) / sum(tb) else NA_real_, digits),
     ## the usual reason a factor model will not fit
     n_rare = sum(tb < rare_n),
     n_unused = if (is.factor(x)) sum(!(levels(x) %in% vals)) else 0L,
-    case_variants = { u <- unique(vals); sum(table(tolower(trimws(u))) > 1L) },
+    ## tolower() stops on text that is not valid UTF-8, which has no case
+    ## variant anyway
+    case_variants = { u <- unique(vals); u <- u[validUTF8(u)]
+                      sum(table(tolower(trimws(u))) > 1L) },
     counts_tb = paste(sprintf("%s%s%d", names(tb)[seq_len(min(top, nu))],
                               sep, as.integer(tb)[seq_len(min(top, nu))]),
                       collapse = ", "),
     stringsAsFactors = FALSE)
   z <- character(0)
+  n_bad <- sum(!validUTF8(vals))
+  if (n_bad > 0)
+    z <- c(z, sprintf("%d %s not valid UTF-8 (another encoding?)", n_bad,
+                      if (n_bad == 1L) "value" else "values"))
   if (out$n_empty > 0) z <- c(z, sprintf("%d empty strings (not NA)", out$n_empty))
   if (out$n_unused > 0) z <- c(z, sprintf("%d unused levels", out$n_unused))
   if (out$case_variants > 0) z <- c(z, sprintf("%d case/space variants", out$case_variants))

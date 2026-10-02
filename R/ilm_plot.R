@@ -368,7 +368,7 @@ ilm_plot <- function(data, x, y = NULL, by = NULL, geom = "auto",
                      size = NULL, palette = NULL, theme = NULL,
                      n_max = 5000L, max_levels = 20L, verdict = TRUE,
                      main = NULL, ..., pch = NULL, facet = NULL) {
-  if (!is.data.frame(data)) stop("`data` must be a data frame", call. = FALSE)
+  data <- ilm_plot_frame(data)
   if (length(geom) != 1L || !geom %in% ILM_GEOMS) {
     auto <- if (is.character(x) && length(x) == 1L && x %in% names(data))
       ilm_pick_geom(data[[x]], if (!is.null(y) && y %in% names(data)) data[[y]],
@@ -565,6 +565,7 @@ ilm_plot_all <- function(data, by = NULL, class = "all", max_panels = 12L,
     stop("unknown `class`: ", paste(sQuote(bad), collapse = ", "),
          ". Options are ", paste(sQuote(c("all", ILM_CLASSES)), collapse = ", "),
          ".", call. = FALSE)
+  data <- ilm_plot_frame(data)
   cand <- setdiff(names(data), by)
   cl <- vapply(data[cand], ilm_class_of, "")
   if (!identical(class, "all")) cand <- cand[cl %in% class]
@@ -598,7 +599,7 @@ ilm_plot_all <- function(data, by = NULL, class = "all", max_panels = 12L,
 #' ilm_plot_missing(ilm_sim())
 #' @export
 ilm_plot_missing <- function(data, ...) {
-  if (!is.data.frame(data)) stop("`data` must be a data frame", call. = FALSE)
+  data <- ilm_plot_frame(data)
   p <- vapply(data, function(v) mean(is.na(v)), 1)
   if (all(p == 0)) {
     message("ilm_plot_missing: no missing values"); return(invisible(p))

@@ -96,7 +96,7 @@ ilm_by_legend <- function(expr, env, by) {
 #' @export
 ilm_plot_histogram <- function(data, x, by = NULL, breaks = "Sturges", ...,
                                facet = NULL, legend = NULL) {
-  ilm_plot_frame_check(data)
+  data <- ilm_plot_frame(data)
   legend <- ilm_by_legend(substitute(legend), parent.frame(), by)
   tinyplot::tinyplot(x = ilm_col_vec(data, x, "x", TRUE),
                      by = ilm_col_vec(data, by, "by", discrete = TRUE),
@@ -116,7 +116,7 @@ ilm_plot_histogram <- function(data, x, by = NULL, breaks = "Sturges", ...,
 #' ilm_plot_density(mtcars, "mpg", by = "cyl")
 #' @export
 ilm_plot_density <- function(data, x, by = NULL, ..., facet = NULL, legend = NULL) {
-  ilm_plot_frame_check(data)
+  data <- ilm_plot_frame(data)
   legend <- ilm_by_legend(substitute(legend), parent.frame(), by)
   tinyplot::tinyplot(x = ilm_col_vec(data, x, "x", TRUE),
                      by = ilm_col_vec(data, by, "by", discrete = TRUE),
@@ -153,7 +153,7 @@ ilm_plot_density <- function(data, x, by = NULL, ..., facet = NULL, legend = NUL
 #' @export
 ilm_plot_box <- function(data, y, x = NULL, by = NULL, ..., pch = NULL,
                          facet = NULL, legend = NULL) {
-  ilm_plot_frame_check(data)
+  data <- ilm_plot_frame(data)
   legend <- ilm_by_legend(substitute(legend), parent.frame(), by)
   xv <- ilm_col_vec(data, x, "x")
   tinyplot::tinyplot(x = if (is.null(xv)) "" else xv,
@@ -176,7 +176,7 @@ ilm_plot_box <- function(data, y, x = NULL, by = NULL, ..., pch = NULL,
 #' @export
 ilm_plot_violin <- function(data, y, x = NULL, by = NULL, ..., pch = NULL,
                             facet = NULL, legend = NULL) {
-  ilm_plot_frame_check(data)
+  data <- ilm_plot_frame(data)
   legend <- ilm_by_legend(substitute(legend), parent.frame(), by)
   xv <- ilm_col_vec(data, x, "x")
   tinyplot::tinyplot(x = if (is.null(xv)) "" else xv,
@@ -247,7 +247,7 @@ ilm_plot_scatter <- function(data, y, x, by = NULL,
                              trend = c("none", "lm", "loess", "gam"), ...,
                              pch = NULL, facet = NULL, legend = NULL) {
   trend <- match.arg(trend)
-  ilm_plot_frame_check(data)
+  data <- ilm_plot_frame(data)
   legend <- ilm_by_legend(substitute(legend), parent.frame(), by)
   xv <- ilm_col_vec(data, x, "x", TRUE)
   yv <- ilm_col_vec(data, y, "y", TRUE)
@@ -354,7 +354,7 @@ ilm_trend_band <- function(x, y, by = NULL, facet = NULL,
 #' ilm_plot_bar(mtcars, "cyl", by = "am")
 #' @export
 ilm_plot_bar <- function(data, x, by = NULL, ..., facet = NULL, legend = NULL) {
-  ilm_plot_frame_check(data)
+  data <- ilm_plot_frame(data)
   legend <- ilm_by_legend(substitute(legend), parent.frame(), by)
   tinyplot::tinyplot(x = ilm_col_vec(data, x, "x", TRUE),
                      by = ilm_col_vec(data, by, "by", discrete = TRUE),
@@ -387,7 +387,7 @@ ilm_plot_bar <- function(data, x, by = NULL, ..., facet = NULL, legend = NULL) {
 #' @export
 ilm_plot_line <- function(data, y, x, by = NULL, ..., pch = NULL,
                           facet = NULL, legend = NULL) {
-  ilm_plot_frame_check(data)
+  data <- ilm_plot_frame(data)
   legend <- ilm_by_legend(substitute(legend), parent.frame(), by)
   tinyplot::tinyplot(x = ilm_col_vec(data, x, "x", TRUE),
                      y = ilm_col_vec(data, y, "y", TRUE),
@@ -436,7 +436,7 @@ ilm_plot_stat_error <- function(data, y, x, by = NULL,
                                 stat = c("mean", "median"), ...,
                                 pch = NULL, facet = NULL, legend = NULL) {
   stat <- match.arg(stat)
-  ilm_plot_frame_check(data)
+  data <- ilm_plot_frame(data)
   legend <- ilm_by_legend(substitute(legend), parent.frame(), by)
   yv <- ilm_col_vec(data, y, "y", TRUE)
   xv <- ilm_col_vec(data, x, "x", TRUE)

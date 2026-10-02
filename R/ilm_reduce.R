@@ -117,6 +117,7 @@ ilm_reduce <- function(data, cols = NULL, ndim = 5,
   if (!is.data.frame(data))
     stop("`data` must be a data frame; it is ", class(data)[1], call. = FALSE)
   keep <- ilm_resolve_cols(data, cols)
+  ilm_stop_not_utf8_names(keep, "ilm_reduce")
   sub <- ilm_time_encode(data[keep], time, "ilm_reduce")
   tmap <- attr(sub, "time_map")
 
@@ -224,7 +225,7 @@ print.ilm_reduce <- function(x, ...) {
   for (d in sort(unique(x$var_contrib$dim))) {
     sl <- x$var_contrib[x$var_contrib$dim == d, , drop = FALSE]
     k <- which.max(ilm_tie(sl$sqload))
-    cat(sprintf("    dim %-3d %-24s %.3f\n", d, sl$variable[k], sl$sqload[k]))
+    cat(sprintf("    dim %-3d %-24s %.3f\n", d, ilm_show_text(sl$variable[k]), sl$sqload[k]))
   }
   invisible(x)
 }

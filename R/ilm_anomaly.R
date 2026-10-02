@@ -227,6 +227,8 @@ ilm_anomaly_iforest <- function(data, sel, ntrees, alpha, seed,
          'install.packages("isotree"), or use the default ',
          'method = "reconstruction", which needs nothing beyond illumex but ',
          "uses the numeric columns only.", call. = FALSE)
+  ## the forest takes every column, by its name
+  ilm_stop_not_utf8_names(sel, "ilm_anomaly")
   d <- data[sel]
   if (ncol(d) < 2L)
     stop("at least 2 columns are needed to isolate a row against.", call. = FALSE)
