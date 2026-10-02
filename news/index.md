@@ -1,5 +1,34 @@
 # Changelog
 
+## illumex 0.0.8.9002
+
+- The display rules every printed number follows live in
+  `R/shared-helpers.R`, the same byte for byte in illume, with the
+  helpers the packages already shared (`ilm_wrap()`, `ilm_and()`, the
+  progress bar, the random-stream restore and the plotting-symbol
+  names), so they cannot drift apart. Their hand-written cases are in
+  `tests/testthat/fixtures/format_cases.csv`. Numbers round half away
+  from zero, after clearing floating-point noise, where R’s own rounding
+  took a tie to even: a profile’s paragraph showed 109 of 400 rows as
+  27.2%, now 27.3%. A duration’s quartiles are printed by the same rule
+  as a number’s (“1,230 days”, not “1230 days”).
+- Numbers shown at three significant figures keep their trailing zeros
+  (10.0, 2.50, 51.0; Craig’s item 256), and an estimate that happens to
+  be whole still shows its figures: 42 is “42.0” and 19234 “19,200”. A
+  count, or a data value that is a whole number (a profile’s quartile of
+  whole-number data), is shown whole. The prints the tests hold are
+  unchanged; profile sentences quoting a quartile that is not whole show
+  its figures (“2.50”).
+- [`ilm_describe()`](https://huttoncp.github.io/illumex/reference/ilm_describe.md)
+  describes values too large for a finite spread (near 1e300) without
+  assessing their shape, and says so in the note: “values too large to
+  assess”.
+- The development version moves to 0.0.8.9002, so that a package needing
+  the shared display rules can require them: illume, whose copy of
+  `R/shared-helpers.R` is tested against the installed illumex, then
+  fails clearly against an older illumex instead of finding none of the
+  file’s names.
+
 ## illumex 0.0.8.9001
 
 - Text that is not valid UTF-8 – a file saved in Windows-1252 or Latin-1

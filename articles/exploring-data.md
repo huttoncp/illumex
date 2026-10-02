@@ -875,7 +875,7 @@ cat(p$summary, sep = "\n\n")
 #> 
 #> Cluster 3 holds 12 rows, 37.5% of the data (stable). What sets it apart: cyl is '8' for 100% of them, against 44% across all rows; disp is higher: the middle 50% of its values lie between 276 and 400, against 120 to 318 across all rows; gear is lower: the middle 50% of its values lie between 3 and 3, against 3 to 4 across all rows; and wt is higher: the middle 50% of its values lie between 3.52 and 4.07, against 2.47 to 3.57 across all rows. Less strongly, 5 more variables set it apart as well.
 #> 
-#> Cluster 4 holds 8 rows, 25.0% of the data (stable). What sets it apart: mpg is higher: the middle 50% of its values lie between 22.8 and 30.4, against 15.2 to 22.8 across all rows; cyl is '4' for 100% of them, against 34% across all rows; wt is lower: the middle 50% of its values lie between 1.62 and 2.2, against 2.47 to 3.57 across all rows; and am is '0' for none of them, against 59% across all rows. Less strongly, 6 more variables set it apart as well.
+#> Cluster 4 holds 8 rows, 25.0% of the data (stable). What sets it apart: mpg is higher: the middle 50% of its values lie between 22.8 and 30.4, against 15.2 to 22.8 across all rows; cyl is '4' for 100% of them, against 34% across all rows; wt is lower: the middle 50% of its values lie between 1.62 and 2.20, against 2.47 to 3.57 across all rows; and am is '0' for none of them, against 59% across all rows. Less strongly, 6 more variables set it apart as well.
 ```
 
 The reduction picks its own method from the column types: PCA when they
