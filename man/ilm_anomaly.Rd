@@ -192,6 +192,26 @@ little hot -- about 0.064 of clean rows fall below 0.05 rather than 0.05 of
 them -- so read it as a ranking rather than as a test.
 }
 
+\section{When it over-flags}{
+
+
+The reference assumes normal noise around the structure, so the scan flags
+rows that are not anomalous when the noise has heavier tails, when the
+rows fall into clusters, and with few columns. On clean data with no
+anomalies, the share of datasets with at least one flagged row was 0.84
+to 1.00 with lognormal noise, 0.01 to 0.17 with clustered rows, and up to
+0.125 with normal noise and 5 columns (150 to 1,000 rows, 5 to 15
+columns; \code{dev/studies/anomaly_calibration3.R}).
+
+The scan therefore checks its own residuals, and warns when their tails
+are heavier than all but 2 of 40 reference datasets' (p <= 0.05, with the
+default \code{B}). The warning covers heavy tails -- on clean t3 and lognormal
+data with 400 rows or more and 8 or more columns it fired in 0.99 to 1.00
+of datasets -- but not clustered data, whose residuals' tails are not
+heavier: there it fired about as often as on clean normal data (0.05 to
+0.135). Rows that fall into groups are \code{\link[=ilm_cluster]{ilm_cluster()}}'s to find.
+}
+
 \section{Size}{
 
 On one core of a 16 GB Windows machine (\code{dev/studies/scale_check.R} in the source) the

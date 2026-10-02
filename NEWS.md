@@ -4,6 +4,13 @@
   `ilm_outliers_all()`'s) are no longer rounded in the result (item 289):
   they keep their full value, and their prints round them, to 4 and 3
   decimals, by the shared rule. What prints is unchanged.
+* `ilm_anomaly()` keeps its default scoring and checks its own residuals
+  (item 282): when their tails are heavier than all but 2 of 40 reference
+  datasets' (p <= 0.05), it warns that on such data the scan flags rows
+  that are not anomalous. The scores, p-values and flags are unchanged; the
+  check's p is kept as `attr(x, "tail_p")`. The help gains a section on
+  when the scan over-flags -- heavy tails, clustered rows, few columns --
+  and says the warning covers heavy tails but not clustering.
 * A floor or a ceiling is named first in `gauss_note`, whatever the index,
   on every numeric variable with at least 5 distinct values, or 4 on a
   short scale (items 274, 275 and 292): when the count at the bound is at
