@@ -2,6 +2,44 @@
 
 ## illumex 0.0.8.9003
 
+- [`ilm_boot_diff()`](https://huttoncp.github.io/illumex/reference/ilm_boot_diff.md)’s
+  `p_superiority` and
+  [`ilm_outliers()`](https://huttoncp.github.io/illumex/reference/ilm_outliers.md)’s
+  `score` (and
+  [`ilm_outliers_all()`](https://huttoncp.github.io/illumex/reference/ilm_outliers_all.md)’s)
+  are no longer rounded in the result (item 289): they keep their full
+  value, and their prints round them, to 4 and 3 decimals, by the shared
+  rule. What prints is unchanged.
+- A description prints the same numbers on every computer (item 272).
+  [`ilm_describe()`](https://huttoncp.github.io/illumex/reference/ilm_describe.md),
+  [`ilm_describe_all()`](https://huttoncp.github.io/illumex/reference/ilm_describe_all.md),
+  [`ilm_describe_na()`](https://huttoncp.github.io/illumex/reference/ilm_describe_na.md)
+  and the clusters’ table in
+  [`ilm_describe_clusters()`](https://huttoncp.github.io/illumex/reference/ilm_describe_clusters.md)
+  round by the shared display rules, half away from zero after clearing
+  floating-point noise, and write each column as text in the layout R’s
+  print gives it. R’s own print could show a value on a rounding
+  boundary differently on an Intel machine and on Apple silicon (a
+  median of 34420.195 as 34420.2 or 34420.19); every value is now
+  rounded once, from the value kept, so 40410.4647 shown to two decimals
+  is 40410.46. Away from a boundary every print is as it was. The same
+  rule covers every other print: the tables of
+  [`ilm_anomaly()`](https://huttoncp.github.io/illumex/reference/ilm_anomaly.md),
+  [`ilm_var_contrib()`](https://huttoncp.github.io/illumex/reference/ilm_var_contrib.md),
+  [`ilm_boot_ci()`](https://huttoncp.github.io/illumex/reference/ilm_boot_ci.md),
+  [`ilm_boot_diff()`](https://huttoncp.github.io/illumex/reference/ilm_boot_diff.md),
+  [`ilm_outliers()`](https://huttoncp.github.io/illumex/reference/ilm_outliers.md)
+  and
+  [`ilm_outliers_all()`](https://huttoncp.github.io/illumex/reference/ilm_outliers_all.md),
+  the gaussian check, and the numbers in the lines of
+  [`ilm_cluster()`](https://huttoncp.github.io/illumex/reference/ilm_cluster.md),
+  [`ilm_reduce()`](https://huttoncp.github.io/illumex/reference/ilm_reduce.md),
+  [`ilm_glrm()`](https://huttoncp.github.io/illumex/reference/ilm_glrm.md),
+  [`ilm_check_missing()`](https://huttoncp.github.io/illumex/reference/ilm_check_missing.md),
+  the notes and frame checks, and the plots’ titles and labels, where
+  [`sprintf()`](https://rdrr.io/r/base/sprintf.html) rounded an exact
+  tie by the C library’s rule (a cluster of 49 rows in 400 is 12.3%, not
+  12.2%).
 - A description by two variables compares, with `smd`, the second’s
   groups within each level of the first – exposure within a modifier,
   controls split by exposure – and names a level of the second as the

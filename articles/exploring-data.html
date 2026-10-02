@@ -574,7 +574,12 @@ judge, so the median describes it better than the mean:</p>
 <span><span class="co">#&gt; alpha alpha 404 37375.61 31161.54 right-skewed; heavy-tailed</span></span>
 <span><span class="co">#&gt; beta   beta 329 36370.77 31056.61 right-skewed; heavy-tailed</span></span>
 <span><span class="co">#&gt; gamma gamma 164 37007.52 30989.96               right-skewed</span></span>
-<span><span class="co">#&gt; delta delta   3 75549.05 92636.93      n too small to assess</span></span></code></pre></div>
+<span><span class="co">#&gt; delta delta   3 75549.05 92636.93      n too small to assess</span></span>
+<span><span class="co">#&gt;                            gauss</span></span>
+<span><span class="co">#&gt; alpha right-skewed; heavy-tailed</span></span>
+<span><span class="co">#&gt; beta  right-skewed; heavy-tailed</span></span>
+<span><span class="co">#&gt; gamma               right-skewed</span></span>
+<span><span class="co">#&gt; delta      n too small to assess</span></span></code></pre></div>
 <p><code>delta</code> has three rows, too few to resample: a bootstrap
 of three values can only reshuffle them. The other groups, with a BCa
 interval, which corrects the percentile interval for bias and skew in
@@ -584,7 +589,7 @@ the resampled medians:</p>
 <span><span class="fu"><a href="../reference/ilm_boot_ci.html">ilm_boot_ci</a></span><span class="op">(</span><span class="va">d4</span>, <span class="st">"income"</span>, by <span class="op">=</span> <span class="st">"grp"</span>, stat <span class="op">=</span> <span class="st">"median"</span>, ci_type <span class="op">=</span> <span class="st">"bca"</span>,</span>
 <span>            R <span class="op">=</span> <span class="fl">2000</span>, seed <span class="op">=</span> <span class="fl">1</span><span class="op">)</span></span>
 <span><span class="co">#&gt;     grp   stat observed    lower    upper conf    R ci_type   n</span></span>
-<span><span class="co">#&gt; 1 alpha median 31161.54 29091.08 33302.69 0.95 2000     bca 404</span></span>
+<span><span class="co">#&gt; 1 alpha median 31161.54 29091.08 33302.70 0.95 2000     bca 404</span></span>
 <span><span class="co">#&gt; 2  beta median 31056.61 28145.81 33794.49 0.95 2000     bca 329</span></span>
 <span><span class="co">#&gt; 3 gamma median 30989.96 26299.36 37287.25 0.95 2000     bca 164</span></span></code></pre></div>
 <p>The 95% describes the method, not one interval: in repeated samples,
@@ -673,8 +678,8 @@ is the weakest of the three for a reason worth seeing:</p>
 <code class="sourceCode R"><span><span class="va">z</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/stats/Normal.html" class="external-link">rnorm</a></span><span class="op">(</span><span class="fl">30</span><span class="op">)</span>, <span class="fl">100</span><span class="op">)</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span>mad <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/Extremes.html" class="external-link">max</a></span><span class="op">(</span><span class="fu"><a href="../reference/ilm_outliers.html">ilm_outliers</a></span><span class="op">(</span><span class="va">z</span>, <span class="st">"mad"</span><span class="op">)</span><span class="op">$</span><span class="va">score</span><span class="op">)</span>,</span>
 <span>  zscore <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/Extremes.html" class="external-link">max</a></span><span class="op">(</span><span class="fu"><a href="../reference/ilm_outliers.html">ilm_outliers</a></span><span class="op">(</span><span class="va">z</span>, <span class="st">"zscore"</span><span class="op">)</span><span class="op">$</span><span class="va">score</span><span class="op">)</span><span class="op">)</span></span>
-<span><span class="co">#&gt;     mad  zscore </span></span>
-<span><span class="co">#&gt; 169.178   5.383</span></span></code></pre></div>
+<span><span class="co">#&gt;        mad     zscore </span></span>
+<span><span class="co">#&gt; 169.178151   5.382697</span></span></code></pre></div>
 <p>One large value inflates the standard deviation enough to hide
 itself. The median and the MAD are not dragged around by the values
 being detected.</p>

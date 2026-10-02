@@ -600,6 +600,11 @@ ilm_describe(d, "income", by = "grp")[c("grp", "n", "mean", "p50", "gauss_note")
 #> beta   beta 329 36370.77 31056.61 right-skewed; heavy-tailed
 #> gamma gamma 164 37007.52 30989.96               right-skewed
 #> delta delta   3 75549.05 92636.93      n too small to assess
+#>                            gauss
+#> alpha right-skewed; heavy-tailed
+#> beta  right-skewed; heavy-tailed
+#> gamma               right-skewed
+#> delta      n too small to assess
 ```
 
 `delta` has three rows, too few to resample: a bootstrap of three values
@@ -613,7 +618,7 @@ d4 <- droplevels(d[d$grp != "delta", ])
 ilm_boot_ci(d4, "income", by = "grp", stat = "median", ci_type = "bca",
             R = 2000, seed = 1)
 #>     grp   stat observed    lower    upper conf    R ci_type   n
-#> 1 alpha median 31161.54 29091.08 33302.69 0.95 2000     bca 404
+#> 1 alpha median 31161.54 29091.08 33302.70 0.95 2000     bca 404
 #> 2  beta median 31056.61 28145.81 33794.49 0.95 2000     bca 329
 #> 3 gamma median 30989.96 26299.36 37287.25 0.95 2000     bca 164
 ```
@@ -719,8 +724,8 @@ and is the weakest of the three for a reason worth seeing:
 z <- c(rnorm(30), 100)
 c(mad = max(ilm_outliers(z, "mad")$score),
   zscore = max(ilm_outliers(z, "zscore")$score))
-#>     mad  zscore 
-#> 169.178   5.383
+#>        mad     zscore 
+#> 169.178151   5.382697
 ```
 
 One large value inflates the standard deviation enough to hide itself.
