@@ -2,6 +2,43 @@
 
 ## illumex 0.0.8.9001
 
+- Text that is not valid UTF-8 – a file saved in Windows-1252 or Latin-1
+  and read as UTF-8 – no longer stops illumex. One such value among 1.4
+  million rows stopped
+  [`ilm_wash_df()`](https://huttoncp.github.io/illumex/reference/ilm_wash_df.md)
+  (“input string 1328351 is invalid UTF-8”, from
+  [`trimws()`](https://rdrr.io/r/base/trimws.html)). Such text is now
+  left as it is, its bytes unchanged and no encoding guessed:
+
+  - [`ilm_wash_df()`](https://huttoncp.github.io/illumex/reference/ilm_wash_df.md)
+    completes, and warns which columns hold such text, how many values
+    and their first rows, and how to read the file in its own encoding
+    or convert it with [`iconv()`](https://rdrr.io/r/base/iconv.html);
+    the result keeps the same table as `attr(x, "not_utf8")`. A column
+    name that is not valid UTF-8 is cleaned with its stray byte spelled
+    out (`caf_e9`).
+  - `ilm_wash_df(encoding = )` converts such text, given the file’s
+    encoding (item 298): `encoding = "windows-1252"` converts the
+    values, factor levels and column names that are not valid UTF-8 from
+    it, and a message says how many values were converted in each column
+    (also `attr(x, "converted")`). Valid text is never touched and no
+    encoding is guessed. A value that does not convert, or does not
+    convert back to the same bytes, is left as it is and reported.
+    Without the argument, the warning suggests it by name.
+  - [`ilm_describe()`](https://huttoncp.github.io/illumex/reference/ilm_describe.md)
+    and
+    [`ilm_describe_all()`](https://huttoncp.github.io/illumex/reference/ilm_describe_all.md)
+    describe such a column, and its note says how many values are not
+    valid UTF-8.
+  - Plots draw such text with its stray bytes spelled out (`caf<e9>`):
+    R’s graphics devices cannot draw it, and the pdf device crashed R.
+    Prints that list column names show them the same way.
+  - [`ilm_reduce()`](https://huttoncp.github.io/illumex/reference/ilm_reduce.md),
+    [`ilm_glrm()`](https://huttoncp.github.io/illumex/reference/ilm_glrm.md)
+    and `ilm_anomaly(method = "iforest")` stop, naming the columns, when
+    a column’s name is not valid UTF-8, since no model can be built from
+    it.
+
 - `ilm_reduce(method = "glrm")` keeps only the dimensions that carry
   variation (Craig’s item 265): a singular value of the centred low-rank
   product at or below `sqrt(.Machine$double.eps)` times the first, the

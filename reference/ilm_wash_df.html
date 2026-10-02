@@ -55,7 +55,8 @@ converts text columns that are really numeric or logical.</p>
 <span>  retype <span class="op">=</span> <span class="cn">TRUE</span>,</span>
 <span>  drop_empty <span class="op">=</span> <span class="cn">TRUE</span>,</span>
 <span>  column_to_rownames <span class="op">=</span> <span class="cn">FALSE</span>,</span>
-<span>  names_col <span class="op">=</span> <span class="cn">NULL</span></span>
+<span>  names_col <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  encoding <span class="op">=</span> <span class="cn">NULL</span></span>
 <span><span class="op">)</span></span></code></pre></div>
     </div>
 
@@ -86,12 +87,22 @@ converts text columns that are really numeric or logical.</p>
 <dt id="arg-names-col">names_col<a class="anchor" aria-label="anchor" href="#arg-names-col"></a></dt>
 <dd><p>The column to use when <code>column_to_rownames = TRUE</code>.</p></dd>
 
+
+<dt id="arg-encoding">encoding<a class="anchor" aria-label="anchor" href="#arg-encoding"></a></dt>
+<dd><p>The encoding the file was saved in, such as
+<code>"windows-1252"</code> (or <code>"latin1"</code>), to convert the text that is not valid
+UTF-8 from. <code>NULL</code>, the default, converts nothing. <code><a href="https://rdrr.io/r/base/iconv.html" class="external-link">iconvlist()</a></code> lists
+the encodings this system knows.</p></dd>
+
 </dl></div>
     <div class="section level2">
     <h2 id="value">Value<a class="anchor" aria-label="anchor" href="#value"></a></h2>
     <p>A cleaned data frame, of the input's class for a tibble or a
 data.table (a plain data.frame when <code>column_to_rownames = TRUE</code>, since
-neither keeps row names) and a plain data.frame for any other.</p>
+neither keeps row names) and a plain data.frame for any other. When
+some text is not valid UTF-8, <code>attr(x, "not_utf8")</code> is a data frame of
+the columns holding it (by their cleaned names): <code>column</code>, <code>n</code>, and the
+first <code>rows</code> of <code>data</code> where it is. With <code>encoding</code>, <code>attr(x, "converted")</code> gives the values converted per column (<code>column</code>, <code>n</code>).</p>
     </div>
     <div class="section level2">
     <h2 id="details">Details<a class="anchor" aria-label="anchor" href="#details"></a></h2>
@@ -99,6 +110,19 @@ neither keeps row names) and a plain data.frame for any other.</p>
 single stray <code>"n/a"</code> cannot silently turn a column into <code>NA</code>s. A text column
 of whole numbers becomes integer; the values are unchanged. Columns that
 are already numbers, and factors, are left as they are.</p>
+<p>Text that is not valid UTF-8 – what a file saved in another encoding,
+such as Windows-1252, gives when read as UTF-8 – is left as it is, its
+bytes unchanged: no encoding is guessed. A warning names each column
+holding such text, with its count and first rows, and says how to read
+the file in its own encoding; the result keeps the same table as
+<code>attr(x, "not_utf8")</code>. A column name that is not valid UTF-8 is cleaned
+with each stray byte written out (<code>caf_e9</code>).</p>
+<p>Given the file's encoding, <code>encoding = "windows-1252"</code> say, the text that
+is not valid UTF-8 – values, factor levels and column names – is
+converted from it, and a message says how many values were converted in
+each column. Nothing that is already valid UTF-8 is touched, and no
+encoding is ever guessed. A value that does not convert, or does not
+convert back to the same bytes, is left as it is and reported as above.</p>
 <p>Names follow the rules of janitor's <code>make_clean_names()</code>, without needing
 janitor, and no letter is dropped: <code>"%"</code> becomes <code>percent</code> and <code>"#"</code>
 <code>number</code>; camelCase is split; accented Latin letters become plain ones (an
