@@ -1,6 +1,6 @@
 ## Reference numbers from PCAmixdata::PCAmix(), stored so the tests hold
 ## ilm_famd() to it for good without PCAmixdata being installed: ilm_reduce()
-## computed with PCAmix until Craig's ruling of 2026-09-28 replaced it with
+## computed with PCAmix until a decision of 2026-09-28 replaced it with
 ## ilm_famd() (dev/studies/famd_own.R measured the two).
 ##
 ##   tests/testthat/fixtures/pcamix_cases.csv

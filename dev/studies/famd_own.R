@@ -3,7 +3,7 @@
 ##
 ## ilm_reduce() calls PCAmixdata::PCAmix(), a Suggests dependency that
 ## ilm_reduce(), ilm_cluster() and ilm_profile() need for any mixed data.
-## Craig asked whether a hand-rolled FAMD, with no dependency at all, gains
+## The question was whether a hand-rolled FAMD, with no dependency at all, gains
 ## speed; agreement comes first, since a faster wrong answer is no use.
 ##
 ## Design, fixed before any full run.

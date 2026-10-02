@@ -1,7 +1,7 @@
 ## Records tableone's standardised mean differences for the cases in
 ## tests/testthat/helper-smd-cases.R, so that illumex's (R/ilm_smd.R) are held
-## to them in tests/testthat/test-smd.R without tableone installed. Craig
-## approved tableone for this (2026-09-27), in a private library only.
+## to them in tests/testthat/test-smd.R without tableone installed. tableone
+## was approved for this (2026-09-27), in a private library only.
 ##
 ## tableone reports each SMD unsigned; for a category of more than two levels
 ## it is Yang and Dalton's multivariate difference, as illumex's is.
