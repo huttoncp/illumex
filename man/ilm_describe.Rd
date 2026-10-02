@@ -53,7 +53,12 @@ describe the variable better than the mean and SD:
 \code{probs = c(0.25, 0.5, 0.75)}.}
 
 \item{dispersion}{Add the variance-to-mean ratio for non-negative integer
-variables. Meaningful only if you intend to model the variable as a count.}
+variables. Meaningful only if you intend to model the variable as a count,
+so it is left blank for a variable read as a rating: whole numbers from 1
+spanning at most 10 points, or a scale centred on 0 (see
+\code{\link[=ilm_gauss_check]{ilm_gauss_check()}}). Whole numbers from 0 to at most 10 may be either,
+and keep it. Shifting a rating scale's values (-3 to 3 into 0 to 6)
+changes this column, not the scale.}
 
 \item{rare_n}{Levels with fewer observations than this count as rare.}
 
@@ -91,7 +96,9 @@ A one-row data frame, or one row per group when \code{by} is used.
 \description{
 Summarises a vector, or one column of a data frame, with statistics chosen
 for its class. Numeric variables also get a gaussian agreement index and,
-where that is low, a plain-language reason.
+where that is low, a plain-language reason. A pile of values at a bound
+is named first; an ordered factor's note names one at its lowest or
+highest level (see \code{\link[=ilm_gauss_check]{ilm_gauss_check()}}).
 }
 \details{
 The default output is deliberately narrow. Quartiles, skewness and kurtosis

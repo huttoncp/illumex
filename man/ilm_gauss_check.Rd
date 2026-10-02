@@ -19,7 +19,8 @@ freedom all score 0.07 or less, while normal data score 1.}
 }
 \value{
 A list with \code{gauss} (0-1), \code{ks_d} (the raw distance) and
-\code{gauss_note} (empty when agreement is high).
+\code{gauss_note} (empty when agreement is high and there is no floor or
+ceiling).
 }
 \description{
 Reports an agreement index on 0-1 and, when it is low, the reason.
@@ -29,6 +30,35 @@ The index measures the size of the departure from normal, not its kind. A
 variable scoring 0.3 may be skewed, heavy-tailed, lumpy or piled on a few
 values; \code{gauss_note} names which, and a plot of it -- \code{ilm_plot(data, x)}
 -- shows it.
+
+A pile of values at a bound -- a detection limit, a capped scale, a
+count's excess zeros -- is named first, whatever the index: when the
+count at the lowest (or highest) value is at least 5 and 2\% of the
+values, at least twice the count at the next value, and significantly
+above it (a one-sided exact test at 0.001). It is looked for on a
+variable with at least 5 distinct values, or 4 on a short scale, so that
+a 0-3 item is read; a 3-point scale or a 0/1 variable is not. The advice
+follows the variable's kind:
+\itemize{
+\item a continuous variable's floor or ceiling points to \code{illume::ilm_censor()};
+\item a count's excess zeros point to a two-part or zero-inflated model;
+\item on a rating scale -- whole numbers from 1 spanning at most 10 points,
+or symmetric about 0 and spanning at most 10 (-3 to 3, say) -- a floor
+or ceiling means the scale cannot separate people at that end, and
+points to an ordinal model;
+\item whole numbers from 0 to at most 10 may be a count or a rating, so the
+note names both readings and both remedies.
+}
+
+An ordered factor is a rating scale: \code{\link[=ilm_describe]{ilm_describe()}}'s note for it
+leads with a floor or ceiling, named by the level's label. Its bounds are
+its declared first and last levels; when the first is unused, a pile at
+the next is not called the scale's lowest point (the note counts the
+unused levels). A numeric variable's bounds are the values it takes.
+
+An ordinal model uses only the order of a scale's levels, so a scale
+centred on 0 needs no shifting to positive values before one is fitted.
+Shifting the values changes the dispersion column, not the scale.
 
 This deliberately does not report a normality test p-value. Any test of
 exact normality rejects everything once \code{n} is large, so the p-value answers
