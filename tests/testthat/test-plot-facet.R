@@ -94,8 +94,8 @@ test_that("a formula is turned away with the column-name form", {
   expect_error(ilm_plot(mtcars, "wt", "mpg", facet = ~cyl), 'facet = "cyl"', fixed = TRUE)
   expect_error(ilm_plot_scatter(mtcars, "mpg", "wt", facet = mtcars$cyl),
                "single column name, as a string")
-  expect_error(ilm_plot_bar(mtcars, "gear", facet = "nope"), "column not found")
-  expect_error(ilm_plot(mtcars, "wt", "mpg", facet = "nope"), "column not found")
+  expect_error(ilm_plot_bar(mtcars, "gear", facet = "nope"), "`facet` takes column names; nope is not one", fixed = TRUE)
+  expect_error(ilm_plot(mtcars, "wt", "mpg", facet = "nope"), "`facet` takes column names; nope is not one", fixed = TRUE)
 })
 
 test_that("a binned density has no panels, and says what to use", {

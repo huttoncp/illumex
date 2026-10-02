@@ -37,7 +37,7 @@ test_that("counts_all stacks variables and respects by", {
   expect_setequal(unique(r$variable), c("grp", "site"))
   rb <- ilm_counts_all(d[, c("grp", "flag")], by = "flag")
   expect_true("flag" %in% names(rb))
-  expect_error(ilm_counts_all(d, by = "nope"), "not found")
+  expect_error(ilm_counts_all(d, by = "nope"), "`by` takes column names; nope is not one", fixed = TRUE)
   expect_error(ilm_counts(d), "use `ilm_counts_all\\(\\)`")
 })
 

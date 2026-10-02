@@ -566,6 +566,7 @@ ilm_describe <- function(data, y = NULL, by = NULL, digits = 3,
   }
 
   if (is.null(by)) return(ilm_describe_result(one(x), "ilm_describe", y, by, digits))
+  ilm_check_by(data, by)
   miss <- setdiff(by, names(data))
   if (length(miss))
     stop("`by` variable(s) not found in the data: ", paste(miss, collapse = ", "),
@@ -636,6 +637,11 @@ ilm_constant_tbl <- function(data, cols) {
 #' you nothing a statistic can show, and it will break a model matrix.
 #'
 #' @inheritParams ilm_describe
+#' @inheritParams ilm_reduce
+#' @param cols Columns to describe. A character vector of names, a regular
+#'   expression, a predicate function such as `is.numeric`, or `NULL` for all
+#'   of them -- see [ilm_selection]. `by` columns are never among them, and the choice is made
+#'   among the columns `class` allows.
 #' @param class `"all"`, or one or more of `"numeric"`, `"categorical"`,
 #'   `"logical"`, `"time"`.
 #' @return A named list of data frames, one per class present, plus `constant`
@@ -648,11 +654,11 @@ ilm_constant_tbl <- function(data, cols) {
 #' ilm_describe_all(d)
 #' ilm_describe_all(d, class = "numeric", skew = TRUE)
 #' @export
-ilm_describe_all <- function(data, by = NULL, digits = 3,
+ilm_describe_all <- function(data, by = NULL, cols = NULL, digits = 3,
                               gauss = c("index", "ks_d", "both", "none"),
                               probs = c(0, 0.5, 1), skew = FALSE, kurt = FALSE,
                               dispersion = TRUE, class = "all", rare_n = 5L,
-                              cap = 0.06, min_n = 20L, smd = FALSE) {
+                              cap = 0.06, min_n = 20L, smd = FALSE, cols_negate = FALSE) {
   gauss <- match.arg(gauss)
   ilm_smd_arg(smd, by)
   ## An ilm_anomaly() result is accepted directly: the flagged rows are what
@@ -665,6 +671,7 @@ ilm_describe_all <- function(data, by = NULL, digits = 3,
     stop("unknown `class`: ", paste(sQuote(bad), collapse = ", "),
          ". Options are ", paste(sQuote(c("all", ILM_CLASSES)), collapse = ", "),
          ".", call. = FALSE)
+  ilm_check_by(data, by)
   miss <- setdiff(by, names(data))
   if (length(miss))
     stop("`by` variable(s) not found in the data: ", paste(miss, collapse = ", "),
@@ -673,6 +680,13 @@ ilm_describe_all <- function(data, by = NULL, digits = 3,
   ## grouping variables describe the split, so they are not also described
   cand <- setdiff(names(data), by)
   cl <- vapply(data[cand], ilm_class_of, "")
+  ## `cols` chooses among the columns `class` allows, and `cols_negate`
+  ## leaves its choice out of those
+  if (!is.null(cols) || isTRUE(cols_negate)) {
+    elig <- if (identical(class, "all")) cand else cand[cl %in% class]
+    cand <- ilm_resolve_cols(data, cols, exclude = by, eligible = elig, negate = cols_negate)
+    cl <- cl[cand]
+  }
   ## constancy is judged on the whole column, so the same variables are set
   ## aside whether or not `by` is used
   is_const <- vapply(data[cand], function(v) fndistinct(v) <= 1L, TRUE)

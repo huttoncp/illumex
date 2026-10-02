@@ -96,7 +96,7 @@ ilm_profile <- function(data, cols = NULL, ndim = 5,
                         method = c("famd", "glrm", "pcamix"),
                         time = c("cycles", "elapsed", "drop"), ...,
                         vtest_threshold = 1.96, top_n_vars = 4,
-                        var_contrib = TRUE, var_contrib_B = 199L) {
+                        var_contrib = TRUE, var_contrib_B = 199L, cols_negate = FALSE) {
   ## An ilm_anomaly() result is accepted directly: the flagged rows are what
   ## the user wants to look at next, and rebuilding that subset by hand from
   ## `row` is both a papercut and a chance to line the wrong rows up.
@@ -104,7 +104,7 @@ ilm_profile <- function(data, cols = NULL, ndim = 5,
     data <- ilm_from_anomaly(data, "ilm_profile")
   method <- match.arg(method)
   rr <- ilm_reduce(data, cols = cols, ndim = ndim, method = method,
-                   time = match.arg(time))
+                   time = match.arg(time), cols_negate = cols_negate)
   cr <- ilm_cluster(rr, ...)
   rows <- cr$ind_cluster$row_id
   dsub <- if (!is.null(rows) && length(rows) == nrow(cr$ind_cluster) &&
@@ -161,6 +161,7 @@ ilm_profile <- function(data, cols = NULL, ndim = 5,
 #' it threatens the model you intend to fit.
 #'
 #' @inheritParams ilm_reduce_na
+#' @inheritParams ilm_reduce
 #' @section Size:
 #' It runs [ilm_cluster_na()], and at its defaults shares that function's
 #' limits (see Size in [ilm_cluster()]): on one core of a 16 GB Windows
@@ -180,10 +181,10 @@ ilm_profile <- function(data, cols = NULL, ndim = 5,
 #' cat(p$summary, sep = "\n")
 #' @export
 ilm_profile_na <- function(data, cols = NULL, ndim = 5, ...,
-                           vtest_threshold = 1.96, top_n_vars = 4) {
+                           vtest_threshold = 1.96, top_n_vars = 4, cols_negate = FALSE) {
   if (inherits(data, "ilm_anomaly"))
     data <- ilm_from_anomaly(data, "ilm_profile_na")
-  rr <- ilm_reduce_na(data, cols = cols, ndim = ndim)
+  rr <- ilm_reduce_na(data, cols = cols, ndim = ndim, cols_negate = cols_negate)
   cr <- ilm_cluster_na(rr, ...)
   ## the present/missing markers the clustering was built from
   marks <- as.data.frame(lapply(rr$cols, function(cn) is.na(data[[cn]])))

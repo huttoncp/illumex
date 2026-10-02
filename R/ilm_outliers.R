@@ -116,6 +116,7 @@ ilm_outliers <- function(y, method = c("iqr", "mad", "zscore"),
 #' @param data A data frame.
 #' @param by Grouping column(s), as a character vector. Reference statistics,
 #'   and so the flags, are computed separately within each group.
+#' @inheritParams ilm_reduce
 #' @param cols Columns to use. A character vector of names, a
 #'   regular expression, a predicate function such as `is.numeric`, or
 #'   `NULL` for all of them -- see [ilm_selection].
@@ -132,14 +133,15 @@ ilm_outliers <- function(y, method = c("iqr", "mad", "zscore"),
 ilm_outliers_all <- function(data, by = NULL, cols = NULL,
                              method = c("iqr", "mad", "zscore"),
                              threshold = NULL, flagged_only = TRUE,
-                             na.rm = TRUE) {
+                             na.rm = TRUE, cols_negate = FALSE) {
   method <- match.arg(method)
   if (!is.data.frame(data))
     stop("`data` must be a data frame; it is ", class(data)[1], call. = FALSE)
   g <- ilm_resolve_cols(data, by, arg = "by")
   if (is.null(by)) g <- character()
   num <- ilm_resolve_cols(data, cols, exclude = g, arg = "cols",
-                          eligible = names(data)[vapply(data, is.numeric, TRUE)])
+                          eligible = names(data)[vapply(data, is.numeric, TRUE)],
+                          negate = cols_negate)
   if (!length(num))
     stop("no numeric columns to check for unusual values", call. = FALSE)
 

@@ -240,6 +240,7 @@ ilm_boot_ci <- function(data, y = NULL, by = NULL, stat = "mean",
     if (!is.data.frame(data))
       stop("`data` must be a data frame, or a numeric vector with `y` left out",
            call. = FALSE)
+    ilm_check_by(data, by)
     miss <- setdiff(by, names(data))
     if (!is.null(y)) miss <- c(setdiff(y, names(data)), miss)
     if (length(miss))
@@ -697,6 +698,7 @@ ilm_boot_diff_infer <- function(D, dh, conf, ci_type, adjust) {
 ilm_describe_na <- function(data, y = NULL, by = NULL, digits = 4) {
   if (is.null(y) && !is.data.frame(data)) { v <- data; data <- NULL } else {
     if (is.null(y)) stop("`y` must name a column, or pass a vector", call. = FALSE)
+    ilm_check_by(data, by)
     miss <- setdiff(c(y, by), names(data))
     if (length(miss))
       stop("column(s) not found in the data: ", paste(miss, collapse = ", "),
@@ -726,21 +728,27 @@ ilm_describe_na <- function(data, y = NULL, by = NULL, digits = 4) {
 #' looking at.
 #'
 #' @inheritParams ilm_describe_na
+#' @inheritParams ilm_reduce
+#' @param cols Columns to describe. A character vector of names, a regular
+#'   expression, a predicate function such as `is.numeric`, or `NULL` for all
+#'   of them -- see [ilm_selection]. `by` columns are never among them.
 #' @param sort Sort by proportion missing, descending.
 #' @return A data frame with `variable`, `obs`, `n`, `na` and `p_na`.
 #' @examples
 #' ilm_describe_na_all(ilm_sim())
 #' @export
-ilm_describe_na_all <- function(data, by = NULL, digits = 4, sort = TRUE) {
+ilm_describe_na_all <- function(data, by = NULL, cols = NULL, digits = 4, sort = TRUE,
+                                cols_negate = FALSE) {
   if (!is.data.frame(data)) stop("`data` must be a data frame", call. = FALSE)
+  ilm_check_by(data, by)
   miss <- setdiff(by, names(data))
   if (length(miss))
     stop("`by` variable(s) not found in the data: ", paste(miss, collapse = ", "),
          call. = FALSE)
-  cols <- setdiff(names(data), by)
-  rs <- lapply(cols, function(cn) ilm_describe_na(data, cn, by = by, digits = digits))
-  res <- do.call(rbind, lapply(seq_along(cols), function(i)
-    cbind(variable = cols[i], rs[[i]], stringsAsFactors = FALSE)))
+  use <- ilm_resolve_cols(data, cols, exclude = by, negate = cols_negate)
+  rs <- lapply(use, function(cn) ilm_describe_na(data, cn, by = by, digits = digits))
+  res <- do.call(rbind, lapply(seq_along(use), function(i)
+    cbind(variable = use[i], rs[[i]], stringsAsFactors = FALSE)))
   ## the variables with the most missingness are the ones worth looking at, so
   ## they go first unless the caller wants the original column order; ordered
   ## by the share as it prints, so shares that print alike keep name order

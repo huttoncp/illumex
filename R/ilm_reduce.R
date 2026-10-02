@@ -42,6 +42,9 @@
 #' @param cols Columns to use. A character vector of names, a
 #'   regular expression, a predicate function such as `is.numeric`, or
 #'   `NULL` for all of them -- see [ilm_selection].
+#' @param cols_negate If `TRUE`, `cols` names the columns to leave out, and every
+#'   other eligible column is used; see [ilm_selection]. It needs `cols`. A
+#'   `by` argument is never negated.
 #' @param method `"famd"` (the default) for PCA, MCA or FAMD depending on
 #'   the column types, in closed form; `"pcamix"`, its name from when
 #'   PCAmixdata computed it, is still accepted and means the same. `"glrm"` fits a generalized low rank
@@ -104,7 +107,7 @@
 #' @export
 ilm_reduce <- function(data, cols = NULL, ndim = 5,
                        method = c("famd", "glrm", "pcamix"),
-                       time = c("cycles", "elapsed", "drop"), ...) {
+                       time = c("cycles", "elapsed", "drop"), ..., cols_negate = FALSE) {
   method <- match.arg(method)
   if (method == "pcamix") method <- "famd"   # the former name, still accepted
   time <- match.arg(time)
@@ -113,10 +116,11 @@ ilm_reduce <- function(data, cols = NULL, ndim = 5,
   ## `row` is both a papercut and a chance to line the wrong rows up.
   if (inherits(data, "ilm_anomaly"))
     data <- ilm_from_anomaly(data, "ilm_reduce")
-  if (method == "glrm") return(ilm_reduce_glrm(data, cols, ndim, time = time, ...))
+  if (method == "glrm")
+    return(ilm_reduce_glrm(data, cols, ndim, time = time, cols_negate = cols_negate, ...))
   if (!is.data.frame(data))
     stop("`data` must be a data frame; it is ", class(data)[1], call. = FALSE)
-  keep <- ilm_resolve_cols(data, cols)
+  keep <- ilm_resolve_cols(data, cols, negate = cols_negate)
   ilm_stop_not_utf8_names(keep, "ilm_reduce")
   sub <- ilm_time_encode(data[keep], time, "ilm_reduce")
   tmap <- attr(sub, "time_map")
@@ -272,6 +276,7 @@ ilm_build_na_indicator <- function(data, cols) {
 #' lost to one skipped section from values that went missing independently.
 #'
 #' @param data A data frame.
+#' @inheritParams ilm_reduce
 #' @param cols Columns to use. A character vector of names, a
 #'   regular expression, a predicate function such as `is.numeric`, or
 #'   `NULL` for all of them -- see [ilm_selection].
@@ -286,7 +291,7 @@ ilm_build_na_indicator <- function(data, cols) {
 #' r <- ilm_reduce_na(airquality)
 #' r
 #' @export
-ilm_reduce_na <- function(data, cols = NULL, ndim = 5) {
+ilm_reduce_na <- function(data, cols = NULL, ndim = 5, cols_negate = FALSE) {
   ## An ilm_anomaly() result is accepted directly: the flagged rows are what
   ## the user wants to look at next, and rebuilding that subset by hand from
   ## `row` is both a papercut and a chance to line the wrong rows up.
@@ -294,13 +299,8 @@ ilm_reduce_na <- function(data, cols = NULL, ndim = 5) {
     data <- ilm_from_anomaly(data, "ilm_reduce_na")
   if (!is.data.frame(data))
     stop("`data` must be a data frame; it is ", class(data)[1], call. = FALSE)
-  if (!is.null(cols)) {
-    miss <- setdiff(as.character(cols), names(data))
-    if (length(miss))
-      stop("column(s) not found in the data: ", paste(miss, collapse = ", "),
-           call. = FALSE)
-  }
-  out <- ilm_reduce(ilm_build_na_indicator(data, cols), ndim = ndim)
+  keep <- ilm_resolve_cols(data, cols, negate = cols_negate)
+  out <- ilm_reduce(ilm_build_na_indicator(data, keep), ndim = ndim)
   class(out) <- c("ilm_reduce_na", class(out))
   out
 }
@@ -332,8 +332,8 @@ ilm_reduce_na <- function(data, cols = NULL, ndim = 5) {
 
 #' @keywords internal
 #' @noRd
-ilm_reduce_glrm <- function(data, cols, ndim, ...) {
-  g <- ilm_glrm(data, cols = cols, rank = ndim, ...)
+ilm_reduce_glrm <- function(data, cols, ndim, ..., cols_negate = FALSE) {
+  g <- ilm_glrm(data, cols = cols, rank = ndim, cols_negate = cols_negate, ...)
   k <- g$rank
   n <- nrow(g$scores)
   P <- as.matrix(g$scores) %*% g$archetypes

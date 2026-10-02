@@ -12,7 +12,8 @@ ilm_outliers_all(
   method = c("iqr", "mad", "zscore"),
   threshold = NULL,
   flagged_only = TRUE,
-  na.rm = TRUE
+  na.rm = TRUE,
+  cols_negate = FALSE
 )
 }
 \arguments{
@@ -25,7 +26,13 @@ and so the flags, are computed separately within each group.}
 regular expression, a predicate function such as \code{is.numeric}, or
 \code{NULL} for all of them -- see \link{ilm_selection}.}
 
-\item{method}{\code{"iqr"}, \code{"mad"} or \code{"zscore"}.}
+\item{method}{\code{"famd"} (the default) for PCA, MCA or FAMD depending on
+the column types, in closed form; \code{"pcamix"}, its name from when
+PCAmixdata computed it, is still accepted and means the same. \code{"glrm"} fits a generalized low rank
+model instead, which uses a loss appropriate to each column's type rather
+than squared error on one-hot indicators, and reconstructs a category as a
+category. It costs an iterative fit, and on all-numeric data the two are
+the same model -- see \code{\link[=ilm_glrm]{ilm_glrm()}} for when it is worth that.}
 
 \item{threshold}{Flagging threshold. Defaults per rule: 1.5 for \code{"iqr"}
 (the boxplot convention), 3.5 for \code{"mad"} (Iglewicz and Hoaglin), 3 for
@@ -37,6 +44,10 @@ value's score.}
 \item{na.rm}{Compute the reference statistics with missing values removed.
 The result always has one row per element of \code{y}, with \code{NA} for \code{score}
 and \code{is_outlier} wherever \code{y} is \code{NA}.}
+
+\item{cols_negate}{If \code{TRUE}, \code{cols} names the columns to leave out, and every
+other eligible column is used; see \link{ilm_selection}. It needs \code{cols}. A
+\code{by} argument is never negated.}
 }
 \value{
 A data frame with the \code{by} columns, \code{row_id} (the row's position in

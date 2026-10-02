@@ -5,14 +5,28 @@
 \alias{iml_counts_tb_all}
 \title{Most and least frequent values for every column}
 \usage{
-ilm_counts_tb_all(data, n = 10L, na.rm = TRUE)
+ilm_counts_tb_all(
+  data,
+  cols = NULL,
+  n = 10L,
+  na.rm = TRUE,
+  cols_negate = FALSE
+)
 }
 \arguments{
 \item{data}{A data frame.}
 
+\item{cols}{Columns to count. A character vector of names, a regular
+expression, a predicate function such as \code{is.numeric}, or \code{NULL} for all
+of them -- see \link{ilm_selection}.}
+
 \item{n}{How many values from each end.}
 
 \item{na.rm}{Drop missing values before counting.}
+
+\item{cols_negate}{If \code{TRUE}, \code{cols} names the columns to leave out, and every
+other eligible column is used; see \link{ilm_selection}. It needs \code{cols}. A
+\code{by} argument is never negated.}
 }
 \value{
 A data frame with \code{variable} and the top/bottom columns.

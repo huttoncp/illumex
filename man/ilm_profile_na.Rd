@@ -11,7 +11,8 @@ ilm_profile_na(
   ndim = 5,
   ...,
   vtest_threshold = 1.96,
-  top_n_vars = 4
+  top_n_vars = 4,
+  cols_negate = FALSE
 )
 }
 \arguments{
@@ -29,6 +30,10 @@ regular expression, a predicate function such as \code{is.numeric}, or
 cluster's description; see \code{\link[=ilm_profile]{ilm_profile()}}.}
 
 \item{top_n_vars}{Most columns to name for one cluster.}
+
+\item{cols_negate}{If \code{TRUE}, \code{cols} names the columns to leave out, and every
+other eligible column is used; see \link{ilm_selection}. It needs \code{cols}. A
+\code{by} argument is never negated.}
 }
 \value{
 An object of class \code{"ilm_profile_na"}, which is also an

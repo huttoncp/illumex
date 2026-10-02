@@ -39,6 +39,10 @@ ilm_na_summary <- function(data, cols, g = character()) {
 #' @param by Optional grouping column(s), as a character vector -- bars are
 #'   drawn per group, which is how you see whether missingness is concentrated
 #'   somewhere.
+#' @inheritParams ilm_reduce
+#' @param cols Columns to plot. A character vector of names, a regular
+#'   expression, a predicate function such as `is.numeric`, or `NULL` for all
+#'   of them -- see [ilm_selection]. `by` columns are never among them.
 #' @param stat `"p_na"` (proportion missing), `"na"` (count missing) or `"n"`
 #'   (count present).
 #' @param ... Passed to [tinyplot::tinyplot()].
@@ -49,18 +53,20 @@ ilm_na_summary <- function(data, cols, g = character()) {
 #' ilm_plot_na_all(airquality)
 #' ilm_plot_na_all(airquality, by = "Month")
 #' @export
-ilm_plot_na_all <- function(data, by = NULL, stat = c("p_na", "na", "n"), ...) {
+ilm_plot_na_all <- function(data, by = NULL, cols = NULL, stat = c("p_na", "na", "n"), ...,
+                            cols_negate = FALSE) {
   stat <- match.arg(stat)
   data <- ilm_plot_frame(data)
+  ilm_check_by(data, by)
   g <- if (is.null(by)) character() else as.character(by)
   miss <- setdiff(g, names(data))
   if (length(miss))
     stop("column(s) not found in the data: ", paste(miss, collapse = ", "),
          call. = FALSE)
-  cols <- setdiff(names(data), g)
-  if (!length(cols))
+  if (length(setdiff(names(data), g)) == 0L)
     stop("no columns left to plot once `by` is set aside", call. = FALSE)
-  s <- ilm_na_summary(data, cols, g)
+  use <- ilm_resolve_cols(data, cols, exclude = g, negate = cols_negate)
+  s <- ilm_na_summary(data, use, g)
   tinyplot::tinyplot(x = s$variable, y = s[[stat]],
                      by = if (length(g)) s$group else NULL,
                      type = if (length(g)) tinyplot::type_barplot(beside = TRUE)
@@ -91,6 +97,7 @@ ilm_plot_na <- function(data, x, by = NULL, stat = c("p_na", "na", "n"), ...) {
   if (is.null(by))
     stop("`by` is required: without a grouping variable there is one bar. ",
          "Use ilm_plot_na_all() to compare columns instead.", call. = FALSE)
+  ilm_check_by(data, by)
   g <- as.character(by)
   miss <- setdiff(c(x, g), names(data))
   if (length(miss))
@@ -134,6 +141,8 @@ ilm_classify_var <- function(v)
 ilm_plot_var <- function(data, var1, var2 = NULL, by = NULL, verbose = FALSE,
                          ...) {
   data <- ilm_plot_frame(data)
+  ilm_check_by(data, var2, "var2")
+  ilm_check_by(data, by)
   miss <- setdiff(c(var1, var2, by), names(data))
   if (length(miss))
     stop("column(s) not found in the data: ", paste(miss, collapse = ", "),
@@ -182,6 +191,7 @@ ilm_panel_grid <- function(n, nrow, ncol) {
 #' [ilm_plot_var()] once per column, arranged in a grid.
 #'
 #' @inheritParams ilm_plot_var
+#' @inheritParams ilm_reduce
 #' @param cols Columns to use. A character vector of names, a
 #'   regular expression, a predicate function such as `is.numeric`, or
 #'   `NULL` for all of them -- see [ilm_selection].
@@ -192,14 +202,13 @@ ilm_panel_grid <- function(n, nrow, ncol) {
 #' ilm_plot_var_all(mtcars, cols = c("mpg", "cyl", "wt", "gear"))
 #' @export
 ilm_plot_var_all <- function(data, var2 = NULL, by = NULL, cols = NULL,
-                             nrow = NULL, ncol = NULL, verbose = FALSE, ...) {
+                             nrow = NULL, ncol = NULL, verbose = FALSE, ...,
+                             cols_negate = FALSE) {
   data <- ilm_plot_frame(data)
-  g <- if (is.null(by)) character() else as.character(by)
-  miss <- setdiff(c(var2, g, cols), names(data))
-  if (length(miss))
-    stop("column(s) not found in the data: ", paste(miss, collapse = ", "),
-         call. = FALSE)
-  target <- ilm_resolve_cols(data, cols, exclude = c(var2, g))
+  ilm_check_by(data, var2, "var2")
+  ilm_check_by(data, by)
+  g <- if (is.null(by)) character() else by
+  target <- ilm_resolve_cols(data, cols, exclude = c(var2, g), negate = cols_negate)
   if (!length(target)) stop("no columns to plot", call. = FALSE)
   ## several grouping columns become one real column on a local copy, since the
   ## single-variable plotters each take one `by` column by name
@@ -220,6 +229,7 @@ ilm_plot_var_all <- function(data, var2 = NULL, by = NULL, cols = NULL,
 #' columns rather than only numeric ones as a classic scatterplot matrix does.
 #'
 #' @param data A data frame.
+#' @inheritParams ilm_reduce
 #' @param cols Columns to use. A character vector of names, a
 #'   regular expression, a predicate function such as `is.numeric`, or
 #'   `NULL` for all of them -- see [ilm_selection].
@@ -233,14 +243,11 @@ ilm_plot_var_all <- function(data, var2 = NULL, by = NULL, cols = NULL,
 #' @examples
 #' ilm_plot_var_pairs(mtcars, cols = c("mpg", "wt", "hp"), by = "cyl")
 #' @export
-ilm_plot_var_pairs <- function(data, cols = NULL, by = NULL, ...) {
+ilm_plot_var_pairs <- function(data, cols = NULL, by = NULL, ..., cols_negate = FALSE) {
   data <- ilm_plot_frame(data)
-  g <- if (is.null(by)) character() else as.character(by)
-  miss <- setdiff(c(g, cols), names(data))
-  if (length(miss))
-    stop("column(s) not found in the data: ", paste(miss, collapse = ", "),
-         call. = FALSE)
-  target <- ilm_resolve_cols(data, cols, exclude = g)
+  ilm_check_by(data, by)
+  g <- if (is.null(by)) character() else by
+  target <- ilm_resolve_cols(data, cols, exclude = g, negate = cols_negate)
   if (length(target) < 2L)
     stop("at least 2 columns are needed to plot pairs of them; ",
          length(target), " given", call. = FALSE)

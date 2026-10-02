@@ -16,7 +16,8 @@ ilm_anomaly(
   alpha = 0.05,
   seed = 1L,
   keep_data = TRUE,
-  progress = NULL
+  progress = NULL,
+  cols_negate = FALSE
 )
 }
 \arguments{
@@ -64,6 +65,10 @@ functions can take the object directly. Set \code{FALSE} if the frame is
 large and you only want the scores.}
 
 \item{progress}{Show a progress bar; see \link{ilm_progress_arg}.}
+
+\item{cols_negate}{If \code{TRUE}, \code{cols} names the columns to leave out, and every
+other eligible column is used; see \link{ilm_selection}. It needs \code{cols}. A
+\code{by} argument is never negated.}
 }
 \value{
 A data frame with one row per observation: \code{row}, \code{score}, \code{p},

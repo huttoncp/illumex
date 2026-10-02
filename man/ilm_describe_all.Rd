@@ -8,6 +8,7 @@
 ilm_describe_all(
   data,
   by = NULL,
+  cols = NULL,
   digits = 3,
   gauss = c("index", "ks_d", "both", "none"),
   probs = c(0, 0.5, 1),
@@ -18,13 +19,19 @@ ilm_describe_all(
   rare_n = 5L,
   cap = 0.06,
   min_n = 20L,
-  smd = FALSE
+  smd = FALSE,
+  cols_negate = FALSE
 )
 }
 \arguments{
 \item{data}{A data frame, or a vector when \code{y} is \code{NULL}.}
 
 \item{by}{Optional character vector of grouping columns.}
+
+\item{cols}{Columns to describe. A character vector of names, a regular
+expression, a predicate function such as \code{is.numeric}, or \code{NULL} for all
+of them -- see \link{ilm_selection}. \code{by} columns are never among them, and the choice is made
+among the columns \code{class} allows.}
 
 \item{digits}{Rounding for numeric columns, quantiles included.}
 
@@ -60,6 +67,10 @@ the square root of the average of their p(1 - p); a category of more
 than two levels, Yang and Dalton's (2012) multivariate difference, which
 has no sign. A date is compared as a number. Each group's uses its
 non-missing values. The reference group's own row has none.}
+
+\item{cols_negate}{If \code{TRUE}, \code{cols} names the columns to leave out, and every
+other eligible column is used; see \link{ilm_selection}. It needs \code{cols}. A
+\code{by} argument is never negated.}
 }
 \value{
 A named list of data frames, one per class present, plus \code{constant}

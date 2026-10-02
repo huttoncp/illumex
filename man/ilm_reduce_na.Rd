@@ -5,7 +5,7 @@
 \alias{iml_reduce_na}
 \title{Reduce a data frame's missingness pattern to a few dimensions}
 \usage{
-ilm_reduce_na(data, cols = NULL, ndim = 5)
+ilm_reduce_na(data, cols = NULL, ndim = 5, cols_negate = FALSE)
 }
 \arguments{
 \item{data}{A data frame.}
@@ -15,6 +15,10 @@ regular expression, a predicate function such as \code{is.numeric}, or
 \code{NULL} for all of them -- see \link{ilm_selection}.}
 
 \item{ndim}{Number of dimensions to keep.}
+
+\item{cols_negate}{If \code{TRUE}, \code{cols} names the columns to leave out, and every
+other eligible column is used; see \link{ilm_selection}. It needs \code{cols}. A
+\code{by} argument is never negated.}
 }
 \value{
 An object of class \code{"ilm_reduce_na"}, which is also an

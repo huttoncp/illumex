@@ -21,7 +21,11 @@ ilm_recode_errors(
 
 \item{replacement}{What to put in their place. \code{NA} by default.}
 
-\item{rows, cols}{Restrict the replacement (data frame or matrix input).}
+\item{rows, cols}{Restrict the replacement (data frame or matrix input):
+the cells recoded are those in these rows and columns. \code{cols} here takes
+column names or positions only -- it addresses cells rather than choosing
+columns for an analysis, so the patterns, predicates and \code{cols_negate} of
+\link{ilm_selection} do not apply.}
 
 \item{ind}{Restrict the replacement (vector input).}
 }

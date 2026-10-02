@@ -86,29 +86,34 @@ ilm_counts_tb <- function(y, n = 10L, na.rm = TRUE) {
 #' as character; the counts stay integer.
 #'
 #' @inheritParams ilm_counts
+#' @inheritParams ilm_reduce
 #' @param data A data frame.
 #' @param by Optional grouping columns.
+#' @param cols Columns to count. A character vector of names, a regular
+#'   expression, a predicate function such as `is.numeric`, or `NULL` for all
+#'   of them -- see [ilm_selection]. `by` columns are never among them.
 #' @return A data frame with `variable`, `value` and `n`.
 #' @examples
 #' ilm_counts_all(ilm_sim()[, c("grp", "site")], n = 2)
 #' @export
-ilm_counts_all <- function(data, by = NULL, n = "all", order = c("d", "a", "i"),
-                           na.rm = TRUE) {
+ilm_counts_all <- function(data, by = NULL, cols = NULL, n = "all",
+                           order = c("d", "a", "i"), na.rm = TRUE, cols_negate = FALSE) {
   order <- match.arg(order)
+  ilm_check_by(data, by)
   miss <- setdiff(by, names(data))
   if (length(miss))
     stop("`by` variable(s) not found in the data: ", paste(miss, collapse = ", "),
          call. = FALSE)
-  cols <- setdiff(names(data), by)
-  one <- function(d, cols) do.call(rbind, lapply(cols, function(cn) {
+  use <- ilm_resolve_cols(data, cols, exclude = by, negate = cols_negate)
+  one <- function(d, vars) do.call(rbind, lapply(vars, function(cn) {
     tb <- ilm_counts(d[[cn]], n = n, order = order, na.rm = na.rm)
     data.frame(variable = cn, value = as.character(tb$value), n = tb$n,
                stringsAsFactors = FALSE)
   }))
-  if (is.null(by)) return(one(data, cols))
+  if (is.null(by)) return(one(data, use))
   g <- interaction(data[by], drop = TRUE)
   parts <- lapply(split(seq_len(nrow(data)), g),
-                  function(i) one(data[i, , drop = FALSE], cols))
+                  function(i) one(data[i, , drop = FALSE], use))
   res <- do.call(rbind, parts)
   cbind(setNames(data.frame(rep(names(parts), vapply(parts, nrow, 1L)),
                             stringsAsFactors = FALSE), paste(by, collapse = ".")),
@@ -118,13 +123,19 @@ ilm_counts_all <- function(data, by = NULL, n = "all", order = c("d", "a", "i"),
 #' Most and least frequent values for every column
 #'
 #' @inheritParams ilm_counts_tb
+#' @inheritParams ilm_reduce
 #' @param data A data frame.
+#' @param cols Columns to count. A character vector of names, a regular
+#'   expression, a predicate function such as `is.numeric`, or `NULL` for all
+#'   of them -- see [ilm_selection].
 #' @return A data frame with `variable` and the top/bottom columns.
 #' @examples
 #' ilm_counts_tb_all(ilm_sim()[, c("grp", "site")], n = 2)
 #' @export
-ilm_counts_tb_all <- function(data, n = 10L, na.rm = TRUE) {
-  do.call(rbind, lapply(names(data), function(cn) {
+ilm_counts_tb_all <- function(data, cols = NULL, n = 10L, na.rm = TRUE,
+                              cols_negate = FALSE) {
+  use <- ilm_resolve_cols(data, cols, negate = cols_negate)
+  do.call(rbind, lapply(use, function(cn) {
     tb <- ilm_counts_tb(data[[cn]], n = n, na.rm = na.rm)
     if (!nrow(tb)) return(NULL)
     ## assigned by name rather than with transform(), whose non-standard
@@ -635,7 +646,11 @@ ilm_recode_errors_vec <- function(x, errors, replacement = NA) {
 #' @param data A vector, data frame or matrix.
 #' @param errors Values to recode.
 #' @param replacement What to put in their place. `NA` by default.
-#' @param rows,cols Restrict the replacement (data frame or matrix input).
+#' @param rows,cols Restrict the replacement (data frame or matrix input):
+#'   the cells recoded are those in these rows and columns. `cols` here takes
+#'   column names or positions only -- it addresses cells rather than choosing
+#'   columns for an analysis, so the patterns, predicates and `cols_negate` of
+#'   [ilm_selection] do not apply.
 #' @param ind Restrict the replacement (vector input).
 #' @return An object of the same shape as `data`.
 #' @examples

@@ -8,9 +8,11 @@
 ilm_counts_all(
   data,
   by = NULL,
+  cols = NULL,
   n = "all",
   order = c("d", "a", "i"),
-  na.rm = TRUE
+  na.rm = TRUE,
+  cols_negate = FALSE
 )
 }
 \arguments{
@@ -18,12 +20,20 @@ ilm_counts_all(
 
 \item{by}{Optional grouping columns.}
 
+\item{cols}{Columns to count. A character vector of names, a regular
+expression, a predicate function such as \code{is.numeric}, or \code{NULL} for all
+of them -- see \link{ilm_selection}. \code{by} columns are never among them.}
+
 \item{n}{Number of rows to return, or \code{"all"}.}
 
 \item{order}{\code{"d"} by count descending, \code{"a"} by count ascending, or \code{"i"}
 by the value itself (factor level order, not label order).}
 
 \item{na.rm}{Drop missing values before counting.}
+
+\item{cols_negate}{If \code{TRUE}, \code{cols} names the columns to leave out, and every
+other eligible column is used; see \link{ilm_selection}. It needs \code{cols}. A
+\code{by} argument is never negated.}
 }
 \value{
 A data frame with \code{variable}, \code{value} and \code{n}.

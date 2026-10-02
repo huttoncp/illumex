@@ -4,8 +4,8 @@
 \alias{ilm_selection}
 \title{How columns can be chosen}
 \description{
-Wherever illumex takes a \code{cols} or \code{by} argument, it accepts any of four
-things. All are ordinary values, so any of them can be held in a variable and
+Wherever illumex takes a \code{cols} argument, it accepts any of four things.
+All are ordinary values, so any of them can be held in a variable and
 passed along -- which a bare-name interface cannot.
 }
 \details{
@@ -17,17 +17,37 @@ exist, and a typo is an error naming the columns that do exist.
 name: \code{"^score_"} takes every column whose name starts with \code{score_}.
 Matching nothing is an error rather than a silent empty selection.
 \item A \strong{predicate function} applied to each column: \code{is.numeric}, or
-\code{function(v) is.numeric(v) && !anyNA(v)}.
+\code{function(v) is.numeric(v) && !anyNA(v)}. A column on which the function
+fails counts as not matching.
 }
 
 The one ambiguity is a single string, which could be a name or a pattern.
 A name wins: \code{cols = "score"} selects the column called \code{score} even if
 \code{scores_2024} also exists. Anything that is not a column name is read as a
 pattern.
+
+\strong{Leaving columns out.} With \code{cols_negate = TRUE}, \code{cols} says which columns to
+leave out, and every other eligible column is used: \code{cols = c("id", "site")} uses all but \code{id} and \code{site}; \code{cols = "^score_"} all but the
+columns whose names start with \code{score_}; \code{cols = is.numeric} all but the
+numeric columns, which is every column of another type. The selection is
+made within the columns the function can use (a numeric-only function
+leaves out text columns either way), so \code{cols_negate = TRUE} takes exactly
+the eligible columns that \code{cols_negate = FALSE} would not. A column on which a
+predicate fails counts as not matching, so \code{cols_negate = TRUE} selects
+it. \code{cols_negate = TRUE} needs \code{cols}, and leaving out every eligible column is an
+error naming them.
+
+A \code{by} argument takes column names. \code{\link[=ilm_outliers_all]{ilm_outliers_all()}}'s \code{by} also takes
+a pattern or a predicate, as \code{cols} does; elsewhere a pattern or a function
+given as \code{by} is an error. \code{by} is never negated.
 }
 \examples{
 d <- data.frame(id = 1:5, score_a = rnorm(5), score_b = rnorm(5),
                 label = letters[1:5])
 ilm_outliers_all(d, cols = "^score_")
 ilm_outliers_all(d, cols = is.numeric)
+## leaving columns out
+ilm_outliers_all(d, cols = "id", cols_negate = TRUE)
+ilm_outliers_all(d, cols = "^score_", cols_negate = TRUE)
+ilm_outliers_all(d, cols = function(v) all(v == round(v)), cols_negate = TRUE)
 }

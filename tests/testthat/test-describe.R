@@ -135,7 +135,7 @@ test_that("misspecified arguments name the valid options", {
   d <- ilm_sim(n_id = 20)
   expect_error(ilm_describe_all(d, class = "numerical"), "Options are")
   expect_error(ilm_describe_all(d, class = "numerical"), "'numeric'")
-  expect_error(ilm_describe_all(d, by = "nope"), "not found")
+  expect_error(ilm_describe_all(d, by = "nope"), "`by` takes column names; nope is not one", fixed = TRUE)
   expect_error(ilm_describe(d, "score", probs = c(-1, 2)), "between 0 and 1")
 })
 
