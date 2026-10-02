@@ -1,0 +1,47 @@
+## Commit hashes in this file are from illumex's history before its public
+## restart on 2026-10-01; they are not in this repository.
+
+## 5 lines that printed a field of an export feature since removed are left out;
+## the run was at b940e35 (pre-restart history). Everything else is as it printed.
+===== rating 0-10, 20% extra at 0, n = 300 
+share at the minimum 0.223, at the next value 0.020, distinct values 11
+  obs   n na  sum  mean    sd    se p0 p50 p100 p_zero dispersion gauss   ks_d
+1 300 300  0 1229 4.097 2.801 0.162  0   5   10  0.223      1.915     0 0.1515
+                                      gauss_note
+1 discrete (11 distinct values); bounded at zero
+gauss_note: discrete (11 distinct values); bounded at zero 
+ilm_frame_issues: nothing 
+
+===== rating 1-10, 20% extra at 1, n = 300 
+share at the minimum 0.243, at the next value 0.050, distinct values 10
+  obs   n na  sum mean    sd    se p0 p50 p100 p_zero dispersion gauss   ks_d                    gauss_note
+1 300 300  0 1260  4.2 2.415 0.139  1   4   10      0      1.389     0 0.1507 discrete (10 distinct values)
+gauss_note: discrete (10 distinct values) 
+ilm_frame_issues: nothing 
+
+===== zero-inflated count, 10% extra zeros, n = 300 
+share at the minimum 0.103, at the next value 0.020, distinct values 43
+  obs   n na  sum   mean     sd    se p0 p50 p100 p_zero dispersion gauss   ks_d
+1 300 300  0 4060 13.533 10.839 0.626  0  12   66  0.103      8.682 0.101 0.1059
+                                                                                gauss_note
+1 10% of values sit exactly at the minimum (0): a floor, see ilm_censor(); bounded at zero
+gauss_note: 10% of values sit exactly at the minimum (0): a floor, see ilm_censor(); bounded at zero 
+ilm_frame_issues: nothing 
+
+===== zero-inflated count, 10% extra zeros, n = 5000 
+share at the minimum 0.102, at the next value 0.010, distinct values 63
+   obs    n na   sum  mean     sd    se p0 p50 p100 p_zero dispersion gauss   ks_d
+1 5000 5000  0 67901 13.58 10.091 0.143  0  12   76  0.102      7.498     0 0.0892
+                                      gauss_note
+1 discrete (63 distinct values); bounded at zero
+gauss_note: discrete (63 distinct values); bounded at zero 
+ilm_frame_issues: nothing 
+
+===== 0-100 rating, 10% extra at 0, n = 5000 
+share at the minimum 0.111, at the next value 0.001, distinct values 101
+   obs    n na    sum  mean    sd    se p0 p50 p100 p_zero dispersion gauss   ks_d
+1 5000 5000  0 202851 40.57 23.01 0.325  0  42  100  0.111      13.05 0.008 0.0723
+                                                                                                 gauss_note
+1 multimodal (check for subgroups); 11% of values sit exactly at the minimum (0): a floor, see ilm_censor()
+gauss_note: multimodal (check for subgroups); 11% of values sit exactly at the minimum (0): a floor, see ilm_censor() 
+ilm_frame_issues: nothing 
