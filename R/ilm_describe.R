@@ -152,6 +152,11 @@ ilm_kurt2 <- function(x) {
 #' @noRd
 ilm_gauss_assess <- function(x, min_n = 20L, cap = 0.06) {
   x <- x[is.finite(x)]; n <- length(x)
+  ## values so large their spread overflows (near 1e300, or 1e300 beside
+  ## ordinary values) have no finite sd to assess a shape against
+  if (n >= min_n && !is.finite(fsd(x)))
+    return(list(gauss = NA_real_, ks_d = NA_real_,
+                note = "values too large to assess", kind = "not_assessed"))
   if (n < min_n || fsd(x) == 0)
     return(list(gauss = NA_real_, ks_d = NA_real_,
                 note = if (n >= min_n) "constant (zero variance)"
@@ -414,10 +419,8 @@ ilm_describe_time <- function(x, digits = 3) {
 }
 
 ## ---- dispatch --------------------------------------------------------------
-
-#' @keywords internal
-#' @noRd
-ilm_is_time <- function(v) inherits(v, "Date") || inherits(v, "POSIXt")
+## (ilm_is_time(), which counts a duration as a time, is in R/ilm_time.R; a
+## second, narrower copy here was never the one in use)
 
 #' @keywords internal
 #' @noRd
@@ -974,12 +977,4 @@ ilm_frame_rank <- function(data, use, add, nested = list()) {
                        "with all of them a model has no unique solution."), v))
   }
   invisible(NULL)
-}
-
-## "a", "a and b", "a, b and c"
-#' @keywords internal
-#' @noRd
-ilm_and <- function(x) {
-  if (length(x) <= 1L) return(paste(x, collapse = ""))
-  paste(paste(x[-length(x)], collapse = ", "), "and", x[length(x)])
 }

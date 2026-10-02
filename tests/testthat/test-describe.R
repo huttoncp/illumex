@@ -249,3 +249,22 @@ test_that("skewness and kurtosis are the type 2 estimators (Joanes and Gill 1998
   ## too few values, or none varying, give NA
   expect_true(is.na(ilm_skew2(c(1, 2))) && is.na(ilm_kurt2(c(1, 2, 3))) && is.na(ilm_kurt2(rep(2, 10))))
 })
+
+test_that("values too large for a finite spread are described, not assessed", {
+  set.seed(1)
+  cols <- list(huge = stats::rnorm(50) * 1e300, neg = -abs(stats::rnorm(50)) * 1e300,
+               mixed = c(stats::rnorm(49), 1e300), with_inf = c(stats::rnorm(49), Inf))
+  for (nm in names(cols)) {
+    d <- data.frame(v = cols[[nm]])
+    r <- suppressWarnings(ilm_describe(d, "v"))
+    expect_no_error(utils::capture.output(print(r)))
+    if (nm == "with_inf") {
+      ## an infinite value is left out, and the rest is ordinary
+      expect_false(grepl("too large to assess", r$gauss_note), label = nm)
+      expect_true(is.finite(r$gauss), label = nm)
+    } else {
+      expect_match(r$gauss_note, "too large to assess", label = nm)
+      expect_true(is.na(r$gauss), label = nm)
+    }
+  }
+})

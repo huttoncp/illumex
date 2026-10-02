@@ -320,8 +320,8 @@ ilm_time_aspect <- function(v, map) {
 ilm_time_formatter <- function(x) {
   if (inherits(x, "difftime")) {
     u <- units(x)
-    ## the profile's number rule
-    return(function(v) paste(ilm_fmt_num(v), u))
+    ## the profile's rule for a data value
+    return(function(v) paste(ilm_fmt_data(v), u))
   }
   if (inherits(x, "Date"))
     return(function(v) format(as.Date(v, origin = "1970-01-01")))
