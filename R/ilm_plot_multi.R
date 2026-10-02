@@ -256,7 +256,10 @@ ilm_plot_var_pairs <- function(data, cols = NULL, by = NULL, ...) {
          ". Either update tinyplot, or use ilm_plot_scatter() one pair at a ",
          "time, or ilm_plot_var_all() for each column on its own.",
          call. = FALSE)
-  pairs_fn(data[target], by = bv, ...)
+  ## `by` only when there is one: tinypairs() keeps an explicit by = NULL
+  ## from its call and then adds its own, so R refuses the call ("formal
+  ## argument by matched by multiple actual arguments", tinyplot 0.7.0)
+  if (is.null(bv)) pairs_fn(data[target], ...) else pairs_fn(data[target], by = bv, ...)
   invisible(NULL)
 }
 
