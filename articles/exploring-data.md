@@ -61,13 +61,13 @@ r$numeric
 #> 5    0.00     3.000     27.00 0.17666667   5.172391 0.0000000
 #> 6    0.00     0.000     11.00 0.64000000   3.825659 0.0000000
 #> 7    4.04     7.330     11.66 0.00000000         NA 1.0000000
-#>                                                                                 gauss_note
-#> 1                                                     bounded at zero; light-tailed / flat
-#> 2                                                                                         
-#> 3                                                               right-skewed; heavy-tailed
-#> 4                                           discrete (11 distinct values); bounded at zero
-#> 5 18% of values sit exactly at the minimum (0): a floor, see ilm_censor(); bounded at zero
-#> 6                                           discrete (12 distinct values); bounded at zero
+#>                                                                                                                gauss_note
+#> 1                                                                                    bounded at zero; light-tailed / flat
+#> 2                                                                                                                        
+#> 3                                                                                              right-skewed; heavy-tailed
+#> 4                                                                          discrete (11 distinct values); bounded at zero
+#> 5                                                                                           bounded at zero; right-skewed
+#> 6 64% are 0, far above the next value: excess zeros, see a two-part or zero-inflated model; discrete (12 distinct values)
 #> 7
 ```
 
@@ -521,16 +521,11 @@ numbers show the other kind of code:
 ``` r
 
 ilm_describe_all(messy_cars)$numeric[c("variable", "p0", "p100", "gauss_note")]
-#>           variable   p0    p100
-#> 1 Miles per gallon 10.4  33.900
-#> 2               hp 52.0 999.000
-#> 3               wt -1.0   5.424
-#> 4               am  0.0   1.000
-#>                                                                                                   gauss_note
-#> 1                                                                                                           
-#> 2                                                                                 right-skewed; heavy-tailed
-#> 3 multimodal (check for subgroups); 14% of values sit exactly at the minimum (-1): a floor, see ilm_censor()
-#> 4                                                              discrete (2 distinct values); bounded at zero
+#>           variable   p0    p100                                    gauss_note
+#> 1 Miles per gallon 10.4  33.900                                              
+#> 2               hp 52.0 999.000                    right-skewed; heavy-tailed
+#> 3               wt -1.0   5.424 multimodal (check for subgroups); left-skewed
+#> 4               am  0.0   1.000 discrete (2 distinct values); bounded at zero
 ```
 
 A horsepower of 999 and a weight of -1 are outside what either column

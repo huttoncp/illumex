@@ -127,13 +127,13 @@ show, and it will break a model matrix.</p>
 <span><span class="co">#&gt; 5    0.00     3.000     27.00 0.17666667   5.172391 0.0000000</span></span>
 <span><span class="co">#&gt; 6    0.00     0.000     11.00 0.64000000   3.825659 0.0000000</span></span>
 <span><span class="co">#&gt; 7    4.04     7.330     11.66 0.00000000         NA 1.0000000</span></span>
-<span><span class="co">#&gt;                                                                                 gauss_note</span></span>
-<span><span class="co">#&gt; 1                                                     bounded at zero; light-tailed / flat</span></span>
-<span><span class="co">#&gt; 2                                                                                         </span></span>
-<span><span class="co">#&gt; 3                                                               right-skewed; heavy-tailed</span></span>
-<span><span class="co">#&gt; 4                                           discrete (11 distinct values); bounded at zero</span></span>
-<span><span class="co">#&gt; 5 18% of values sit exactly at the minimum (0): a floor, see ilm_censor(); bounded at zero</span></span>
-<span><span class="co">#&gt; 6                                           discrete (12 distinct values); bounded at zero</span></span>
+<span><span class="co">#&gt;                                                                                                                gauss_note</span></span>
+<span><span class="co">#&gt; 1                                                                                    bounded at zero; light-tailed / flat</span></span>
+<span><span class="co">#&gt; 2                                                                                                                        </span></span>
+<span><span class="co">#&gt; 3                                                                                              right-skewed; heavy-tailed</span></span>
+<span><span class="co">#&gt; 4                                                                          discrete (11 distinct values); bounded at zero</span></span>
+<span><span class="co">#&gt; 5                                                                                           bounded at zero; right-skewed</span></span>
+<span><span class="co">#&gt; 6 64% are 0, far above the next value: excess zeros, see a two-part or zero-inflated model; discrete (12 distinct values)</span></span>
 <span><span class="co">#&gt; 7</span></span></code></pre></div>
 <p>Reading across: <code>p_zero</code> flags zero inflation,
 <code>dispersion</code> is the variance-to-mean ratio for count-like
@@ -508,16 +508,11 @@ rarest values and a missing-value code among the most common:</p>
 of code:</p>
 <div class="sourceCode" id="cb31"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="../reference/ilm_describe_all.html">ilm_describe_all</a></span><span class="op">(</span><span class="va">messy_cars</span><span class="op">)</span><span class="op">$</span><span class="va">numeric</span><span class="op">[</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"variable"</span>, <span class="st">"p0"</span>, <span class="st">"p100"</span>, <span class="st">"gauss_note"</span><span class="op">)</span><span class="op">]</span></span>
-<span><span class="co">#&gt;           variable   p0    p100</span></span>
-<span><span class="co">#&gt; 1 Miles per gallon 10.4  33.900</span></span>
-<span><span class="co">#&gt; 2               hp 52.0 999.000</span></span>
-<span><span class="co">#&gt; 3               wt -1.0   5.424</span></span>
-<span><span class="co">#&gt; 4               am  0.0   1.000</span></span>
-<span><span class="co">#&gt;                                                                                                   gauss_note</span></span>
-<span><span class="co">#&gt; 1                                                                                                           </span></span>
-<span><span class="co">#&gt; 2                                                                                 right-skewed; heavy-tailed</span></span>
-<span><span class="co">#&gt; 3 multimodal (check for subgroups); 14% of values sit exactly at the minimum (-1): a floor, see ilm_censor()</span></span>
-<span><span class="co">#&gt; 4                                                              discrete (2 distinct values); bounded at zero</span></span></code></pre></div>
+<span><span class="co">#&gt;           variable   p0    p100                                    gauss_note</span></span>
+<span><span class="co">#&gt; 1 Miles per gallon 10.4  33.900                                              </span></span>
+<span><span class="co">#&gt; 2               hp 52.0 999.000                    right-skewed; heavy-tailed</span></span>
+<span><span class="co">#&gt; 3               wt -1.0   5.424 multimodal (check for subgroups); left-skewed</span></span>
+<span><span class="co">#&gt; 4               am  0.0   1.000 discrete (2 distinct values); bounded at zero</span></span></code></pre></div>
 <p>A horsepower of 999 and a weight of -1 are outside what either column
 can hold. <code>gauss_note</code> sees the pile of -1s as a floor and
 suggests <code>ilm_censor()</code>; knowing that a weight cannot be

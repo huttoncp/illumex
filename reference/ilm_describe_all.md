@@ -78,7 +78,13 @@ ilm_describe_all(
 - dispersion:
 
   Add the variance-to-mean ratio for non-negative integer variables.
-  Meaningful only if you intend to model the variable as a count.
+  Meaningful only if you intend to model the variable as a count, so it
+  is left blank for a variable read as a rating: whole numbers from 1
+  spanning at most 10 points, or a scale centred on 0 (see
+  [`ilm_gauss_check()`](https://huttoncp.github.io/illumex/reference/ilm_gauss_check.md)).
+  Whole numbers from 0 to at most 10 may be either, and keep it.
+  Shifting a rating scale's values (-3 to 3 into 0 to 6) changes this
+  column, not the scale.
 
 - class:
 
@@ -186,14 +192,14 @@ ilm_describe_all(d)
 #> 5     3.000     27.00  0.177      5.172 0.000
 #> 6     0.000     11.00  0.640      3.826 0.000
 #> 7     7.330     11.66  0.000         NA 1.000
-#>                                                                                 gauss_note
-#> 1                                                     bounded at zero; light-tailed / flat
-#> 2                                                                                         
-#> 3                                                               right-skewed; heavy-tailed
-#> 4                                           discrete (11 distinct values); bounded at zero
-#> 5 18% of values sit exactly at the minimum (0): a floor, see ilm_censor(); bounded at zero
-#> 6                                           discrete (12 distinct values); bounded at zero
-#> 7                                                                                         
+#>                                                                                                                gauss_note
+#> 1                                                                                    bounded at zero; light-tailed / flat
+#> 2                                                                                                                        
+#> 3                                                                                              right-skewed; heavy-tailed
+#> 4                                                                          discrete (11 distinct values); bounded at zero
+#> 5                                                                                           bounded at zero; right-skewed
+#> 6 64% are 0, far above the next value: excess zeros, see a two-part or zero-inflated model; discrete (12 distinct values)
+#> 7                                                                                                                        
 #> 
 #> $time
 #>   variable obs   n na n_unique      start        end span_days spacing regular
@@ -241,12 +247,12 @@ ilm_describe_all(d, class = "numeric", skew = TRUE)
 #> 5     3.000     27.00  1.952  0.177      5.172 0.000
 #> 6     0.000     11.00  1.558  0.640      3.826 0.000
 #> 7     7.330     11.66 -0.038  0.000         NA 1.000
-#>                                                                                 gauss_note
-#> 1                                                     bounded at zero; light-tailed / flat
-#> 2                                                                                         
-#> 3                                                               right-skewed; heavy-tailed
-#> 4                                           discrete (11 distinct values); bounded at zero
-#> 5 18% of values sit exactly at the minimum (0): a floor, see ilm_censor(); bounded at zero
-#> 6                                           discrete (12 distinct values); bounded at zero
-#> 7                                                                                         
+#>                                                                                                                gauss_note
+#> 1                                                                                    bounded at zero; light-tailed / flat
+#> 2                                                                                                                        
+#> 3                                                                                              right-skewed; heavy-tailed
+#> 4                                                                          discrete (11 distinct values); bounded at zero
+#> 5                                                                                           bounded at zero; right-skewed
+#> 6 64% are 0, far above the next value: excess zeros, see a two-part or zero-inflated model; discrete (12 distinct values)
+#> 7                                                                                                                        
 ```

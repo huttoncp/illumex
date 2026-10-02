@@ -10,6 +10,48 @@
   are no longer rounded in the result (item 289): they keep their full
   value, and their prints round them, to 4 and 3 decimals, by the shared
   rule. What prints is unchanged.
+- A floor or a ceiling is named first in `gauss_note`, whatever the
+  index, on every numeric variable with at least 5 distinct values, or 4
+  on a short scale (items 274, 275 and 292): when the count at the bound
+  is at least 5 and 2% of the values, at least twice the next value’s
+  count, and significantly above it (one-sided exact test at 0.001). The
+  rule is the one the floor-rule studies confirmed, at the stricter
+  ratio of 2 (`dev/studies/floor_rule3.R`). It was checked only on
+  continuous variables with more than 20 distinct values before. A short
+  scale is whole numbers spanning at most 10 points, read as below, or
+  an ordered factor; a 3-point scale or a 0/1 variable is not read. The
+  advice follows the variable’s kind:
+  - a continuous floor or ceiling: “12% of values sit exactly at the
+    minimum (0.5): a floor, see ilm_censor()”, as before;
+  - a count’s excess zeros: “68% are 0, far above the next value: excess
+    zeros, see a two-part or zero-inflated model”;
+  - a rating scale’s floor or ceiling – whole numbers from 1 spanning at
+    most 10 points, or symmetric about 0 (-3 to 3), or an ordered
+    factor’s levels: “30% of values sit at the scale’s lowest point
+    (-3): it cannot separate people there, see an ordinal model”, and
+    the same at the highest point. An ordinal model uses only the order,
+    so a scale centred on 0 needs no shifting first;
+  - whole numbers from 0 to at most 10, which may be a count or a rating
+    (a 0-3 PHQ-9 item, a 0-3 count of visits), name both: “68% are 0,
+    far above the next value: excess zeros if a count (see a two-part or
+    zero-inflated model); if a rating, it can’t separate people there
+    (see an ordinal model)”, and at the top, “20% are 3, far above the
+    next value: a cap if a count (see ilm_censor()); if a rating, it
+    can’t separate people there (see an ordinal model)”. An ordered
+    factor’s bounds are its declared first and last levels: a pile at
+    the lowest level used, when the first is unused, is not called the
+    scale’s lowest point. With `by`, each group is read against its
+    variable’s scale, so a count is not read as a rating in a group
+    whose values happen to run from 1, and a rating’s floor is its
+    lowest point, not a group’s lowest value. A variable’s name is not
+    read: one named for a measurement is classed by its values like any
+    other.
+- [`ilm_describe()`](https://huttoncp.github.io/illumex/reference/ilm_describe.md)’s
+  `dispersion` is left blank for a variable read as a rating – whole
+  numbers from 1 spanning at most 10 points – as it was already for one
+  centred on 0 (item 297): a variance-to-mean ratio means nothing there.
+  Counts keep it, and so do whole numbers from 0 to at most 10, which
+  may be counts.
 - A description prints the same numbers on every computer (item 272).
   [`ilm_describe()`](https://huttoncp.github.io/illumex/reference/ilm_describe.md),
   [`ilm_describe_all()`](https://huttoncp.github.io/illumex/reference/ilm_describe_all.md),
