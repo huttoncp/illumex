@@ -1,0 +1,105 @@
+## Commit hashes in this file are from illumex's history before its public
+## restart on 2026-10-01; they are not in this repository.
+## dev/studies/scale_check.R, run 2026-09-28 17:17 to 19:48 on one core of a 16 GB Windows machine, R 4.4.3,
+## 10 lines timing two export cells, a feature since removed, are left out
+## (also from scale_check.csv); every other number is as it was measured.
+## from a tree at c63085e (the design committed before the run), illumex main ff5e579 (0.0.8.9001)
+## in the pinned library lib_scale (manifest lib_scale_manifest_2026-09-28.csv). The run's log, then the summary.
+
+## scale check at c63085e (scale-check), library lib_scale (illumex 0.0.8.9001, RemoteSha none: installed from the run tree at ff5e579), started 2026-09-28 17:16:55
+describe_all     n=10000   ok              0.1 s       61 MB
+describe_na_all  n=10000   ok              0.0 s       32 MB
+counts_all       n=10000   ok              0.1 s       38 MB
+frame_issues     n=10000   ok              0.1 s       65 MB
+dupes            n=10000   ok              0.0 s       30 MB
+outliers_all     n=10000   ok              0.0 s       46 MB
+check_missing    n=10000   ok              0.6 s      101 MB
+wash_df          n=10000   ok              0.3 s       48 MB
+recode_errors    n=10000   ok              0.1 s       36 MB
+gauss_check      n=10000   ok              0.0 s       32 MB
+boot_ci          n=10000   ok              2.2 s       90 MB
+anomaly          n=10000   ok             31.9 s      101 MB
+anomaly_iforest  n=10000   ok            207.7 s      261 MB
+reduce           n=10000   ok              0.0 s       50 MB
+reduce_glrm      n=10000   ok            299.2 s      111 MB
+cluster n=10000 TIMEOUT
+cluster_k3       n=10000   ok             35.1 s     1200 MB
+cluster_hclust   n=10000   ok            766.1 s     1947 MB
+var_contrib      n=10000   ok              4.5 s       93 MB
+profile n=10000 TIMEOUT
+profile_na n=10000 TIMEOUT
+plot_all         n=10000   ok              0.4 s       55 MB
+describe_all     n=50000   ok              0.5 s       92 MB
+describe_na_all  n=50000   ok              0.0 s       35 MB
+counts_all       n=50000   ok              0.2 s       61 MB
+frame_issues     n=50000   ok              0.4 s       88 MB
+dupes            n=50000   ok              0.0 s       37 MB
+outliers_all     n=50000   ok              0.1 s       86 MB
+check_missing    n=50000   ok              3.9 s      130 MB
+wash_df          n=50000   ok              2.4 s       89 MB
+recode_errors    n=50000   ok              0.7 s       70 MB
+gauss_check      n=50000   ok              0.0 s       42 MB
+boot_ci          n=50000   ok             13.9 s       87 MB
+anomaly          n=50000   ok            807.0 s      194 MB
+anomaly_iforest n=50000 TIMEOUT
+reduce           n=50000   ok              0.1 s       87 MB
+reduce_glrm n=50000 TIMEOUT
+cluster_k3       n=50000   error: can    228.3 s     9598 MB
+cluster_hclust n=50000 TIMEOUT
+var_contrib      n=50000   ok             16.6 s       90 MB
+plot_all         n=50000   ok              0.4 s       94 MB
+describe_all     n=100000  ok              0.7 s       90 MB
+describe_na_all  n=100000  ok              0.0 s       39 MB
+counts_all       n=100000  ok              0.2 s       91 MB
+frame_issues     n=100000  ok              0.7 s       98 MB
+dupes            n=100000  ok              0.0 s       45 MB
+outliers_all     n=100000  ok              0.2 s      103 MB
+check_missing    n=100000  ok              5.6 s      201 MB
+wash_df          n=100000  ok              3.7 s       92 MB
+recode_errors    n=100000  ok              1.0 s       93 MB
+gauss_check      n=100000  ok              0.1 s       56 MB
+boot_ci          n=100000  ok             24.4 s       86 MB
+anomaly n=100000 TIMEOUT
+reduce           n=100000  ok              0.2 s       87 MB
+var_contrib      n=100000  ok             33.4 s      113 MB
+plot_all         n=100000  ok              0.7 s      100 MB
+describe_all     n=250000  ok              1.6 s      103 MB
+describe_na_all  n=250000  ok              0.0 s       50 MB
+counts_all       n=250000  ok              0.8 s      100 MB
+frame_issues     n=250000  ok              1.4 s      199 MB
+dupes            n=250000  ok              0.0 s       72 MB
+outliers_all     n=250000  ok              0.6 s      191 MB
+check_missing    n=250000  ok             15.2 s      492 MB
+wash_df          n=250000  ok              9.5 s      116 MB
+recode_errors    n=250000  ok              2.3 s      102 MB
+gauss_check      n=250000  ok              0.2 s       86 MB
+boot_ci          n=250000  ok             52.8 s       86 MB
+reduce           n=250000  ok              0.6 s      133 MB
+var_contrib      n=250000  ok             82.4 s      204 MB
+plot_all         n=250000  ok              1.3 s      111 MB
+## finished 2026-09-28 19:48:07
+
+seconds and R's maximum heap during the call, one core; data sizes: n=10000 1 MB, n=10000 NA MB, n=50000 4 MB, n=50000 NA MB, n=100000 8 MB, n=100000 NA MB, n=250000 19 MB, n=250000 NA MB 
+            cell                  n=10000                                      n=50000                                    n=100000                                    n=250000
+    describe_all             0.1 s, 61 MB                                 0.5 s, 92 MB                                0.7 s, 90 MB                               1.6 s, 103 MB
+ describe_na_all             0.0 s, 32 MB                                 0.0 s, 35 MB                                0.0 s, 39 MB                                0.0 s, 50 MB
+      counts_all             0.1 s, 38 MB                                 0.2 s, 61 MB                                0.2 s, 91 MB                               0.8 s, 100 MB
+    frame_issues             0.1 s, 65 MB                                 0.4 s, 88 MB                                0.7 s, 98 MB                               1.4 s, 199 MB
+           dupes             0.0 s, 30 MB                                 0.0 s, 37 MB                                0.0 s, 45 MB                                0.0 s, 72 MB
+    outliers_all             0.0 s, 46 MB                                 0.1 s, 86 MB                               0.2 s, 103 MB                               0.6 s, 191 MB
+   check_missing            0.6 s, 101 MB                                3.9 s, 130 MB                               5.6 s, 201 MB                              15.2 s, 492 MB
+         wash_df             0.3 s, 48 MB                                 2.4 s, 89 MB                                3.7 s, 92 MB                               9.5 s, 116 MB
+   recode_errors             0.1 s, 36 MB                                 0.7 s, 70 MB                                1.0 s, 93 MB                               2.3 s, 102 MB
+     gauss_check             0.0 s, 32 MB                                 0.0 s, 42 MB                                0.1 s, 56 MB                                0.1 s, 86 MB
+         boot_ci             2.2 s, 90 MB                                13.9 s, 87 MB                               24.4 s, 86 MB                               52.8 s, 86 MB
+         anomaly           31.9 s, 101 MB                              807.0 s, 194 MB                    timeout: over 15 minutes not run: failed or timed out at a smaller n
+ anomaly_iforest          207.7 s, 261 MB                     timeout: over 15 minutes not run: failed or timed out at a smaller n not run: failed or timed out at a smaller n
+          reduce             0.0 s, 50 MB                                 0.1 s, 87 MB                                0.2 s, 87 MB                               0.6 s, 133 MB
+     reduce_glrm          299.2 s, 111 MB                     timeout: over 15 minutes not run: failed or timed out at a smaller n not run: failed or timed out at a smaller n
+         cluster timeout: over 15 minutes  not run: failed or timed out at a smaller n not run: failed or timed out at a smaller n not run: failed or timed out at a smaller n
+      cluster_k3          35.1 s, 1200 MB error: cannot allocate vector of size 9.3 Gb not run: failed or timed out at a smaller n not run: failed or timed out at a smaller n
+  cluster_hclust         766.1 s, 1947 MB                     timeout: over 15 minutes not run: failed or timed out at a smaller n not run: failed or timed out at a smaller n
+     var_contrib             4.5 s, 93 MB                                16.6 s, 90 MB                              33.4 s, 113 MB                              82.5 s, 204 MB
+         profile timeout: over 15 minutes  not run: failed or timed out at a smaller n not run: failed or timed out at a smaller n not run: failed or timed out at a smaller n
+      profile_na timeout: over 15 minutes  not run: failed or timed out at a smaller n not run: failed or timed out at a smaller n not run: failed or timed out at a smaller n
+        plot_all             0.4 s, 55 MB                                 0.4 s, 94 MB                               0.7 s, 100 MB                               1.3 s, 111 MB

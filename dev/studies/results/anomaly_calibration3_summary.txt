@@ -1,0 +1,298 @@
+the default arm reproduces ilm_anomaly()'s p exactly: 2120 of 2120 datasets checked
+
+clean and clustered cells: share of datasets flagging anything, mean (MC SE); holds?
+      part     noise    n  p            arm        any_flag holds       p_le_0.01
+     clean lognormal  150  5        default 0.8350 (0.0263) FALSE 0.0434 (0.0013)
+     clean lognormal  150  5     heavy_kept 0.8250 (0.0269) FALSE 0.0512 (0.0014)
+     clean lognormal  150  5 heavy_kept_q90 0.7450 (0.0309) FALSE 0.0381 (0.0010)
+     clean lognormal  150  5        mixture 0.8450 (0.0257) FALSE 0.0498 (0.0014)
+     clean lognormal  150  8        default 0.9500 (0.0154) FALSE 0.0645 (0.0015)
+     clean lognormal  150  8     heavy_kept 0.8800 (0.0230) FALSE 0.0629 (0.0014)
+     clean lognormal  150  8 heavy_kept_q90 0.7400 (0.0311) FALSE 0.0409 (0.0010)
+     clean lognormal  150  8        mixture 0.9900 (0.0071) FALSE 0.0722 (0.0014)
+     clean lognormal  150 15        default 0.9850 (0.0086) FALSE 0.0722 (0.0017)
+     clean lognormal  150 15     heavy_kept 0.3900 (0.0346) FALSE 0.0474 (0.0013)
+     clean lognormal  150 15 heavy_kept_q90 0.2750 (0.0317) FALSE 0.0325 (0.0009)
+     clean lognormal  150 15        mixture 0.9950 (0.0050) FALSE 0.0884 (0.0016)
+     clean lognormal  400  5        default 0.9250 (0.0187) FALSE 0.0493 (0.0010)
+     clean lognormal  400  5     heavy_kept 0.9750 (0.0111) FALSE 0.0554 (0.0010)
+     clean lognormal  400  5 heavy_kept_q90 0.9050 (0.0208) FALSE 0.0391 (0.0007)
+     clean lognormal  400  5        mixture 0.9450 (0.0162) FALSE 0.0500 (0.0011)
+     clean lognormal  400  8        default 1.0000 (0.0000) FALSE 0.0608 (0.0010)
+     clean lognormal  400  8     heavy_kept 1.0000 (0.0000) FALSE 0.0676 (0.0011)
+     clean lognormal  400  8 heavy_kept_q90 0.9600 (0.0139) FALSE 0.0448 (0.0006)
+     clean lognormal  400  8        mixture 0.9850 (0.0086) FALSE 0.0689 (0.0012)
+     clean lognormal  400 15        default 0.9950 (0.0050) FALSE 0.0714 (0.0012)
+     clean lognormal  400 15     heavy_kept 0.7800 (0.0294) FALSE 0.0562 (0.0009)
+     clean lognormal  400 15 heavy_kept_q90 0.6150 (0.0345) FALSE 0.0394 (0.0006)
+     clean lognormal  400 15        mixture 1.0000 (0.0000) FALSE 0.0977 (0.0011)
+     clean lognormal 1000  5        default 0.9750 (0.0111) FALSE 0.0510 (0.0007)
+     clean lognormal 1000  5     heavy_kept 0.9650 (0.0130) FALSE 0.0621 (0.0008)
+     clean lognormal 1000  5 heavy_kept_q90 0.9650 (0.0130) FALSE 0.0423 (0.0005)
+     clean lognormal 1000  5        mixture 0.9950 (0.0050) FALSE 0.0472 (0.0007)
+     clean lognormal 1000  8        default 1.0000 (0.0000) FALSE 0.0657 (0.0010)
+     clean lognormal 1000  8     heavy_kept 1.0000 (0.0000) FALSE 0.0705 (0.0009)
+     clean lognormal 1000  8 heavy_kept_q90 1.0000 (0.0000) FALSE 0.0461 (0.0005)
+     clean lognormal 1000  8        mixture 1.0000 (0.0000) FALSE 0.0630 (0.0007)
+     clean lognormal 1000 15        default 1.0000 (0.0000) FALSE 0.0716 (0.0011)
+     clean lognormal 1000 15     heavy_kept 0.9550 (0.0147) FALSE 0.0575 (0.0007)
+     clean lognormal 1000 15 heavy_kept_q90 0.8600 (0.0246) FALSE 0.0395 (0.0005)
+     clean lognormal 1000 15        mixture 1.0000 (0.0000) FALSE 0.0922 (0.0009)
+     clean    normal  150  5        default 0.1250 (0.0234) FALSE 0.0157 (0.0010)
+     clean    normal  150  5     heavy_kept 0.1450 (0.0250) FALSE 0.0242 (0.0013)
+     clean    normal  150  5 heavy_kept_q90 0.1050 (0.0217) FALSE 0.0198 (0.0009)
+     clean    normal  150  5        mixture 0.0200 (0.0099)  TRUE 0.0078 (0.0005)
+     clean    normal  150  8        default 0.0500 (0.0154)  TRUE 0.0174 (0.0008)
+     clean    normal  150  8     heavy_kept 0.1300 (0.0238) FALSE 0.0240 (0.0011)
+     clean    normal  150  8 heavy_kept_q90 0.0750 (0.0187)  TRUE 0.0196 (0.0009)
+     clean    normal  150  8        mixture 0.0850 (0.0198)  TRUE 0.0108 (0.0006)
+     clean    normal  150 15        default 0.0550 (0.0162)  TRUE 0.0144 (0.0007)
+     clean    normal  150 15     heavy_kept 0.0700 (0.0181)  TRUE 0.0178 (0.0008)
+     clean    normal  150 15 heavy_kept_q90 0.0650 (0.0175)  TRUE 0.0155 (0.0007)
+     clean    normal  150 15        mixture 0.0150 (0.0086)  TRUE 0.0113 (0.0007)
+     clean    normal  400  5        default 0.1300 (0.0238) FALSE 0.0183 (0.0006)
+     clean    normal  400  5     heavy_kept 0.1900 (0.0278) FALSE 0.0249 (0.0009)
+     clean    normal  400  5 heavy_kept_q90 0.1450 (0.0250) FALSE 0.0207 (0.0006)
+     clean    normal  400  5        mixture 0.0350 (0.0130)  TRUE 0.0105 (0.0004)
+     clean    normal  400  8        default 0.0750 (0.0187)  TRUE 0.0140 (0.0005)
+     clean    normal  400  8     heavy_kept 0.1650 (0.0263) FALSE 0.0240 (0.0007)
+     clean    normal  400  8 heavy_kept_q90 0.1150 (0.0226) FALSE 0.0193 (0.0006)
+     clean    normal  400  8        mixture 0.0200 (0.0099)  TRUE 0.0105 (0.0004)
+     clean    normal  400 15        default 0.0500 (0.0154)  TRUE 0.0116 (0.0004)
+     clean    normal  400 15     heavy_kept 0.0700 (0.0181)  TRUE 0.0168 (0.0005)
+     clean    normal  400 15 heavy_kept_q90 0.0600 (0.0168)  TRUE 0.0156 (0.0004)
+     clean    normal  400 15        mixture 0.0700 (0.0181)  TRUE 0.0108 (0.0004)
+     clean    normal 1000  5        default 0.1850 (0.0275) FALSE 0.0178 (0.0006)
+     clean    normal 1000  5     heavy_kept 0.3650 (0.0341) FALSE 0.0284 (0.0008)
+     clean    normal 1000  5 heavy_kept_q90 0.2300 (0.0298) FALSE 0.0219 (0.0005)
+     clean    normal 1000  5        mixture 0.0300 (0.0121)  TRUE 0.0105 (0.0002)
+     clean    normal 1000  8        default 0.0550 (0.0162)  TRUE 0.0147 (0.0003)
+     clean    normal 1000  8     heavy_kept 0.2400 (0.0303) FALSE 0.0240 (0.0005)
+     clean    normal 1000  8 heavy_kept_q90 0.1600 (0.0260) FALSE 0.0202 (0.0004)
+     clean    normal 1000  8        mixture 0.0050 (0.0050)  TRUE 0.0111 (0.0003)
+     clean    normal 1000 15        default 0.0300 (0.0121)  TRUE 0.0115 (0.0003)
+     clean    normal 1000 15     heavy_kept 0.1200 (0.0230) FALSE 0.0183 (0.0004)
+     clean    normal 1000 15 heavy_kept_q90 0.1050 (0.0217) FALSE 0.0165 (0.0003)
+     clean    normal 1000 15        mixture 0.1250 (0.0234) FALSE 0.0110 (0.0002)
+     clean        t3  150  5        default 0.9400 (0.0168) FALSE 0.0576 (0.0015)
+     clean        t3  150  5     heavy_kept 0.9450 (0.0162) FALSE 0.0670 (0.0017)
+     clean        t3  150  5 heavy_kept_q90 0.8500 (0.0253) FALSE 0.0420 (0.0010)
+     clean        t3  150  5        mixture 0.9550 (0.0147) FALSE 0.0606 (0.0015)
+     clean        t3  150  8        default 0.9900 (0.0071) FALSE 0.0852 (0.0017)
+     clean        t3  150  8     heavy_kept 0.9600 (0.0139) FALSE 0.0843 (0.0017)
+     clean        t3  150  8 heavy_kept_q90 0.9000 (0.0213) FALSE 0.0492 (0.0009)
+     clean        t3  150  8        mixture 0.9800 (0.0099) FALSE 0.0828 (0.0017)
+     clean        t3  150 15        default 1.0000 (0.0000) FALSE 0.0970 (0.0021)
+     clean        t3  150 15     heavy_kept 0.7550 (0.0305) FALSE 0.0649 (0.0014)
+     clean        t3  150 15 heavy_kept_q90 0.6000 (0.0347) FALSE 0.0423 (0.0010)
+     clean        t3  150 15        mixture 0.9850 (0.0086) FALSE 0.1121 (0.0015)
+     clean        t3  400  5        default 0.9800 (0.0099) FALSE 0.0660 (0.0015)
+     clean        t3  400  5     heavy_kept 0.9850 (0.0086) FALSE 0.0719 (0.0013)
+     clean        t3  400  5 heavy_kept_q90 0.9700 (0.0121) FALSE 0.0442 (0.0006)
+     clean        t3  400  5        mixture 1.0000 (0.0000) FALSE 0.0678 (0.0010)
+     clean        t3  400  8        default 1.0000 (0.0000) FALSE 0.0786 (0.0014)
+     clean        t3  400  8     heavy_kept 1.0000 (0.0000) FALSE 0.0854 (0.0014)
+     clean        t3  400  8 heavy_kept_q90 0.9850 (0.0086) FALSE 0.0493 (0.0007)
+     clean        t3  400  8        mixture 1.0000 (0.0000) FALSE 0.0905 (0.0010)
+     clean        t3  400 15        default 1.0000 (0.0000) FALSE 0.0965 (0.0015)
+     clean        t3  400 15     heavy_kept 0.9900 (0.0071) FALSE 0.0726 (0.0012)
+     clean        t3  400 15 heavy_kept_q90 0.8950 (0.0217) FALSE 0.0466 (0.0007)
+     clean        t3  400 15        mixture 1.0000 (0.0000) FALSE 0.1220 (0.0011)
+     clean        t3 1000  5        default 1.0000 (0.0000) FALSE 0.0697 (0.0010)
+     clean        t3 1000  5     heavy_kept 1.0000 (0.0000) FALSE 0.0823 (0.0010)
+     clean        t3 1000  5 heavy_kept_q90 1.0000 (0.0000) FALSE 0.0466 (0.0005)
+     clean        t3 1000  5        mixture 1.0000 (0.0000) FALSE 0.0697 (0.0006)
+     clean        t3 1000  8        default 1.0000 (0.0000) FALSE 0.0860 (0.0013)
+     clean        t3 1000  8     heavy_kept 1.0000 (0.0000) FALSE 0.0892 (0.0012)
+     clean        t3 1000  8 heavy_kept_q90 1.0000 (0.0000) FALSE 0.0509 (0.0005)
+     clean        t3 1000  8        mixture 1.0000 (0.0000) FALSE 0.0912 (0.0007)
+     clean        t3 1000 15        default 1.0000 (0.0000) FALSE 0.0951 (0.0014)
+     clean        t3 1000 15     heavy_kept 1.0000 (0.0000) FALSE 0.0756 (0.0008)
+     clean        t3 1000 15 heavy_kept_q90 0.9900 (0.0071) FALSE 0.0485 (0.0004)
+     clean        t3 1000 15        mixture 1.0000 (0.0000) FALSE 0.1235 (0.0008)
+     clean        t5  150  5        default 0.6850 (0.0329) FALSE 0.0348 (0.0011)
+     clean        t5  150  5     heavy_kept 0.7500 (0.0307) FALSE 0.0455 (0.0013)
+     clean        t5  150  5 heavy_kept_q90 0.6300 (0.0342) FALSE 0.0321 (0.0009)
+     clean        t5  150  5        mixture 0.6850 (0.0329) FALSE 0.0316 (0.0010)
+     clean        t5  150  8        default 0.8100 (0.0278) FALSE 0.0500 (0.0015)
+     clean        t5  150  8     heavy_kept 0.8350 (0.0263) FALSE 0.0544 (0.0015)
+     clean        t5  150  8 heavy_kept_q90 0.6650 (0.0335) FALSE 0.0347 (0.0009)
+     clean        t5  150  8        mixture 0.8700 (0.0238) FALSE 0.0454 (0.0013)
+     clean        t5  150 15        default 0.8700 (0.0238) FALSE 0.0529 (0.0014)
+     clean        t5  150 15     heavy_kept 0.6450 (0.0339) FALSE 0.0444 (0.0013)
+     clean        t5  150 15 heavy_kept_q90 0.5300 (0.0354) FALSE 0.0331 (0.0009)
+     clean        t5  150 15        mixture 0.9150 (0.0198) FALSE 0.0579 (0.0014)
+     clean        t5  400  5        default 0.8950 (0.0217) FALSE 0.0424 (0.0009)
+     clean        t5  400  5     heavy_kept 0.9150 (0.0198) FALSE 0.0484 (0.0010)
+     clean        t5  400  5 heavy_kept_q90 0.8200 (0.0272) FALSE 0.0333 (0.0006)
+     clean        t5  400  5        mixture 0.9000 (0.0213) FALSE 0.0351 (0.0007)
+     clean        t5  400  8        default 0.9700 (0.0121) FALSE 0.0471 (0.0008)
+     clean        t5  400  8     heavy_kept 0.9950 (0.0050) FALSE 0.0590 (0.0009)
+     clean        t5  400  8 heavy_kept_q90 0.9450 (0.0162) FALSE 0.0385 (0.0006)
+     clean        t5  400  8        mixture 0.9750 (0.0111) FALSE 0.0478 (0.0008)
+     clean        t5  400 15        default 0.9850 (0.0086) FALSE 0.0527 (0.0009)
+     clean        t5  400 15     heavy_kept 0.9550 (0.0147) FALSE 0.0533 (0.0008)
+     clean        t5  400 15 heavy_kept_q90 0.8700 (0.0238) FALSE 0.0381 (0.0006)
+     clean        t5  400 15        mixture 1.0000 (0.0000) FALSE 0.0632 (0.0008)
+     clean        t5 1000  5        default 0.9800 (0.0099) FALSE 0.0436 (0.0007)
+     clean        t5 1000  5     heavy_kept 0.9850 (0.0086) FALSE 0.0562 (0.0009)
+     clean        t5 1000  5 heavy_kept_q90 0.9750 (0.0111) FALSE 0.0373 (0.0005)
+     clean        t5 1000  5        mixture 0.9950 (0.0050) FALSE 0.0389 (0.0005)
+     clean        t5 1000  8        default 1.0000 (0.0000) FALSE 0.0510 (0.0008)
+     clean        t5 1000  8     heavy_kept 1.0000 (0.0000) FALSE 0.0613 (0.0008)
+     clean        t5 1000  8 heavy_kept_q90 1.0000 (0.0000) FALSE 0.0397 (0.0004)
+     clean        t5 1000  8        mixture 1.0000 (0.0000) FALSE 0.0507 (0.0005)
+     clean        t5 1000 15        default 1.0000 (0.0000) FALSE 0.0537 (0.0007)
+     clean        t5 1000 15     heavy_kept 0.9950 (0.0050) FALSE 0.0561 (0.0007)
+     clean        t5 1000 15 heavy_kept_q90 0.9800 (0.0099) FALSE 0.0394 (0.0004)
+     clean        t5 1000 15        mixture 1.0000 (0.0000) FALSE 0.0694 (0.0006)
+ clustered    normal  400  5        default 0.1050 (0.0217) FALSE 0.0177 (0.0007)
+ clustered    normal  400  5     heavy_kept 0.1850 (0.0275) FALSE 0.0252 (0.0010)
+ clustered    normal  400  5 heavy_kept_q90 0.0650 (0.0175)  TRUE 0.0168 (0.0006)
+ clustered    normal  400  5        mixture 0.0250 (0.0111)  TRUE 0.0132 (0.0004)
+ clustered    normal  400  8        default 0.0700 (0.0181)  TRUE 0.0144 (0.0006)
+ clustered    normal  400  8     heavy_kept 0.2900 (0.0322) FALSE 0.0293 (0.0009)
+ clustered    normal  400  8 heavy_kept_q90 0.1150 (0.0226) FALSE 0.0188 (0.0005)
+ clustered    normal  400  8        mixture 0.0450 (0.0147)  TRUE 0.0143 (0.0004)
+ clustered    normal  400 15        default 0.0250 (0.0111)  TRUE 0.0118 (0.0004)
+ clustered    normal  400 15     heavy_kept 0.1150 (0.0226) FALSE 0.0205 (0.0006)
+ clustered    normal  400 15 heavy_kept_q90 0.0650 (0.0175)  TRUE 0.0159 (0.0005)
+ clustered    normal  400 15        mixture 0.0600 (0.0168)  TRUE 0.0163 (0.0005)
+ clustered    normal 1000  5        default 0.1650 (0.0263) FALSE 0.0172 (0.0006)
+ clustered    normal 1000  5     heavy_kept 0.3700 (0.0342) FALSE 0.0291 (0.0010)
+ clustered    normal 1000  5 heavy_kept_q90 0.1450 (0.0250) FALSE 0.0189 (0.0004)
+ clustered    normal 1000  5        mixture 0.0500 (0.0154)  TRUE 0.0128 (0.0003)
+ clustered    normal 1000  8        default 0.1300 (0.0238) FALSE 0.0180 (0.0005)
+ clustered    normal 1000  8     heavy_kept 0.4600 (0.0353) FALSE 0.0322 (0.0009)
+ clustered    normal 1000  8 heavy_kept_q90 0.2400 (0.0303) FALSE 0.0205 (0.0004)
+ clustered    normal 1000  8        mixture 0.0450 (0.0147)  TRUE 0.0140 (0.0003)
+ clustered    normal 1000 15        default 0.0100 (0.0071)  TRUE 0.0117 (0.0003)
+ clustered    normal 1000 15     heavy_kept 0.2250 (0.0296) FALSE 0.0237 (0.0005)
+ clustered    normal 1000 15 heavy_kept_q90 0.1250 (0.0234) FALSE 0.0180 (0.0004)
+ clustered    normal 1000 15        mixture 0.0350 (0.0130)  TRUE 0.0153 (0.0003)
+
+planted rows flagged, averaged over shifts, mean (MC SE)
+  noise     cond            arm         flagged             fdp      false_flag
+ normal  random2        default 0.5625 (0.0215) 0.0475 (0.0062) 0.0010 (0.0001)
+ normal  random2     heavy_kept 0.6246 (0.0205) 0.1264 (0.0094) 0.0027 (0.0002)
+ normal  random2 heavy_kept_q90 0.5943 (0.0210) 0.0742 (0.0070) 0.0014 (0.0001)
+ normal  random2        mixture 0.6664 (0.0214) 0.0310 (0.0037) 0.0007 (0.0001)
+ normal  random5        default 0.6043 (0.0206) 0.0478 (0.0059) 0.0015 (0.0001)
+ normal  random5     heavy_kept 0.6580 (0.0197) 0.0979 (0.0080) 0.0037 (0.0003)
+ normal  random5 heavy_kept_q90 0.6101 (0.0204) 0.0529 (0.0064) 0.0015 (0.0001)
+ normal  random5        mixture 0.6959 (0.0205) 0.0448 (0.0045) 0.0020 (0.0001)
+ normal shared10        default 0.2584 (0.0191) 0.0480 (0.0089) 0.0010 (0.0001)
+ normal shared10     heavy_kept 0.3250 (0.0202) 0.0698 (0.0090) 0.0029 (0.0003)
+ normal shared10 heavy_kept_q90 0.1770 (0.0144) 0.0310 (0.0073) 0.0003 (0.0001)
+ normal shared10        mixture 0.0091 (0.0019) 0.0137 (0.0050) 0.0001 (0.0000)
+ normal  shared5        default 0.4671 (0.0224) 0.0531 (0.0086) 0.0012 (0.0001)
+ normal  shared5     heavy_kept 0.5393 (0.0221) 0.0959 (0.0094) 0.0031 (0.0002)
+ normal  shared5 heavy_kept_q90 0.4773 (0.0222) 0.0527 (0.0083) 0.0012 (0.0001)
+ normal  shared5        mixture 0.3041 (0.0192) 0.0372 (0.0054) 0.0011 (0.0001)
+     t3  random2        default 0.7588 (0.0236) 0.7870 (0.0072) 0.0584 (0.0013)
+     t3  random2     heavy_kept 0.7712 (0.0233) 0.7986 (0.0064) 0.0627 (0.0014)
+     t3  random2 heavy_kept_q90 0.6400 (0.0278) 0.6905 (0.0130) 0.0266 (0.0007)
+     t3  random2        mixture 0.8387 (0.0199) 0.8056 (0.0049) 0.0714 (0.0011)
+     t3  random5        default 0.7720 (0.0220) 0.5903 (0.0104) 0.0573 (0.0015)
+     t3  random5     heavy_kept 0.7810 (0.0216) 0.5964 (0.0098) 0.0596 (0.0014)
+     t3  random5 heavy_kept_q90 0.5833 (0.0267) 0.4790 (0.0178) 0.0207 (0.0006)
+     t3  random5        mixture 0.8375 (0.0197) 0.6167 (0.0079) 0.0699 (0.0011)
+     t3 shared10        default 0.4720 (0.0274) 0.5782 (0.0173) 0.0516 (0.0014)
+     t3 shared10     heavy_kept 0.4682 (0.0270) 0.5668 (0.0177) 0.0516 (0.0015)
+     t3 shared10 heavy_kept_q90 0.0782 (0.0092) 0.6622 (0.0216) 0.0158 (0.0008)
+     t3 shared10        mixture 0.2508 (0.0214) 0.6453 (0.0201) 0.0388 (0.0018)
+     t3  shared5        default 0.6760 (0.0275) 0.6435 (0.0132) 0.0568 (0.0015)
+     t3  shared5     heavy_kept 0.6873 (0.0270) 0.6414 (0.0130) 0.0580 (0.0014)
+     t3  shared5 heavy_kept_q90 0.4662 (0.0284) 0.5683 (0.0207) 0.0210 (0.0006)
+     t3  shared5        mixture 0.6877 (0.0274) 0.6028 (0.0148) 0.0592 (0.0017)
+     t5  random2        default 0.6669 (0.0265) 0.6189 (0.0144) 0.0210 (0.0008)
+     t5  random2     heavy_kept 0.7163 (0.0244) 0.6668 (0.0117) 0.0301 (0.0010)
+     t5  random2 heavy_kept_q90 0.6069 (0.0273) 0.5382 (0.0177) 0.0133 (0.0005)
+     t5  random2        mixture 0.7675 (0.0245) 0.6048 (0.0128) 0.0247 (0.0009)
+     t5  random5        default 0.6815 (0.0254) 0.4319 (0.0154) 0.0221 (0.0007)
+     t5  random5     heavy_kept 0.7230 (0.0236) 0.4698 (0.0132) 0.0296 (0.0009)
+     t5  random5 heavy_kept_q90 0.5913 (0.0272) 0.3659 (0.0195) 0.0120 (0.0004)
+     t5  random5        mixture 0.7442 (0.0257) 0.4455 (0.0143) 0.0263 (0.0008)
+     t5 shared10        default 0.3724 (0.0270) 0.4913 (0.0221) 0.0197 (0.0008)
+     t5 shared10     heavy_kept 0.4111 (0.0273) 0.4901 (0.0210) 0.0252 (0.0009)
+     t5 shared10 heavy_kept_q90 0.1176 (0.0139) 0.4610 (0.0269) 0.0069 (0.0005)
+     t5 shared10        mixture 0.0441 (0.0056) 0.4506 (0.0283) 0.0093 (0.0008)
+     t5  shared5        default 0.5480 (0.0288) 0.5124 (0.0191) 0.0210 (0.0007)
+     t5  shared5     heavy_kept 0.5952 (0.0283) 0.5377 (0.0163) 0.0279 (0.0008)
+     t5  shared5 heavy_kept_q90 0.4542 (0.0293) 0.4535 (0.0233) 0.0113 (0.0005)
+     t5  shared5        mixture 0.3080 (0.0257) 0.3770 (0.0229) 0.0147 (0.0009)
+
+R1 (item 143):
+  default         holds in  6 of 36 clean cells; planted rows flagged 0.4731 (normal), 0.5506 (all); floor 0.3548 -> does not
+  heavy_kept      holds in  2 of 36 clean cells; planted rows flagged 0.5367 (normal), 0.5940 (all); floor 0.3548 -> does not
+  heavy_kept_q90  holds in  3 of 36 clean cells; planted rows flagged 0.4647 (normal), 0.4527 (all); floor 0.3548 -> does not
+  mixture         holds in  8 of 36 clean cells; planted rows flagged 0.4189 (normal), 0.4941 (all); floor 0.3548 -> does not
+  recommended: none qualifies; nothing changes until the results are reviewed 
+
+R2 (item 144): share of datasets whose tail check has p <= t
+                          cell t0.01 t0.02  t0.03  t0.04  t0.05  t0.06  t0.07 t0.08 t0.09 t0.10 t0.11 t0.12 t0.13 t0.14 t0.15 t0.16 t0.17 t0.18 t0.19 t0.20
+    clean/lognormal/1000/15/NA     0     0 1.0000 1.0000 1.0000 1.0000 1.0000 1.000 1.000 1.000 1.000 1.000 1.000 1.000 1.000 1.000 1.000 1.000 1.000 1.000
+     clean/lognormal/1000/5/NA     0     0 0.9450 0.9450 0.9750 0.9750 0.9750 0.985 0.985 0.985 0.995 0.995 0.995 0.995 0.995 0.995 0.995 1.000 1.000 1.000
+     clean/lognormal/1000/8/NA     0     0 1.0000 1.0000 1.0000 1.0000 1.0000 1.000 1.000 1.000 1.000 1.000 1.000 1.000 1.000 1.000 1.000 1.000 1.000 1.000
+     clean/lognormal/150/15/NA     0     0 1.0000 1.0000 1.0000 1.0000 1.0000 1.000 1.000 1.000 1.000 1.000 1.000 1.000 1.000 1.000 1.000 1.000 1.000 1.000
+      clean/lognormal/150/5/NA     0     0 0.2500 0.2500 0.4400 0.4400 0.4400 0.520 0.520 0.520 0.595 0.595 0.655 0.655 0.685 0.685 0.685 0.735 0.735 0.780
+      clean/lognormal/150/8/NA     0     0 0.6100 0.6100 0.7400 0.7400 0.7400 0.795 0.795 0.795 0.850 0.850 0.895 0.895 0.915 0.915 0.915 0.925 0.925 0.935
+     clean/lognormal/400/15/NA     0     0 1.0000 1.0000 1.0000 1.0000 1.0000 1.000 1.000 1.000 1.000 1.000 1.000 1.000 1.000 1.000 1.000 1.000 1.000 1.000
+      clean/lognormal/400/5/NA     0     0 0.7150 0.7150 0.8200 0.8200 0.8200 0.865 0.865 0.865 0.925 0.925 0.940 0.940 0.945 0.945 0.945 0.955 0.955 0.960
+      clean/lognormal/400/8/NA     0     0 0.9650 0.9650 0.9950 0.9950 0.9950 1.000 1.000 1.000 1.000 1.000 1.000 1.000 1.000 1.000 1.000 1.000 1.000 1.000
+       clean/normal/1000/15/NA     0     0 0.0300 0.0300 0.0750 0.0750 0.0750 0.090 0.090 0.090 0.120 0.120 0.135 0.135 0.160 0.160 0.160 0.170 0.170 0.190
+        clean/normal/1000/5/NA     0     0 0.1050 0.1050 0.1350 0.1350 0.1350 0.205 0.205 0.205 0.240 0.240 0.265 0.265 0.290 0.290 0.290 0.340 0.340 0.350
+        clean/normal/1000/8/NA     0     0 0.0400 0.0400 0.0650 0.0650 0.0650 0.100 0.100 0.100 0.130 0.130 0.160 0.160 0.220 0.220 0.220 0.240 0.240 0.270
+        clean/normal/150/15/NA     0     0 0.0100 0.0100 0.0450 0.0450 0.0450 0.075 0.075 0.075 0.105 0.105 0.115 0.115 0.140 0.140 0.140 0.175 0.175 0.200
+         clean/normal/150/5/NA     0     0 0.0350 0.0350 0.0600 0.0600 0.0600 0.075 0.075 0.075 0.110 0.110 0.145 0.145 0.180 0.180 0.180 0.220 0.220 0.245
+         clean/normal/150/8/NA     0     0 0.0250 0.0250 0.0500 0.0500 0.0500 0.080 0.080 0.080 0.100 0.100 0.140 0.140 0.185 0.185 0.185 0.200 0.200 0.210
+        clean/normal/400/15/NA     0     0 0.0350 0.0350 0.0650 0.0650 0.0650 0.090 0.090 0.090 0.120 0.120 0.155 0.155 0.180 0.180 0.180 0.215 0.215 0.245
+         clean/normal/400/5/NA     0     0 0.0500 0.0500 0.0700 0.0700 0.0700 0.120 0.120 0.120 0.150 0.150 0.205 0.205 0.260 0.260 0.260 0.295 0.295 0.335
+         clean/normal/400/8/NA     0     0 0.0500 0.0500 0.0800 0.0800 0.0800 0.130 0.130 0.130 0.145 0.145 0.160 0.160 0.190 0.190 0.190 0.225 0.225 0.250
+           clean/t3/1000/15/NA     0     0 1.0000 1.0000 1.0000 1.0000 1.0000 1.000 1.000 1.000 1.000 1.000 1.000 1.000 1.000 1.000 1.000 1.000 1.000 1.000
+            clean/t3/1000/5/NA     0     0 0.9200 0.9200 0.9650 0.9650 0.9650 0.980 0.980 0.980 0.980 0.980 0.980 0.980 0.985 0.985 0.985 0.990 0.990 0.995
+            clean/t3/1000/8/NA     0     0 1.0000 1.0000 1.0000 1.0000 1.0000 1.000 1.000 1.000 1.000 1.000 1.000 1.000 1.000 1.000 1.000 1.000 1.000 1.000
+            clean/t3/150/15/NA     0     0 0.9950 0.9950 1.0000 1.0000 1.0000 1.000 1.000 1.000 1.000 1.000 1.000 1.000 1.000 1.000 1.000 1.000 1.000 1.000
+             clean/t3/150/5/NA     0     0 0.2000 0.2000 0.3100 0.3100 0.3100 0.435 0.435 0.435 0.490 0.490 0.550 0.550 0.600 0.600 0.600 0.655 0.655 0.715
+             clean/t3/150/8/NA     0     0 0.5450 0.5450 0.6700 0.6700 0.6700 0.750 0.750 0.750 0.800 0.800 0.840 0.840 0.865 0.865 0.865 0.870 0.870 0.885
+            clean/t3/400/15/NA     0     0 1.0000 1.0000 1.0000 1.0000 1.0000 1.000 1.000 1.000 1.000 1.000 1.000 1.000 1.000 1.000 1.000 1.000 1.000 1.000
+             clean/t3/400/5/NA     0     0 0.6000 0.6000 0.7150 0.7150 0.7150 0.775 0.775 0.775 0.845 0.845 0.865 0.865 0.900 0.900 0.900 0.900 0.900 0.915
+             clean/t3/400/8/NA     0     0 0.9750 0.9750 0.9900 0.9900 0.9900 1.000 1.000 1.000 1.000 1.000 1.000 1.000 1.000 1.000 1.000 1.000 1.000 1.000
+           clean/t5/1000/15/NA     0     0 1.0000 1.0000 1.0000 1.0000 1.0000 1.000 1.000 1.000 1.000 1.000 1.000 1.000 1.000 1.000 1.000 1.000 1.000 1.000
+            clean/t5/1000/5/NA     0     0 0.5500 0.5500 0.6800 0.6800 0.6800 0.740 0.740 0.740 0.810 0.810 0.835 0.835 0.870 0.870 0.870 0.880 0.880 0.885
+            clean/t5/1000/8/NA     0     0 0.9600 0.9600 0.9850 0.9850 0.9850 1.000 1.000 1.000 1.000 1.000 1.000 1.000 1.000 1.000 1.000 1.000 1.000 1.000
+            clean/t5/150/15/NA     0     0 0.7250 0.7250 0.8700 0.8700 0.8700 0.920 0.920 0.920 0.945 0.945 0.970 0.970 0.970 0.970 0.970 0.975 0.975 0.980
+             clean/t5/150/5/NA     0     0 0.1000 0.1000 0.1650 0.1650 0.1650 0.230 0.230 0.230 0.290 0.290 0.340 0.340 0.380 0.380 0.380 0.425 0.425 0.475
+             clean/t5/150/8/NA     0     0 0.2050 0.2050 0.3350 0.3350 0.3350 0.410 0.410 0.410 0.490 0.490 0.555 0.555 0.590 0.590 0.590 0.625 0.625 0.645
+            clean/t5/400/15/NA     0     0 0.9950 0.9950 1.0000 1.0000 1.0000 1.000 1.000 1.000 1.000 1.000 1.000 1.000 1.000 1.000 1.000 1.000 1.000 1.000
+             clean/t5/400/5/NA     0     0 0.2250 0.2250 0.3450 0.3450 0.3450 0.440 0.440 0.440 0.510 0.510 0.560 0.560 0.600 0.600 0.600 0.620 0.620 0.645
+             clean/t5/400/8/NA     0     0 0.6600 0.6600 0.7900 0.7900 0.7900 0.820 0.820 0.820 0.835 0.835 0.855 0.855 0.865 0.865 0.865 0.890 0.890 0.915
+   clustered/normal/1000/15/NA     0     0 0.0250 0.0250 0.0500 0.0500 0.0500 0.085 0.085 0.085 0.115 0.115 0.140 0.140 0.170 0.170 0.170 0.200 0.200 0.230
+    clustered/normal/1000/5/NA     0     0 0.0600 0.0600 0.1350 0.1350 0.1350 0.195 0.195 0.195 0.220 0.220 0.265 0.265 0.300 0.300 0.300 0.320 0.320 0.365
+    clustered/normal/1000/8/NA     0     0 0.0450 0.0450 0.0800 0.0800 0.0800 0.105 0.105 0.105 0.125 0.125 0.160 0.160 0.210 0.210 0.210 0.235 0.235 0.260
+    clustered/normal/400/15/NA     0     0 0.0400 0.0400 0.0500 0.0500 0.0500 0.085 0.085 0.085 0.130 0.130 0.160 0.160 0.190 0.190 0.190 0.240 0.240 0.260
+     clustered/normal/400/5/NA     0     0 0.0450 0.0450 0.0850 0.0850 0.0850 0.105 0.105 0.105 0.155 0.155 0.180 0.180 0.220 0.220 0.220 0.265 0.265 0.300
+     clustered/normal/400/8/NA     0     0 0.0450 0.0450 0.0800 0.0800 0.0800 0.130 0.130 0.130 0.145 0.145 0.180 0.180 0.210 0.210 0.210 0.240 0.240 0.260
+    power/normal/400/8/random2     0     0 0.0457 0.0457 0.0800 0.0800 0.0800 0.106 0.106 0.106 0.131 0.131 0.157 0.157 0.177 0.177 0.177 0.211 0.211 0.249
+    power/normal/400/8/random5     0     0 0.0343 0.0343 0.0829 0.0829 0.0829 0.123 0.123 0.123 0.171 0.171 0.223 0.223 0.246 0.246 0.246 0.277 0.277 0.297
+   power/normal/400/8/shared10     0     0 0.0971 0.0971 0.1600 0.1600 0.1600 0.220 0.220 0.220 0.271 0.271 0.314 0.314 0.360 0.360 0.360 0.406 0.406 0.443
+    power/normal/400/8/shared5     0     0 0.0571 0.0571 0.0857 0.0857 0.0857 0.123 0.123 0.123 0.157 0.157 0.203 0.203 0.234 0.234 0.234 0.274 0.274 0.320
+  power_heavy/t3/400/8/random2     0     0 0.9750 0.9750 0.9950 0.9950 0.9950 0.995 0.995 0.995 1.000 1.000 1.000 1.000 1.000 1.000 1.000 1.000 1.000 1.000
+  power_heavy/t3/400/8/random5     0     0 0.9900 0.9900 1.0000 1.0000 1.0000 1.000 1.000 1.000 1.000 1.000 1.000 1.000 1.000 1.000 1.000 1.000 1.000 1.000
+ power_heavy/t3/400/8/shared10     0     0 0.9850 0.9850 0.9950 0.9950 0.9950 0.995 0.995 0.995 1.000 1.000 1.000 1.000 1.000 1.000 1.000 1.000 1.000 1.000
+  power_heavy/t3/400/8/shared5     0     0 0.9900 0.9900 0.9950 0.9950 0.9950 1.000 1.000 1.000 1.000 1.000 1.000 1.000 1.000 1.000 1.000 1.000 1.000 1.000
+  power_heavy/t5/400/8/random2     0     0 0.6650 0.6650 0.8150 0.8150 0.8150 0.850 0.850 0.850 0.890 0.890 0.925 0.925 0.940 0.940 0.940 0.955 0.955 0.960
+  power_heavy/t5/400/8/random5     0     0 0.7900 0.7900 0.8800 0.8800 0.8800 0.890 0.890 0.890 0.900 0.900 0.930 0.930 0.945 0.945 0.945 0.960 0.960 0.970
+ power_heavy/t5/400/8/shared10     0     0 0.7950 0.7950 0.8800 0.8800 0.8800 0.920 0.920 0.920 0.950 0.950 0.960 0.960 0.960 0.960 0.960 0.965 0.965 0.965
+  power_heavy/t5/400/8/shared5     0     0 0.7550 0.7550 0.8500 0.8500 0.8500 0.880 0.880 0.880 0.925 0.925 0.940 0.940 0.945 0.945 0.945 0.950 0.950 0.950
+  admissible thresholds: 0.01 0.02 0.03 0.04 0.05 0.06 0.07
+  the rule's threshold: 0.07, attainable as 2/40 = 0.050
+
+R3 (item 88, the five-column excess):
+  rank2    p=5 holds in 1 of 3 (default 0); p=8 control 2 of 3 -> does not
+  nodf     p=5 holds in 0 of 3 (default 0); p=8 control 1 of 3 -> does not
+  nomatch  p=5 holds in 0 of 3 (default 0); p=8 control 3 of 3 -> does not
+  rank chosen by the default at p = 5: 1 x149, 2 x451 
+
+R4 (item 88, the mixture score fixes both failures):
+  holds in 6 of 33 heavy-tailed and clustered cells -> does not
