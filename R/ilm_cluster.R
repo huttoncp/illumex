@@ -135,7 +135,8 @@ ilm_pct_share <- function(p) {
     v <- 100 * x
     if (v < 0.1) return("under 0.1%")
     if (v > 99.9) return("over 99.9%")
-    if (round(v) %in% c(0, 100) || v < 1 || v > 99) sprintf("%.1f%%", v) else sprintf("%.0f%%", v)
+    if (ilm_disp_round(v, 0) %in% c(0, 100) || v < 1 || v > 99) paste0(ilm_fx(v, 1), "%")
+    else paste0(ilm_fx(v, 0), "%")
   }, "")
 }
 
@@ -453,20 +454,20 @@ print.ilm_cluster <- function(x, ...) {
   cat(sprintf("  %7s %6s %6s %8s %10s %7s\n", "cluster", "size", "pct",
               "jaccard", "stability", "sil"))
   for (i in seq_len(nrow(cl)))
-    cat(sprintf("  %7d %6d %6.1f %8.3f %10s %7s%s\n", cl$cluster[i],
-                cl$size[i], cl$pct[i], cl$jaccard[i],
+    cat(sprintf("  %7d %6d %6s %8s %10s %7s%s\n", cl$cluster[i],
+                cl$size[i], ilm_fx(cl$pct[i], 1), ilm_fx(cl$jaccard[i], 3),
                 as.character(cl$stability[i]),
                 ifelse(is.na(cl$mean_silhouette[i]), "-",
-                       sprintf("%.3f", cl$mean_silhouette[i])),
+                       ilm_fx(cl$mean_silhouette[i], 3)),
                 if (isTRUE(cl$anomalous[i])) "  small" else ""))
   ns <- sum(x$ind_cluster$is_small_cluster)
   if (ns)
-    cat(sprintf("\n  %d observation(s) in a cluster holding less than %.0f%% of the data\n",
-                ns, 100 * x$small_cluster_frac))
+    cat(sprintf("\n  %d observation(s) in a cluster holding less than %s%% of the data\n",
+                ns, ilm_fx(100 * x$small_cluster_frac, 0)))
   na_ <- sum(x$ind_cluster$is_ambiguous)
   if (na_)
-    cat(sprintf("  %d observation(s) sit between clusters (silhouette below %.2f) and may be misassigned\n",
-                na_, x$ambiguous_threshold))
+    cat(sprintf("  %d observation(s) sit between clusters (silhouette below %s) and may be misassigned\n",
+                na_, ilm_fx(x$ambiguous_threshold, 2)))
   nc <- x$kmeans_not_converged %||% 0L
   if (nc > 0L)
     cat(sprintf(ILM_KMEANS_NOT_CONVERGED, ilm_fmt_count(nc), ilm_fmt_count(x$kmeans_starts),

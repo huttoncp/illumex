@@ -524,8 +524,8 @@ ilm_plot_anom_map <- function(x, d, data, main, pch, ...) {
     "Red: flagged, by score. Together? ilm_profile(x) describes them"
   else "Red: flagged, by score. Odd OFF these axes, so may sit mid-cloud"
   args <- list(x = co$dim1, y = co$dim2, type = "p", pch = pch, col = "grey70",
-               xlab = sprintf("Dim 1 (%.1f%%)", pv[1]),
-               ylab = sprintf("Dim 2 (%.1f%%)", pv[2]),
+               xlab = sprintf("Dim 1 (%s%%)", ilm_fx(pv[1], 1)),
+               ylab = sprintf("Dim 2 (%s%%)", ilm_fx(pv[2], 1)),
                main = if (is.null(main)) "Where the flagged rows sit" else main,
                sub = sub)
   do.call(tinyplot::tinyplot, utils::modifyList(args, list(...)))
@@ -596,11 +596,11 @@ ilm_anom_row_values <- function(x, d, row, dat) {
   j <- match(row, d$row)
   jz <- which.max(abs(vals$z)); je <- which.max(abs(vals$residual))
   sub <- if (abs(vals$z[jz]) >= 3)
-    sprintf("`%s` is extreme on its own (z = %.1f): ilm_outliers() sees it too",
-            vals$column[jz], vals$z[jz])
+    sprintf("`%s` is extreme on its own (z = %s): ilm_outliers() sees it too",
+            vals$column[jz], ilm_fx(vals$z[jz], 1))
   else if (abs(vals$residual[je]) >= 3)
-    sprintf("Odd only as a combination: largest |z| %.1f, largest residual %.1f",
-            abs(vals$z[jz]), abs(vals$residual[je]))
+    sprintf("Odd only as a combination: largest |z| %s, largest residual %s",
+            ilm_fx(abs(vals$z[jz]), 1), ilm_fx(abs(vals$residual[je]), 1))
   else "Nothing unusual here, on its own or as a combination"
   list(values = vals, row = as.integer(row), score = d$score[j],
        flag = d$flag[j], sub = sub)
@@ -628,7 +628,7 @@ ilm_plot_anom_row <- function(x, d, row, top_n, data, main, ...) {
                type = tinyplot::type_barplot(beside = TRUE), flip = TRUE,
                xlab = "", xaxt = "n", ylab = "typical deviations for that column",
                main = if (is.null(main))
-                 sprintf("Row %d: score %s, %s", v$row, format(signif(v$score, 3)),
+                 sprintf("Row %d: score %s, %s", v$row, format(ilm_disp_signif(v$score, 3)),
                          if (isTRUE(v$flag)) "flagged" else "not flagged")
                  else main,
                sub = v$sub, palette = c("grey55", "firebrick"),

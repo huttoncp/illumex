@@ -99,7 +99,7 @@ ilm_outliers <- function(y, method = c("iqr", "mad", "zscore"),
   is_outlier <- score > threshold
   is_outlier[is.na(y)] <- NA
   ilm_as_result(data.frame(value = y, method = method, threshold = threshold,
-                           score = round(score, 3), is_outlier = is_outlier,
+                           score = score, is_outlier = is_outlier,
                            stringsAsFactors = FALSE, row.names = NULL),
                 "ilm_outliers")
 }

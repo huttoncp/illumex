@@ -407,8 +407,8 @@ print.ilm_glrm <- function(x, ...) {
   cat("  losses: ",
       paste(sprintf("%s x%d", names(tb), as.integer(tb)), collapse = ", "),
       "\n", sep = "")
-  cat(sprintf("  %d iterations, objective %.4f%s\n", x$iterations,
-              utils::tail(x$objective, 1L),
+  cat(sprintf("  %d iterations, objective %s%s\n", x$iterations,
+              ilm_fx(utils::tail(x$objective, 1L), 4),
               if (x$converged) "" else "  [did NOT converge]"))
   if (!x$converged)
     cat("  The objective was still moving when maxit was reached. Raise",

@@ -243,20 +243,20 @@ print.ilm_reduce <- function(x, ...) {
     ## a categorical column is fitted on the logit scale, so its share is of
     ## the fitted signal and is reported apart from the numeric columns'
     if (is.finite(x$eig$cum_pct_var[m]))
-      cat(sprintf("  first %d dimension(s) explain %.1f%% of the numeric columns' variance\n",
-                  m, x$eig$cum_pct_var[m]))
+      cat(sprintf("  first %d dimension(s) explain %s%% of the numeric columns' variance\n",
+                  m, ilm_fx(x$eig$cum_pct_var[m], 1)))
     if (m < nrow(x$eig) && is.finite(x$eig$cum_pct_categorical[m]))
-      cat(sprintf("  and carry %.1f%% of the fitted categorical signal\n",
-                  x$eig$cum_pct_categorical[m]))
+      cat(sprintf("  and carry %s%% of the fitted categorical signal\n",
+                  ilm_fx(x$eig$cum_pct_categorical[m], 1)))
   } else {
-    cat(sprintf("  first %d dimension(s) explain %.1f%% of the variance\n",
-                m, x$eig$cum_pct_var[m]))
+    cat(sprintf("  first %d dimension(s) explain %s%% of the variance\n",
+                m, ilm_fx(x$eig$cum_pct_var[m], 1)))
   }
   cat("\n  strongest variable per dimension (squared loading)\n")
   for (d in sort(unique(x$var_contrib$dim))) {
     sl <- x$var_contrib[x$var_contrib$dim == d, , drop = FALSE]
     k <- which.max(ilm_tie(sl$sqload))
-    cat(sprintf("    dim %-3d %-24s %.3f\n", d, ilm_show_text(sl$variable[k]), sl$sqload[k]))
+    cat(sprintf("    dim %-3d %-24s %s\n", d, ilm_show_text(sl$variable[k]), ilm_fx(sl$sqload[k], 3)))
   }
   invisible(x)
 }

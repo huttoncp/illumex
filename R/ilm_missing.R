@@ -199,7 +199,7 @@ ilm_check_missing <- function(data, y = NULL, covariates = NULL,
   }
   say("  ", length(inc), " of ", ncol(data), " columns have missing values")
   say("  ", cc, " of ", n, " rows are complete (",
-      sprintf("%.1f%%", 100 * cc / n), ")")
+      paste0(ilm_fx(100 * cc / n, 1), "%"), ")")
 
   ## ---- which variables go missing together ---------------------------------
   M <- is.na(data[inc])
@@ -343,10 +343,10 @@ ilm_check_missing_say <- function(verdict, flagged, n_flag, y,
   } else {
     say("  missingness IS associated with observed variables:")
     for (i in seq_len(min(n_flag, 6L)))
-      say(sprintf("    %s missing <- %s (effect %.3f, p = %s)%s",
+      say(sprintf("    %s missing <- %s (effect %s, p = %s)%s",
                   flagged$missing_in[i], flagged$related_to[i],
-                  flagged$effect[i],
-                  format.pval(flagged$p_adj[i], digits = 2, eps = 1e-4),
+                  ilm_fx(flagged$effect[i], 3),
+                  format.pval(ilm_disp_signif(flagged$p_adj[i], 2), digits = 2, eps = 1e-4),
                   if (flagged$is_outcome[i]) "   <- THE OUTCOME" else ""))
     if (n_flag > 6L) say("    ... and ", n_flag - 6L, " more")
     if (verdict == "RELATED_TO_OUTCOME") {
@@ -377,15 +377,15 @@ ilm_check_missing_say <- function(verdict, flagged, n_flag, y,
 #' @export
 print.ilm_missing <- function(x, ...) {
   cat("<ilm_missing>", x$n_complete, "of", x$n, "rows complete",
-      sprintf("(%.1f%%)\n", 100 * x$n_complete / x$n))
+      paste0("(", ilm_fx(100 * x$n_complete / x$n, 1), "%)\n"))
   if (identical(x$verdict, "NONE")) {
     cat("  no missing values\n"); return(invisible(x))
   }
   v <- x$variables[x$variables$n_missing > 0, , drop = FALSE]
   cat("\n  missing by variable\n")
   for (i in seq_len(nrow(v)))
-    cat(sprintf("    %-20s %6d  %5.1f%%\n", ilm_show_text(v$variable[i]), v$n_missing[i],
-                100 * v$p_missing[i]))
+    cat(sprintf("    %-20s %6d  %5s%%\n", ilm_show_text(v$variable[i]), v$n_missing[i],
+                ilm_fx(100 * v$p_missing[i], 1)))
   cat("\n  pattern:", if (isTRUE(x$monotone)) "monotone" else "non-monotone",
       sprintf("(%d distinct)\n", nrow(x$patterns)))
   cat("  verdict:", x$verdict, "\n")
@@ -404,8 +404,8 @@ print.ilm_missing <- function(x, ...) {
     for (i in seq_len(nrow(ot)))
       cat(sprintf("    %-16s partial r = %s, p = %s%s
 ", ilm_show_text(ot$missing_in[i]),
-                  ifelse(is.na(ot$effect[i]), "-", sprintf("%.3f", ot$effect[i])),
-                  format.pval(ot$p_adj[i], digits = 2, eps = 1e-4),
+                  ifelse(is.na(ot$effect[i]), "-", ilm_fx(ot$effect[i], 3)),
+                  format.pval(ilm_disp_signif(ot$p_adj[i], 2), digits = 2, eps = 1e-4),
                   if (isTRUE(ot$flag[i])) "   <- yes" else ""))
   }
   if (!is.null(x$associations)) {
@@ -413,8 +413,8 @@ print.ilm_missing <- function(x, ...) {
     if (nrow(f)) {
       cat("\n  strongest associations with missingness\n")
       for (i in seq_len(min(nrow(f), 8L)))
-        cat(sprintf("    %-16s <- %-16s %.3f%s\n", ilm_show_text(f$missing_in[i]),
-                    ilm_show_text(f$related_to[i]), f$effect[i],
+        cat(sprintf("    %-16s <- %-16s %s%s\n", ilm_show_text(f$missing_in[i]),
+                    ilm_show_text(f$related_to[i]), ilm_fx(f$effect[i], 3),
                     if (f$is_outcome[i]) "  (outcome)" else ""))
     }
   }

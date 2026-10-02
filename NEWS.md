@@ -1,5 +1,25 @@
 # illumex 0.0.8.9003
 
+* `ilm_boot_diff()`'s `p_superiority` and `ilm_outliers()`'s `score` (and
+  `ilm_outliers_all()`'s) are no longer rounded in the result (item 289):
+  they keep their full value, and their prints round them, to 4 and 3
+  decimals, by the shared rule. What prints is unchanged.
+* A description prints the same numbers on every computer (item 272).
+  `ilm_describe()`, `ilm_describe_all()`, `ilm_describe_na()` and the
+  clusters' table in `ilm_describe_clusters()` round by the shared display
+  rules, half away from zero after clearing floating-point noise, and write
+  each column as text in the layout R's print gives it. R's own print could
+  show a value on a rounding boundary differently on an Intel machine and on
+  Apple silicon (a median of 34420.195 as 34420.2 or 34420.19); every value
+  is now rounded once, from the value kept, so 40410.4647 shown to two
+  decimals is 40410.46. Away from a boundary every print is as it was.
+  The same rule covers every other print: the tables of `ilm_anomaly()`,
+  `ilm_var_contrib()`, `ilm_boot_ci()`, `ilm_boot_diff()`, `ilm_outliers()`
+  and `ilm_outliers_all()`, the gaussian check, and the numbers in the lines
+  of `ilm_cluster()`, `ilm_reduce()`, `ilm_glrm()`, `ilm_check_missing()`,
+  the notes and frame checks, and the plots' titles and labels, where
+  `sprintf()` rounded an exact tie by the C library's rule (a cluster of 49
+  rows in 400 is 12.3%, not 12.2%).
 * A description by two variables compares, with `smd`, the second's groups
   within each level of the first -- exposure within a modifier, controls
   split by exposure -- and names a level of the second as the reference:

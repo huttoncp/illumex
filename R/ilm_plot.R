@@ -95,13 +95,13 @@ ilm_plot_verdict <- function(v) {
   if (is.numeric(v) && !is.logical(v)) {
     g <- ilm_gauss_check(v[is.finite(v)])
     if (is.na(g$gauss)) return(g$gauss_note)
-    return(sprintf("gauss %.2f%s", g$gauss,
+    return(sprintf("gauss %s%s", ilm_fx(g$gauss, 2),
                    if (nzchar(g$gauss_note)) paste0(" \u2014 ", g$gauss_note) else ""))
   }
   if (is.logical(v)) {
     p <- fmean(v)
     return(if (is.finite(p) && (p < 0.01 || p > 0.99))
-      sprintf("p(TRUE) = %.3f \u2014 near-constant (separation risk)", p) else "")
+      sprintf("p(TRUE) = %s \u2014 near-constant (separation risk)", ilm_fx(p, 3)) else "")
   }
   d <- ilm_describe_cat(v)
   d$note
