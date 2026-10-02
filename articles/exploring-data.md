@@ -1006,7 +1006,7 @@ pn <- ilm_profile_na(airquality, k_max = 4, B = 25, seed = 1)
 #> selector can also lock onto the number of category combinations rather than the
 #> number of clusters; plot(x) shows the gap curve.
 cat(pn$summary[1:2], sep = "\n\n")
-#> Cluster 1 holds 5 rows, 3.3% of the data (stable). What sets it apart: Solar.R is missing for 100% of them, against 5% across all rows. It is a small cluster, 3.3% of the rows: possibly a real minority pattern, possibly a data problem, but worth looking at either way.
+#> Cluster 1 is too small to describe reliably: 5 rows, 3.3% of the data (stable). What sets it apart: Solar.R is missing for 100% of them, against 5% across all rows. It could be a real minority pattern or a data problem, and is worth looking at either way.
 #> 
 #> Cluster 2 holds 35 rows, 22.9% of the data (stable). What sets it apart: Ozone is missing for 100% of them, against 24% across all rows.
 ```
