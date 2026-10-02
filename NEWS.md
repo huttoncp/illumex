@@ -1,3 +1,23 @@
+# illumex 0.0.8.9003
+
+* Numbers are written in full with at most 15 figures before the point
+  and, below 1, at most 6 decimals, after rounding, and in R's scientific
+  notation beyond, so sentences and reports match R's printed tables (item
+  290): "1.23e+300", "1.00e-05", "5.05e-08", with the exponent's sign and
+  at least two digits. To 3 figures, 0.0001 is "0.000100" and 0.00001 is
+  "1.00e-05"; the decimals are counted with the zeros at the end kept, so
+  dropping them does not move the switch. A value shown to significant
+  figures keeps them in the mantissa ("1.00e+15"). One shown to fixed
+  decimals keeps its declared decimals however small (0.0000001 to 8
+  decimals is "0.00000010"), and goes scientific only from 1e15, at 7
+  figures, as R prints it ("1.234568e+20"). p-values, clock times and
+  ordinals are unchanged.
+* A value just below a power of ten whose 15 figures are all nines keeps
+  them: 999,999,999,999,999 was shown as 1,000,000,000,000,000 when asked
+  for 15 figures, because `log10()` of it is 15.
+* The development version moves to 0.0.8.9003, so that a package needing
+  the scientific notation of the shared display rules can require it.
+
 # illumex 0.0.8.9002
 
 * The display rules every printed number follows live in
