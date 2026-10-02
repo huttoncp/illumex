@@ -77,6 +77,27 @@ the eligible columns that <code>cols_negate = FALSE</code> would not. A column o
 predicate fails counts as not matching, so <code>cols_negate = TRUE</code> selects
 it. <code>cols_negate = TRUE</code> needs <code>cols</code>, and leaving out every eligible column is an
 error naming them.</p>
+<p><strong>Matching literally.</strong> With <code>cols_fixed = TRUE</code>, a <code>cols</code> string read as
+a pattern is matched as it is written, as a substring: <code>cols = "wt.", cols_fixed = TRUE</code> takes <code>wt.kg</code> and <code>wt.lb</code> but not <code>wt_2</code>. A column name
+still wins, and names or a predicate are unaffected.</p>
+<p><strong>Choosing rows.</strong> A function that takes <code>subset</code> uses only the rows it
+gives, before <code>cols</code>, <code>by</code> and everything else – <code><a href="https://dplyr.tidyverse.org/reference/filter.html" class="external-link">dplyr::filter()</a></code> before
+the call, as an ordinary value. <code>subset</code> is one of:</p><ul><li><p>A <strong>logical vector</strong>, one value per row: <code>subset = d$age &gt;= 18</code>. Rows
+where it is <code>NA</code> are left out, as in <code><a href="https://dplyr.tidyverse.org/reference/filter.html" class="external-link">dplyr::filter()</a></code>.</p></li>
+<li><p><strong>Row positions</strong>, positive whole numbers: <code>subset = 1:100</code>. A number on
+its own always means a position.</p></li>
+<li><p><strong>Named patterns</strong>, one per column: <code>subset = c(site = "^north", arm = "drug")</code> keeps the rows where every named column matches; a missing
+value matches nothing. <code>subset_fixed = TRUE</code> matches them literally.</p></li>
+<li><p>A <strong>random sample</strong>, <code><a href="ilm_sample.html">ilm_sample()</a></code>: <code>subset = ilm_sample(prop = 0.2, seed = 1)</code>, or whole groups with <code>by</code>.</p></li>
+</ul><p><code>subset_negate = TRUE</code> takes the rows <code>subset</code> would not: the other rows,
+or the rows not sampled, a holdout. For a logical <code>subset</code>, rows where it
+is <code>NA</code> stay out either way. A subset that keeps no row is an error saying
+what it was. Results name rows by the data's own row numbers, never by
+their place in the subset, so they join back onto the data as they are.
+<code><a href="ilm_subset.html">ilm_subset()</a></code> returns the rows and columns themselves.</p>
+<p>A result made from a subset, or from a choice of columns, says so above
+what it prints – <code>119 of 600 rows (subset)</code> and <code>Columns: 5 of 8 (excluded: id, name, date)</code> – and keeps what was chosen in its attribute
+<code>"ilm_select"</code>. A plot says the same in a message.</p>
 <p>A <code>by</code> argument takes column names. <code><a href="ilm_outliers_all.html">ilm_outliers_all()</a></code>'s <code>by</code> also takes
 a pattern or a predicate, as <code>cols</code> does; elsewhere a pattern or a function
 given as <code>by</code> is an error. <code>by</code> is never negated.</p>
@@ -87,25 +108,43 @@ given as <code>by</code> is an error. <code>by</code> is never negated.</p>
     <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="va">d</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/data.frame.html" class="external-link">data.frame</a></span><span class="op">(</span>id <span class="op">=</span> <span class="fl">1</span><span class="op">:</span><span class="fl">5</span>, score_a <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/stats/Normal.html" class="external-link">rnorm</a></span><span class="op">(</span><span class="fl">5</span><span class="op">)</span>, score_b <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/stats/Normal.html" class="external-link">rnorm</a></span><span class="op">(</span><span class="fl">5</span><span class="op">)</span>,</span></span>
 <span class="r-in"><span>                label <span class="op">=</span> <span class="va">letters</span><span class="op">[</span><span class="fl">1</span><span class="op">:</span><span class="fl">5</span><span class="op">]</span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="fu"><a href="ilm_outliers_all.html">ilm_outliers_all</a></span><span class="op">(</span><span class="va">d</span>, cols <span class="op">=</span> <span class="st">"^score_"</span><span class="op">)</span></span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Columns: 2 of 4 (excluded: id, label)</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>   row_id variable     value score is_outlier</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> 1      1  score_a -1.706430 3.513       TRUE</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> 2      4  score_a  1.954017 2.572       TRUE</span>
 <span class="r-in"><span><span class="fu"><a href="ilm_outliers_all.html">ilm_outliers_all</a></span><span class="op">(</span><span class="va">d</span>, cols <span class="op">=</span> <span class="va">is.numeric</span><span class="op">)</span></span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Columns: 3 of 4 (excluded: label)</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>   row_id variable     value score is_outlier</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> 1      1  score_a -1.706430 3.513       TRUE</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> 2      4  score_a  1.954017 2.572       TRUE</span>
 <span class="r-in"><span><span class="co">## leaving columns out</span></span></span>
 <span class="r-in"><span><span class="fu"><a href="ilm_outliers_all.html">ilm_outliers_all</a></span><span class="op">(</span><span class="va">d</span>, cols <span class="op">=</span> <span class="st">"id"</span>, cols_negate <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Columns: 2 of 4 (excluded: id, label)</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>   row_id variable     value score is_outlier</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> 1      1  score_a -1.706430 3.513       TRUE</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> 2      4  score_a  1.954017 2.572       TRUE</span>
 <span class="r-in"><span><span class="fu"><a href="ilm_outliers_all.html">ilm_outliers_all</a></span><span class="op">(</span><span class="va">d</span>, cols <span class="op">=</span> <span class="st">"^score_"</span>, cols_negate <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Columns: 1 of 4 (excluded: score_a, score_b, label)</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> [1] row_id     variable   value      score      is_outlier</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> &lt;0 rows&gt; (or 0-length row.names)</span>
 <span class="r-in"><span><span class="fu"><a href="ilm_outliers_all.html">ilm_outliers_all</a></span><span class="op">(</span><span class="va">d</span>, cols <span class="op">=</span> <span class="kw">function</span><span class="op">(</span><span class="va">v</span><span class="op">)</span> <span class="fu"><a href="https://rdrr.io/r/base/all.html" class="external-link">all</a></span><span class="op">(</span><span class="va">v</span> <span class="op">==</span> <span class="fu"><a href="https://rdrr.io/r/base/Round.html" class="external-link">round</a></span><span class="op">(</span><span class="va">v</span><span class="op">)</span><span class="op">)</span>, cols_negate <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Columns: 2 of 4 (excluded: id, label)</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>   row_id variable     value score is_outlier</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> 1      1  score_a -1.706430 3.513       TRUE</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> 2      4  score_a  1.954017 2.572       TRUE</span>
+<span class="r-in"><span><span class="co">## choosing rows</span></span></span>
+<span class="r-in"><span><span class="fu"><a href="ilm_outliers_all.html">ilm_outliers_all</a></span><span class="op">(</span><span class="va">d</span>, subset <span class="op">=</span> <span class="va">d</span><span class="op">$</span><span class="va">id</span> <span class="op">&gt;</span> <span class="fl">2</span><span class="op">)</span></span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 3 of 5 rows (subset)</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1] row_id     variable   value      score      is_outlier</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> &lt;0 rows&gt; (or 0-length row.names)</span>
+<span class="r-in"><span><span class="fu"><a href="ilm_outliers_all.html">ilm_outliers_all</a></span><span class="op">(</span><span class="va">d</span>, subset <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span>label <span class="op">=</span> <span class="st">"^[ab]$"</span><span class="op">)</span>, subset_negate <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 3 of 5 rows (subset, negated)</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1] row_id     variable   value      score      is_outlier</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> &lt;0 rows&gt; (or 0-length row.names)</span>
+<span class="r-in"><span><span class="fu"><a href="ilm_outliers_all.html">ilm_outliers_all</a></span><span class="op">(</span><span class="va">d</span>, subset <span class="op">=</span> <span class="fu"><a href="ilm_sample.html">ilm_sample</a></span><span class="op">(</span><span class="fl">3</span>, seed <span class="op">=</span> <span class="fl">1</span><span class="op">)</span><span class="op">)</span></span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 3 of 5 rows (subset)</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1] row_id     variable   value      score      is_outlier</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> &lt;0 rows&gt; (or 0-length row.names)</span>
 </code></pre></div>
     </div>
   </main><aside class="col-md-3"><nav id="toc" aria-label="Table of contents"><h2>On this page</h2>

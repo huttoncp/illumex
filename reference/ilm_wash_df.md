@@ -91,6 +91,12 @@ letters of other scripts are kept as they are; a name starting with a
 digit gains an `x`; and a repeated name gains `_2`, `_3` and so on, as
 janitor numbers it.
 
+It washes the whole data frame, and takes no `subset` or `cols`: a
+column has one type, which retyping decides from all of its rows. To
+wash part of a data frame, choose it with
+[`ilm_subset()`](https://huttoncp.github.io/illumex/reference/ilm_subset.md)
+first.
+
 ## Examples
 
 ``` r

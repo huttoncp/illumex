@@ -337,6 +337,22 @@ Built on tinyplot, named for what they show.
 - [`ilm_plot_violin()`](https://huttoncp.github.io/illumex/reference/ilm_plot_violin.md)
   : Violin plot
 
+## Choosing rows and columns
+
+Which rows and columns a function uses: `subset` and `cols` with their
+options, a random sample of rows, and the data a call would use.
+
+- [`ilm_selection`](https://huttoncp.github.io/illumex/reference/ilm_selection.md)
+  : How columns can be chosen
+
+- [`ilm_subset()`](https://huttoncp.github.io/illumex/reference/ilm_subset.md)
+  : Rows and columns of a data frame, chosen as illumex chooses them
+
+- [`ilm_sample()`](https://huttoncp.github.io/illumex/reference/ilm_sample.md)
+  :
+
+  A random sample of rows, or of whole groups, for `subset`
+
 ## Example data
 
 A grouped data set with a known structure, used throughout the examples.
@@ -351,8 +367,6 @@ rather than by name.
 
 - [`ilm_progress_arg`](https://huttoncp.github.io/illumex/reference/ilm_progress_arg.md)
   : Progress reporting in illumex and illume
-- [`ilm_selection`](https://huttoncp.github.io/illumex/reference/ilm_selection.md)
-  : How columns can be chosen
 
 # Articles
 

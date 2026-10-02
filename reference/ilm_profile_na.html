@@ -62,7 +62,11 @@ missingness sets it apart – &quot;income is missing for 92% of them, against
 <span>  <span class="va">...</span>,</span>
 <span>  vtest_threshold <span class="op">=</span> <span class="fl">1.96</span>,</span>
 <span>  top_n_vars <span class="op">=</span> <span class="fl">4</span>,</span>
-<span>  cols_negate <span class="op">=</span> <span class="cn">FALSE</span></span>
+<span>  cols_negate <span class="op">=</span> <span class="cn">FALSE</span>,</span>
+<span>  cols_fixed <span class="op">=</span> <span class="cn">FALSE</span>,</span>
+<span>  subset <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  subset_negate <span class="op">=</span> <span class="cn">FALSE</span>,</span>
+<span>  subset_fixed <span class="op">=</span> <span class="cn">FALSE</span></span>
 <span><span class="op">)</span></span></code></pre></div>
     </div>
 
@@ -101,6 +105,30 @@ cluster's description; see <code><a href="ilm_profile.html">ilm_profile()</a></c
 <dd><p>If <code>TRUE</code>, <code>cols</code> names the columns to leave out, and every
 other eligible column is used; see <a href="ilm_selection.html">ilm_selection</a>. It needs <code>cols</code>. A
 <code>by</code> argument is never negated.</p></dd>
+
+
+<dt id="arg-cols-fixed">cols_fixed<a class="anchor" aria-label="anchor" href="#arg-cols-fixed"></a></dt>
+<dd><p>If <code>TRUE</code>, a <code>cols</code> string read as a pattern is matched
+literally, as a substring (as <code>grepl(fixed = TRUE)</code> does); a column name
+still wins. It changes nothing when <code>cols</code> is names or a predicate.</p></dd>
+
+
+<dt id="arg-subset">subset<a class="anchor" aria-label="anchor" href="#arg-subset"></a></dt>
+<dd><p>Which rows to use, before anything else: a logical vector
+(one value per row; <code>NA</code> is left out), row positions, named patterns
+(<code>c(site = "^north")</code>), or <code><a href="ilm_sample.html">ilm_sample()</a></code>. See <a href="ilm_selection.html">ilm_selection</a>. Results
+keep the data's own row numbers.</p></dd>
+
+
+<dt id="arg-subset-negate">subset_negate<a class="anchor" aria-label="anchor" href="#arg-subset-negate"></a></dt>
+<dd><p>If <code>TRUE</code>, the rows <code>subset</code> would not take: the other
+rows, or the rows not sampled (a holdout). With a logical <code>subset</code>, rows
+where it is <code>NA</code> stay out either way.</p></dd>
+
+
+<dt id="arg-subset-fixed">subset_fixed<a class="anchor" aria-label="anchor" href="#arg-subset-fixed"></a></dt>
+<dd><p>If <code>TRUE</code>, <code>subset</code>'s patterns are matched literally,
+as substrings. It changes nothing for a logical, positions or a sample.</p></dd>
 
 </dl></div>
     <div class="section level2">

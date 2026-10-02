@@ -11,7 +11,17 @@ apart.
 ## Usage
 
 ``` r
-ilm_frame_issues(data, cor_cut = 0.999, v_cut = 0.95)
+ilm_frame_issues(
+  data,
+  cor_cut = 0.999,
+  v_cut = 0.95,
+  cols = NULL,
+  cols_negate = FALSE,
+  cols_fixed = FALSE,
+  subset = NULL,
+  subset_negate = FALSE,
+  subset_fixed = FALSE
+)
 ```
 
 ## Arguments
@@ -29,6 +39,47 @@ ilm_frame_issues(data, cor_cut = 0.999, v_cut = 0.95)
 
   Cramer's V at or above which a pair of categorical columns is reported
   as redundant.
+
+- cols:
+
+  Columns to use. A character vector of names, a regular expression, a
+  predicate function such as `is.numeric`, or `NULL` for all of them –
+  see
+  [ilm_selection](https://huttoncp.github.io/illumex/reference/ilm_selection.md).
+
+- cols_negate:
+
+  If `TRUE`, `cols` names the columns to leave out, and every other
+  eligible column is used; see
+  [ilm_selection](https://huttoncp.github.io/illumex/reference/ilm_selection.md).
+  It needs `cols`. A `by` argument is never negated.
+
+- cols_fixed:
+
+  If `TRUE`, a `cols` string read as a pattern is matched literally, as
+  a substring (as `grepl(fixed = TRUE)` does); a column name still wins.
+  It changes nothing when `cols` is names or a predicate.
+
+- subset:
+
+  Which rows to use, before anything else: a logical vector (one value
+  per row; `NA` is left out), row positions, named patterns
+  (`c(site = "^north")`), or
+  [`ilm_sample()`](https://huttoncp.github.io/illumex/reference/ilm_sample.md).
+  See
+  [ilm_selection](https://huttoncp.github.io/illumex/reference/ilm_selection.md).
+  Results keep the data's own row numbers.
+
+- subset_negate:
+
+  If `TRUE`, the rows `subset` would not take: the other rows, or the
+  rows not sampled (a holdout). With a logical `subset`, rows where it
+  is `NA` stay out either way.
+
+- subset_fixed:
+
+  If `TRUE`, `subset`'s patterns are matched literally, as substrings.
+  It changes nothing for a logical, positions or a sample.
 
 ## Value
 

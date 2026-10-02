@@ -46,7 +46,15 @@
 
     <div class="section level2">
     <h2 id="ref-usage">Usage<a class="anchor" aria-label="anchor" href="#ref-usage"></a></h2>
-    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">ilm_describe_na</span><span class="op">(</span><span class="va">data</span>, y <span class="op">=</span> <span class="cn">NULL</span>, by <span class="op">=</span> <span class="cn">NULL</span>, digits <span class="op">=</span> <span class="fl">4</span><span class="op">)</span></span></code></pre></div>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">ilm_describe_na</span><span class="op">(</span></span>
+<span>  <span class="va">data</span>,</span>
+<span>  y <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  by <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  digits <span class="op">=</span> <span class="fl">4</span>,</span>
+<span>  subset <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  subset_negate <span class="op">=</span> <span class="cn">FALSE</span>,</span>
+<span>  subset_fixed <span class="op">=</span> <span class="cn">FALSE</span></span>
+<span><span class="op">)</span></span></code></pre></div>
     </div>
 
     <div class="section level2">
@@ -67,6 +75,24 @@
 
 <dt id="arg-digits">digits<a class="anchor" aria-label="anchor" href="#arg-digits"></a></dt>
 <dd><p>Rounding for <code>p_na</code>.</p></dd>
+
+
+<dt id="arg-subset">subset<a class="anchor" aria-label="anchor" href="#arg-subset"></a></dt>
+<dd><p>Which rows to use, before anything else: a logical vector
+(one value per row; <code>NA</code> is left out), row positions, named patterns
+(<code>c(site = "^north")</code>), or <code><a href="ilm_sample.html">ilm_sample()</a></code>. See <a href="ilm_selection.html">ilm_selection</a>. Results
+keep the data's own row numbers.</p></dd>
+
+
+<dt id="arg-subset-negate">subset_negate<a class="anchor" aria-label="anchor" href="#arg-subset-negate"></a></dt>
+<dd><p>If <code>TRUE</code>, the rows <code>subset</code> would not take: the other
+rows, or the rows not sampled (a holdout). With a logical <code>subset</code>, rows
+where it is <code>NA</code> stay out either way.</p></dd>
+
+
+<dt id="arg-subset-fixed">subset_fixed<a class="anchor" aria-label="anchor" href="#arg-subset-fixed"></a></dt>
+<dd><p>If <code>TRUE</code>, <code>subset</code>'s patterns are matched literally,
+as substrings. It changes nothing for a logical, positions or a sample.</p></dd>
 
 </dl></div>
     <div class="section level2">

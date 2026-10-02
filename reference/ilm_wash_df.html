@@ -129,6 +129,9 @@ janitor, and no letter is dropped: <code>"%"</code> becomes <code>percent</code>
 e with an accent becomes e, a sharp s ss, the oe ligature oe); letters of
 other scripts are kept as they are; a name starting with a digit gains an
 <code>x</code>; and a repeated name gains <code>_2</code>, <code>_3</code> and so on, as janitor numbers it.</p>
+<p>It washes the whole data frame, and takes no <code>subset</code> or <code>cols</code>: a column
+has one type, which retyping decides from all of its rows. To wash part of
+a data frame, choose it with <code><a href="ilm_subset.html">ilm_subset()</a></code> first.</p>
     </div>
 
     <div class="section level2">

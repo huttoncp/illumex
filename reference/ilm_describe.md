@@ -20,7 +20,10 @@ ilm_describe(
   rare_n = 5L,
   cap = 0.06,
   min_n = 20L,
-  smd = FALSE
+  smd = FALSE,
+  subset = NULL,
+  subset_negate = FALSE,
+  subset_fixed = FALSE
 )
 ```
 
@@ -90,6 +93,27 @@ ilm_describe(
   multivariate difference, which has no sign. A date is compared as a
   number. Each group's uses its non-missing values. The reference
   group's own row has none.
+
+- subset:
+
+  Which rows to use, before anything else: a logical vector (one value
+  per row; `NA` is left out), row positions, named patterns
+  (`c(site = "^north")`), or
+  [`ilm_sample()`](https://huttoncp.github.io/illumex/reference/ilm_sample.md).
+  See
+  [ilm_selection](https://huttoncp.github.io/illumex/reference/ilm_selection.md).
+  Results keep the data's own row numbers.
+
+- subset_negate:
+
+  If `TRUE`, the rows `subset` would not take: the other rows, or the
+  rows not sampled (a holdout). With a logical `subset`, rows where it
+  is `NA` stay out either way.
+
+- subset_fixed:
+
+  If `TRUE`, `subset`'s patterns are matched literally, as substrings.
+  It changes nothing for a logical, positions or a sample.
 
 ## Value
 

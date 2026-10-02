@@ -2,6 +2,91 @@
 
 ## illumex 0.0.8.9003
 
+- Choosing rows (items 277, 279 and 280). Every function that acts on a
+  data frame takes `subset`, applied first, before `cols`, `by` and
+  everything else: a logical vector (`NA` left out), row positions,
+  named patterns (`subset = c(site = "^north")`), or
+  [`ilm_sample()`](https://huttoncp.github.io/illumex/reference/ilm_sample.md).
+  `subset_negate = TRUE` takes the other rows – a holdout – and
+  `subset_fixed = TRUE` matches the patterns literally. Results name
+  rows by the data’s own row numbers, so they join back as they are. A
+  subset of an
+  [`ilm_anomaly()`](https://huttoncp.github.io/illumex/reference/ilm_anomaly.md)
+  result is an error: subset the data before
+  [`ilm_anomaly()`](https://huttoncp.github.io/illumex/reference/ilm_anomaly.md).
+  See
+  [`?ilm_selection`](https://huttoncp.github.io/illumex/reference/ilm_selection.md).
+- `ilm_sample(n, prop, by, seed, within, min)`, new, draws rows for
+  `subset`: `n` of them, or a share `prop`; with `by`, whole groups, so
+  a holdout never splits one; with `within`, rows inside every cluster,
+  every cluster kept – the remedy for data too large to fit (item 283).
+  The draw inside clusters is proportional, at least `min` rows from
+  each (all of a smaller one), and nested levels
+  (`within = c("school", "classroom")`) draw inside the finest; an id
+  repeated across a coarser level, or crossed groupings, are refused for
+  now. The result keeps the shares kept (the smallest, median and
+  largest) and what derives each row’s chance of being kept, which
+  [`ilm_subset()`](https://huttoncp.github.io/illumex/reference/ilm_subset.md)
+  carries as `attr(, "ilm_inclusion")`. Crossed factors are drawn by
+  factor (item 284): `by = c(rater = 0.3, item = 0.2)` draws a share (or
+  a count) of each factor’s levels on its own and keeps the rows whose
+  levels were all drawn; 1 or `"all"` keeps a factor whole. `within` is
+  for nested levels only, and points a crossed pair to `by`.
+  `report_by = c("rater", "item")` reports what a sample left of those
+  columns – levels and rows kept, and whether each pair is still
+  connected – on the result, with a warning (counts only) when a level
+  is left with fewer than 2 rows or a pair falls apart. A seed draws the
+  same rows every time and leaves your random stream as it was.
+- [`ilm_subset()`](https://huttoncp.github.io/illumex/reference/ilm_subset.md),
+  new, returns the rows and columns a function would use, rows first,
+  with the original row numbers as row names.
+- `cols_fixed = TRUE` matches a `cols` pattern literally, as a
+  substring; a column name still wins.
+- A result made from chosen rows or columns says so above what it prints
+  – `119 of 600 rows (subset)`, `481 of 600 rows (subset, negated)`,
+  `Columns: 5 of 8 (excluded: id, name, date)`, with more than eight
+  excluded names cut to “and N more” – and a plot says it in a message
+  when rows were left out.
+- [`ilm_cluster()`](https://huttoncp.github.io/illumex/reference/ilm_cluster.md)
+  takes `cols` and `subset`: on a data frame it reduces, or on
+  coordinates, `cols` chooses the columns before any reduction; on an
+  [`ilm_reduce()`](https://huttoncp.github.io/illumex/reference/ilm_reduce.md)
+  result, whose dimensions `ndim` chose, `cols` is an error.
+  [`ilm_cluster_na()`](https://huttoncp.github.io/illumex/reference/ilm_cluster_na.md)
+  takes `subset`.
+- Pre-release changes to arguments:
+  - [`ilm_copies()`](https://huttoncp.github.io/illumex/reference/ilm_copies.md)
+    and
+    [`ilm_dupes()`](https://huttoncp.github.io/illumex/reference/ilm_dupes.md)
+    take their key columns as `cols`, in every form and with
+    `cols_negate`, in place of `...`: `ilm_copies(d, "id")` still works;
+    `ilm_copies(d, "id", "date")` becomes
+    `ilm_copies(d, c("id", "date"))`.
+  - [`ilm_recode_errors()`](https://huttoncp.github.io/illumex/reference/ilm_recode_errors.md)’s
+    `rows` is renamed `subset`, and it takes `subset_negate`,
+    `subset_fixed`, `cols` in every form, `cols_negate` and `cols_fixed`
+    (a random sample is refused there). `keep_all = TRUE`, the default,
+    returns every row and column with the chosen cells recoded;
+    `keep_all = FALSE` returns only the chosen rows and columns.
+  - [`ilm_check_missing()`](https://huttoncp.github.io/illumex/reference/ilm_check_missing.md)’s
+    `covariates` takes every form of `cols`, with `covariates_negate`
+    and `covariates_fixed`.
+- [`ilm_copies()`](https://huttoncp.github.io/illumex/reference/ilm_copies.md)
+  and
+  [`ilm_dupes()`](https://huttoncp.github.io/illumex/reference/ilm_dupes.md)
+  return rows with the data’s own row numbers (or names) as row names,
+  where they were numbered afresh, so the rows found join back onto the
+  data.
+- `ilm_reduce(method = "glrm")`’s `ind_coord` starts with `row_id`, as
+  its help says and as the other routes give it; it had only the
+  dimensions.
+- [`ilm_wash_df()`](https://huttoncp.github.io/illumex/reference/ilm_wash_df.md)
+  takes neither `subset` nor `cols`, and its help says to choose the
+  part to wash with
+  [`ilm_subset()`](https://huttoncp.github.io/illumex/reference/ilm_subset.md)
+  first.
+- Every `ilm_plot_*()` that passes `...` to tinyplot now has its own
+  `subset`, which takes the place of tinyplot’s.
 - [`ilm_describe_all()`](https://huttoncp.github.io/illumex/reference/ilm_describe_all.md),
   [`ilm_describe_na_all()`](https://huttoncp.github.io/illumex/reference/ilm_describe_na_all.md),
   [`ilm_counts_all()`](https://huttoncp.github.io/illumex/reference/ilm_counts_all.md),

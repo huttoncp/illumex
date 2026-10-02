@@ -56,7 +56,12 @@ missingness is related to – then says what that implies for the analysis.</p>
 <span>  min_effect <span class="op">=</span> <span class="fl">0.1</span>,</span>
 <span>  alpha <span class="op">=</span> <span class="fl">0.05</span>,</span>
 <span>  adjust <span class="op">=</span> <span class="st">"holm"</span>,</span>
-<span>  verbose <span class="op">=</span> <span class="cn">TRUE</span></span>
+<span>  verbose <span class="op">=</span> <span class="cn">TRUE</span>,</span>
+<span>  covariates_negate <span class="op">=</span> <span class="cn">FALSE</span>,</span>
+<span>  covariates_fixed <span class="op">=</span> <span class="cn">FALSE</span>,</span>
+<span>  subset <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  subset_negate <span class="op">=</span> <span class="cn">FALSE</span>,</span>
+<span>  subset_fixed <span class="op">=</span> <span class="cn">FALSE</span></span>
 <span><span class="op">)</span></span></code></pre></div>
     </div>
 
@@ -79,7 +84,8 @@ right-hand side as <code>covariates</code>.</p></dd>
 <dt id="arg-covariates">covariates<a class="anchor" aria-label="anchor" href="#arg-covariates"></a></dt>
 <dd><p>Variables to hold fixed when asking whether missingness
 depends on the outcome. Default is every other column; pass the model's
-predictors when they are a subset.</p></dd>
+predictors when they are a subset. Names, a pattern or a predicate, as
+<code>cols</code> takes them (<a href="ilm_selection.html">ilm_selection</a>).</p></dd>
 
 
 <dt id="arg-min-effect">min_effect<a class="anchor" aria-label="anchor" href="#arg-min-effect"></a></dt>
@@ -99,6 +105,30 @@ significant and means nothing.</p></dd>
 
 <dt id="arg-verbose">verbose<a class="anchor" aria-label="anchor" href="#arg-verbose"></a></dt>
 <dd><p>Narrate the findings.</p></dd>
+
+
+<dt id="arg-covariates-negate-covariates-fixed">covariates_negate, covariates_fixed<a class="anchor" aria-label="anchor" href="#arg-covariates-negate-covariates-fixed"></a></dt>
+<dd><p>As <code>cols_negate</code> and
+<code>cols_fixed</code>, for <code>covariates</code>: <code>covariates_negate = TRUE</code> holds fixed
+every column but those named (and <code>y</code>).</p></dd>
+
+
+<dt id="arg-subset">subset<a class="anchor" aria-label="anchor" href="#arg-subset"></a></dt>
+<dd><p>Which rows to use, before anything else: a logical vector
+(one value per row; <code>NA</code> is left out), row positions, named patterns
+(<code>c(site = "^north")</code>), or <code><a href="ilm_sample.html">ilm_sample()</a></code>. See <a href="ilm_selection.html">ilm_selection</a>. Results
+keep the data's own row numbers.</p></dd>
+
+
+<dt id="arg-subset-negate">subset_negate<a class="anchor" aria-label="anchor" href="#arg-subset-negate"></a></dt>
+<dd><p>If <code>TRUE</code>, the rows <code>subset</code> would not take: the other
+rows, or the rows not sampled (a holdout). With a logical <code>subset</code>, rows
+where it is <code>NA</code> stay out either way.</p></dd>
+
+
+<dt id="arg-subset-fixed">subset_fixed<a class="anchor" aria-label="anchor" href="#arg-subset-fixed"></a></dt>
+<dd><p>If <code>TRUE</code>, <code>subset</code>'s patterns are matched literally,
+as substrings. It changes nothing for a logical, positions or a sample.</p></dd>
 
 </dl></div>
     <div class="section level2">

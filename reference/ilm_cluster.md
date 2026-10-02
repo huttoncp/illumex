@@ -24,7 +24,13 @@ ilm_cluster(
   small_cluster_frac = 0.05,
   ambiguous_threshold = 0.1,
   seed = NULL,
-  progress = NULL
+  progress = NULL,
+  cols = NULL,
+  cols_negate = FALSE,
+  cols_fixed = FALSE,
+  subset = NULL,
+  subset_negate = FALSE,
+  subset_fixed = FALSE
 )
 ```
 
@@ -35,7 +41,8 @@ ilm_cluster(
   An
   [`ilm_reduce()`](https://huttoncp.github.io/illumex/reference/ilm_reduce.md)
   result, or a numeric matrix or data frame of coordinates with one row
-  per observation.
+  per observation, or a data frame with non-numeric columns, which is
+  reduced first.
 
 - k:
 
@@ -92,6 +99,52 @@ ilm_cluster(
   appears when someone is watching and nothing is written in a script or
   a knitted document. See
   [ilm_progress_arg](https://huttoncp.github.io/illumex/reference/ilm_progress_arg.md).
+
+- cols:
+
+  Which columns to use, before any reduction: on a data frame that is
+  reduced here, the variables that go into the reduction; on a matrix or
+  data frame of coordinates, those coordinates. A reduction's dimensions
+  are chosen after it, with `ndim` in
+  [`ilm_reduce()`](https://huttoncp.github.io/illumex/reference/ilm_reduce.md),
+  so `cols` on an
+  [`ilm_reduce()`](https://huttoncp.github.io/illumex/reference/ilm_reduce.md)
+  result is an error. See
+  [ilm_selection](https://huttoncp.github.io/illumex/reference/ilm_selection.md).
+
+- cols_negate:
+
+  If `TRUE`, `cols` names the columns to leave out, and every other
+  eligible column is used; see
+  [ilm_selection](https://huttoncp.github.io/illumex/reference/ilm_selection.md).
+  It needs `cols`. A `by` argument is never negated.
+
+- cols_fixed:
+
+  If `TRUE`, a `cols` string read as a pattern is matched literally, as
+  a substring (as `grepl(fixed = TRUE)` does); a column name still wins.
+  It changes nothing when `cols` is names or a predicate.
+
+- subset:
+
+  Which rows to use, before anything else: a logical vector (one value
+  per row; `NA` is left out), row positions, named patterns
+  (`c(site = "^north")`), or
+  [`ilm_sample()`](https://huttoncp.github.io/illumex/reference/ilm_sample.md).
+  See
+  [ilm_selection](https://huttoncp.github.io/illumex/reference/ilm_selection.md).
+  Results keep the data's own row numbers.
+
+- subset_negate:
+
+  If `TRUE`, the rows `subset` would not take: the other rows, or the
+  rows not sampled (a holdout). With a logical `subset`, rows where it
+  is `NA` stay out either way.
+
+- subset_fixed:
+
+  If `TRUE`, `subset`'s patterns are matched literally, as substrings.
+  It changes nothing for a logical, positions or a sample.
 
 ## Value
 

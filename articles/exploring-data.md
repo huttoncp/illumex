@@ -489,11 +489,11 @@ Copies first, since every count after this depends on them:
 
 head(ilm_dupes(messy_cars), 4)
 #> 22 of 44 rows share their values with another row; ilm_copies(messy_cars, filter = "first") keeps one of each, leaving 32.
-#>   Miles per gallon # of cylinders DISP  hp    wt gear am notes n_copies
-#> 1             10.4              8  N/A 205 5.250    3  0    NA        2
-#> 2             10.4              8  N/A 205 5.250    3  0    NA        2
-#> 3             10.4              8  N/A 215 5.424    3  0    NA        3
-#> 4             10.4              8  N/A 215 5.424    3  0    NA        3
+#>    Miles per gallon # of cylinders DISP  hp    wt gear am notes n_copies
+#> 15             10.4              8  N/A 205 5.250    3  0    NA        2
+#> 39             10.4              8  N/A 205 5.250    3  0    NA        2
+#> 16             10.4              8  N/A 215 5.424    3  0    NA        3
+#> 34             10.4              8  N/A 215 5.424    3  0    NA        3
 ```
 
 The line above the table counts the rows involved, each copy and the row

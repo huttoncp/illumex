@@ -14,7 +14,12 @@ ilm_check_missing(
   min_effect = 0.1,
   alpha = 0.05,
   adjust = "holm",
-  verbose = TRUE
+  verbose = TRUE,
+  covariates_negate = FALSE,
+  covariates_fixed = FALSE,
+  subset = NULL,
+  subset_negate = FALSE,
+  subset_fixed = FALSE
 )
 ```
 
@@ -36,7 +41,9 @@ ilm_check_missing(
 
   Variables to hold fixed when asking whether missingness depends on the
   outcome. Default is every other column; pass the model's predictors
-  when they are a subset.
+  when they are a subset. Names, a pattern or a predicate, as `cols`
+  takes them
+  ([ilm_selection](https://huttoncp.github.io/illumex/reference/ilm_selection.md)).
 
 - min_effect:
 
@@ -56,6 +63,33 @@ ilm_check_missing(
 - verbose:
 
   Narrate the findings.
+
+- covariates_negate, covariates_fixed:
+
+  As `cols_negate` and `cols_fixed`, for `covariates`:
+  `covariates_negate = TRUE` holds fixed every column but those named
+  (and `y`).
+
+- subset:
+
+  Which rows to use, before anything else: a logical vector (one value
+  per row; `NA` is left out), row positions, named patterns
+  (`c(site = "^north")`), or
+  [`ilm_sample()`](https://huttoncp.github.io/illumex/reference/ilm_sample.md).
+  See
+  [ilm_selection](https://huttoncp.github.io/illumex/reference/ilm_selection.md).
+  Results keep the data's own row numbers.
+
+- subset_negate:
+
+  If `TRUE`, the rows `subset` would not take: the other rows, or the
+  rows not sampled (a holdout). With a logical `subset`, rows where it
+  is `NA` stay out either way.
+
+- subset_fixed:
+
+  If `TRUE`, `subset`'s patterns are matched literally, as substrings.
+  It changes nothing for a logical, positions or a sample.
 
 ## Value
 

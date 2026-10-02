@@ -55,7 +55,10 @@
 <span>  <span class="va">...</span>,</span>
 <span>  pch <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  facet <span class="op">=</span> <span class="cn">NULL</span>,</span>
-<span>  legend <span class="op">=</span> <span class="cn">NULL</span></span>
+<span>  legend <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  subset <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  subset_negate <span class="op">=</span> <span class="cn">FALSE</span>,</span>
+<span>  subset_fixed <span class="op">=</span> <span class="cn">FALSE</span></span>
 <span><span class="op">)</span></span></code></pre></div>
     </div>
 
@@ -104,6 +107,24 @@ string the way <code>by</code> is: <code>facet = "site"</code>.</p></dd>
 <dd><p>Passed to <code><a href="https://grantmcdermott.com/tinyplot/man/tinyplot.html" class="external-link">tinyplot::tinyplot()</a></code>, in any form it takes. With
 <code>by</code>, the legend is titled with the <code>by</code> column's name unless you
 give a title.</p></dd>
+
+
+<dt id="arg-subset">subset<a class="anchor" aria-label="anchor" href="#arg-subset"></a></dt>
+<dd><p>Which rows to use, before anything else: a logical vector
+(one value per row; <code>NA</code> is left out), row positions, named patterns
+(<code>c(site = "^north")</code>), or <code><a href="ilm_sample.html">ilm_sample()</a></code>. See <a href="ilm_selection.html">ilm_selection</a>. Results
+keep the data's own row numbers.</p></dd>
+
+
+<dt id="arg-subset-negate">subset_negate<a class="anchor" aria-label="anchor" href="#arg-subset-negate"></a></dt>
+<dd><p>If <code>TRUE</code>, the rows <code>subset</code> would not take: the other
+rows, or the rows not sampled (a holdout). With a logical <code>subset</code>, rows
+where it is <code>NA</code> stay out either way.</p></dd>
+
+
+<dt id="arg-subset-fixed">subset_fixed<a class="anchor" aria-label="anchor" href="#arg-subset-fixed"></a></dt>
+<dd><p>If <code>TRUE</code>, <code>subset</code>'s patterns are matched literally,
+as substrings. It changes nothing for a logical, positions or a sample.</p></dd>
 
 </dl></div>
     <div class="section level2">

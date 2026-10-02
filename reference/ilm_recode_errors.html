@@ -56,9 +56,14 @@ restricted to particular rows and columns.</p>
 <span>  <span class="va">data</span>,</span>
 <span>  <span class="va">errors</span>,</span>
 <span>  replacement <span class="op">=</span> <span class="cn">NA</span>,</span>
-<span>  rows <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  subset <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  cols <span class="op">=</span> <span class="cn">NULL</span>,</span>
-<span>  ind <span class="op">=</span> <span class="cn">NULL</span></span>
+<span>  ind <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  keep_all <span class="op">=</span> <span class="cn">TRUE</span>,</span>
+<span>  subset_negate <span class="op">=</span> <span class="cn">FALSE</span>,</span>
+<span>  subset_fixed <span class="op">=</span> <span class="cn">FALSE</span>,</span>
+<span>  cols_negate <span class="op">=</span> <span class="cn">FALSE</span>,</span>
+<span>  cols_fixed <span class="op">=</span> <span class="cn">FALSE</span></span>
 <span><span class="op">)</span></span></code></pre></div>
     </div>
 
@@ -78,33 +83,50 @@ restricted to particular rows and columns.</p>
 <dd><p>What to put in their place. <code>NA</code> by default.</p></dd>
 
 
-<dt id="arg-rows-cols">rows, cols<a class="anchor" aria-label="anchor" href="#arg-rows-cols"></a></dt>
-<dd><p>Restrict the replacement (data frame or matrix input):
-the cells recoded are those in these rows and columns. <code>cols</code> here takes
-column names or positions only – it addresses cells rather than choosing
-columns for an analysis, so the patterns, predicates and <code>cols_negate</code> of
-<a href="ilm_selection.html">ilm_selection</a> do not apply.</p></dd>
+<dt id="arg-subset-subset-negate-subset-fixed">subset, subset_negate, subset_fixed<a class="anchor" aria-label="anchor" href="#arg-subset-subset-negate-subset-fixed"></a></dt>
+<dd><p>The rows whose cells are recoded
+(data frame or matrix input): a logical vector, row positions or named
+patterns, as in <a href="ilm_selection.html">ilm_selection</a>. A random sample (<code><a href="ilm_sample.html">ilm_sample()</a></code>) makes
+no sense here and is refused.</p></dd>
+
+
+<dt id="arg-cols-cols-negate-cols-fixed">cols, cols_negate, cols_fixed<a class="anchor" aria-label="anchor" href="#arg-cols-cols-negate-cols-fixed"></a></dt>
+<dd><p>The columns whose cells are recoded
+(data frame or matrix input): names, positions, a pattern or a
+predicate, as in <a href="ilm_selection.html">ilm_selection</a>.</p></dd>
 
 
 <dt id="arg-ind">ind<a class="anchor" aria-label="anchor" href="#arg-ind"></a></dt>
 <dd><p>Restrict the replacement (vector input).</p></dd>
 
+
+<dt id="arg-keep-all">keep_all<a class="anchor" aria-label="anchor" href="#arg-keep-all"></a></dt>
+<dd><p><code>TRUE</code> (the default) returns every row and column, with
+only the chosen cells recoded; <code>FALSE</code> returns just the chosen rows and
+columns, recoded.</p></dd>
+
 </dl></div>
     <div class="section level2">
     <h2 id="value">Value<a class="anchor" aria-label="anchor" href="#value"></a></h2>
-    <p>An object of the same shape as <code>data</code>.</p>
+    <p>An object of the same shape as <code>data</code>, or with <code>keep_all = FALSE</code>
+the chosen rows and columns of it.</p>
     </div>
 
     <div class="section level2">
     <h2 id="ref-examples">Examples<a class="anchor" aria-label="anchor" href="#ref-examples"></a></h2>
     <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="fu">ilm_recode_errors</span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">1</span>, <span class="fl">2</span>, <span class="fl">999</span>, <span class="op">-</span><span class="fl">1</span><span class="op">)</span>, errors <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">999</span>, <span class="op">-</span><span class="fl">1</span><span class="op">)</span><span class="op">)</span></span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> [1]  1  2 NA NA</span>
-<span class="r-in"><span><span class="va">d</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/data.frame.html" class="external-link">data.frame</a></span><span class="op">(</span>x <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">1</span>, <span class="fl">999</span>, <span class="fl">3</span><span class="op">)</span>, y <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">999</span>, <span class="fl">2</span>, <span class="fl">3</span><span class="op">)</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="va">d</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/data.frame.html" class="external-link">data.frame</a></span><span class="op">(</span>x <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">1</span>, <span class="fl">999</span>, <span class="fl">3</span><span class="op">)</span>, y <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">999</span>, <span class="fl">2</span>, <span class="fl">3</span><span class="op">)</span>, site <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"a"</span>, <span class="st">"b"</span>, <span class="st">"a"</span><span class="op">)</span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="fu">ilm_recode_errors</span><span class="op">(</span><span class="va">d</span>, errors <span class="op">=</span> <span class="fl">999</span>, cols <span class="op">=</span> <span class="st">"x"</span><span class="op">)</span></span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>    x   y</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 1  1 999</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 2 NA   2</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 3  3   3</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>    x   y site</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 1  1 999    a</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 2 NA   2    b</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 3  3   3    a</span>
+<span class="r-in"><span><span class="co">## only at site a, and only there returned</span></span></span>
+<span class="r-in"><span><span class="fu">ilm_recode_errors</span><span class="op">(</span><span class="va">d</span>, errors <span class="op">=</span> <span class="fl">999</span>, subset <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span>site <span class="op">=</span> <span class="st">"^a$"</span><span class="op">)</span>, keep_all <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>   x  y site</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 1 1 NA    a</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 3 3  3    a</span>
 </code></pre></div>
     </div>
   </main><aside class="col-md-3"><nav id="toc" aria-label="Table of contents"><h2>On this page</h2>

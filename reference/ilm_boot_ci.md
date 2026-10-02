@@ -17,7 +17,10 @@ ilm_boot_ci(
   conf = 0.95,
   ci_type = "percentile",
   seed = NULL,
-  progress = NULL
+  progress = NULL,
+  subset = NULL,
+  subset_negate = FALSE,
+  subset_fixed = FALSE
 )
 ```
 
@@ -68,6 +71,27 @@ ilm_boot_ci(
   appears when someone is watching and nothing is written in a script or
   a knitted document. See
   [ilm_progress_arg](https://huttoncp.github.io/illumex/reference/ilm_progress_arg.md).
+
+- subset:
+
+  Which rows to use, before anything else: a logical vector (one value
+  per row; `NA` is left out), row positions, named patterns
+  (`c(site = "^north")`), or
+  [`ilm_sample()`](https://huttoncp.github.io/illumex/reference/ilm_sample.md).
+  See
+  [ilm_selection](https://huttoncp.github.io/illumex/reference/ilm_selection.md).
+  Results keep the data's own row numbers.
+
+- subset_negate:
+
+  If `TRUE`, the rows `subset` would not take: the other rows, or the
+  rows not sampled (a holdout). With a logical `subset`, rows where it
+  is `NA` stay out either way.
+
+- subset_fixed:
+
+  If `TRUE`, `subset`'s patterns are matched literally, as substrings.
+  It changes nothing for a logical, positions or a sample.
 
 ## Value
 

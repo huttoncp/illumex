@@ -484,11 +484,11 @@ that need cleaning, an empty column, and twelve copied rows.</p>
 <div class="sourceCode" id="cb29"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="fu"><a href="../reference/ilm_dupes.html">ilm_dupes</a></span><span class="op">(</span><span class="va">messy_cars</span><span class="op">)</span>, <span class="fl">4</span><span class="op">)</span></span>
 <span><span class="co">#&gt; 22 of 44 rows share their values with another row; ilm_copies(messy_cars, filter = "first") keeps one of each, leaving 32.</span></span>
-<span><span class="co">#&gt;   Miles per gallon # of cylinders DISP  hp    wt gear am notes n_copies</span></span>
-<span><span class="co">#&gt; 1             10.4              8  N/A 205 5.250    3  0    NA        2</span></span>
-<span><span class="co">#&gt; 2             10.4              8  N/A 205 5.250    3  0    NA        2</span></span>
-<span><span class="co">#&gt; 3             10.4              8  N/A 215 5.424    3  0    NA        3</span></span>
-<span><span class="co">#&gt; 4             10.4              8  N/A 215 5.424    3  0    NA        3</span></span></code></pre></div>
+<span><span class="co">#&gt;    Miles per gallon # of cylinders DISP  hp    wt gear am notes n_copies</span></span>
+<span><span class="co">#&gt; 15             10.4              8  N/A 205 5.250    3  0    NA        2</span></span>
+<span><span class="co">#&gt; 39             10.4              8  N/A 205 5.250    3  0    NA        2</span></span>
+<span><span class="co">#&gt; 16             10.4              8  N/A 215 5.424    3  0    NA        3</span></span>
+<span><span class="co">#&gt; 34             10.4              8  N/A 215 5.424    3  0    NA        3</span></span></code></pre></div>
 <p>The line above the table counts the rows involved, each copy and the
 row it copies, and gives the call that keeps one of each.</p>
 <p>Errors tend to sit at the two ends of a count, a typo among the
