@@ -23,6 +23,8 @@ data frame before any model sees it.
   : The most and least frequent values, side by side
 - [`ilm_counts_tb_all()`](https://huttoncp.github.io/illumex/reference/ilm_counts_tb_all.md)
   : Most and least frequent values for every column
+- [`ilm_describe_clusters()`](https://huttoncp.github.io/illumex/reference/ilm_describe_clusters.md)
+  : Describe data whose rows sit in clusters
 - [`ilm_dupes()`](https://huttoncp.github.io/illumex/reference/ilm_dupes.md)
   : Duplicated rows only
 
