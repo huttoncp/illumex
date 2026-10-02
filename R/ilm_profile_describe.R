@@ -273,7 +273,9 @@ ilm_join_and <- function(x, sep = "; ") {
 
 ## Each cluster's sentences: its size, the variables that set it apart in
 ## order of strength (or that nothing does), how many more do less strongly,
-## and what the clustering says about its members.
+## and what the clustering says about its members. A cluster ilm_cluster()
+## marks small opens by saying it is too small to describe reliably (Craig's
+## item 291); its figures are all still given.
 #' @keywords internal
 #' @noRd
 ilm_profile_sentences <- function(tab, cluster_res, top_n_vars, vtest_threshold) {
@@ -287,16 +289,17 @@ ilm_profile_sentences <- function(tab, cluster_res, top_n_vars, vtest_threshold)
     more <- length(setdiff(unique(tab$variable[r]), unique(tab$variable[shown])))
     si <- ct[ct$cluster == cc, , drop = FALSE]
     n_amb <- sum(ind$cluster == cc & ind$is_ambiguous)
-    c(sprintf("Cluster %d holds %s rows, %s of the data (%s).", cc, ilm_fmt_count(si$size),
+    small <- isTRUE(si$anomalous)
+    c(sprintf(if (small) "Cluster %d is too small to describe reliably: %s rows, %s of the data (%s)."
+              else "Cluster %d holds %s rows, %s of the data (%s).", cc, ilm_fmt_count(si$size),
               ilm_fmt_pct(si$pct / 100, 1L), as.character(si$stability)),
       if (!length(shown)) "Nothing sets it clearly apart from the rest."
       else paste0("What sets it apart: ", ilm_join_and(tab$description[shown]), "."),
       if (more > 0L)
         sprintf("Less strongly, %d more variable%s set%s it apart as well.", more,
                 if (more == 1L) "" else "s", if (more == 1L) "s" else ""),
-      if (isTRUE(si$anomalous))
-        sprintf("It is a small cluster, %s of the rows: possibly a real minority pattern, possibly a data problem, but worth looking at either way.",
-                ilm_fmt_pct(si$pct / 100, 1L)),
+      if (small)
+        "It could be a real minority pattern or a data problem, and is worth looking at either way.",
       ## "N of its members" is plural whatever N is; only the verb agrees
       if (n_amb > 0)
         sprintf("%d of its members sit%s close enough to another cluster to be uncertain.",

@@ -1,9 +1,20 @@
 # illumex 0.0.8.9003
 
+* A cluster that `ilm_cluster()` marks small opens its paragraph in a
+  profile by saying it is too small to describe reliably (item 291):
+  "Cluster 3 is too small to describe reliably: 2 rows, 1.3% of the data
+  (stable)." Its figures are all still given; the closing sentence keeps
+  that it could be a real minority pattern or a data problem.
 * `ilm_boot_diff()`'s `p_superiority` and `ilm_outliers()`'s `score` (and
   `ilm_outliers_all()`'s) are no longer rounded in the result (item 289):
   they keep their full value, and their prints round them, to 4 and 3
   decimals, by the shared rule. What prints is unchanged.
+* At k = 1, `ilm_cluster()` prints "No distinct clusters" (item 259): the
+  one-row table and its stability, which said nothing, give way to what the
+  rows are -- a continuum, when the gap statistic finds no grouping better
+  than one group, to describe with `ilm_describe_all()` or follow with
+  `ilm_reduce()`. `ilm_profile()` then has no cluster to describe, and says
+  no more.
 * `ilm_anomaly()` keeps its default scoring and checks its own residuals
   (item 282): when their tails are heavier than all but 2 of 40 reference
   datasets' (p <= 0.05), it warns that on such data the scan flags rows

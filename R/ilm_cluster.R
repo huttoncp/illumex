@@ -445,11 +445,31 @@ ilm_cluster_na <- function(x, ..., subset = NULL, subset_negate = FALSE, subset_
   out
 }
 
+## At k = 1 there is no grouping to tabulate (Craig's item 259): one
+## cluster of every row, stable by construction, says nothing. The print
+## says so, and points to what describes a continuum. One constant each.
+ILM_NO_CLUSTERS_GAP <- paste(
+  "No distinct clusters: the gap statistic finds no grouping better than one",
+  "group, so the %s rows form a continuum rather than groups. Describe them as",
+  "one group with ilm_describe_all(), or follow how they vary with ilm_reduce().")
+ILM_NO_CLUSTERS_GIVEN <- paste(
+  "No distinct clusters: with k = 1, as given, the %s rows are one group.",
+  "Describe them with ilm_describe_all().")
+
 #' @export
 print.ilm_cluster <- function(x, ...) {
   tag <- if (inherits(x, "ilm_cluster_na")) "ilm_cluster_na" else "ilm_cluster"
   cat(sprintf("<%s> method = %s, k = %d %s\n\n", tag, x$method, x$k,
               if (!is.null(x$gap)) "(chosen by gap statistic)" else "(as given)"))
+  if (identical(as.integer(x$k), 1L)) {
+    cat(ilm_wrap(sprintf(if (!is.null(x$gap)) ILM_NO_CLUSTERS_GAP else ILM_NO_CLUSTERS_GIVEN,
+                         ilm_fmt_count(sum(x$clusters$size))), 76L, "  "), "\n", sep = "")
+    nc <- x$kmeans_not_converged %||% 0L
+    if (nc > 0L)
+      cat(sprintf(ILM_KMEANS_NOT_CONVERGED, ilm_fmt_count(nc), ilm_fmt_count(x$kmeans_starts),
+                  ILM_KMEANS_ITER_MAX), "\n", sep = "")
+    return(invisible(x))
+  }
   cl <- x$clusters
   cat(sprintf("  %7s %6s %6s %8s %10s %7s\n", "cluster", "size", "pct",
               "jaccard", "stability", "sil"))

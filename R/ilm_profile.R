@@ -229,6 +229,9 @@ print.ilm_profile <- function(x, ...) {
   print(x$reduce)
   cat("\n")
   print(x$cluster)
+  ## no clusters, nothing to describe cluster by cluster (Craig's item 259):
+  ## the cluster print has said what the rows are
+  if (identical(as.integer(x$cluster$k), 1L)) return(invisible(x))
   cat("\n  what each cluster is\n")
   for (s in x$summary) cat(ilm_wrap(s, 76L, "    "), "\n\n")
   ## what the paragraphs leave out, said once rather than left to be wondered at

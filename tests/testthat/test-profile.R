@@ -116,7 +116,7 @@ test_that("a profile says how each cluster differs, in the variables' own units"
   p <- ilm_profile(mixed_df(), k = 3, B = 20, seed = 1)
   expect_s3_class(p, "ilm_profile")
   expect_length(p$summary, 3L)
-  expect_true(all(grepl("^Cluster [0-9] holds", p$summary)))
+  expect_true(all(grepl("^Cluster [0-9] (holds|is too small to describe reliably:)", p$summary)))
   ## what is named cleared both bars: the v-test and a size worth naming
   ch <- p$characterization
   named <- illumex:::ilm_profile_distinctive(ch, 1.96)
@@ -169,6 +169,29 @@ test_that("the missingness pipeline runs end to end and is type-checked", {
   expect_error(ilm_cluster_na(ilm_reduce(mtcars)), "must be an ilm_reduce_na")
   expect_error(ilm_reduce_na(mtcars), "at least 2 columns")
   expect_error(ilm_reduce_na("nope"), "must be a data frame")
+})
+
+test_that("a small cluster's paragraph opens by saying it is too small to describe reliably", {
+  skip_profile()
+  ## Craig's item 291: the figures stay, and the paragraph says first that
+  ## they rest on few rows
+  p <- suppressMessages(ilm_profile_na(airquality, k_max = 4, B = 10, seed = 1))
+  ct <- p$cluster$clusters
+  small <- ct$cluster[ct$anomalous]
+  expect_gt(length(small), 0L)
+  expect_lt(length(small), nrow(ct))
+  for (i in seq_len(nrow(ct))) {
+    s <- p$summary[[i]]
+    if (ct$anomalous[i]) {
+      expect_true(startsWith(s, sprintf("Cluster %d is too small to describe reliably: %d rows, ",
+                                        ct$cluster[i], ct$size[i])))
+      expect_match(s, "What sets it apart|Nothing sets it clearly apart")
+      expect_match(s, "a real minority pattern or a data problem", fixed = TRUE)
+    } else {
+      expect_true(startsWith(s, sprintf("Cluster %d holds %d rows, ", ct$cluster[i], ct$size[i])))
+      expect_no_match(s, "too small|minority pattern")
+    }
+  }
 })
 
 test_that("the profiling plots draw and check their input", {
