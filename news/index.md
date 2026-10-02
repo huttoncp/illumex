@@ -39,6 +39,13 @@
     a column’s name is not valid UTF-8, since no model can be built from
     it.
 
+- [`ilm_plot_var_pairs()`](https://huttoncp.github.io/illumex/reference/ilm_plot_var_pairs.md)
+  without `by` draws again. It failed on every such call with “formal
+  argument by matched by multiple actual arguments”:
+  [`tinyplot::tinypairs()`](https://grantmcdermott.com/tinyplot/man/tinyplot.data.frame.html)
+  keeps an explicit `by = NULL` from its call and adds its own, so `by`
+  is now passed only when there is one.
+
 - `ilm_reduce(method = "glrm")` keeps only the dimensions that carry
   variation (Craig’s item 265): a singular value of the centred low-rank
   product at or below `sqrt(.Machine$double.eps)` times the first, the
