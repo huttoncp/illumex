@@ -1,5 +1,10 @@
 # illumex 0.0.8.9003
 
+* A description by two variables compares, with `smd`, the second's groups
+  within each level of the first -- exposure within a modifier, controls
+  split by exposure -- and names a level of the second as the reference:
+  exposed against unexposed controls, never cases against controls. Only
+  `smd` changes; every other print is as before.
 * Choosing rows (items 277, 279 and 280). Every function that acts on a data
   frame takes `subset`, applied first, before `cols`, `by` and everything
   else: a logical vector (`NA` left out), row positions, named patterns
@@ -8,6 +13,21 @@
   patterns literally. Results name rows by the data's own row numbers, so
   they join back as they are. A subset of an `ilm_anomaly()` result is an
   error: subset the data before `ilm_anomaly()`. See `?ilm_selection`.
+* `ilm_describe_clusters()`, new, for data whose rows sit in clusters --
+  patients within sites, visits within people (item 121). It counts the
+  clusters and the rows in each, and describes each variable that is the
+  same on every row of a cluster once per cluster, where described over the
+  rows a large cluster would count many times over. The variables that vary
+  within clusters are named, for `ilm_describe_all()`. It takes `cols` and
+  `subset` as every function does.
+* A model is a fifth form of `subset`, for the rows it analysed (items 146
+  and 150): `ilm_describe_all(d, subset = fit)` describes the rows a fit from
+  illume's `ilm_model()` used, without the ones it dropped, and an
+  `ilm_dag_model()` the rows every adjustment set used. `subset_negate =
+  TRUE` gives the rows the model dropped, to check whether they differ. The
+  result prints `297 of 300 rows (analysed by the model)` and keeps copies of
+  what identifies each fit, to check against it with `identical()`. `data`
+  must be the data the model was fitted to.
 * `ilm_sample(n, prop, by, seed, within, min)`, new, draws rows for
   `subset`: `n` of them, or a share `prop`; with `by`, whole groups, so a
   holdout never splits one; with `within`, rows inside every cluster, every

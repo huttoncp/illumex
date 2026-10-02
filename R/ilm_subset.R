@@ -2,8 +2,9 @@
 ## Choosing rows (items 277 and 279).
 ##
 ## `subset` is dplyr::filter() before the call, as an ordinary value: a
-## logical vector, row positions, named patterns, or a random sample from
-## ilm_sample(). It runs first, before `cols`, `by` and everything else, and
+## logical vector, row positions, named patterns, a random sample from
+## ilm_sample(), or a model, for the rows it analysed (R/ilm_subset_model.R).
+## It runs first, before `cols`, `by` and everything else, and
 ## `subset_negate` takes the rows it would not. The rows kept keep their
 ## original numbers wherever a result names a row, since those are the
 ## numbers a user joins back on.
@@ -234,6 +235,11 @@ ilm_resolve_rows <- function(data, subset, negate = FALSE, fixed = FALSE,
     incl <- s$inclusion
     info$form <- "sample"
     info$sample <- s$sample
+  } else if (inherits(subset, c("ilm_model", "ilm_dag_model"))) {
+    m <- ilm_model_rows(subset, data)
+    keep <- m$keep
+    info$form <- "model"
+    info$model <- m$model
   } else if (is.logical(subset)) {
     if (length(subset) != N)
       stop("a logical `subset` needs one value per row: it has ", length(subset),
@@ -280,8 +286,9 @@ ilm_resolve_rows <- function(data, subset, negate = FALSE, fixed = FALSE,
     info$form <- "patterns"
     info$patterns <- as.list(subset)
   } else {
-    stop("`subset` must be a logical vector, row positions, named patterns or ",
-         "ilm_sample(); it is ", class(subset)[1], call. = FALSE)
+    stop("`subset` must be a logical vector, row positions, named patterns, ",
+         "ilm_sample(), or a model from illume's ilm_model() or ilm_dag_model(); it is ",
+         class(subset)[1], call. = FALSE)
   }
   if (negate) keep <- !keep
   rows <- which(keep)
@@ -297,7 +304,7 @@ ilm_resolve_rows <- function(data, subset, negate = FALSE, fixed = FALSE,
   info$n_rows_kept <- length(rows)
   list(rows = rows, inclusion = inclusion,
        info = info[c("form", "negate", "n_rows_given", "n_rows_kept",
-                     intersect(c("patterns", "sample"), names(info)))])
+                     intersect(c("patterns", "sample", "model"), names(info)))])
 }
 
 ## the rows an ilm_sample() draws, an account of the draw (its size, its
@@ -465,6 +472,8 @@ ilm_within_clusters <- function(data, within) {
 ilm_subset_describe <- function(subset, info) {
   base <- switch(info$form,
     sample = "the sample drawn",
+    model = if (identical(info$model$scope, "sets")) "the rows every adjustment set analysed"
+            else "the rows the model analysed",
     logical = "a condition true on no row",
     positions = paste0("positions ", paste(utils::head(subset, 5), collapse = ", "),
                        if (length(subset) > 5) ", ..."),
@@ -502,8 +511,10 @@ ilm_select_lines <- function(sel) {
   if (is.null(sel)) return(character())
   s <- sel$subset; c_ <- sel$selection
   rows <- if (!is.null(s))
-    sprintf("%s of %s rows (subset%s)", format(s$n_rows_kept, big.mark = ","),
-            format(s$n_rows_given, big.mark = ","), if (isTRUE(s$negate)) ", negated" else "")
+    sprintf("%s of %s rows (%s)", format(s$n_rows_kept, big.mark = ","),
+            format(s$n_rows_given, big.mark = ","),
+            if (identical(s$form, "model")) ilm_model_rows_words(s)
+            else paste0("subset", if (isTRUE(s$negate)) ", negated" else ""))
   cols <- if (!is.null(c_)) {
     ex <- unlist(c_$columns_excluded)
     shown <- utils::head(ex, 8L)

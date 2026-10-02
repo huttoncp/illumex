@@ -452,7 +452,10 @@ ILM_CLASSES <- c("numeric", "categorical", "logical", "time")
 #'   `data` is taken as the thing to describe: a bare vector, or a data frame
 #'   whose columns are all of one kind. For a frame of mixed kinds use
 #'   [ilm_describe_all()], which returns one table per kind.
-#' @param by Optional character vector of grouping columns.
+#' @param by Optional character vector of grouping columns. With two, the
+#'   second's groups are read within each level of the first -- exposure
+#'   within a modifier, controls split by exposure: each row is one
+#'   combination, and `smd` compares within each level of the first.
 #' @param digits Rounding for numeric columns, quantiles included.
 #' @param gauss One of `"index"` (the 0-1 agreement index), `"ks_d"` (the raw
 #'   Kolmogorov distance behind it), `"both"`, or `"none"`.
@@ -476,7 +479,11 @@ ILM_CLASSES <- c("numeric", "categorical", "logical", "time")
 #'   the square root of the average of their p(1 - p); a category of more
 #'   than two levels, Yang and Dalton's (2012) multivariate difference, which
 #'   has no sign. A date is compared as a number. Each group's uses its
-#'   non-missing values. The reference group's own row has none.
+#'   non-missing values. The reference group's own row has none. With two
+#'   `by` variables, each combination is compared with the reference level of
+#'   the second variable within the same level of the first, so `smd` names a
+#'   level of the second ("unexposed", say): exposed against unexposed
+#'   controls, never cases against controls.
 #' @return A one-row data frame, or one row per group when `by` is used.
 #' @references
 #' Austin, P. C. (2009). Balance diagnostics for comparing the distribution of
@@ -583,13 +590,56 @@ ilm_describe <- function(data, y = NULL, by = NULL, digits = 3,
   res <- cbind(setNames(data.frame(names(parts), stringsAsFactors = FALSE),
                         paste(by, collapse = ".")),
                do.call(rbind, parts), stringsAsFactors = FALSE)
-  ## each group against the reference (R/ilm_smd.R); a date as a number
-  ref <- if (!isFALSE(smd)) ilm_smd_reference(smd, names(parts))
-  if (!is.null(ref)) {
-    s <- ilm_smd(if (ilm_is_time(x)) ilm_time_number(x) else x, g, ref)
+  ## By two variables, the second's groups sit within each level of the
+  ## first (exposure within a modifier, controls split by exposure), and a
+  ## standardised difference compares the second's groups within one level
+  ## of the first (ilm_describe_two())
+  two <- if (length(by) == 2L) ilm_describe_two(data, by, g)
+  xs <- if (ilm_is_time(x)) ilm_time_number(x) else x
+  if (!isFALSE(smd)) {
+    if (is.null(two)) {
+      ## each group against the reference (R/ilm_smd.R); a date as a number
+      ref <- ilm_smd_reference(smd, names(parts))
+      s <- ilm_smd(xs, g, ref)
+    } else {
+      ref <- ilm_smd_reference(smd, two$second_levels)
+      s <- ilm_smd_within(xs, two, ref)
+    }
     res$smd <- as.numeric(s[names(parts)])
   }
   fin(ilm_describe_result(res, "ilm_describe", y, by, digits))
+}
+
+## By two variables: each combination's two levels, by the label
+## interaction() gave it, the first variable's levels as a factor, and the
+## second's levels in order
+#' @keywords internal
+#' @noRd
+ilm_describe_two <- function(data, by, g) {
+  first <- factor(data[[by[1L]]])
+  second <- as.character(data[[by[2L]]])
+  lab <- as.character(g)
+  ok <- !is.na(lab)
+  pair <- unique(data.frame(lab = lab[ok], a = as.character(first)[ok], b = second[ok],
+                            stringsAsFactors = FALSE))
+  list(first = first, second = second,
+       second_levels = levels(factor(data[[by[2L]]])), pair = pair)
+}
+
+## each combination's standardised difference from the reference level of
+## the second variable within the same level of the first; NA where that
+## level has no reference group
+#' @keywords internal
+#' @noRd
+ilm_smd_within <- function(v, two, ref) {
+  out <- stats::setNames(rep(NA_real_, nrow(two$pair)), two$pair$lab)
+  for (l in levels(two$first)) {
+    i <- which(two$first == l)
+    s <- ilm_smd(v[i], two$second[i], ref)
+    p <- two$pair[two$pair$a == l, , drop = FALSE]
+    out[p$lab] <- unname(s[p$b])
+  }
+  out
 }
 
 ## `smd` is FALSE, TRUE or one group's name, and compares groups, so it

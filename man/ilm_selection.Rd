@@ -52,18 +52,27 @@ its own always means a position.
 \item \strong{Named patterns}, one per column: \code{subset = c(site = "^north", arm = "drug")} keeps the rows where every named column matches; a missing
 value matches nothing. \code{subset_fixed = TRUE} matches them literally.
 \item A \strong{random sample}, \code{\link[=ilm_sample]{ilm_sample()}}: \code{subset = ilm_sample(prop = 0.2, seed = 1)}, or whole groups with \code{by}.
+\item A \strong{model}, for the rows it analysed: a fit from illume's \code{ilm_model()},
+whose dropped rows are left out, or an \code{ilm_dag_model()}, whose
+adjustment sets can drop different rows, for the rows every set used.
+\code{data} must be the data the model was fitted to. A table of
+characteristics beside the model's estimates describes these rows:
+\code{ilm_describe_all(d, subset = fit)}.
 }
 
 \code{subset_negate = TRUE} takes the rows \code{subset} would not: the other rows,
-or the rows not sampled, a holdout. For a logical \code{subset}, rows where it
+the rows not sampled (a holdout), or the rows a model dropped -- the check
+on whether they differ from the rows it analysed. For a logical \code{subset}, rows where it
 is \code{NA} stay out either way. A subset that keeps no row is an error saying
 what it was. Results name rows by the data's own row numbers, never by
 their place in the subset, so they join back onto the data as they are.
 \code{\link[=ilm_subset]{ilm_subset()}} returns the rows and columns themselves.
 
 A result made from a subset, or from a choice of columns, says so above
-what it prints -- \verb{119 of 600 rows (subset)} and \verb{Columns: 5 of 8 (excluded: id, name, date)} -- and keeps what was chosen in its attribute
-\code{"ilm_select"}. A plot says the same in a message.
+what it prints -- \verb{119 of 600 rows (subset)}, \verb{297 of 300 rows (analysed by the model)} and \verb{Columns: 5 of 8 (excluded: id, name, date)} -- and
+keeps what was chosen in its attribute \code{"ilm_select"}, with, for a model,
+copies of what identifies each fit (formula, rows given, rows dropped and
+any subset), to check against it with \code{identical()}. A plot says the same in a message.
 
 A \code{by} argument takes column names. \code{\link[=ilm_outliers_all]{ilm_outliers_all()}}'s \code{by} also takes
 a pattern or a predicate, as \code{cols} does; elsewhere a pattern or a function
