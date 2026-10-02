@@ -7,7 +7,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">illumex</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.0.8.9002</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.0.8.9003</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -39,6 +39,13 @@
       <small>Source: <a href="https://github.com/huttoncp/illumex/blob/main/NEWS.md" class="external-link"><code>NEWS.md</code></a></small>
     </div>
 
+    <div class="section level2">
+<h2 class="pkg-version" data-toc-text="0.0.8.9003" id="illumex-0089003">illumex 0.0.8.9003<a class="anchor" aria-label="anchor" href="#illumex-0089003"></a></h2>
+<ul><li>Numbers are written in full with at most 15 figures before the point and, below 1, at most 6 decimals, after rounding, and in R’s scientific notation beyond, so sentences and reports match R’s printed tables (item 290): “1.23e+300”, “1.00e-05”, “5.05e-08”, with the exponent’s sign and at least two digits. To 3 figures, 0.0001 is “0.000100” and 0.00001 is “1.00e-05”; the decimals are counted with the zeros at the end kept, so dropping them does not move the switch. A value shown to significant figures keeps them in the mantissa (“1.00e+15”). One shown to fixed decimals keeps its declared decimals however small (0.0000001 to 8 decimals is “0.00000010”), and goes scientific only from 1e15, at 7 figures, as R prints it (“1.234568e+20”). p-values, clock times and ordinals are unchanged.</li>
+<li>A value just below a power of ten whose 15 figures are all nines keeps them: 999,999,999,999,999 was shown as 1,000,000,000,000,000 when asked for 15 figures, because <code><a href="https://rdrr.io/r/base/Log.html" class="external-link">log10()</a></code> of it is 15.</li>
+<li>The shared display rules take a group of numbers read together – an estimate with its interval, a list of predicted values – and write every value at the group’s decimals (item 306): none when every value is whole; otherwise enough for 3 figures at the group’s median size, and for its smallest value to show a figure, at most 6. A value that needs more than 6 decimals to show a figure, or is 1e15 or more, is written in scientific notation at 3 figures and sets nothing, so it does not drag the others to 6 decimals: 1.25, 0.00000004 and 3.5 read “1.25”, “4.00e-08” and “3.50”. So 12.3456, 0.5 and 250.75 read “12.3”, “0.5” and “250.8”, and -0.034, 0.0125 and -0.5 read “-0.0340”, “0.0125” and “-0.5000”.</li>
+<li>The development version moves to 0.0.8.9003, so that a package needing the scientific notation and the group decimals of the shared display rules can require them.</li>
+</ul></div>
     <div class="section level2">
 <h2 class="pkg-version" data-toc-text="0.0.8.9002" id="illumex-0089002">illumex 0.0.8.9002<a class="anchor" aria-label="anchor" href="#illumex-0089002"></a></h2>
 <ul><li>The display rules every printed number follows live in <code>R/shared-helpers.R</code>, the same byte for byte in illume, with the helpers the packages already shared (<code>ilm_wrap()</code>, <code>ilm_and()</code>, the progress bar, the random-stream restore and the plotting-symbol names), so they cannot drift apart. Their hand-written cases are in <code>tests/testthat/fixtures/format_cases.csv</code>. Numbers round half away from zero, after clearing floating-point noise, where R’s own rounding took a tie to even: a profile’s paragraph showed 109 of 400 rows as 27.2%, now 27.3%. A duration’s quartiles are printed by the same rule as a number’s (“1,230 days”, not “1230 days”).</li>
