@@ -6,7 +6,14 @@ looking at.
 ## Usage
 
 ``` r
-ilm_describe_na_all(data, by = NULL, digits = 4, sort = TRUE)
+ilm_describe_na_all(
+  data,
+  by = NULL,
+  cols = NULL,
+  digits = 4,
+  sort = TRUE,
+  cols_negate = FALSE
+)
 ```
 
 ## Arguments
@@ -19,6 +26,14 @@ ilm_describe_na_all(data, by = NULL, digits = 4, sort = TRUE)
 
   Optional grouping columns.
 
+- cols:
+
+  Columns to describe. A character vector of names, a regular
+  expression, a predicate function such as `is.numeric`, or `NULL` for
+  all of them – see
+  [ilm_selection](https://huttoncp.github.io/illumex/reference/ilm_selection.md).
+  `by` columns are never among them.
+
 - digits:
 
   Rounding for `p_na`.
@@ -26,6 +41,13 @@ ilm_describe_na_all(data, by = NULL, digits = 4, sort = TRUE)
 - sort:
 
   Sort by proportion missing, descending.
+
+- cols_negate:
+
+  If `TRUE`, `cols` names the columns to leave out, and every other
+  eligible column is used; see
+  [ilm_selection](https://huttoncp.github.io/illumex/reference/ilm_selection.md).
+  It needs `cols`. A `by` argument is never negated.
 
 ## Value
 

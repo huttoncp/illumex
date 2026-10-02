@@ -11,6 +11,7 @@ different summaries are not forced into a common shape.
 ilm_describe_all(
   data,
   by = NULL,
+  cols = NULL,
   digits = 3,
   gauss = c("index", "ks_d", "both", "none"),
   probs = c(0, 0.5, 1),
@@ -21,7 +22,8 @@ ilm_describe_all(
   rare_n = 5L,
   cap = 0.06,
   min_n = 20L,
-  smd = FALSE
+  smd = FALSE,
+  cols_negate = FALSE
 )
 ```
 
@@ -34,6 +36,15 @@ ilm_describe_all(
 - by:
 
   Optional character vector of grouping columns.
+
+- cols:
+
+  Columns to describe. A character vector of names, a regular
+  expression, a predicate function such as `is.numeric`, or `NULL` for
+  all of them – see
+  [ilm_selection](https://huttoncp.github.io/illumex/reference/ilm_selection.md).
+  `by` columns are never among them, and the choice is made among the
+  columns `class` allows.
 
 - digits:
 
@@ -88,6 +99,13 @@ ilm_describe_all(
   multivariate difference, which has no sign. A date is compared as a
   number. Each group's uses its non-missing values. The reference
   group's own row has none.
+
+- cols_negate:
+
+  If `TRUE`, `cols` names the columns to leave out, and every other
+  eligible column is used; see
+  [ilm_selection](https://huttoncp.github.io/illumex/reference/ilm_selection.md).
+  It needs `cols`. A `by` argument is never negated.
 
 ## Value
 

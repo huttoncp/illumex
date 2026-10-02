@@ -55,11 +55,13 @@ variable with <code><a href="ilm_plot.html">ilm_plot()</a></code> when you need 
     <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">ilm_plot_all</span><span class="op">(</span></span>
 <span>  <span class="va">data</span>,</span>
 <span>  by <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  cols <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  class <span class="op">=</span> <span class="st">"all"</span>,</span>
 <span>  max_panels <span class="op">=</span> <span class="fl">12L</span>,</span>
 <span>  n_max <span class="op">=</span> <span class="fl">5000L</span>,</span>
 <span>  verdict <span class="op">=</span> <span class="cn">FALSE</span>,</span>
-<span>  <span class="va">...</span></span>
+<span>  <span class="va">...</span>,</span>
+<span>  cols_negate <span class="op">=</span> <span class="cn">FALSE</span></span>
 <span><span class="op">)</span></span></code></pre></div>
     </div>
 
@@ -73,6 +75,13 @@ variable with <code><a href="ilm_plot.html">ilm_plot()</a></code> when you need 
 
 <dt id="arg-by">by<a class="anchor" aria-label="anchor" href="#arg-by"></a></dt>
 <dd><p>Optional grouping variable, drawn as colour with a legend.</p></dd>
+
+
+<dt id="arg-cols">cols<a class="anchor" aria-label="anchor" href="#arg-cols"></a></dt>
+<dd><p>Columns to plot. A character vector of names, a regular
+expression, a predicate function such as <code>is.numeric</code>, or <code>NULL</code> for all
+of them – see <a href="ilm_selection.html">ilm_selection</a>. <code>by</code> columns are never among them, and the choice is made
+among the columns <code>class</code> allows.</p></dd>
 
 
 <dt id="arg-class">class<a class="anchor" aria-label="anchor" href="#arg-class"></a></dt>
@@ -94,6 +103,12 @@ variable with <code><a href="ilm_plot.html">ilm_plot()</a></code> when you need 
 
 <dt id="arg--">...<a class="anchor" aria-label="anchor" href="#arg--"></a></dt>
 <dd><p>Passed to <code><a href="https://grantmcdermott.com/tinyplot/man/tinyplot.html" class="external-link">tinyplot::tinyplot()</a></code>.</p></dd>
+
+
+<dt id="arg-cols-negate">cols_negate<a class="anchor" aria-label="anchor" href="#arg-cols-negate"></a></dt>
+<dd><p>If <code>TRUE</code>, <code>cols</code> names the columns to leave out, and every
+other eligible column is used; see <a href="ilm_selection.html">ilm_selection</a>. It needs <code>cols</code>. A
+<code>by</code> argument is never negated.</p></dd>
 
 </dl></div>
     <div class="section level2">

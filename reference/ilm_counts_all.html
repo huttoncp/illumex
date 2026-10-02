@@ -52,9 +52,11 @@ as character; the counts stay integer.</p>
     <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">ilm_counts_all</span><span class="op">(</span></span>
 <span>  <span class="va">data</span>,</span>
 <span>  by <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  cols <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  n <span class="op">=</span> <span class="st">"all"</span>,</span>
 <span>  order <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"d"</span>, <span class="st">"a"</span>, <span class="st">"i"</span><span class="op">)</span>,</span>
-<span>  na.rm <span class="op">=</span> <span class="cn">TRUE</span></span>
+<span>  na.rm <span class="op">=</span> <span class="cn">TRUE</span>,</span>
+<span>  cols_negate <span class="op">=</span> <span class="cn">FALSE</span></span>
 <span><span class="op">)</span></span></code></pre></div>
     </div>
 
@@ -70,6 +72,12 @@ as character; the counts stay integer.</p>
 <dd><p>Optional grouping columns.</p></dd>
 
 
+<dt id="arg-cols">cols<a class="anchor" aria-label="anchor" href="#arg-cols"></a></dt>
+<dd><p>Columns to count. A character vector of names, a regular
+expression, a predicate function such as <code>is.numeric</code>, or <code>NULL</code> for all
+of them – see <a href="ilm_selection.html">ilm_selection</a>. <code>by</code> columns are never among them.</p></dd>
+
+
 <dt id="arg-n">n<a class="anchor" aria-label="anchor" href="#arg-n"></a></dt>
 <dd><p>Number of rows to return, or <code>"all"</code>.</p></dd>
 
@@ -81,6 +89,12 @@ by the value itself (factor level order, not label order).</p></dd>
 
 <dt id="arg-na-rm">na.rm<a class="anchor" aria-label="anchor" href="#arg-na-rm"></a></dt>
 <dd><p>Drop missing values before counting.</p></dd>
+
+
+<dt id="arg-cols-negate">cols_negate<a class="anchor" aria-label="anchor" href="#arg-cols-negate"></a></dt>
+<dd><p>If <code>TRUE</code>, <code>cols</code> names the columns to leave out, and every
+other eligible column is used; see <a href="ilm_selection.html">ilm_selection</a>. It needs <code>cols</code>. A
+<code>by</code> argument is never negated.</p></dd>
 
 </dl></div>
     <div class="section level2">

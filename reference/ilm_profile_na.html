@@ -61,7 +61,8 @@ missingness sets it apart – &quot;income is missing for 92% of them, against
 <span>  ndim <span class="op">=</span> <span class="fl">5</span>,</span>
 <span>  <span class="va">...</span>,</span>
 <span>  vtest_threshold <span class="op">=</span> <span class="fl">1.96</span>,</span>
-<span>  top_n_vars <span class="op">=</span> <span class="fl">4</span></span>
+<span>  top_n_vars <span class="op">=</span> <span class="fl">4</span>,</span>
+<span>  cols_negate <span class="op">=</span> <span class="cn">FALSE</span></span>
 <span><span class="op">)</span></span></code></pre></div>
     </div>
 
@@ -94,6 +95,12 @@ cluster's description; see <code><a href="ilm_profile.html">ilm_profile()</a></c
 
 <dt id="arg-top-n-vars">top_n_vars<a class="anchor" aria-label="anchor" href="#arg-top-n-vars"></a></dt>
 <dd><p>Most columns to name for one cluster.</p></dd>
+
+
+<dt id="arg-cols-negate">cols_negate<a class="anchor" aria-label="anchor" href="#arg-cols-negate"></a></dt>
+<dd><p>If <code>TRUE</code>, <code>cols</code> names the columns to leave out, and every
+other eligible column is used; see <a href="ilm_selection.html">ilm_selection</a>. It needs <code>cols</code>. A
+<code>by</code> argument is never negated.</p></dd>
 
 </dl></div>
     <div class="section level2">

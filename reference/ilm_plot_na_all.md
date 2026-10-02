@@ -8,7 +8,14 @@ then turns into advice.
 ## Usage
 
 ``` r
-ilm_plot_na_all(data, by = NULL, stat = c("p_na", "na", "n"), ...)
+ilm_plot_na_all(
+  data,
+  by = NULL,
+  cols = NULL,
+  stat = c("p_na", "na", "n"),
+  ...,
+  cols_negate = FALSE
+)
 ```
 
 ## Arguments
@@ -23,6 +30,14 @@ ilm_plot_na_all(data, by = NULL, stat = c("p_na", "na", "n"), ...)
   per group, which is how you see whether missingness is concentrated
   somewhere.
 
+- cols:
+
+  Columns to plot. A character vector of names, a regular expression, a
+  predicate function such as `is.numeric`, or `NULL` for all of them –
+  see
+  [ilm_selection](https://huttoncp.github.io/illumex/reference/ilm_selection.md).
+  `by` columns are never among them.
+
 - stat:
 
   `"p_na"` (proportion missing), `"na"` (count missing) or `"n"` (count
@@ -32,6 +47,13 @@ ilm_plot_na_all(data, by = NULL, stat = c("p_na", "na", "n"), ...)
 
   Passed to
   [`tinyplot::tinyplot()`](https://grantmcdermott.com/tinyplot/man/tinyplot.html).
+
+- cols_negate:
+
+  If `TRUE`, `cols` names the columns to leave out, and every other
+  eligible column is used; see
+  [ilm_selection](https://huttoncp.github.io/illumex/reference/ilm_selection.md).
+  It needs `cols`. A `by` argument is never negated.
 
 ## Value
 

@@ -79,7 +79,11 @@ restricted to particular rows and columns.</p>
 
 
 <dt id="arg-rows-cols">rows, cols<a class="anchor" aria-label="anchor" href="#arg-rows-cols"></a></dt>
-<dd><p>Restrict the replacement (data frame or matrix input).</p></dd>
+<dd><p>Restrict the replacement (data frame or matrix input):
+the cells recoded are those in these rows and columns. <code>cols</code> here takes
+column names or positions only – it addresses cells rather than choosing
+columns for an analysis, so the patterns, predicates and <code>cols_negate</code> of
+<a href="ilm_selection.html">ilm_selection</a> do not apply.</p></dd>
 
 
 <dt id="arg-ind">ind<a class="anchor" aria-label="anchor" href="#arg-ind"></a></dt>

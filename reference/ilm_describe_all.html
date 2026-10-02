@@ -52,6 +52,7 @@ columns with different summaries are not forced into a common shape.</p>
     <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">ilm_describe_all</span><span class="op">(</span></span>
 <span>  <span class="va">data</span>,</span>
 <span>  by <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  cols <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  digits <span class="op">=</span> <span class="fl">3</span>,</span>
 <span>  gauss <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"index"</span>, <span class="st">"ks_d"</span>, <span class="st">"both"</span>, <span class="st">"none"</span><span class="op">)</span>,</span>
 <span>  probs <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">0</span>, <span class="fl">0.5</span>, <span class="fl">1</span><span class="op">)</span>,</span>
@@ -62,7 +63,8 @@ columns with different summaries are not forced into a common shape.</p>
 <span>  rare_n <span class="op">=</span> <span class="fl">5L</span>,</span>
 <span>  cap <span class="op">=</span> <span class="fl">0.06</span>,</span>
 <span>  min_n <span class="op">=</span> <span class="fl">20L</span>,</span>
-<span>  smd <span class="op">=</span> <span class="cn">FALSE</span></span>
+<span>  smd <span class="op">=</span> <span class="cn">FALSE</span>,</span>
+<span>  cols_negate <span class="op">=</span> <span class="cn">FALSE</span></span>
 <span><span class="op">)</span></span></code></pre></div>
     </div>
 
@@ -76,6 +78,13 @@ columns with different summaries are not forced into a common shape.</p>
 
 <dt id="arg-by">by<a class="anchor" aria-label="anchor" href="#arg-by"></a></dt>
 <dd><p>Optional character vector of grouping columns.</p></dd>
+
+
+<dt id="arg-cols">cols<a class="anchor" aria-label="anchor" href="#arg-cols"></a></dt>
+<dd><p>Columns to describe. A character vector of names, a regular
+expression, a predicate function such as <code>is.numeric</code>, or <code>NULL</code> for all
+of them – see <a href="ilm_selection.html">ilm_selection</a>. <code>by</code> columns are never among them, and the choice is made
+among the columns <code>class</code> allows.</p></dd>
 
 
 <dt id="arg-digits">digits<a class="anchor" aria-label="anchor" href="#arg-digits"></a></dt>
@@ -129,6 +138,12 @@ the square root of the average of their p(1 - p); a category of more
 than two levels, Yang and Dalton's (2012) multivariate difference, which
 has no sign. A date is compared as a number. Each group's uses its
 non-missing values. The reference group's own row has none.</p></dd>
+
+
+<dt id="arg-cols-negate">cols_negate<a class="anchor" aria-label="anchor" href="#arg-cols-negate"></a></dt>
+<dd><p>If <code>TRUE</code>, <code>cols</code> names the columns to leave out, and every
+other eligible column is used; see <a href="ilm_selection.html">ilm_selection</a>. It needs <code>cols</code>. A
+<code>by</code> argument is never negated.</p></dd>
 
 </dl></div>
     <div class="section level2">

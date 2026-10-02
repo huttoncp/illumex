@@ -7,7 +7,7 @@ does.
 ## Usage
 
 ``` r
-ilm_plot_var_pairs(data, cols = NULL, by = NULL, ...)
+ilm_plot_var_pairs(data, cols = NULL, by = NULL, ..., cols_negate = FALSE)
 ```
 
 ## Arguments
@@ -33,6 +33,13 @@ ilm_plot_var_pairs(data, cols = NULL, by = NULL, ...)
   [`tinyplot::tinypairs()`](https://grantmcdermott.com/tinyplot/man/tinyplot.data.frame.html),
   which needs tinyplot 0.7.0 or later. On an earlier tinyplot this is
   the one plot in the package that cannot be drawn, and it says so.
+
+- cols_negate:
+
+  If `TRUE`, `cols` names the columns to leave out, and every other
+  eligible column is used; see
+  [ilm_selection](https://huttoncp.github.io/illumex/reference/ilm_selection.md).
+  It needs `cols`. A `by` argument is never negated.
 
 ## Value
 

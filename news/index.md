@@ -2,6 +2,39 @@
 
 ## illumex 0.0.8.9003
 
+- [`ilm_describe_all()`](https://huttoncp.github.io/illumex/reference/ilm_describe_all.md),
+  [`ilm_describe_na_all()`](https://huttoncp.github.io/illumex/reference/ilm_describe_na_all.md),
+  [`ilm_counts_all()`](https://huttoncp.github.io/illumex/reference/ilm_counts_all.md),
+  [`ilm_counts_tb_all()`](https://huttoncp.github.io/illumex/reference/ilm_counts_tb_all.md),
+  [`ilm_plot_all()`](https://huttoncp.github.io/illumex/reference/ilm_plot_all.md)
+  and
+  [`ilm_plot_na_all()`](https://huttoncp.github.io/illumex/reference/ilm_plot_na_all.md)
+  take `cols` and `cols_negate`, as
+  [`ilm_outliers_all()`](https://huttoncp.github.io/illumex/reference/ilm_outliers_all.md)
+  does (item 278). Where `class` already narrows the columns, `cols`
+  chooses among those. `cols` comes right after `by` (after `data` in
+  [`ilm_counts_tb_all()`](https://huttoncp.github.io/illumex/reference/ilm_counts_tb_all.md),
+  which has no `by`), so a call that passed the next argument by
+  position now needs its name: `ilm_describe_all(d, "grp", 2)` becomes
+  `ilm_describe_all(d, "grp", digits = 2)`.
+- Every function that takes `cols` takes `cols_negate`: with
+  `cols_negate = TRUE`, `cols` names the columns to leave out –
+  `cols = c("id", "site")`, `cols = "^score_"` or `cols = is.numeric` –
+  and every other column the function can use is used (item 276). `by`
+  is never negated. See
+  [`?ilm_selection`](https://huttoncp.github.io/illumex/reference/ilm_selection.md).
+- A `by` argument takes column names, as the help now says; only
+  [`ilm_outliers_all()`](https://huttoncp.github.io/illumex/reference/ilm_outliers_all.md)’s
+  also takes a pattern or a predicate. A pattern or a function given as
+  `by` elsewhere is one clear error (“`by` takes column names; ^grp is
+  not one”) rather than a message from deep inside the call.
+- [`ilm_reduce_na()`](https://huttoncp.github.io/illumex/reference/ilm_reduce_na.md),
+  [`ilm_profile_na()`](https://huttoncp.github.io/illumex/reference/ilm_profile_na.md),
+  [`ilm_plot_var_all()`](https://huttoncp.github.io/illumex/reference/ilm_plot_var_all.md)
+  and
+  [`ilm_plot_var_pairs()`](https://huttoncp.github.io/illumex/reference/ilm_plot_var_pairs.md)
+  take a pattern or a predicate as `cols`, as the help always said; they
+  took names only.
 - Numbers are written in full with at most 15 figures before the point
   and, below 1, at most 6 decimals, after rounding, and in R’s
   scientific notation beyond, so sentences and reports match R’s printed

@@ -14,7 +14,8 @@ ilm_plot_var_all(
   nrow = NULL,
   ncol = NULL,
   verbose = FALSE,
-  ...
+  ...,
+  cols_negate = FALSE
 )
 ```
 
@@ -50,6 +51,13 @@ ilm_plot_var_all(
 - ...:
 
   Passed to the underlying plot function.
+
+- cols_negate:
+
+  If `TRUE`, `cols` names the columns to leave out, and every other
+  eligible column is used; see
+  [ilm_selection](https://huttoncp.github.io/illumex/reference/ilm_selection.md).
+  It needs `cols`. A `by` argument is never negated.
 
 ## Value
 

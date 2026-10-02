@@ -20,7 +20,8 @@ ilm_anomaly(
   alpha = 0.05,
   seed = 1L,
   keep_data = TRUE,
-  progress = NULL
+  progress = NULL,
+  cols_negate = FALSE
 )
 ```
 
@@ -97,6 +98,13 @@ ilm_anomaly(
 
   Show a progress bar; see
   [ilm_progress_arg](https://huttoncp.github.io/illumex/reference/ilm_progress_arg.md).
+
+- cols_negate:
+
+  If `TRUE`, `cols` names the columns to leave out, and every other
+  eligible column is used; see
+  [ilm_selection](https://huttoncp.github.io/illumex/reference/ilm_selection.md).
+  It needs `cols`. A `by` argument is never negated.
 
 ## Value
 

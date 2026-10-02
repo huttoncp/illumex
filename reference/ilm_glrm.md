@@ -21,7 +21,8 @@ ilm_glrm(
   tol = 1e-07,
   seed = 1L,
   progress = NULL,
-  time = c("cycles", "elapsed", "drop")
+  time = c("cycles", "elapsed", "drop"),
+  cols_negate = FALSE
 )
 ```
 
@@ -104,6 +105,13 @@ ilm_glrm(
   only grows puts every Monday somewhere new – and skips the test, for
   very large data or when only order matters. `"drop"` leaves dates out.
   A duration (`difftime`) is used as its number of days.
+
+- cols_negate:
+
+  If `TRUE`, `cols` names the columns to leave out, and every other
+  eligible column is used; see
+  [ilm_selection](https://huttoncp.github.io/illumex/reference/ilm_selection.md).
+  It needs `cols`. A `by` argument is never negated.
 
 ## Value
 

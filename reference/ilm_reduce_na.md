@@ -12,7 +12,7 @@ skipped section from values that went missing independently.
 ## Usage
 
 ``` r
-ilm_reduce_na(data, cols = NULL, ndim = 5)
+ilm_reduce_na(data, cols = NULL, ndim = 5, cols_negate = FALSE)
 ```
 
 ## Arguments
@@ -31,6 +31,13 @@ ilm_reduce_na(data, cols = NULL, ndim = 5)
 - ndim:
 
   Number of dimensions to keep.
+
+- cols_negate:
+
+  If `TRUE`, `cols` names the columns to leave out, and every other
+  eligible column is used; see
+  [ilm_selection](https://huttoncp.github.io/illumex/reference/ilm_selection.md).
+  It needs `cols`. A `by` argument is never negated.
 
 ## Value
 

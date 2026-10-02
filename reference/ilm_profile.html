@@ -74,7 +74,8 @@ subgroups in a sample and learn what each of them is.</p>
 <span>  vtest_threshold <span class="op">=</span> <span class="fl">1.96</span>,</span>
 <span>  top_n_vars <span class="op">=</span> <span class="fl">4</span>,</span>
 <span>  var_contrib <span class="op">=</span> <span class="cn">TRUE</span>,</span>
-<span>  var_contrib_B <span class="op">=</span> <span class="fl">199L</span></span>
+<span>  var_contrib_B <span class="op">=</span> <span class="fl">199L</span>,</span>
+<span>  cols_negate <span class="op">=</span> <span class="cn">FALSE</span></span>
 <span><span class="op">)</span></span></code></pre></div>
     </div>
 
@@ -139,6 +140,12 @@ clustering takes; <code>var_contrib = FALSE</code> leaves it out.</p></dd>
 
 <dt id="arg-var-contrib-b">var_contrib_B<a class="anchor" aria-label="anchor" href="#arg-var-contrib-b"></a></dt>
 <dd><p>Permutations for that check.</p></dd>
+
+
+<dt id="arg-cols-negate">cols_negate<a class="anchor" aria-label="anchor" href="#arg-cols-negate"></a></dt>
+<dd><p>If <code>TRUE</code>, <code>cols</code> names the columns to leave out, and every
+other eligible column is used; see <a href="ilm_selection.html">ilm_selection</a>. It needs <code>cols</code>. A
+<code>by</code> argument is never negated.</p></dd>
 
 </dl></div>
     <div class="section level2">

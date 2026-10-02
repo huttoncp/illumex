@@ -19,7 +19,8 @@ ilm_profile_na(
   ndim = 5,
   ...,
   vtest_threshold = 1.96,
-  top_n_vars = 4
+  top_n_vars = 4,
+  cols_negate = FALSE
 )
 ```
 
@@ -54,6 +55,13 @@ ilm_profile_na(
 - top_n_vars:
 
   Most columns to name for one cluster.
+
+- cols_negate:
+
+  If `TRUE`, `cols` names the columns to leave out, and every other
+  eligible column is used; see
+  [ilm_selection](https://huttoncp.github.io/illumex/reference/ilm_selection.md).
+  It needs `cols`. A `by` argument is never negated.
 
 ## Value
 

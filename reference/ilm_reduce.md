@@ -17,7 +17,8 @@ ilm_reduce(
   ndim = 5,
   method = c("famd", "glrm", "pcamix"),
   time = c("cycles", "elapsed", "drop"),
-  ...
+  ...,
+  cols_negate = FALSE
 )
 ```
 
@@ -75,6 +76,13 @@ ilm_reduce(
   Passed to
   [`ilm_glrm()`](https://huttoncp.github.io/illumex/reference/ilm_glrm.md)
   when `method = "glrm"`.
+
+- cols_negate:
+
+  If `TRUE`, `cols` names the columns to leave out, and every other
+  eligible column is used; see
+  [ilm_selection](https://huttoncp.github.io/illumex/reference/ilm_selection.md).
+  It needs `cols`. A `by` argument is never negated.
 
 ## Value
 

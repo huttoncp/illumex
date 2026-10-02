@@ -56,7 +56,8 @@ and returns one row per flagged value with the row it came from.</p>
 <span>  method <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"iqr"</span>, <span class="st">"mad"</span>, <span class="st">"zscore"</span><span class="op">)</span>,</span>
 <span>  threshold <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  flagged_only <span class="op">=</span> <span class="cn">TRUE</span>,</span>
-<span>  na.rm <span class="op">=</span> <span class="cn">TRUE</span></span>
+<span>  na.rm <span class="op">=</span> <span class="cn">TRUE</span>,</span>
+<span>  cols_negate <span class="op">=</span> <span class="cn">FALSE</span></span>
 <span><span class="op">)</span></span></code></pre></div>
     </div>
 
@@ -80,7 +81,13 @@ regular expression, a predicate function such as <code>is.numeric</code>, or
 
 
 <dt id="arg-method">method<a class="anchor" aria-label="anchor" href="#arg-method"></a></dt>
-<dd><p><code>"iqr"</code>, <code>"mad"</code> or <code>"zscore"</code>.</p></dd>
+<dd><p><code>"famd"</code> (the default) for PCA, MCA or FAMD depending on
+the column types, in closed form; <code>"pcamix"</code>, its name from when
+PCAmixdata computed it, is still accepted and means the same. <code>"glrm"</code> fits a generalized low rank
+model instead, which uses a loss appropriate to each column's type rather
+than squared error on one-hot indicators, and reconstructs a category as a
+category. It costs an iterative fit, and on all-numeric data the two are
+the same model – see <code><a href="ilm_glrm.html">ilm_glrm()</a></code> for when it is worth that.</p></dd>
 
 
 <dt id="arg-threshold">threshold<a class="anchor" aria-label="anchor" href="#arg-threshold"></a></dt>
@@ -98,6 +105,12 @@ value's score.</p></dd>
 <dd><p>Compute the reference statistics with missing values removed.
 The result always has one row per element of <code>y</code>, with <code>NA</code> for <code>score</code>
 and <code>is_outlier</code> wherever <code>y</code> is <code>NA</code>.</p></dd>
+
+
+<dt id="arg-cols-negate">cols_negate<a class="anchor" aria-label="anchor" href="#arg-cols-negate"></a></dt>
+<dd><p>If <code>TRUE</code>, <code>cols</code> names the columns to leave out, and every
+other eligible column is used; see <a href="ilm_selection.html">ilm_selection</a>. It needs <code>cols</code>. A
+<code>by</code> argument is never negated.</p></dd>
 
 </dl></div>
     <div class="section level2">

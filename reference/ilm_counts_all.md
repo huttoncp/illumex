@@ -9,9 +9,11 @@ rendered as character; the counts stay integer.
 ilm_counts_all(
   data,
   by = NULL,
+  cols = NULL,
   n = "all",
   order = c("d", "a", "i"),
-  na.rm = TRUE
+  na.rm = TRUE,
+  cols_negate = FALSE
 )
 ```
 
@@ -25,6 +27,14 @@ ilm_counts_all(
 
   Optional grouping columns.
 
+- cols:
+
+  Columns to count. A character vector of names, a regular expression, a
+  predicate function such as `is.numeric`, or `NULL` for all of them –
+  see
+  [ilm_selection](https://huttoncp.github.io/illumex/reference/ilm_selection.md).
+  `by` columns are never among them.
+
 - n:
 
   Number of rows to return, or `"all"`.
@@ -37,6 +47,13 @@ ilm_counts_all(
 - na.rm:
 
   Drop missing values before counting.
+
+- cols_negate:
+
+  If `TRUE`, `cols` names the columns to leave out, and every other
+  eligible column is used; see
+  [ilm_selection](https://huttoncp.github.io/illumex/reference/ilm_selection.md).
+  It needs `cols`. A `by` argument is never negated.
 
 ## Value
 

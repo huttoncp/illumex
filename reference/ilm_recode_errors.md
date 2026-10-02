@@ -33,7 +33,13 @@ ilm_recode_errors(
 
 - rows, cols:
 
-  Restrict the replacement (data frame or matrix input).
+  Restrict the replacement (data frame or matrix input): the cells
+  recoded are those in these rows and columns. `cols` here takes column
+  names or positions only – it addresses cells rather than choosing
+  columns for an analysis, so the patterns, predicates and `cols_negate`
+  of
+  [ilm_selection](https://huttoncp.github.io/illumex/reference/ilm_selection.md)
+  do not apply.
 
 - ind:
 

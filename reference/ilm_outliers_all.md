@@ -15,7 +15,8 @@ ilm_outliers_all(
   method = c("iqr", "mad", "zscore"),
   threshold = NULL,
   flagged_only = TRUE,
-  na.rm = TRUE
+  na.rm = TRUE,
+  cols_negate = FALSE
 )
 ```
 
@@ -39,7 +40,15 @@ ilm_outliers_all(
 
 - method:
 
-  `"iqr"`, `"mad"` or `"zscore"`.
+  `"famd"` (the default) for PCA, MCA or FAMD depending on the column
+  types, in closed form; `"pcamix"`, its name from when PCAmixdata
+  computed it, is still accepted and means the same. `"glrm"` fits a
+  generalized low rank model instead, which uses a loss appropriate to
+  each column's type rather than squared error on one-hot indicators,
+  and reconstructs a category as a category. It costs an iterative fit,
+  and on all-numeric data the two are the same model – see
+  [`ilm_glrm()`](https://huttoncp.github.io/illumex/reference/ilm_glrm.md)
+  for when it is worth that.
 
 - threshold:
 
@@ -55,6 +64,13 @@ ilm_outliers_all(
   Compute the reference statistics with missing values removed. The
   result always has one row per element of `y`, with `NA` for `score`
   and `is_outlier` wherever `y` is `NA`.
+
+- cols_negate:
+
+  If `TRUE`, `cols` names the columns to leave out, and every other
+  eligible column is used; see
+  [ilm_selection](https://huttoncp.github.io/illumex/reference/ilm_selection.md).
+  It needs `cols`. A `by` argument is never negated.
 
 ## Value
 

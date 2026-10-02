@@ -24,7 +24,8 @@ ilm_profile(
   vtest_threshold = 1.96,
   top_n_vars = 4,
   var_contrib = TRUE,
-  var_contrib_B = 199L
+  var_contrib_B = 199L,
+  cols_negate = FALSE
 )
 ```
 
@@ -95,6 +96,13 @@ ilm_profile(
 - var_contrib_B:
 
   Permutations for that check.
+
+- cols_negate:
+
+  If `TRUE`, `cols` names the columns to leave out, and every other
+  eligible column is used; see
+  [ilm_selection](https://huttoncp.github.io/illumex/reference/ilm_selection.md).
+  It needs `cols`. A `by` argument is never negated.
 
 ## Value
 

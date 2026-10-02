@@ -12,11 +12,13 @@ when you need one.
 ilm_plot_all(
   data,
   by = NULL,
+  cols = NULL,
   class = "all",
   max_panels = 12L,
   n_max = 5000L,
   verdict = FALSE,
-  ...
+  ...,
+  cols_negate = FALSE
 )
 ```
 
@@ -29,6 +31,15 @@ ilm_plot_all(
 - by:
 
   Optional grouping variable, drawn as colour with a legend.
+
+- cols:
+
+  Columns to plot. A character vector of names, a regular expression, a
+  predicate function such as `is.numeric`, or `NULL` for all of them –
+  see
+  [ilm_selection](https://huttoncp.github.io/illumex/reference/ilm_selection.md).
+  `by` columns are never among them, and the choice is made among the
+  columns `class` allows.
 
 - class:
 
@@ -51,6 +62,13 @@ ilm_plot_all(
 
   Passed to
   [`tinyplot::tinyplot()`](https://grantmcdermott.com/tinyplot/man/tinyplot.html).
+
+- cols_negate:
+
+  If `TRUE`, `cols` names the columns to leave out, and every other
+  eligible column is used; see
+  [ilm_selection](https://huttoncp.github.io/illumex/reference/ilm_selection.md).
+  It needs `cols`. A `by` argument is never negated.
 
 ## Value
 
