@@ -61,7 +61,10 @@ test_that("rounding to a number goes by the same digits", {
 })
 
 test_that("the largest double and the subnormals round without error", {
-  big <- 1.7976931348623157e308
+  ## not the literal 1.7976931348623157e308: where long double is double
+  ## (macOS on arm64), R's parser builds a decimal literal in double, and
+  ## that one overflows to Inf
+  big <- .Machine$double.xmax
   ## the rounded 1.8e308 is beyond any double: the number is returned as it
   ## is, and the text is written from the rounded digits
   expect_identical(ilm_disp_signif(big, 2), big)

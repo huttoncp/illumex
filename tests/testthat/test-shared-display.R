@@ -6,6 +6,20 @@
 cases_file <- function(f) utils::read.csv(test_path("fixtures", f),
                                           colClasses = "character", na.strings = NULL)
 
+## The cases' inputs beyond 10^22 or under 10^-22, and those of 17 figures,
+## are written as hex doubles. Where long double is double (macOS on
+## arm64), R's parser builds a decimal in double arithmetic: a large or
+## small one comes out a different double, or Inf ("1.7976931348623157e308"
+## did), and 17 figures, more than a double holds, can be rounded twice and
+## land a bit off ("0.44999999999999996"). A hex double parses exactly
+## everywhere -- with its exponent at -1022 or above: R reads 0x1p-1074 as 0,
+## so the smallest subnormal is 0x0.0000000000001p-1022.
+test_that("the cases' hex inputs read as the doubles they name", {
+  expect_identical(as.numeric("0x1.fffffffffffffp+1023"), .Machine$double.xmax)
+  expect_identical(as.numeric("0x1p-1022"), .Machine$double.xmin)
+  expect_identical(as.numeric("0x0.0000000000001p-1022"), 2^-1074)
+})
+
 test_that("every display rule gives the hand-written text of every case", {
   cs <- cases_file("format_cases.csv")
   expect_identical(names(cs), c("input", "rule", "digits", "end", "trailing_zeros", "expected",
