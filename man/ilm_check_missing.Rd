@@ -12,7 +12,12 @@ ilm_check_missing(
   min_effect = 0.1,
   alpha = 0.05,
   adjust = "holm",
-  verbose = TRUE
+  verbose = TRUE,
+  covariates_negate = FALSE,
+  covariates_fixed = FALSE,
+  subset = NULL,
+  subset_negate = FALSE,
+  subset_fixed = FALSE
 )
 }
 \arguments{
@@ -26,7 +31,8 @@ right-hand side as \code{covariates}.}
 
 \item{covariates}{Variables to hold fixed when asking whether missingness
 depends on the outcome. Default is every other column; pass the model's
-predictors when they are a subset.}
+predictors when they are a subset. Names, a pattern or a predicate, as
+\code{cols} takes them (\link{ilm_selection}).}
 
 \item{min_effect}{Smallest association worth reporting, as a correlation or
 Cramer's V. With several thousand rows an association of 0.02 is
@@ -38,6 +44,22 @@ significant and means nothing.}
 \code{\link[stats:p.adjust]{stats::p.adjust()}}.}
 
 \item{verbose}{Narrate the findings.}
+
+\item{covariates_negate, covariates_fixed}{As \code{cols_negate} and
+\code{cols_fixed}, for \code{covariates}: \code{covariates_negate = TRUE} holds fixed
+every column but those named (and \code{y}).}
+
+\item{subset}{Which rows to use, before anything else: a logical vector
+(one value per row; \code{NA} is left out), row positions, named patterns
+(\code{c(site = "^north")}), or \code{\link[=ilm_sample]{ilm_sample()}}. See \link{ilm_selection}. Results
+keep the data's own row numbers.}
+
+\item{subset_negate}{If \code{TRUE}, the rows \code{subset} would not take: the other
+rows, or the rows not sampled (a holdout). With a logical \code{subset}, rows
+where it is \code{NA} stay out either way.}
+
+\item{subset_fixed}{If \code{TRUE}, \code{subset}'s patterns are matched literally,
+as substrings. It changes nothing for a logical, positions or a sample.}
 }
 \value{
 An object of class \code{"ilm_missing"}: \code{variables}, \code{patterns},

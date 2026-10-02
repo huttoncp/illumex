@@ -134,7 +134,12 @@ ilm_miss_outcome_test <- function(data, v, y, covars) {
 #' @param data A data frame.
 #' @param covariates Variables to hold fixed when asking whether missingness
 #'   depends on the outcome. Default is every other column; pass the model's
-#'   predictors when they are a subset.
+#'   predictors when they are a subset. Names, a pattern or a predicate, as
+#'   `cols` takes them ([ilm_selection]).
+#' @param covariates_negate,covariates_fixed As `cols_negate` and
+#'   `cols_fixed`, for `covariates`: `covariates_negate = TRUE` holds fixed
+#'   every column but those named (and `y`).
+#' @inheritParams ilm_reduce
 #' @param y Optional outcome column, named as a string. Naming it is what
 #'   separates "complete cases are fine" from "complete cases are biased", so
 #'   it is worth naming. A formula is also accepted and is usually the clearer
@@ -156,9 +161,21 @@ ilm_miss_outcome_test <- function(data, v, y, covars) {
 #' @export
 ilm_check_missing <- function(data, y = NULL, covariates = NULL,
                               min_effect = 0.1, alpha = 0.05,
-                              adjust = "holm", verbose = TRUE) {
-  a <- ilm_check_missing_args(data, y, covariates)
+                              adjust = "holm", verbose = TRUE, covariates_negate = FALSE,
+                              covariates_fixed = FALSE, subset = NULL,
+                              subset_negate = FALSE, subset_fixed = FALSE) {
+  rsel <- ilm_select_rows(data, subset, subset_negate, subset_fixed)
+  data <- rsel$data
+  cov_given <- covariates
+  a <- ilm_check_missing_args(data, y, covariates, covariates_negate, covariates_fixed)
   y <- a$y; covariates <- a$covariates
+  ## a formula's right-hand side chose the covariates as surely as naming them
+  if (is.null(cov_given) && !is.null(covariates)) cov_given <- covariates
+  fin <- function(out) ilm_select_finish(out, data, rsel,
+                                         if (!is.null(cov_given) || isTRUE(covariates_negate))
+                                           cov_given, covariates %||% names(data),
+                                         cols_negate = covariates_negate,
+                                         cols_fixed = covariates_fixed)
   say <- function(...) if (verbose) message(...)
   n <- nrow(data)
 
@@ -175,10 +192,10 @@ ilm_check_missing <- function(data, y = NULL, covariates = NULL,
   say("== missing data ==")
   if (!length(inc)) {
     say("  no missing values in any of the ", ncol(data), " columns")
-    return(structure(list(variables = vars, patterns = NULL,
+    return(fin(structure(list(variables = vars, patterns = NULL,
                           associations = NULL, monotone = NA,
                           n = n, n_complete = n, y = y, verdict = "NONE"),
-                     class = "ilm_missing"))
+                     class = "ilm_missing")))
   }
   say("  ", length(inc), " of ", ncol(data), " columns have missing values")
   say("  ", cc, " of ", n, " rows are complete (",
@@ -266,18 +283,18 @@ ilm_check_missing <- function(data, y = NULL, covariates = NULL,
   if (verbose)
     ilm_check_missing_say(verdict, flagged, n_flag, y, min_effect, n, cc)
 
-  structure(list(variables = vars, patterns = patterns, associations = assoc,
+  fin(structure(list(variables = vars, patterns = patterns, associations = assoc,
                  outcome_test = outcome_test, monotone = monotone, n = n,
                  n_complete = cc, y = y, min_effect = min_effect,
                  verdict = verdict),
-            class = "ilm_missing")
+            class = "ilm_missing"))
 }
 
 ## `data`, `y` and `covariates` of ilm_check_missing(), checked, with a
 ## formula `y` split into the outcome and the covariates.
 #' @keywords internal
 #' @noRd
-ilm_check_missing_args <- function(data, y, covariates) {
+ilm_check_missing_args <- function(data, y, covariates, negate = FALSE, fixed = FALSE) {
   if (!is.data.frame(data))
     stop("`data` must be a data frame; it is ", class(data)[1], call. = FALSE)
   ## `y ~ x + z` says exactly what this function asks -- does missingness in the
@@ -305,12 +322,10 @@ ilm_check_missing_args <- function(data, y, covariates) {
          ".", call. = FALSE)
   if (!is.null(y) && !y %in% names(data))
     stop("`y` (", y, ") is not a column of `data`", call. = FALSE)
-  if (!is.null(covariates)) {
-    cmiss <- setdiff(covariates, names(data))
-    if (length(cmiss))
-      stop("covariate(s) not in `data`: ", paste(cmiss, collapse = ", "),
-           call. = FALSE)
-  }
+  ## the four forms, as `cols` takes them; the outcome is never a covariate
+  if (!is.null(covariates) || isTRUE(negate))
+    covariates <- ilm_resolve_cols(data, covariates, exclude = y, arg = "covariates",
+                                   negate = negate, fixed = fixed)
   list(y = y, covariates = covariates)
 }
 

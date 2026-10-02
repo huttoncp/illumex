@@ -24,7 +24,10 @@ ilm_plot(
   main = NULL,
   ...,
   pch = NULL,
-  facet = NULL
+  facet = NULL,
+  subset = NULL,
+  subset_negate = FALSE,
+  subset_fixed = FALSE
 )
 }
 \arguments{
@@ -72,6 +75,18 @@ drawn literally, so \code{pch = "x"} is still the letter x.}
 \item{facet}{Optional column to draw in panels, one per level, named as a
 string the way \code{by} is: \code{facet = "site"}. Not available for the binned
 density (\code{"bin2d"}).}
+
+\item{subset}{Which rows to use, before anything else: a logical vector
+(one value per row; \code{NA} is left out), row positions, named patterns
+(\code{c(site = "^north")}), or \code{\link[=ilm_sample]{ilm_sample()}}. See \link{ilm_selection}. Results
+keep the data's own row numbers.}
+
+\item{subset_negate}{If \code{TRUE}, the rows \code{subset} would not take: the other
+rows, or the rows not sampled (a holdout). With a logical \code{subset}, rows
+where it is \code{NA} stay out either way.}
+
+\item{subset_fixed}{If \code{TRUE}, \code{subset}'s patterns are matched literally,
+as substrings. It changes nothing for a logical, positions or a sample.}
 }
 \value{
 Invisibly, a list with the geom used, the reason, and the note shown.

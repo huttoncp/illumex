@@ -100,5 +100,5 @@ test_that("a malformed formula is refused with the shape it wanted", {
   expect_error(ilm_check_missing(d, ~ x + z, verbose = FALSE), "needs a response")
   expect_error(ilm_check_missing(d, y + z ~ x, verbose = FALSE), "one outcome")
   expect_error(ilm_check_missing(d, y = 42, verbose = FALSE), "single string")
-  expect_error(ilm_check_missing(d, y ~ nope, verbose = FALSE), "not in `data`")
+  expect_error(ilm_check_missing(d, y ~ nope, verbose = FALSE), "column not found in the data")
 })

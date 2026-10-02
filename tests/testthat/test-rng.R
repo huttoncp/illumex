@@ -26,6 +26,9 @@ test_that("every seeded function starts by arranging to restore the stream", {
   meth <- ifelse(is.na(s3[, 3L]), paste(s3[, 1L], s3[, 2L], sep = "."), s3[, 3L])
   cand <- unique(c(ex, meth[vapply(meth, exists, TRUE, envir = ns,
                                    inherits = FALSE)]))
+  ## ilm_sample() only keeps a seed for the draw a `subset` makes later,
+  ## which restores the stream itself (R/ilm_subset.R)
+  cand <- setdiff(cand, "ilm_sample")
   seeded <- Filter(function(f) {
     fn <- get(f, envir = ns)
     is.function(fn) && "seed" %in% names(formals(fn)) &&

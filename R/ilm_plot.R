@@ -249,12 +249,17 @@ ilm_geom_spec <- function(geom = NULL) {
 #' ilm_plot(d, "score")
 #' ilm_plot(d, "grp", "score", geom = "violin", fill = "lightblue")
 #' ilm_plot(d, "score", "income", by = "grp", alpha = 0.6)
+#' @inheritParams ilm_reduce
 #' @export
 ilm_plot <- function(data, x, y = NULL, by = NULL, geom = "auto",
                      colour = NULL, color = NULL, fill = NULL, alpha = NULL,
                      size = NULL, palette = NULL, theme = NULL,
                      n_max = 5000L, max_levels = 20L, verdict = TRUE,
-                     main = NULL, ..., pch = NULL, facet = NULL) {
+                     main = NULL, ..., pch = NULL, facet = NULL,
+                     subset = NULL, subset_negate = FALSE, subset_fixed = FALSE) {
+  rsel <- ilm_select_rows(data, subset, subset_negate, subset_fixed)
+  data <- rsel$data
+  ilm_select_note("ilm_plot", data, rsel)
   data <- ilm_plot_frame(data)
   if (length(geom) != 1L || !geom %in% ILM_GEOMS) {
     auto <- if (is.character(x) && length(x) == 1L && x %in% names(data))
@@ -452,7 +457,10 @@ ilm_bin2d <- function(x, y, bins = 60L, xlab = "", ylab = "", main = "", sub = "
 #' ilm_plot_all(ilm_sim(), class = "numeric", max_panels = 4)
 #' @export
 ilm_plot_all <- function(data, by = NULL, cols = NULL, class = "all", max_panels = 12L,
-                         n_max = 5000L, verdict = FALSE, ..., cols_negate = FALSE) {
+                         n_max = 5000L, verdict = FALSE, ..., cols_negate = FALSE,
+                         cols_fixed = FALSE, subset = NULL, subset_negate = FALSE, subset_fixed = FALSE) {
+  rsel <- ilm_select_rows(data, subset, subset_negate, subset_fixed)
+  data <- rsel$data
   bad <- setdiff(class, c("all", ILM_CLASSES))
   if (length(bad))
     stop("unknown `class`: ", paste(sQuote(bad), collapse = ", "),
@@ -466,7 +474,9 @@ ilm_plot_all <- function(data, by = NULL, cols = NULL, class = "all", max_panels
   ## `cols` chooses among the columns `class` allows, and `cols_negate`
   ## leaves its choice out of those
   if (!is.null(cols) || isTRUE(cols_negate))
-    cand <- ilm_resolve_cols(data, cols, exclude = by, eligible = cand, negate = cols_negate)
+    cand <- ilm_resolve_cols(data, cols, exclude = by, eligible = cand, negate = cols_negate,
+                             fixed = cols_fixed)
+  ilm_select_note("ilm_plot_all", data, rsel, cols, cand, by, cols_negate, cols_fixed)
   if (!length(cand)) stop("no columns of class ",
                           paste(sQuote(class), collapse = ", "), " in the data",
                           call. = FALSE)
@@ -495,8 +505,13 @@ ilm_plot_all <- function(data, by = NULL, cols = NULL, class = "all", max_panels
 #' @seealso [ilm_describe_na_all()] for the same information as a table.
 #' @examples
 #' ilm_plot_missing(ilm_sim())
+#' @inheritParams ilm_reduce
 #' @export
-ilm_plot_missing <- function(data, ...) {
+ilm_plot_missing <- function(data, ...,
+                             subset = NULL, subset_negate = FALSE, subset_fixed = FALSE) {
+  rsel <- ilm_select_rows(data, subset, subset_negate, subset_fixed)
+  data <- rsel$data
+  ilm_select_note("ilm_plot_missing", data, rsel)
   data <- ilm_plot_frame(data)
   p <- vapply(data, function(v) mean(is.na(v)), 1)
   if (all(p == 0)) {

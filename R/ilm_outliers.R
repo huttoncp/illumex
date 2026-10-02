@@ -133,15 +133,19 @@ ilm_outliers <- function(y, method = c("iqr", "mad", "zscore"),
 ilm_outliers_all <- function(data, by = NULL, cols = NULL,
                              method = c("iqr", "mad", "zscore"),
                              threshold = NULL, flagged_only = TRUE,
-                             na.rm = TRUE, cols_negate = FALSE) {
+                             na.rm = TRUE, cols_negate = FALSE, cols_fixed = FALSE,
+                             subset = NULL, subset_negate = FALSE, subset_fixed = FALSE) {
   method <- match.arg(method)
   if (!is.data.frame(data))
     stop("`data` must be a data frame; it is ", class(data)[1], call. = FALSE)
+  rs <- ilm_select_rows(data, subset, subset_negate, subset_fixed)
+  data <- rs$data
   g <- ilm_resolve_cols(data, by, arg = "by")
   if (is.null(by)) g <- character()
   num <- ilm_resolve_cols(data, cols, exclude = g, arg = "cols",
                           eligible = names(data)[vapply(data, is.numeric, TRUE)],
-                          negate = cols_negate)
+                          negate = cols_negate, fixed = cols_fixed)
+  done <- function(res) ilm_select_finish(res, data, rs, cols, num, g, cols_negate, cols_fixed)
   if (!length(num))
     stop("no numeric columns to check for unusual values", call. = FALSE)
 
@@ -173,7 +177,7 @@ ilm_outliers_all <- function(data, by = NULL, cols = NULL,
   }
   out <- if (!k) NULL else {
     rid <- unlist(ri[seq_len(k)], use.names = FALSE)
-    o2 <- data.frame(row_id = rid,
+    o2 <- data.frame(row_id = ilm_orig_rows(data, rid),
                      variable = unlist(vi[seq_len(k)], use.names = FALSE),
                      value = unlist(va[seq_len(k)], use.names = FALSE),
                      score = unlist(sc[seq_len(k)], use.names = FALSE),
@@ -186,7 +190,7 @@ ilm_outliers_all <- function(data, by = NULL, cols = NULL,
                       value = numeric(), score = numeric(),
                       is_outlier = logical(), stringsAsFactors = FALSE)
     if (length(g)) out <- cbind(data[0, g, drop = FALSE], out)
-    return(ilm_outliers_all_result(out, method, threshold, g, checked))
+    return(done(ilm_outliers_all_result(out, method, threshold, g, checked)))
   }
   if (flagged_only) out <- out[!is.na(out$is_outlier) & out$is_outlier, ,
                                drop = FALSE]
@@ -196,9 +200,9 @@ ilm_outliers_all <- function(data, by = NULL, cols = NULL,
   out <- out[ord, , drop = FALSE]
   out$variable <- as.character(out$variable)
   rownames(out) <- NULL
-  ilm_outliers_all_result(out[, c(g, "row_id", "variable", "value", "score",
-                                  "is_outlier"), drop = FALSE],
-                          method, threshold, g, checked)
+  done(ilm_outliers_all_result(out[, c(g, "row_id", "variable", "value", "score",
+                                       "is_outlier"), drop = FALSE],
+                               method, threshold, g, checked))
 }
 
 ## the table, with what it was made by: the method, the threshold in effect,

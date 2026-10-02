@@ -232,12 +232,15 @@ logspace_add0 <- function(u) ifelse(u > 30, u, log1p(exp(pmin(u, 30))))
 ilm_glrm <- function(data, cols = NULL, rank = 2L, loss = NULL, lambda = NULL,
                      weights = NULL, maxit = 300L, tol = 1e-7, seed = 1L,
                      progress = NULL, time = c("cycles", "elapsed", "drop"),
-                     cols_negate = FALSE) {
+                     cols_negate = FALSE, cols_fixed = FALSE,
+                     subset = NULL, subset_negate = FALSE, subset_fixed = FALSE) {
   ilm_rng_restore(seed)                  # the user's random stream, put back on exit
   time <- match.arg(time)
   if (!is.data.frame(data))
     stop("`data` must be a data frame; it is ", class(data)[1], call. = FALSE)
-  keep <- ilm_resolve_cols(data, cols, negate = cols_negate)
+  rs <- ilm_select_rows(data, subset, subset_negate, subset_fixed)
+  data <- rs$data
+  keep <- ilm_resolve_cols(data, cols, negate = cols_negate, fixed = cols_fixed)
   ilm_stop_not_utf8_names(keep, "ilm_glrm")
   sub <- ilm_time_encode(data[keep], time, "ilm_glrm")
   tmap <- attr(sub, "time_map")
@@ -360,7 +363,7 @@ ilm_glrm <- function(data, cols = NULL, rank = 2L, loss = NULL, lambda = NULL,
   XYc <- XYc - rep(colMeans(XYc), each = n)
   dd <- svd(XYc, nu = 0L, nv = 0L)$d
   rank_kept <- max(1L, sum(dd[seq_len(rank)] > ilm_rank_tol(dd)))
-  ilm_seed_mark(structure(list(scores = as.data.frame(X), archetypes = Y, offset = mu,
+  res <- ilm_seed_mark(structure(list(scores = as.data.frame(X), archetypes = Y, offset = mu,
                  linear_predictor = U, sigma = sg,
                  loss = auto, objective = obj, rank = rank, rank_kept = rank_kept,
                  lambda = lambda,
@@ -368,6 +371,10 @@ ilm_glrm <- function(data, cols = NULL, rank = 2L, loss = NULL, lambda = NULL,
                  iterations = length(obj) - 1L,
                  converged = length(obj) - 1L < maxit),
             class = "ilm_glrm"), seed)
+  ## the scores' rows keep the data's own row numbers
+  if (!is.null(rs$subset)) rownames(res$scores) <- rs$rows
+  ilm_select_finish(res, data, rs, cols, keep, cols_negate = cols_negate,
+                    cols_fixed = cols_fixed)
 }
 
 #' Turn the fitted linear predictor back into columns on their own scales

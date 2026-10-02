@@ -14,7 +14,10 @@ ilm_boot_ci(
   conf = 0.95,
   ci_type = "percentile",
   seed = NULL,
-  progress = NULL
+  progress = NULL,
+  subset = NULL,
+  subset_negate = FALSE,
+  subset_fixed = FALSE
 )
 }
 \arguments{
@@ -43,6 +46,18 @@ when a correction is undefined.}
 \item{progress}{Show a progress bar. Defaults to \code{\link[=interactive]{interactive()}}, so a
 bar appears when someone is watching and nothing is written in a
 script or a knitted document. See \link{ilm_progress_arg}.}
+
+\item{subset}{Which rows to use, before anything else: a logical vector
+(one value per row; \code{NA} is left out), row positions, named patterns
+(\code{c(site = "^north")}), or \code{\link[=ilm_sample]{ilm_sample()}}. See \link{ilm_selection}. Results
+keep the data's own row numbers.}
+
+\item{subset_negate}{If \code{TRUE}, the rows \code{subset} would not take: the other
+rows, or the rows not sampled (a holdout). With a logical \code{subset}, rows
+where it is \code{NA} stay out either way.}
+
+\item{subset_fixed}{If \code{TRUE}, \code{subset}'s patterns are matched literally,
+as substrings. It changes nothing for a logical, positions or a sample.}
 }
 \value{
 A one-row data frame per group, with \code{observed}, \code{lower}, \code{upper}

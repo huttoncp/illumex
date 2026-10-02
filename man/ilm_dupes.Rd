@@ -5,21 +5,51 @@
 \alias{iml_dupes}
 \title{Duplicated rows only}
 \usage{
-ilm_dupes(data, ..., na_last = TRUE)
+ilm_dupes(
+  data,
+  cols = NULL,
+  na_last = TRUE,
+  cols_negate = FALSE,
+  cols_fixed = FALSE,
+  subset = NULL,
+  subset_negate = FALSE,
+  subset_fixed = FALSE
+)
 }
 \arguments{
 \item{data}{A data frame.}
 
-\item{...}{Columns defining a duplicate. All columns if none are given.}
+\item{cols}{The columns that define a copy: names, a pattern or a
+predicate, as in \link{ilm_selection}; all columns if \code{NULL}.}
 
 \item{na_last}{Sort missing values last.}
+
+\item{cols_negate}{If \code{TRUE}, \code{cols} names the columns to leave out, and every
+other eligible column is used; see \link{ilm_selection}. It needs \code{cols}. A
+\code{by} argument is never negated.}
+
+\item{cols_fixed}{If \code{TRUE}, a \code{cols} string read as a pattern is matched
+literally, as a substring (as \code{grepl(fixed = TRUE)} does); a column name
+still wins. It changes nothing when \code{cols} is names or a predicate.}
+
+\item{subset}{Which rows to use, before anything else: a logical vector
+(one value per row; \code{NA} is left out), row positions, named patterns
+(\code{c(site = "^north")}), or \code{\link[=ilm_sample]{ilm_sample()}}. See \link{ilm_selection}. Results
+keep the data's own row numbers.}
+
+\item{subset_negate}{If \code{TRUE}, the rows \code{subset} would not take: the other
+rows, or the rows not sampled (a holdout). With a logical \code{subset}, rows
+where it is \code{NA} stay out either way.}
+
+\item{subset_fixed}{If \code{TRUE}, \code{subset}'s patterns are matched literally,
+as substrings. It changes nothing for a logical, positions or a sample.}
 }
 \value{
 A data frame of repeated rows with \code{n_copies} appended, and the
 same message as \code{\link[=ilm_copies]{ilm_copies()}} when there are any.
 }
 \description{
-A shorthand for \code{ilm_copies(data, ..., filter = "dupes")}.
+A shorthand for \code{ilm_copies(data, cols, filter = "dupes")}.
 }
 \examples{
 ilm_dupes(data.frame(a = c(1, 1, 2), b = c("x", "x", "y")))

@@ -37,6 +37,34 @@ predicate fails counts as not matching, so \code{cols_negate = TRUE} selects
 it. \code{cols_negate = TRUE} needs \code{cols}, and leaving out every eligible column is an
 error naming them.
 
+\strong{Matching literally.} With \code{cols_fixed = TRUE}, a \code{cols} string read as
+a pattern is matched as it is written, as a substring: \verb{cols = "wt.", cols_fixed = TRUE} takes \code{wt.kg} and \code{wt.lb} but not \code{wt_2}. A column name
+still wins, and names or a predicate are unaffected.
+
+\strong{Choosing rows.} A function that takes \code{subset} uses only the rows it
+gives, before \code{cols}, \code{by} and everything else -- \code{dplyr::filter()} before
+the call, as an ordinary value. \code{subset} is one of:
+\itemize{
+\item A \strong{logical vector}, one value per row: \code{subset = d$age >= 18}. Rows
+where it is \code{NA} are left out, as in \code{dplyr::filter()}.
+\item \strong{Row positions}, positive whole numbers: \code{subset = 1:100}. A number on
+its own always means a position.
+\item \strong{Named patterns}, one per column: \code{subset = c(site = "^north", arm = "drug")} keeps the rows where every named column matches; a missing
+value matches nothing. \code{subset_fixed = TRUE} matches them literally.
+\item A \strong{random sample}, \code{\link[=ilm_sample]{ilm_sample()}}: \code{subset = ilm_sample(prop = 0.2, seed = 1)}, or whole groups with \code{by}.
+}
+
+\code{subset_negate = TRUE} takes the rows \code{subset} would not: the other rows,
+or the rows not sampled, a holdout. For a logical \code{subset}, rows where it
+is \code{NA} stay out either way. A subset that keeps no row is an error saying
+what it was. Results name rows by the data's own row numbers, never by
+their place in the subset, so they join back onto the data as they are.
+\code{\link[=ilm_subset]{ilm_subset()}} returns the rows and columns themselves.
+
+A result made from a subset, or from a choice of columns, says so above
+what it prints -- \verb{119 of 600 rows (subset)} and \verb{Columns: 5 of 8 (excluded: id, name, date)} -- and keeps what was chosen in its attribute
+\code{"ilm_select"}. A plot says the same in a message.
+
 A \code{by} argument takes column names. \code{\link[=ilm_outliers_all]{ilm_outliers_all()}}'s \code{by} also takes
 a pattern or a predicate, as \code{cols} does; elsewhere a pattern or a function
 given as \code{by} is an error. \code{by} is never negated.
@@ -50,4 +78,8 @@ ilm_outliers_all(d, cols = is.numeric)
 ilm_outliers_all(d, cols = "id", cols_negate = TRUE)
 ilm_outliers_all(d, cols = "^score_", cols_negate = TRUE)
 ilm_outliers_all(d, cols = function(v) all(v == round(v)), cols_negate = TRUE)
+## choosing rows
+ilm_outliers_all(d, subset = d$id > 2)
+ilm_outliers_all(d, subset = c(label = "^[ab]$"), subset_negate = TRUE)
+ilm_outliers_all(d, subset = ilm_sample(3, seed = 1))
 }

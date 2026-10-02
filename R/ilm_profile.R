@@ -96,19 +96,30 @@ ilm_profile <- function(data, cols = NULL, ndim = 5,
                         method = c("famd", "glrm", "pcamix"),
                         time = c("cycles", "elapsed", "drop"), ...,
                         vtest_threshold = 1.96, top_n_vars = 4,
-                        var_contrib = TRUE, var_contrib_B = 199L, cols_negate = FALSE) {
+                        var_contrib = TRUE, var_contrib_B = 199L, cols_negate = FALSE,
+                        cols_fixed = FALSE, subset = NULL, subset_negate = FALSE,
+                        subset_fixed = FALSE) {
   ## An ilm_anomaly() result is accepted directly: the flagged rows are what
   ## the user wants to look at next, and rebuilding that subset by hand from
   ## `row` is both a papercut and a chance to line the wrong rows up.
-  if (inherits(data, "ilm_anomaly"))
+  if (inherits(data, "ilm_anomaly")) {
+    if (!is.null(subset) || isTRUE(subset_negate))
+      stop("`subset` cannot be applied to an ilm_anomaly() result: subset the data ",
+           "before ilm_anomaly(), or use the rows its result gives", call. = FALSE)
     data <- ilm_from_anomaly(data, "ilm_profile")
+  }
   method <- match.arg(method)
-  rr <- ilm_reduce(data, cols = cols, ndim = ndim, method = method,
-                   time = match.arg(time), cols_negate = cols_negate)
+  rs <- ilm_select_rows(data, subset, subset_negate, subset_fixed)
+  data <- rs$data
+  rr <- ilm_select_unmark(ilm_reduce(data, cols = cols, ndim = ndim, method = method,
+                                     time = match.arg(time), cols_negate = cols_negate,
+                                     cols_fixed = cols_fixed))
   cr <- ilm_cluster(rr, ...)
-  rows <- cr$ind_cluster$row_id
-  dsub <- if (!is.null(rows) && length(rows) == nrow(cr$ind_cluster) &&
-              max(rows) <= nrow(data)) data[rows, , drop = FALSE] else data
+  ## the clustering names rows by the data's own numbers; their positions
+  ## here are where those numbers sit in the rows kept
+  rows <- match(cr$ind_cluster$row_id, ilm_orig_rows(data, seq_len(nrow(data))))
+  dsub <- if (length(rows) && !anyNA(rows) && length(rows) == nrow(cr$ind_cluster))
+            data[rows, , drop = FALSE] else data
   cl <- cr$ind_cluster$cluster
   ## Run the variable check HERE rather than leaving it for the user to find.
   ## Nothing in this pipeline selects variables, and an irrelevant one is not
@@ -144,7 +155,8 @@ ilm_profile <- function(data, cols = NULL, ndim = 5,
             "does. If that is not the grouping you were looking for, exclude ",
             "it with cols =. See the variable contribution table in the ",
             "printed output.", call. = FALSE)
-  out
+  ilm_select_finish(out, data, rs, cols, rr$cols, cols_negate = cols_negate,
+                    cols_fixed = cols_fixed)
 }
 
 #' Profile which values are missing, and for whom
@@ -181,21 +193,32 @@ ilm_profile <- function(data, cols = NULL, ndim = 5,
 #' cat(p$summary, sep = "\n")
 #' @export
 ilm_profile_na <- function(data, cols = NULL, ndim = 5, ...,
-                           vtest_threshold = 1.96, top_n_vars = 4, cols_negate = FALSE) {
-  if (inherits(data, "ilm_anomaly"))
+                           vtest_threshold = 1.96, top_n_vars = 4, cols_negate = FALSE,
+                           cols_fixed = FALSE, subset = NULL, subset_negate = FALSE,
+                           subset_fixed = FALSE) {
+  if (inherits(data, "ilm_anomaly")) {
+    if (!is.null(subset) || isTRUE(subset_negate))
+      stop("`subset` cannot be applied to an ilm_anomaly() result: subset the data ",
+           "before ilm_anomaly(), or use the rows its result gives", call. = FALSE)
     data <- ilm_from_anomaly(data, "ilm_profile_na")
-  rr <- ilm_reduce_na(data, cols = cols, ndim = ndim, cols_negate = cols_negate)
+  }
+  rs <- ilm_select_rows(data, subset, subset_negate, subset_fixed)
+  data <- rs$data
+  rr <- ilm_select_unmark(ilm_reduce_na(data, cols = cols, ndim = ndim,
+                                        cols_negate = cols_negate, cols_fixed = cols_fixed))
   cr <- ilm_cluster_na(rr, ...)
   ## the present/missing markers the clustering was built from
   marks <- as.data.frame(lapply(rr$cols, function(cn) is.na(data[[cn]])))
   names(marks) <- rr$cols
   de <- ilm_profile_describe(marks, cr$ind_cluster$cluster, rr, cr,
                              top_n_vars, vtest_threshold, missing = TRUE)
-  structure(list(reduce = rr, cluster = cr,
-                 characterization = de$characterization,
-                 frequencies = de$frequencies, summary = de$summary,
-                 not_distinctive = de$not_distinctive),
-            class = c("ilm_profile_na", "ilm_profile"))
+  out <- structure(list(reduce = rr, cluster = cr,
+                        characterization = de$characterization,
+                        frequencies = de$frequencies, summary = de$summary,
+                        not_distinctive = de$not_distinctive),
+                   class = c("ilm_profile_na", "ilm_profile"))
+  ilm_select_finish(out, data, rs, cols, rr$cols, cols_negate = cols_negate,
+                    cols_fixed = cols_fixed)
 }
 
 #' @export

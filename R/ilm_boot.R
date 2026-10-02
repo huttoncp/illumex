@@ -219,10 +219,12 @@ ilm_stat_fun <- function(stat) {
 #' ilm_boot_ci(d, "score", R = 200, seed = 1)
 #' ilm_boot_ci(d, "score", by = "grp", R = 200, seed = 1)
 #' ilm_boot_ci(d, c("score", "income"), stat = "median", R = 200, seed = 1)
+#' @inheritParams ilm_reduce
 #' @export
 ilm_boot_ci <- function(data, y = NULL, by = NULL, stat = "mean",
                         R = 2000L, conf = 0.95, ci_type = "percentile",
-                        seed = NULL, progress = NULL) {
+                        seed = NULL, progress = NULL,
+                        subset = NULL, subset_negate = FALSE, subset_fixed = FALSE) {
   ilm_rng_restore(seed)                  # the user's random stream, put back on exit
   if (length(ci_type) != 1L || !ci_type %in% ILM_CI_TYPES)
     stop("unknown `ci_type`: ", paste(sQuote(ci_type), collapse = ", "),
@@ -234,6 +236,8 @@ ilm_boot_ci <- function(data, y = NULL, by = NULL, stat = "mean",
     stop("`R` must be a single number of at least 2", call. = FALSE)
   sf <- ilm_stat_fun(stat)
   lab <- if (is.function(stat)) "custom" else stat
+  rsel <- ilm_select_rows(data, subset, subset_negate, subset_fixed)
+  data <- rsel$data
 
   vec_in <- is.numeric(data) && is.null(y)
   if (!vec_in) {
@@ -305,7 +309,7 @@ ilm_boot_ci <- function(data, y = NULL, by = NULL, stat = "mean",
   rownames(res) <- NULL
   res <- ilm_boot_result(res, "ilm_boot_ci", seed)
   attr(res, "variable") <- if (!vec_in) y
-  res
+  ilm_select_finish(res, data, rsel, NULL, y)
 }
 
 ## ---- differences between groups ---------------------------------------------
@@ -475,12 +479,13 @@ ilm_boot_pairs <- function(lv, ref = NULL) {
 #' ## every level against one reference, on medians
 #' ilm_boot_diff(score ~ grp, data = d, stat = "median", ref = "alpha",
 #'               R = 300, seed = 1)
+#' @inheritParams ilm_reduce
 #' @export
 ilm_boot_diff <- function(x, ...) UseMethod("ilm_boot_diff")
 
 #' @rdname ilm_boot_diff
 #' @export
-ilm_boot_diff.formula <- function(x, data = NULL, ...) {
+ilm_boot_diff.formula <- function(x, data = NULL, ..., subset = NULL, subset_negate = FALSE, subset_fixed = FALSE) {
   if (length(x) != 3L)
     stop("the formula needs a left and a right hand side, as in y ~ g",
          call. = FALSE)
@@ -491,11 +496,14 @@ ilm_boot_diff.formula <- function(x, data = NULL, ...) {
     stop("`data` must be a data frame; it is ", class(data)[1], call. = FALSE)
   ## na.pass so the per-group missingness reporting below stays the caller's to
   ## see, rather than rows vanishing here
+  rsel <- ilm_select_rows(data, subset, subset_negate, subset_fixed)
+  data <- rsel$data
   mf <- stats::model.frame(x, data = data, na.action = stats::na.pass)
   if (ncol(mf) < 2L)
     stop("the right hand side must name at least one grouping variable",
          call. = FALSE)
-  ilm_boot_diff.data.frame(mf, y = names(mf)[1L], group = names(mf)[-1L], ...)
+  ilm_select_finish(ilm_boot_diff.data.frame(mf, y = names(mf)[1L], group = names(mf)[-1L], ...),
+                    data, rsel, NULL, names(mf))
 }
 
 #' @rdname ilm_boot_diff
@@ -507,9 +515,12 @@ ilm_boot_diff.data.frame <- function(x, y = NULL, group = NULL, stat = "mean",
                                      R = 2000L, conf = 0.95,
                                      ci_type = "percentile",
                                      adjust = "max_t", ref = NULL,
-                                     seed = NULL, progress = NULL, ...) {
+                                     seed = NULL, progress = NULL, ...,
+                                     subset = NULL, subset_negate = FALSE,
+                                     subset_fixed = FALSE) {
   ilm_rng_restore(seed)                  # the user's random stream, put back on exit
-  data <- x
+  rsel <- ilm_select_rows(x, subset, subset_negate, subset_fixed)
+  data <- rsel$data
   ilm_boot_diff_args(data, y, group, R, conf, ci_type, adjust, list(...))
   R <- as.integer(R)
   gname <- paste(group, collapse = ".")
@@ -579,7 +590,8 @@ ilm_boot_diff.data.frame <- function(x, y = NULL, group = NULL, stat = "mean",
   ## distribution behind a row can be drawn rather than only summarised
   colnames(D) <- paste(lv[pr$i], lv[pr$j], sep = " -> ")
   attr(out, "draws") <- D
-  ilm_boot_result(out, "ilm_boot_diff", seed)
+  ilm_select_finish(ilm_boot_result(out, "ilm_boot_diff", seed), data, rsel, NULL,
+                    c(y, group))
 }
 
 ## The arguments of ilm_boot_diff.data.frame(), checked before any work.
@@ -694,8 +706,13 @@ ilm_boot_diff_infer <- function(D, dh, conf, ci_type, adjust) {
 #' @seealso [ilm_describe_na_all()], [ilm_plot_missing()].
 #' @examples
 #' ilm_describe_na(ilm_sim(), "lab_value")
+#' @inheritParams ilm_reduce
 #' @export
-ilm_describe_na <- function(data, y = NULL, by = NULL, digits = 4) {
+ilm_describe_na <- function(data, y = NULL, by = NULL, digits = 4, subset = NULL,
+                            subset_negate = FALSE, subset_fixed = FALSE) {
+  rsel <- ilm_select_rows(data, subset, subset_negate, subset_fixed)
+  data <- rsel$data
+  fin <- function(out) ilm_select_finish(out, data, rsel, NULL, y)
   if (is.null(y) && !is.data.frame(data)) { v <- data; data <- NULL } else {
     if (is.null(y)) stop("`y` must name a column, or pass a vector", call. = FALSE)
     ilm_check_by(data, by)
@@ -713,13 +730,13 @@ ilm_describe_na <- function(data, y = NULL, by = NULL, digits = 4) {
                stringsAsFactors = FALSE)
   }
   if (is.null(by) || is.null(data))
-    return(ilm_describe_result(one(v), "ilm_describe_na", y, by, digits))
+    return(fin(ilm_describe_result(one(v), "ilm_describe_na", y, by, digits)))
   g <- interaction(data[by], drop = TRUE)
   parts <- lapply(split(v, g), one)
   res <- cbind(setNames(data.frame(names(parts), stringsAsFactors = FALSE),
                         paste(by, collapse = ".")),
                do.call(rbind, parts), row.names = NULL)
-  ilm_describe_result(res, "ilm_describe_na", y, by, digits)
+  fin(ilm_describe_result(res, "ilm_describe_na", y, by, digits))
 }
 
 #' Missingness in every variable
@@ -738,14 +755,17 @@ ilm_describe_na <- function(data, y = NULL, by = NULL, digits = 4) {
 #' ilm_describe_na_all(ilm_sim())
 #' @export
 ilm_describe_na_all <- function(data, by = NULL, cols = NULL, digits = 4, sort = TRUE,
-                                cols_negate = FALSE) {
+                                cols_negate = FALSE, cols_fixed = FALSE, subset = NULL,
+                                subset_negate = FALSE, subset_fixed = FALSE) {
   if (!is.data.frame(data)) stop("`data` must be a data frame", call. = FALSE)
+  rsel <- ilm_select_rows(data, subset, subset_negate, subset_fixed)
+  data <- rsel$data
   ilm_check_by(data, by)
   miss <- setdiff(by, names(data))
   if (length(miss))
     stop("`by` variable(s) not found in the data: ", paste(miss, collapse = ", "),
          call. = FALSE)
-  use <- ilm_resolve_cols(data, cols, exclude = by, negate = cols_negate)
+  use <- ilm_resolve_cols(data, cols, exclude = by, negate = cols_negate, fixed = cols_fixed)
   rs <- lapply(use, function(cn) ilm_describe_na(data, cn, by = by, digits = digits))
   res <- do.call(rbind, lapply(seq_along(use), function(i)
     cbind(variable = use[i], rs[[i]], stringsAsFactors = FALSE)))
@@ -754,5 +774,6 @@ ilm_describe_na_all <- function(data, by = NULL, cols = NULL, digits = 4, sort =
   ## by the share as it prints, so shares that print alike keep name order
   if (sort) res <- res[order(-round(res$p_na, digits), res$variable), , drop = FALSE]
   rownames(res) <- NULL
-  ilm_describe_result(res, "ilm_describe_na", NULL, by, digits)
+  ilm_select_finish(ilm_describe_result(res, "ilm_describe_na", NULL, by, digits),
+                    data, rsel, cols, use, by, cols_negate, cols_fixed)
 }

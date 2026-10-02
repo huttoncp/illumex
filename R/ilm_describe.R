@@ -498,13 +498,20 @@ ILM_CLASSES <- c("numeric", "categorical", "logical", "time")
 #' ilm_describe(d, "income", probs = c(0.1, 0.5, 0.9))
 #' ilm_describe(d, "score", by = "grp")
 #' ilm_describe(d, "score", by = "grp", smd = TRUE)
+#' @inheritParams ilm_reduce
 #' @export
 ilm_describe <- function(data, y = NULL, by = NULL, digits = 3,
                           gauss = c("index", "ks_d", "both", "none"),
                           probs = c(0, 0.5, 1), skew = FALSE, kurt = FALSE,
                           dispersion = TRUE, rare_n = 5L,
-                          cap = 0.06, min_n = 20L, smd = FALSE) {
+                          cap = 0.06, min_n = 20L, smd = FALSE, subset = NULL, subset_negate = FALSE, subset_fixed = FALSE) {
   gauss <- match.arg(gauss)
+  if (inherits(data, "ilm_anomaly") && (!is.null(subset) || isTRUE(subset_negate)))
+    stop("`subset` cannot be applied to an ilm_anomaly() result: subset the data ",
+         "before ilm_anomaly(), or use the rows its result gives", call. = FALSE)
+  rsel <- ilm_select_rows(data, subset, subset_negate, subset_fixed)
+  data <- rsel$data
+  fin <- function(out) ilm_select_finish(out, data, rsel, NULL, y)
   ilm_smd_arg(smd, by)
   ## An ilm_anomaly() result is accepted directly: the flagged rows are what
   ## the user wants to look at next, and rebuilding that subset by hand from
@@ -560,12 +567,12 @@ ilm_describe <- function(data, y = NULL, by = NULL, digits = 3,
                    cap = cap, min_n = min_n, smd = smd))
     r <- do.call(rbind, rs)
     nrep <- nrow(r) / length(cols)
-    return(ilm_describe_result(cbind(variable = rep(cols, each = nrep), r,
-                                     stringsAsFactors = FALSE),
-                               "ilm_describe", NULL, by, digits))
+    return(fin(ilm_describe_result(cbind(variable = rep(cols, each = nrep), r,
+                                         stringsAsFactors = FALSE),
+                                   "ilm_describe", NULL, by, digits)))
   }
 
-  if (is.null(by)) return(ilm_describe_result(one(x), "ilm_describe", y, by, digits))
+  if (is.null(by)) return(fin(ilm_describe_result(one(x), "ilm_describe", y, by, digits)))
   ilm_check_by(data, by)
   miss <- setdiff(by, names(data))
   if (length(miss))
@@ -582,7 +589,7 @@ ilm_describe <- function(data, y = NULL, by = NULL, digits = 3,
     s <- ilm_smd(if (ilm_is_time(x)) ilm_time_number(x) else x, g, ref)
     res$smd <- as.numeric(s[names(parts)])
   }
-  ilm_describe_result(res, "ilm_describe", y, by, digits)
+  fin(ilm_describe_result(res, "ilm_describe", y, by, digits))
 }
 
 ## `smd` is FALSE, TRUE or one group's name, and compares groups, so it
@@ -658,8 +665,14 @@ ilm_describe_all <- function(data, by = NULL, cols = NULL, digits = 3,
                               gauss = c("index", "ks_d", "both", "none"),
                               probs = c(0, 0.5, 1), skew = FALSE, kurt = FALSE,
                               dispersion = TRUE, class = "all", rare_n = 5L,
-                              cap = 0.06, min_n = 20L, smd = FALSE, cols_negate = FALSE) {
+                              cap = 0.06, min_n = 20L, smd = FALSE, cols_negate = FALSE, cols_fixed = FALSE, subset = NULL,
+                              subset_negate = FALSE, subset_fixed = FALSE) {
   gauss <- match.arg(gauss)
+  if (inherits(data, "ilm_anomaly") && (!is.null(subset) || isTRUE(subset_negate)))
+    stop("`subset` cannot be applied to an ilm_anomaly() result: subset the data ",
+         "before ilm_anomaly(), or use the rows its result gives", call. = FALSE)
+  rsel <- ilm_select_rows(data, subset, subset_negate, subset_fixed)
+  data <- rsel$data
   ilm_smd_arg(smd, by)
   ## An ilm_anomaly() result is accepted directly: the flagged rows are what
   ## the user wants to look at next, and rebuilding that subset by hand from
@@ -684,7 +697,8 @@ ilm_describe_all <- function(data, by = NULL, cols = NULL, digits = 3,
   ## leaves its choice out of those
   if (!is.null(cols) || isTRUE(cols_negate)) {
     elig <- if (identical(class, "all")) cand else cand[cl %in% class]
-    cand <- ilm_resolve_cols(data, cols, exclude = by, eligible = elig, negate = cols_negate)
+    cand <- ilm_resolve_cols(data, cols, exclude = by, eligible = elig, negate = cols_negate,
+                             fixed = cols_fixed)
     cl <- cl[cand]
   }
   ## constancy is judged on the whole column, so the same variables are set
@@ -694,6 +708,10 @@ ilm_describe_all <- function(data, by = NULL, cols = NULL, digits = 3,
   cand <- cand[!is_const]; cl <- cl[!is_const]
 
   want <- if (identical(class, "all")) unique(cl) else intersect(class, unique(cl))
+  ## the columns the result covers: those described, and the constant ones
+  ## when they are shown
+  used <- c(cand[cl %in% want], if (identical(class, "all") && !is.null(const)) const$variable)
+  fin <- function(out) ilm_select_finish(out, data, rsel, cols, used, by, cols_negate, cols_fixed)
   res <- lapply(want, function(k) {
     cols <- cand[cl == k]
     if (!length(cols)) return(NULL)
@@ -720,11 +738,11 @@ ilm_describe_all <- function(data, by = NULL, cols = NULL, digits = 3,
             "); use class = \"all\" to see them")
   }
   if (length(res) == 1L) {
-    return(ilm_describe_result(res[[1L]], "ilm_describe", NULL, by, digits))
+    return(fin(ilm_describe_result(res[[1L]], "ilm_describe", NULL, by, digits)))
   }
   attr(res, "digits") <- digits
   if (length(by)) attr(res, "by") <- by
-  ilm_as_result(res, "ilm_describe_all")
+  fin(ilm_as_result(res, "ilm_describe_all"))
 }
 
 ## ---- whole-frame issues ----------------------------------------------------
@@ -778,10 +796,19 @@ ilm_describe_all <- function(data, by = NULL, cols = NULL, digits = 3,
 #'                 ward = rep(c("x1", "x2", "y1", "y2"), c(12, 13, 12, 13)))
 #' d$total <- d$a + d$b
 #' ilm_frame_issues(d)
+#' @inheritParams ilm_reduce
 #' @export
-ilm_frame_issues <- function(data, cor_cut = 0.999, v_cut = 0.95) {
+ilm_frame_issues <- function(data, cor_cut = 0.999, v_cut = 0.95, cols = NULL,
+                             cols_negate = FALSE, cols_fixed = FALSE, subset = NULL, subset_negate = FALSE, subset_fixed = FALSE) {
   if (!is.data.frame(data))
     stop("`data` must be a data frame; it is ", class(data)[1], call. = FALSE)
+  ## the rows first, then the columns; the checks run on what is left
+  rsel <- ilm_select_rows(data, subset, subset_negate, subset_fixed)
+  data0 <- rsel$data
+  use <- ilm_resolve_cols(data0, cols, negate = cols_negate, fixed = cols_fixed)
+  data <- data0[use]
+  fin <- function(out) ilm_select_finish(out, data0, rsel, cols, use, cols_negate = cols_negate,
+                                         cols_fixed = cols_fixed)
   for (a in c("cor_cut", "v_cut")) {
     v <- get(a)
     if (!is.numeric(v) || length(v) != 1L || !is.finite(v) || v <= 0 || v > 1)
@@ -842,10 +869,10 @@ ilm_frame_issues <- function(data, cor_cut = 0.999, v_cut = 0.95) {
   ilm_frame_rank(data, setdiff(names(data), c(set_aside, cat_res$aliased)), add,
                  cat_res$nested)
   if (!length(out))
-    return(ilm_as_result(data.frame(issue = character(0), columns = character(0),
-                                    detail = character(0), remedy = character(0),
-                                    stringsAsFactors = FALSE), "ilm_frame_issues"))
-  ilm_as_result(do.call(rbind, out), "ilm_frame_issues")
+    return(fin(ilm_as_result(data.frame(issue = character(0), columns = character(0),
+                                        detail = character(0), remedy = character(0),
+                                        stringsAsFactors = FALSE), "ilm_frame_issues")))
+  fin(ilm_as_result(do.call(rbind, out), "ilm_frame_issues"))
 }
 
 ## Pairs of categorical columns: the same grouping relabelled, one grouping

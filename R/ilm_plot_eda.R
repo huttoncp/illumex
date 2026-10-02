@@ -95,9 +95,14 @@ ilm_by_legend <- function(expr, env, by) {
 #' ilm_plot_histogram(mtcars, "mpg")
 #' ilm_plot_histogram(mtcars, "mpg", by = "cyl")
 #' ilm_plot_histogram(mtcars, "mpg", facet = "am")
+#' @inheritParams ilm_reduce
 #' @export
 ilm_plot_histogram <- function(data, x, by = NULL, breaks = "Sturges", ...,
-                               facet = NULL, legend = NULL) {
+                               facet = NULL, legend = NULL,
+                               subset = NULL, subset_negate = FALSE, subset_fixed = FALSE) {
+  rsel <- ilm_select_rows(data, subset, subset_negate, subset_fixed)
+  data <- rsel$data
+  ilm_select_note("ilm_plot_histogram", data, rsel)
   data <- ilm_plot_frame(data)
   legend <- ilm_by_legend(substitute(legend), parent.frame(), by)
   tinyplot::tinyplot(x = ilm_col_vec(data, x, "x", TRUE),
@@ -116,8 +121,13 @@ ilm_plot_histogram <- function(data, x, by = NULL, breaks = "Sturges", ...,
 #' @seealso [ilm_plot_histogram()].
 #' @examples
 #' ilm_plot_density(mtcars, "mpg", by = "cyl")
+#' @inheritParams ilm_reduce
 #' @export
-ilm_plot_density <- function(data, x, by = NULL, ..., facet = NULL, legend = NULL) {
+ilm_plot_density <- function(data, x, by = NULL, ..., facet = NULL, legend = NULL,
+                             subset = NULL, subset_negate = FALSE, subset_fixed = FALSE) {
+  rsel <- ilm_select_rows(data, subset, subset_negate, subset_fixed)
+  data <- rsel$data
+  ilm_select_note("ilm_plot_density", data, rsel)
   data <- ilm_plot_frame(data)
   legend <- ilm_by_legend(substitute(legend), parent.frame(), by)
   tinyplot::tinyplot(x = ilm_col_vec(data, x, "x", TRUE),
@@ -152,9 +162,14 @@ ilm_plot_density <- function(data, x, by = NULL, ..., facet = NULL, legend = NUL
 #' @seealso [ilm_outliers()], [ilm_plot_violin()].
 #' @examples
 #' ilm_plot_box(mtcars, "mpg", x = "cyl")
+#' @inheritParams ilm_reduce
 #' @export
 ilm_plot_box <- function(data, y, x = NULL, by = NULL, ..., pch = NULL,
-                         facet = NULL, legend = NULL) {
+                         facet = NULL, legend = NULL,
+                         subset = NULL, subset_negate = FALSE, subset_fixed = FALSE) {
+  rsel <- ilm_select_rows(data, subset, subset_negate, subset_fixed)
+  data <- rsel$data
+  ilm_select_note("ilm_plot_box", data, rsel)
   data <- ilm_plot_frame(data)
   legend <- ilm_by_legend(substitute(legend), parent.frame(), by)
   xv <- ilm_col_vec(data, x, "x")
@@ -175,9 +190,14 @@ ilm_plot_box <- function(data, y, x = NULL, by = NULL, ..., pch = NULL,
 #' @seealso [ilm_plot_box()], which shows the quartiles rather than the shape.
 #' @examples
 #' ilm_plot_violin(mtcars, "mpg", x = "cyl")
+#' @inheritParams ilm_reduce
 #' @export
 ilm_plot_violin <- function(data, y, x = NULL, by = NULL, ..., pch = NULL,
-                            facet = NULL, legend = NULL) {
+                            facet = NULL, legend = NULL,
+                            subset = NULL, subset_negate = FALSE, subset_fixed = FALSE) {
+  rsel <- ilm_select_rows(data, subset, subset_negate, subset_fixed)
+  data <- rsel$data
+  ilm_select_note("ilm_plot_violin", data, rsel)
   data <- ilm_plot_frame(data)
   legend <- ilm_by_legend(substitute(legend), parent.frame(), by)
   xv <- ilm_col_vec(data, x, "x")
@@ -244,10 +264,15 @@ ilm_plot_violin <- function(data, y, x = NULL, by = NULL, ..., pch = NULL,
 #' ilm_plot_scatter(mtcars, "mpg", "wt", by = "cyl", trend = "lm")
 #' ilm_plot_scatter(mtcars, "mpg", "wt", facet = "cyl")
 #' ilm_plot_scatter(mtcars, "mpg", "hp", trend = "gam")
+#' @inheritParams ilm_reduce
 #' @export
 ilm_plot_scatter <- function(data, y, x, by = NULL,
                              trend = c("none", "lm", "loess", "gam"), ...,
-                             pch = NULL, facet = NULL, legend = NULL) {
+                             pch = NULL, facet = NULL, legend = NULL,
+                             subset = NULL, subset_negate = FALSE, subset_fixed = FALSE) {
+  rsel <- ilm_select_rows(data, subset, subset_negate, subset_fixed)
+  data <- rsel$data
+  ilm_select_note("ilm_plot_scatter", data, rsel)
   trend <- match.arg(trend)
   data <- ilm_plot_frame(data)
   legend <- ilm_by_legend(substitute(legend), parent.frame(), by)
@@ -354,8 +379,13 @@ ilm_trend_band <- function(x, y, by = NULL, facet = NULL,
 #' @seealso [ilm_counts()] for the same information as a table.
 #' @examples
 #' ilm_plot_bar(mtcars, "cyl", by = "am")
+#' @inheritParams ilm_reduce
 #' @export
-ilm_plot_bar <- function(data, x, by = NULL, ..., facet = NULL, legend = NULL) {
+ilm_plot_bar <- function(data, x, by = NULL, ..., facet = NULL, legend = NULL,
+                         subset = NULL, subset_negate = FALSE, subset_fixed = FALSE) {
+  rsel <- ilm_select_rows(data, subset, subset_negate, subset_fixed)
+  data <- rsel$data
+  ilm_select_note("ilm_plot_bar", data, rsel)
   data <- ilm_plot_frame(data)
   legend <- ilm_by_legend(substitute(legend), parent.frame(), by)
   tinyplot::tinyplot(x = ilm_col_vec(data, x, "x", TRUE),
@@ -386,9 +416,14 @@ ilm_plot_bar <- function(data, x, by = NULL, ..., facet = NULL, legend = NULL) {
 #' @examples
 #' d <- data.frame(t = 1:40, v = cumsum(rnorm(40)))
 #' ilm_plot_line(d, "v", "t")
+#' @inheritParams ilm_reduce
 #' @export
 ilm_plot_line <- function(data, y, x, by = NULL, ..., pch = NULL,
-                          facet = NULL, legend = NULL) {
+                          facet = NULL, legend = NULL,
+                          subset = NULL, subset_negate = FALSE, subset_fixed = FALSE) {
+  rsel <- ilm_select_rows(data, subset, subset_negate, subset_fixed)
+  data <- rsel$data
+  ilm_select_note("ilm_plot_line", data, rsel)
   data <- ilm_plot_frame(data)
   legend <- ilm_by_legend(substitute(legend), parent.frame(), by)
   tinyplot::tinyplot(x = ilm_col_vec(data, x, "x", TRUE),
@@ -433,10 +468,15 @@ ilm_plot_line <- function(data, y, x, by = NULL, ..., pch = NULL,
 #' @seealso [ilm_boot_diff()] for the comparison this plot invites.
 #' @examples
 #' ilm_plot_stat_error(mtcars, "mpg", "cyl")
+#' @inheritParams ilm_reduce
 #' @export
 ilm_plot_stat_error <- function(data, y, x, by = NULL,
                                 stat = c("mean", "median"), ...,
-                                pch = NULL, facet = NULL, legend = NULL) {
+                                pch = NULL, facet = NULL, legend = NULL,
+                                subset = NULL, subset_negate = FALSE, subset_fixed = FALSE) {
+  rsel <- ilm_select_rows(data, subset, subset_negate, subset_fixed)
+  data <- rsel$data
+  ilm_select_note("ilm_plot_stat_error", data, rsel)
   stat <- match.arg(stat)
   data <- ilm_plot_frame(data)
   legend <- ilm_by_legend(substitute(legend), parent.frame(), by)

@@ -316,10 +316,20 @@ iml_reduce <- ilm_reduce
 #' @export
 iml_reduce_na <- ilm_reduce_na
 
+#' @rdname ilm_sample
+#' @usage NULL
+#' @export
+iml_sample <- ilm_sample
+
 #' @rdname ilm_sim
 #' @usage NULL
 #' @export
 iml_sim <- ilm_sim
+
+#' @rdname ilm_subset
+#' @usage NULL
+#' @export
+iml_subset <- ilm_subset
 
 #' @rdname ilm_translate
 #' @usage NULL

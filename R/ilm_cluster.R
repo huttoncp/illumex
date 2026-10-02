@@ -202,7 +202,14 @@ ilm_cluster_na_note <- function(data, fn) {
 #' cluster a sample of the rows.
 #'
 #' @param x An [ilm_reduce()] result, or a numeric matrix or data frame of
-#'   coordinates with one row per observation.
+#'   coordinates with one row per observation, or a data frame with
+#'   non-numeric columns, which is reduced first.
+#' @param cols Which columns to use, before any reduction: on a data frame
+#'   that is reduced here, the variables that go into the reduction; on a
+#'   matrix or data frame of coordinates, those coordinates. A reduction's
+#'   dimensions are chosen after it, with `ndim` in [ilm_reduce()], so `cols`
+#'   on an [ilm_reduce()] result is an error. See [ilm_selection].
+#' @inheritParams ilm_reduce
 #' @param k Number of clusters. Omit to choose it by the gap statistic.
 #' @param k_max Largest `k` to consider in that search. Ignored when `k` is
 #'   given.
@@ -248,14 +255,44 @@ ilm_cluster <- function(x, k = NULL, k_max = 10, method = c("kmeans", "hclust"),
                         dist_method = "euclidean", hclust_method = "ward.D2",
                         nstart = 25, B = 100, gap_method = "firstSEmax",
                         small_cluster_frac = 0.05, ambiguous_threshold = 0.1,
-                        seed = NULL, progress = NULL) {
+                        seed = NULL, progress = NULL, cols = NULL, cols_negate = FALSE,
+                        cols_fixed = FALSE, subset = NULL, subset_negate = FALSE,
+                        subset_fixed = FALSE) {
   ilm_rng_restore(seed)                  # the user's random stream, put back on exit
   method <- match.arg(method)
   ## An ilm_anomaly() result is accepted directly: the flagged rows are what
   ## the user wants to look at next, and rebuilding that subset by hand from
   ## `row` is both a papercut and a chance to line the wrong rows up.
-  if (inherits(x, "ilm_anomaly"))
+  if (inherits(x, "ilm_anomaly")) {
+    if (!is.null(subset) || isTRUE(subset_negate))
+      stop("`subset` cannot be applied to an ilm_anomaly() result: subset the data ",
+           "before ilm_anomaly(), or use the rows its result gives", call. = FALSE)
     x <- ilm_from_anomaly(x, "ilm_cluster")
+  }
+  ## The rows first, then the columns. On a reduction the rows are its own
+  ## (its row numbers kept), and its columns were chosen before it was made.
+  chose_cols <- !is.null(cols) || isTRUE(cols_negate)
+  if (inherits(x, "ilm_reduce") && chose_cols)
+    stop("`cols` chooses a data frame's columns before a reduction, and this is a ",
+         "reduction already: choose its columns with ilm_reduce(cols = ), and how many ",
+         "dimensions with ndim", call. = FALSE)
+  if (is.matrix(x) && (chose_cols || !is.null(subset) || isTRUE(subset_negate)))
+    x <- as.data.frame(x)
+  rsel <- list(subset = NULL); src <- NULL; used <- NULL
+  if (inherits(x, "ilm_reduce")) {
+    rsel <- ilm_select_rows(x$ind_coord, subset, subset_negate, subset_fixed)
+    if (!is.null(rsel$subset)) {
+      x$ind_coord <- rsel$data
+      attr(x$ind_coord, "ilm_rows") <- NULL
+      x$n <- nrow(x$ind_coord)
+    }
+  } else if (is.data.frame(x)) {
+    rsel <- ilm_select_rows(x, subset, subset_negate, subset_fixed)
+    src <- rsel$data
+    used <- ilm_resolve_cols(src, cols, negate = cols_negate, fixed = cols_fixed)
+    x <- src[used]
+    attr(x, "ilm_rows") <- rsel$rows
+  }
   reduced <- NULL
   ## Raw mixed data is the ordinary way to arrive here, not a mistake. A
   ## k-means centroid is not defined on a factor, so the columns have to be put
@@ -288,6 +325,10 @@ ilm_cluster <- function(x, k = NULL, k_max = 10, method = c("kmeans", "hclust"),
          call. = FALSE)
   }
   n <- nrow(coords)
+  ## the rows named by the data's own numbers: a reduction's row_id, or the
+  ## rows a subset kept
+  rid <- if (inherits(x, "ilm_reduce")) ilm_reduce_row_ids(x, n)
+         else if (length(rsel$rows) == n) rsel$rows else seq_len(n)
   if (!is.null(seed)) set.seed(seed)
   ## k-means starts, and those that stopped at the iteration limit, across the
   ## gap search, the stability resamples and the final fit
@@ -350,14 +391,15 @@ ilm_cluster <- function(x, k = NULL, k_max = 10, method = c("kmeans", "hclust"),
 
   is_ambig <- !is.na(sil_width) & sil_width < ambiguous_threshold
   ind_cluster <- data.frame(
-    row_id = seq_len(n), cluster = cluster_assign,
+    row_id = rid,
+    cluster = cluster_assign,
     silhouette = sil_width,
     is_small_cluster = is_small[cluster_assign], is_ambiguous = is_ambig,
     is_anomalous = is_small[cluster_assign] | is_ambig,
     stringsAsFactors = FALSE)
   rownames(ind_cluster) <- NULL
 
-  ilm_seed_mark(structure(list(method = method, k = k,
+  out <- ilm_seed_mark(structure(list(method = method, k = k,
                  k_max = if (is.null(gap)) NA_integer_ else k_max, gap = gap,
                  clusters = clusters, ind_cluster = ind_cluster, coords = coords,
                  dist_method = if (method == "hclust") dist_method else NA_character_,
@@ -370,6 +412,8 @@ ilm_cluster <- function(x, k = NULL, k_max = 10, method = c("kmeans", "hclust"),
                  ## clusters in dates again
                  time = if (inherits(x, "ilm_reduce")) x$time),
             class = "ilm_cluster"), seed)
+  ilm_select_finish(out, src %||% data.frame(), rsel, cols, used, cols_negate = cols_negate,
+                    cols_fixed = cols_fixed)
 }
 
 #' Cluster observations by which values they are missing
@@ -381,6 +425,7 @@ ilm_cluster <- function(x, k = NULL, k_max = 10, method = c("kmeans", "hclust"),
 #'
 #' @param x An [ilm_reduce_na()] result.
 #' @param ... Passed to [ilm_cluster()].
+#' @inheritParams ilm_reduce
 #' @return An object of class `"ilm_cluster_na"`, which is also an
 #'   `"ilm_cluster"`.
 #' @seealso [ilm_profile_na()].
@@ -388,12 +433,14 @@ ilm_cluster <- function(x, k = NULL, k_max = 10, method = c("kmeans", "hclust"),
 #' cl <- ilm_cluster_na(ilm_reduce_na(airquality), k_max = 4, B = 25, seed = 1)
 #' cl
 #' @export
-ilm_cluster_na <- function(x, ...) {
+ilm_cluster_na <- function(x, ..., subset = NULL, subset_negate = FALSE, subset_fixed = FALSE) {
   if (!inherits(x, "ilm_reduce_na"))
     stop("`x` must be an ilm_reduce_na() result; it is ", class(x)[1],
          call. = FALSE)
-  out <- ilm_cluster(x, ...)
-  class(out) <- c("ilm_cluster_na", class(out))
+  out <- ilm_cluster(x, ..., subset = subset, subset_negate = subset_negate,
+                     subset_fixed = subset_fixed)
+  ## a subset's mark stays first, so its lines print
+  class(out) <- unique(c(intersect("ilm_selected", class(out)), "ilm_cluster_na", class(out)))
   out
 }
 
@@ -431,3 +478,11 @@ print.ilm_cluster <- function(x, ...) {
 ILM_KMEANS_NOT_CONVERGED <- paste0(
   "  %s of %s k-means starts stopped at the %d-iteration limit before settling. ",
   "Each fit keeps the best of its starts; a larger nstart gives it more to choose from.")
+
+## the rows a clustering names: a reduction's own row numbers, its row_id
+#' @keywords internal
+#' @noRd
+ilm_reduce_row_ids <- function(x, n) {
+  ic <- x$ind_coord
+  if (inherits(x, "ilm_reduce") && length(ic$row_id) == n) ic$row_id else seq_len(n)
+}
