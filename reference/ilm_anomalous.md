@@ -58,6 +58,7 @@ description question, and this is what hands the rows over.
 ``` r
 # \donttest{
 a <- ilm_anomaly(mtcars)
+#> Warning: ilm_anomaly(): the residuals have heavier tails than the reference assumes (tail check p = 0.025), and on such data the scan flags rows that are not anomalous. Read the flags as rows to look at, not as findings.
 odd <- ilm_anomalous(a)
 ilm_describe_all(odd)
 #>    variable       class obs n na value

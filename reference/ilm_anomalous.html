@@ -96,6 +96,7 @@ question, and this is what hands the rows over.</p>
     <h2 id="ref-examples">Examples<a class="anchor" aria-label="anchor" href="#ref-examples"></a></h2>
     <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="co"># \donttest{</span></span></span>
 <span class="r-in"><span><span class="va">a</span> <span class="op">&lt;-</span> <span class="fu"><a href="ilm_anomaly.html">ilm_anomaly</a></span><span class="op">(</span><span class="va">mtcars</span><span class="op">)</span></span></span>
+<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>ilm_anomaly(): the residuals have heavier tails than the reference assumes (tail check p = 0.025), and on such data the scan flags rows that are not anomalous. Read the flags as rows to look at, not as findings.</span>
 <span class="r-in"><span><span class="va">odd</span> <span class="op">&lt;-</span> <span class="fu">ilm_anomalous</span><span class="op">(</span><span class="va">a</span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="fu"><a href="ilm_describe_all.html">ilm_describe_all</a></span><span class="op">(</span><span class="va">odd</span><span class="op">)</span></span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>    variable       class obs n na value</span>
