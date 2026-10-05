@@ -192,6 +192,8 @@ test_that("ilm_frame_issues finds structure that breaks a model matrix", {
 })
 
 test_that("the rank check agrees with stats::alias() on a fitted lm", {
+  ## alias() loads MASS, which illumex does not declare
+  skip_if_not_installed("MASS")
   d <- frame_fixture()
   d$clinic_code <- NULL           # aliased pairs are left out of the matrix
   d$y <- rnorm(nrow(d))
