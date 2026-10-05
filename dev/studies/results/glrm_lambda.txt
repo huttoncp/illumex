@@ -1,0 +1,32 @@
+held-out error at the missing cells, mean and Monte Carlo standard error over 50 replicates
+   n                                  method error  mc_se
+ 150                  ilm_glrm, lambda = 0.1 1.039 0.0958
+ 150                  ilm_glrm, lambda = 0.5 0.744 0.0552
+ 150                    ilm_glrm, lambda = 1 0.641 0.0450
+ 150                    ilm_glrm, lambda = 2 0.560 0.0367
+ 150                    ilm_glrm, lambda = 5 0.506 0.0269
+ 150                   ilm_glrm, lambda = 10 0.552 0.0215
+ 150                   ilm_glrm, lambda = 20 0.746 0.0210
+ 150                   ilm_glrm, lambda = 50 0.993 0.0206
+ 150                  ilm_glrm, lambda = 100 0.993 0.0206
+ 150                 ilm_glrm, lambda chosen 0.495 0.0251
+ 150       iterative SVD, rank 2, no penalty 1.422 0.1801
+ 150 missMDA::imputePCA, rank 2, regularised 0.499 0.0255
+ 150                            column means 0.993 0.0206
+ 400                  ilm_glrm, lambda = 0.1 1.054 0.0920
+ 400                  ilm_glrm, lambda = 0.5 0.780 0.0502
+ 400                    ilm_glrm, lambda = 1 0.685 0.0421
+ 400                    ilm_glrm, lambda = 2 0.610 0.0365
+ 400                    ilm_glrm, lambda = 5 0.537 0.0292
+ 400                   ilm_glrm, lambda = 10 0.522 0.0228
+ 400                   ilm_glrm, lambda = 20 0.600 0.0166
+ 400                   ilm_glrm, lambda = 50 0.964 0.0129
+ 400                  ilm_glrm, lambda = 100 1.006 0.0111
+ 400                 ilm_glrm, lambda chosen 0.509 0.0234
+ 400       iterative SVD, rank 2, no penalty 1.470 0.2024
+ 400 missMDA::imputePCA, rank 2, regularised 0.507 0.0239
+ 400                            column means 1.006 0.0111
+
+lambda chosen at n = 150:  1 x2, 2 x13, 5 x26, 10 x8, 20 x1 
+
+lambda chosen at n = 400:  2 x5, 5 x21, 10 x19, 20 x5 

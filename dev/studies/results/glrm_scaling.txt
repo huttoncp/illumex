@@ -1,0 +1,103 @@
+## Commit hashes in this file are from illumex's history before its public
+## restart on 2026-10-01; they are not in this repository.
+## dev/studies/glrm_scaling.R (S1), run at scale on 2026-09-27 with R 4.4.3, 50 replicates
+## (design as committed at 47cfc99; run from a clean tree at 47cfc99, on a pinned library;
+##  run in two parts, one per core: noise_L3,noise_L10 and noise3_L3,info_L6)
+## Printed output, verbatim, with the library's provenance before and after:
+
+### part: noise_L3,noise_L10
+## run tree <run tree> at 47cfc99
+## before: 2026-09-27 06:31:52, R version 4.4.3 (2025-02-28 ucrt)
+## .libPaths(): <pinned library> ; <R's library> 
+##   pkgload      1.3.4        <pinned library> installed 2024-04-29 04:33
+##   collapse     2.1.8        <pinned library> installed 2026-09-19 23:49
+##   tinyplot     0.7.0        <pinned library> installed 2026-09-20 01:34
+
+mean (Monte Carlo standard error) over 50 replicates
+  scenario    n     arm failed   noise_share     latent_r2           ari   err_numeric    err_binary err_info         lambda
+  noise_L3  200 current      0 0.057 (0.005) 0.840 (0.004) 0.645 (0.013) 0.528 (0.018) 0.127 (0.012)           5.000 (0.000)
+  noise_L3  200  scaled      0 0.013 (0.001) 0.863 (0.003) 0.700 (0.009) 0.458 (0.018) 0.123 (0.010)           5.000 (0.000)
+  noise_L3  200     s2z      0 0.048 (0.010) 0.845 (0.009) 0.661 (0.018) 0.535 (0.042) 0.140 (0.041)           5.000 (0.000)
+  noise_L3 1000 current      0 0.018 (0.002) 0.854 (0.002) 0.679 (0.004) 0.498 (0.009) 0.102 (0.005)          10.000 (0.000)
+  noise_L3 1000  scaled      0 0.003 (0.000) 0.865 (0.001) 0.702 (0.003) 0.451 (0.008) 0.100 (0.005)          10.000 (0.000)
+  noise_L3 1000     s2z      0 0.019 (0.003) 0.856 (0.002) 0.682 (0.010) 0.483 (0.013) 0.103 (0.011)          10.000 (0.000)
+ noise_L10  200 current      0 0.032 (0.001) 0.857 (0.003) 0.656 (0.009) 0.505 (0.017) 0.114 (0.010)           5.000 (0.000)
+ noise_L10  200  scaled      0 0.006 (0.001) 0.863 (0.003) 0.689 (0.008) 0.462 (0.018) 0.114 (0.010)           4.880 (0.084)
+ noise_L10  200     s2z      0 0.030 (0.003) 0.863 (0.005) 0.677 (0.020) 0.502 (0.022) 0.147 (0.018)           5.000 (0.000)
+ noise_L10 1000 current      0 0.009 (0.000) 0.862 (0.001) 0.679 (0.003) 0.469 (0.008) 0.112 (0.005)          10.000 (0.000)
+ noise_L10 1000  scaled      0 0.001 (0.000) 0.866 (0.001) 0.701 (0.003) 0.434 (0.008) 0.111 (0.005)           9.900 (0.100)
+ noise_L10 1000     s2z      0 0.009 (0.001) 0.862 (0.003) 0.677 (0.004) 0.483 (0.025) 0.123 (0.010)          10.000 (0.000)
+
+## after: 2026-09-27 09:22:33, R version 4.4.3 (2025-02-28 ucrt)
+## .libPaths(): <pinned library> ; <R's library> 
+##   pkgload      1.3.4        <pinned library> installed 2024-04-29 04:33
+##   collapse     2.1.8        <pinned library> installed 2026-09-19 23:49
+##   tinyplot     0.7.0        <pinned library> installed 2026-09-20 01:34
+## library unchanged during the run
+
+### part: noise3_L3,info_L6
+## run tree <run tree> at 47cfc99
+## before: 2026-09-27 06:31:53, R version 4.4.3 (2025-02-28 ucrt)
+## .libPaths(): <pinned library> ; <R's library> 
+##   pkgload      1.3.4        <pinned library> installed 2024-04-29 04:33
+##   collapse     2.1.8        <pinned library> installed 2026-09-19 23:49
+##   tinyplot     0.7.0        <pinned library> installed 2026-09-20 01:34
+
+mean (Monte Carlo standard error) over 50 replicates
+  scenario    n     arm failed   noise_share     latent_r2           ari   err_numeric    err_binary      err_info         lambda
+ noise3_L3  200 current      0 0.129 (0.007) 0.812 (0.005) 0.578 (0.016) 0.557 (0.022) 0.113 (0.010)                5.000 (0.000)
+ noise3_L3  200  scaled      0 0.030 (0.002) 0.860 (0.003) 0.664 (0.009) 0.470 (0.019) 0.113 (0.010)                5.000 (0.000)
+ noise3_L3  200     s2z      0 0.123 (0.014) 0.801 (0.010) 0.648 (0.024) 0.664 (0.053) 0.126 (0.019)                5.000 (0.000)
+ noise3_L3 1000 current      0 0.050 (0.003) 0.841 (0.002) 0.679 (0.003) 0.521 (0.009) 0.120 (0.005)               10.000 (0.000)
+ noise3_L3 1000  scaled      0 0.008 (0.001) 0.864 (0.001) 0.710 (0.003) 0.456 (0.009) 0.116 (0.005)               10.000 (0.000)
+ noise3_L3 1000     s2z      0 0.040 (0.007) 0.849 (0.004) 0.675 (0.006) 0.493 (0.023) 0.110 (0.009)               10.000 (0.000)
+   info_L6  200 current      0 0.024 (0.002) 0.903 (0.002) 0.363 (0.007) 0.321 (0.013) 0.138 (0.011) 0.661 (0.014)  4.460 (0.165)
+   info_L6  200  scaled      0 0.010 (0.001) 0.887 (0.002) 0.676 (0.008) 0.364 (0.017) 0.131 (0.011) 0.675 (0.015)  5.000 (0.000)
+   info_L6  200     s2z      0 0.022 (0.003) 0.907 (0.004) 0.367 (0.013) 0.316 (0.031) 0.116 (0.027) 0.640 (0.030)  4.700 (0.300)
+   info_L6 1000 current      0 0.006 (0.001) 0.911 (0.001) 0.353 (0.004) 0.284 (0.005) 0.123 (0.005) 0.644 (0.007)  8.800 (0.305)
+   info_L6 1000  scaled      0 0.003 (0.000) 0.888 (0.001) 0.696 (0.003) 0.340 (0.006) 0.121 (0.005) 0.667 (0.008) 10.000 (0.000)
+   info_L6 1000     s2z      0 0.006 (0.001) 0.912 (0.002) 0.357 (0.005) 0.283 (0.010) 0.106 (0.007) 0.667 (0.017)  9.500 (0.500)
+
+## after: 2026-09-27 12:45:54, R version 4.4.3 (2025-02-28 ucrt)
+## .libPaths(): <pinned library> ; <R's library> 
+##   pkgload      1.3.4        <pinned library> installed 2024-04-29 04:33
+##   collapse     2.1.8        <pinned library> installed 2026-09-19 23:49
+##   tinyplot     0.7.0        <pinned library> installed 2026-09-20 01:34
+## library unchanged during the run
+
+## dev/studies/glrm_scaling_paired.R on the two parts' CSVs, verbatim. Written after the
+## run, not pre-registered: the same data read replicate by replicate, since every arm
+## fits the same simulated data in each replicate.
+
+s2z - current: largest absolute paired difference
+  scenario    n pairs noise_share latent_r2 ari err_numeric err_binary err_info lambda
+  noise_L3  200    10       9e-16     1e-15   0     2.5e-14          0               0
+  noise_L3 1000    10     5.6e-15   4.3e-14   0     4.1e-13          0               0
+ noise_L10  200    10       5e-15     3e-15   0     1.4e-13          0               0
+ noise_L10 1000    10     1.6e-16   1.1e-15   0       7e-15          0               0
+ noise3_L3  200    10       2e-16     1e-15   0       7e-15          0               0
+ noise3_L3 1000    10       3e-16     1e-15   0     1.4e-14          0               0
+   info_L6  200    10       2e-16     1e-15   0       6e-15          0        0      0
+   info_L6 1000    10     3.6e-16     1e-15   0     1.1e-14          0        0      0
+
+scaled - current: mean paired difference (standard error)
+  scenario    n pairs    noise_share      latent_r2            ari    err_numeric     err_binary       err_info         lambda
+  noise_L3  200    50 -0.044 (0.004) +0.024 (0.002) +0.054 (0.009) -0.070 (0.004) -0.004 (0.005)                +0.000 (0.000)
+  noise_L3 1000    50 -0.015 (0.001) +0.010 (0.001) +0.023 (0.002) -0.047 (0.002) -0.002 (0.001)                +0.000 (0.000)
+ noise_L10  200    50 -0.027 (0.001) +0.006 (0.001) +0.033 (0.005) -0.043 (0.003) -0.000 (0.003)                -0.120 (0.084)
+ noise_L10 1000    50 -0.008 (0.000) +0.004 (0.000) +0.022 (0.002) -0.035 (0.001) -0.001 (0.002)                -0.100 (0.100)
+ noise3_L3  200    50 -0.098 (0.005) +0.048 (0.003) +0.085 (0.013) -0.086 (0.005) -0.000 (0.004)                +0.000 (0.000)
+ noise3_L3 1000    50 -0.042 (0.003) +0.023 (0.001) +0.030 (0.002) -0.066 (0.002) -0.005 (0.002)                +0.000 (0.000)
+   info_L6  200    50 -0.014 (0.001) -0.015 (0.002) +0.313 (0.012) +0.043 (0.008) -0.007 (0.006) +0.013 (0.008) +0.540 (0.165)
+   info_L6 1000    50 -0.003 (0.000) -0.023 (0.001) +0.343 (0.005) +0.056 (0.004) -0.002 (0.002) +0.022 (0.005) +1.200 (0.305)
+
+share of fits whose lambda is the top of the grid (10)
+  scenario    n current scaled
+  noise_L3  200    0.00   0.00
+  noise_L3 1000    1.00   1.00
+ noise_L10  200    0.00   0.00
+ noise_L10 1000    1.00   0.98
+ noise3_L3  200    0.00   0.00
+ noise3_L3 1000    1.00   1.00
+   info_L6  200    0.00   0.00
+   info_L6 1000    0.76   1.00

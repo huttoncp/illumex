@@ -1,0 +1,41 @@
+mean (Monte Carlo SE) over replicates
+           cond  rule           ari           var3       jaccard                          lambda
+ numeric_strong cap10 0.664 (0.023) 92.229 (1.460) 0.944 (0.007)               1 x1, 2 x12, 5 x7
+ numeric_strong onese 0.667 (0.023) 98.340 (0.879) 0.944 (0.008)                     1 x11, 2 x9
+ numeric_strong ruled 0.663 (0.023) 92.694 (1.684) 0.942 (0.009)               1 x1, 2 x13, 5 x6
+   numeric_weak cap10 0.106 (0.010) 83.169 (2.343) 0.806 (0.017)              2 x9, 5 x10, 10 x1
+   numeric_weak onese 0.116 (0.011) 89.174 (2.667) 0.804 (0.015) 0.5 x1, 1 x7, 2 x8, 5 x3, 10 x1
+   numeric_weak ruled 0.106 (0.010) 80.221 (2.422) 0.807 (0.017)        1 x1, 2 x4, 5 x13, 10 x2
+   mixed_strong cap10 0.562 (0.029) 76.339 (2.355) 0.929 (0.009)              2 x6, 5 x11, 10 x3
+   mixed_strong onese 0.516 (0.036) 73.346 (3.034) 0.892 (0.017)       0.5 x1, 1 x1, 2 x8, 5 x10
+   mixed_strong ruled 0.601 (0.032) 76.403 (2.769) 0.926 (0.009)              2 x1, 5 x14, 10 x5
+     mixed_weak cap10 0.082 (0.011) 64.868 (2.524) 0.825 (0.023)              2 x3, 5 x10, 10 x7
+     mixed_weak onese 0.088 (0.010) 65.639 (4.871) 0.802 (0.021)               1 x2, 2 x1, 5 x17
+     mixed_weak ruled 0.090 (0.010) 58.947 (4.049) 0.848 (0.019) 1 x1, 2 x1, 5 x7, 10 x10, 20 x1
+  numeric_noisy cap10 0.348 (0.018) 43.711 (1.019) 0.818 (0.019)                          10 x20
+  numeric_noisy onese 0.340 (0.020) 42.798 (3.194) 0.816 (0.019)             5 x3, 10 x14, 20 x3
+  numeric_noisy ruled 0.332 (0.021) 35.451 (3.539) 0.825 (0.018)             5 x1, 10 x11, 20 x8
+    mixed_noisy cap10 0.267 (0.022) 51.731 (1.061) 0.769 (0.025)                    5 x11, 10 x9
+    mixed_noisy onese 0.276 (0.021) 56.167 (1.421) 0.759 (0.022)                           5 x20
+    mixed_noisy ruled 0.255 (0.024) 48.545 (2.760) 0.780 (0.024)            5 x8, 10 x11, 100 x1
+
+the check: the study's selector call equals ilm_glrm(lambda = NULL)'s
+  18 of 18 agree
+
+paired against ruled, ari: mean difference (paired SE)
+  cap10  numeric_strong  +0.001 (0.001)
+  cap10  numeric_weak    +0.000 (0.002)
+  cap10  mixed_strong    -0.039 (0.018)
+  cap10  mixed_weak      -0.009 (0.008)
+  cap10  numeric_noisy   +0.016 (0.008)
+  cap10  mixed_noisy     +0.011 (0.007)
+  cap10: better in 0 condition(s), worse by more than 0.02 in at least one -> does not
+  onese  numeric_strong  +0.003 (0.002)
+  onese  numeric_weak    +0.010 (0.006)
+  onese  mixed_strong    -0.085 (0.045)
+  onese  mixed_weak      -0.002 (0.008)
+  onese  numeric_noisy   +0.008 (0.006)
+  onese  mixed_noisy     +0.020 (0.009)
+  onese: better in 0 condition(s), worse by more than 0.02 in at least one -> does not
+
+decision, by the rule fixed before the run: one selector for both (neither qualifies) 
