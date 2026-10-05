@@ -7,14 +7,14 @@ Authors@R: person(given = "Craig", family = "Hutton",
                   email = "craig.hutton@gmail.com")
 Description: The exploratory half of the 'illume' workflow, usable on its
     own. It describes every column of a data frame in one call, with a
-    gaussian index in place of a normality test; counts values, finds
+    Gaussian index in place of a normality test; counts values, finds
     duplicated and copied rows, and reports problems that belong to pairs of
     columns; cleans and recodes; gives bootstrap intervals for a statistic or
     a difference between groups without a model; flags values extreme for
     their own column and rows implausible as a combination, by low-rank
     reconstruction with a simulated null or by isolation forest; describes
-    missing values and plots their pattern; and profiles a data set by
-    dimension reduction, generalized low rank models and clustering, for
+    missing values and plots their pattern; and profiles a dataset by
+    dimension reduction, generalised low rank models and clustering, for
     numeric and mixed columns alike. Plots are built on 'tinyplot' and named
     for what they show, and the grouped arithmetic runs on 'collapse'.
     Every function is prefixed ilm_, as in 'illume', which attaches this

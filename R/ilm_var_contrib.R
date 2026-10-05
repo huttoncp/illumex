@@ -32,7 +32,7 @@
 #'
 #' @details
 #' The statistic is the **between-cluster share of variance** -- eta squared
-#' for a numeric variable, Cramer's V for a categorical one -- so both are on
+#' for a numeric variable, \enc{Cramér}{Cramer}'s V for a categorical one -- so both are on
 #' a 0 to 1 scale and directly comparable. A permutation reference is computed
 #' by shuffling the cluster labels, which preserves each variable's own
 #' distribution and destroys only its relationship with the clustering, and the
@@ -73,7 +73,7 @@
 #' @return A data frame, one row per variable, with the separation statistic,
 #'   the permutation mean, a p-value and a verdict. Sorted strongest first.
 #' @seealso [ilm_profile()], [ilm_cluster()], [ilm_reduce()].
-#' @examples
+#' @examplesIf requireNamespace("cluster", quietly = TRUE)
 #' \donttest{
 #' p <- ilm_profile(mtcars, k = 3)
 #' ilm_var_contrib(p, mtcars)

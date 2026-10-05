@@ -3,7 +3,7 @@
 \name{ilm_describe_clusters}
 \alias{ilm_describe_clusters}
 \alias{iml_describe_clusters}
-\title{Describe data whose rows sit in clusters}
+\title{Describe data whose rows sit in sampling clusters}
 \usage{
 ilm_describe_clusters(
   data,

@@ -203,7 +203,7 @@ logspace_add0 <- function(u) ifelse(u > 30, u, log1p(exp(pmin(u, 30))))
 #'   spacing, in one column -- and adds the time of day, the day of the week,
 #'   the day of the month and the time of year, each as a sine and cosine so
 #'   that the ends of the cycle meet, but only the cycles some other column
-#'   varies with, and only where the data cover two of the cycle. A cycle
+#'   varies with, and only where the data cover two full cycles. A cycle
 #'   nothing else follows is noise to a clustering: on two known clusters,
 #'   every cycle given unasked took recovery from 0.38 to 0.10 where the date
 #'   meant nothing, while the tested ones left it at 0.36 there and, where a

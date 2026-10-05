@@ -67,7 +67,7 @@ default, uses each as the time since its earliest value -- its order and
 spacing, in one column -- and adds the time of day, the day of the week,
 the day of the month and the time of year, each as a sine and cosine so
 that the ends of the cycle meet, but only the cycles some other column
-varies with, and only where the data cover two of the cycle. A cycle
+varies with, and only where the data cover two full cycles. A cycle
 nothing else follows is noise to a clustering: on two known clusters,
 every cycle given unasked took recovery from 0.38 to 0.10 where the date
 meant nothing, while the tested ones left it at 0.36 there and, where a
@@ -80,8 +80,7 @@ large data or when only order matters. \code{"drop"} leaves dates out. A
 duration (\code{difftime}) is used as its number of days.}
 
 \item{cols_negate}{If \code{TRUE}, \code{cols} names the columns to leave out, and every
-other eligible column is used; see \link{ilm_selection}. It needs \code{cols}. A
-\code{by} argument is never negated.}
+other eligible column is used; see \link{ilm_selection}. It needs \code{cols}.}
 
 \item{cols_fixed}{If \code{TRUE}, a \code{cols} string read as a pattern is matched
 literally, as a substring (as \code{grepl(fixed = TRUE)} does); a column name

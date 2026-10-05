@@ -3,7 +3,7 @@
 \name{ilm_profile}
 \alias{ilm_profile}
 \alias{iml_profile}
-\title{Profile a data set: reduce, cluster, and describe the clusters}
+\title{Profile a dataset: reduce, cluster, and describe the clusters}
 \usage{
 ilm_profile(
   data,
@@ -34,8 +34,8 @@ regular expression, a predicate function such as \code{is.numeric}, or
 
 \item{method}{\code{"famd"} (the default) for PCA, MCA or FAMD depending on
 the column types, in closed form; \code{"pcamix"}, its name from when
-PCAmixdata computed it, is still accepted and means the same. \code{"glrm"} fits a generalized low rank
-model instead, which uses a loss appropriate to each column's type rather
+PCAmixdata computed it, is still accepted and means the same. \code{"glrm"} fits a
+generalised low rank model instead, which uses a loss appropriate to each column's type rather
 than squared error on one-hot indicators, and reconstructs a category as a
 category. It costs an iterative fit, and on all-numeric data the two are
 the same model -- see \code{\link[=ilm_glrm]{ilm_glrm()}} for when it is worth that.}
@@ -64,8 +64,7 @@ clustering takes; \code{var_contrib = FALSE} leaves it out.}
 \item{var_contrib_B}{Permutations for that check.}
 
 \item{cols_negate}{If \code{TRUE}, \code{cols} names the columns to leave out, and every
-other eligible column is used; see \link{ilm_selection}. It needs \code{cols}. A
-\code{by} argument is never negated.}
+other eligible column is used; see \link{ilm_selection}. It needs \code{cols}.}
 
 \item{cols_fixed}{If \code{TRUE}, a \code{cols} string read as a pattern is matched
 literally, as a substring (as \code{grepl(fixed = TRUE)} does); a column name
@@ -139,15 +138,17 @@ stability and silhouette figures in \code{\link[=ilm_cluster]{ilm_cluster()}} ar
 
 A profile runs \code{\link[=ilm_cluster]{ilm_cluster()}}, and at its defaults shares that
 function's limits (see Size there): on one core of a 16 GB Windows
-machine (\code{dev/studies/scale_check.R} in the source) it took about a minute at 1,000
+machine (\href{https://github.com/huttoncp/illumex/blob/main/dev/studies/scale_check.R}{\code{dev/studies/scale_check.R}}) it took about a minute at 1,000
 rows and over 15 minutes at 10,000, nearly all of it the gap statistic
 choosing \code{k}; giving \code{k} saves that search. Above about 40,000 rows the
 silhouettes' distance matrix does not fit in 16 GB.
 }
 
 \examples{
+\dontshow{if (requireNamespace("cluster", quietly = TRUE)) (if (getRversion() >= "3.4") withAutoprint else force)(\{ # examplesIf}
 p <- ilm_profile(mtcars, k_max = 5, B = 25, seed = 1)
 cat(p$summary, sep = "\n")
+\dontshow{\}) # examplesIf}
 }
 \seealso{
 \code{\link[=ilm_reduce]{ilm_reduce()}}, \code{\link[=ilm_cluster]{ilm_cluster()}}, \code{\link[=ilm_plot_profile]{ilm_plot_profile()}},

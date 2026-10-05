@@ -39,7 +39,7 @@ ilm_plot(
 
 \item{by}{Optional grouping variable, drawn as colour with a legend.}
 
-\item{geom}{\code{"auto"} or one of the geoms in the table above.}
+\item{geom}{\code{"auto"} or one of the geoms in the table below.}
 
 \item{colour, color}{Colour of lines, points and borders. Synonyms; give one.}
 
@@ -66,7 +66,7 @@ reported here.}
 
 \item{...}{Passed to \code{\link[tinyplot:tinyplot]{tinyplot::tinyplot()}}.}
 
-\item{pch}{Plotting character. Takes a NAME as well as a number:
+\item{pch}{Plotting character. Takes a name as well as a number:
 \code{"filled circle"} is 16, and every code from 0 to 25 has one. Case,
 spaces, underscores and hyphens are ignored. A single character is
 drawn literally, so \code{pch = "x"} is still the letter x.}

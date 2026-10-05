@@ -79,6 +79,7 @@ a pattern or a predicate, as \code{cols} does; elsewhere a pattern or a function
 given as \code{by} is an error. \code{by} is never negated.
 }
 \examples{
+set.seed(1)
 d <- data.frame(id = 1:5, score_a = rnorm(5), score_b = rnorm(5),
                 label = letters[1:5])
 ilm_outliers_all(d, cols = "^score_")

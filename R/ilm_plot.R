@@ -221,7 +221,7 @@ ilm_geom_spec <- function(geom = NULL) {
 #' @param facet Optional column to draw in panels, one per level, named as a
 #'   string the way `by` is: `facet = "site"`. Not available for the binned
 #'   density (`"bin2d"`).
-#' @param geom `"auto"` or one of the geoms in the table above.
+#' @param geom `"auto"` or one of the geoms in the table below.
 #' @param colour,color Colour of lines, points and borders. Synonyms; give one.
 #' @param fill Fill colour for bars, boxes, violins and densities.
 #' @param alpha Opacity between 0 (transparent) and 1 (opaque).
@@ -236,7 +236,7 @@ ilm_geom_spec <- function(geom = NULL) {
 #' @param verdict Annotate the plot with the diagnostic verdict.
 #' @param main Plot title.
 #' @param ... Passed to [tinyplot::tinyplot()].
-#' @param pch Plotting character. Takes a NAME as well as a number:
+#' @param pch Plotting character. Takes a name as well as a number:
 #'   `"filled circle"` is 16, and every code from 0 to 25 has one. Case,
 #'   spaces, underscores and hyphens are ignored. A single character is
 #'   drawn literally, so `pch = "x"` is still the letter x.
@@ -492,6 +492,8 @@ ilm_plot_all <- function(data, by = NULL, cols = NULL, class = "all", max_panels
 ## ---- missingness -----------------------------------------------------------
 
 #' Proportion missing, by variable
+#'
+#' Draws the share of values missing in each column of a data frame, as bars.
 #'
 #' @param data A data frame.
 #' @param ... Passed to [graphics::barplot()].

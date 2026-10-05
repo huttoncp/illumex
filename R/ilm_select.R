@@ -93,6 +93,7 @@
 #'
 #' @name ilm_selection
 #' @examples
+#' set.seed(1)
 #' d <- data.frame(id = 1:5, score_a = rnorm(5), score_b = rnorm(5),
 #'                 label = letters[1:5])
 #' ilm_outliers_all(d, cols = "^score_")

@@ -22,8 +22,9 @@ test_that("a dimension with no variation is not kept, printed or recorded", {
   expect_true(all(sv[1:4] > sqrt(.Machine$double.eps) * sv[1]))
   expect_lte(sv[5], sqrt(.Machine$double.eps) * sv[1])
   out <- capture.output(print(r))
-  expect_match(out[1], "4 dimensions carry variation (5 fitted; after shrinkage the 5th has none)",
-               fixed = TRUE)
+  ## the header is split over two lines to stay under 80 characters
+  expect_match(out[1], "4 dimensions carry variation$")
+  expect_identical(out[2], "  (5 fitted; after shrinkage the 5th has none)")
   expect_false(any(grepl("dim 5", out)))
   expect_true(any(grepl("after shrinkage 4 of the 5 dimensions carry variation",
                         capture.output(print(r$fit)), fixed = TRUE)))

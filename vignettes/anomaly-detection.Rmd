@@ -8,7 +8,7 @@ vignette: >
 ---
 
 ```{r setup, include = FALSE}
-knitr::opts_chunk$set(collapse = TRUE, comment = "#>", eval = FALSE)
+knitr::opts_chunk$set(collapse = TRUE, comment = "#>", fig.width = 7, fig.height = 4.5)
 ```
 
 Two functions ask different questions, and the difference is the whole point.
@@ -17,22 +17,39 @@ Two functions ask different questions, and the difference is the whole point.
 library(illumex)
 ```
 
+The examples use simulated body measurements: four columns driven by one
+shared size, and three people who are short and heavy, each value inside its
+own column's range.
+
+```{r}
+set.seed(1)
+n <- 300
+size <- rnorm(n)
+d <- data.frame(height = 170 + 9 * size + rnorm(n, 0, 4),
+                weight = 72 + 11 * size + rnorm(n, 0, 6),
+                waist = 85 + 9 * size + rnorm(n, 0, 5),
+                shoe = 41 + 2.5 * size + rnorm(n, 0, 1))
+d[c(17, 120, 230), "height"] <- c(152, 150, 155)
+d[c(17, 120, 230), "weight"] <- c(98, 100, 97)
+```
+
 ## One column, or the combination
 
 `ilm_outliers()` asks whether a **value** is extreme for its own column.
 
 ```{r}
-ilm_outliers(d$height)
+o <- ilm_outliers(d$height)
+o[o$is_outlier, ]              # the flagged values only
 ilm_outliers_all(d)            # every column at once
 ```
 
 `ilm_anomaly()` asks whether a **row** is a plausible combination.
 
 ```{r}
-ilm_anomaly(d)
+ilm_anomaly(d, seed = 1)
 ```
 
-Someone 150 cm tall is unremarkable. Someone weighing 110 kg is unremarkable.
+Someone 150 cm tall is unremarkable. Someone weighing 100 kg is unremarkable.
 Someone who is both is not, and nothing in either column's distribution says so.
 On simulated data with ten rows pushed off the correlation structure but inside
 every column's range, the column-at-a-time scan caught **none** of them.
@@ -43,10 +60,7 @@ of the row is left over. A row that respects the correlations needs only a few
 numbers to describe it; one that does not leaves a large remainder.
 
 ```{r}
-r <- ilm_anomaly(d)
-head(r)
-#>  row score        p  p_adj  flag driver
-#>    1 3.746 8.55e-05 0.0256  TRUE      a
+r <- ilm_anomaly(d, seed = 1)
 ```
 
 `driver` is the column contributing most to that row's score. An anomaly nobody
@@ -190,8 +204,8 @@ legitimately includes their direction. Detection degrades accordingly: 0.89 at
 That is the method reaching its limit rather than failing quietly, and the tool
 for a second group is `ilm_cluster()`, which is looking for exactly that.
 
-```{r}
-ilm_profile(d)                 # is it a group rather than a scattering?
+```{r, eval = requireNamespace("cluster", quietly = TRUE)}
+ilm_profile(d, B = 25, seed = 1)  # a group rather than a scattering?
 ```
 
 ## A flagged row is not an error

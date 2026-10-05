@@ -11,7 +11,7 @@
 ## markers for variables: "income is missing for 92% of them".
 ## ---------------------------------------------------------------------------
 
-#' Profile a data set: reduce, cluster, and describe the clusters
+#' Profile a dataset: reduce, cluster, and describe the clusters
 #'
 #' Runs [ilm_reduce()], then [ilm_cluster()] on the dimensions it produces,
 #' then says what sets each cluster apart, in the variables' own units -- a
@@ -56,7 +56,7 @@
 #' @section Size:
 #' A profile runs [ilm_cluster()], and at its defaults shares that
 #' function's limits (see Size there): on one core of a 16 GB Windows
-#' machine (`dev/studies/scale_check.R` in the source) it took about a minute at 1,000
+#' machine ([`dev/studies/scale_check.R`](https://github.com/huttoncp/illumex/blob/main/dev/studies/scale_check.R)) it took about a minute at 1,000
 #' rows and over 15 minutes at 10,000, nearly all of it the gap statistic
 #' choosing `k`; giving `k` saves that search. Above about 40,000 rows the
 #' silhouettes' distance matrix does not fit in 16 GB.
@@ -88,7 +88,7 @@
 #'   `not_distinctive` (the variables that set no cluster apart).
 #' @seealso [ilm_reduce()], [ilm_cluster()], [ilm_plot_profile()],
 #'   [ilm_profile_na()].
-#' @examples
+#' @examplesIf requireNamespace("cluster", quietly = TRUE)
 #' p <- ilm_profile(mtcars, k_max = 5, B = 25, seed = 1)
 #' cat(p$summary, sep = "\n")
 #' @export
@@ -177,7 +177,7 @@ ilm_profile <- function(data, cols = NULL, ndim = 5,
 #' @section Size:
 #' It runs [ilm_cluster_na()], and at its defaults shares that function's
 #' limits (see Size in [ilm_cluster()]): on one core of a 16 GB Windows
-#' machine (`dev/studies/scale_check.R` in the source) it took 17 seconds at 1,000 rows
+#' machine ([`dev/studies/scale_check.R`](https://github.com/huttoncp/illumex/blob/main/dev/studies/scale_check.R)) it took 17 seconds at 1,000 rows
 #' and over 15 minutes at 10,000, nearly all of it the gap statistic
 #' choosing `k`; giving `k` saves that search.
 #'
@@ -188,7 +188,7 @@ ilm_profile <- function(data, cols = NULL, ndim = 5,
 #' @return An object of class `"ilm_profile_na"`, which is also an
 #'   `"ilm_profile"`.
 #' @seealso [ilm_check_missing()], `illume::ilm_impute()`, [ilm_profile()].
-#' @examples
+#' @examplesIf requireNamespace("cluster", quietly = TRUE)
 #' p <- ilm_profile_na(airquality, k_max = 4, B = 25, seed = 1)
 #' cat(p$summary, sep = "\n")
 #' @export
@@ -221,11 +221,20 @@ ilm_profile_na <- function(data, cols = NULL, ndim = 5, ...,
                     cols_fixed = cols_fixed)
 }
 
+## A warning in the print, wrapped as the paragraphs above it are: "  ! "
+## then the text, at the same width
+#' @keywords internal
+#' @noRd
+ilm_profile_alert <- function(text) {
+  cat(paste0(strwrap(text, width = 72L, initial = "  ! ", prefix = "    "),
+             collapse = "\n"), "\n", sep = "")
+}
+
 #' @export
 print.ilm_profile <- function(x, ...) {
   cat(if (inherits(x, "ilm_profile_na"))
-        "<ilm_profile_na>  (profiling the pattern of missing values)"
-      else "<ilm_profile>", "\n\n")
+        "<ilm_profile_na> (profiling the pattern of missing values)"
+      else "<ilm_profile>", "\n\n", sep = "")
   print(x$reduce)
   cat("\n")
   print(x$cluster)
@@ -233,11 +242,11 @@ print.ilm_profile <- function(x, ...) {
   ## the cluster print has said what the rows are
   if (identical(as.integer(x$cluster$k), 1L)) return(invisible(x))
   cat("\n  what each cluster is\n")
-  for (s in x$summary) cat(ilm_wrap(s, 76L, "    "), "\n\n")
+  for (s in x$summary) cat(ilm_wrap(s, 76L, "    "), "\n\n", sep = "")
   ## what the paragraphs leave out, said once rather than left to be wondered at
   closing <- ilm_profile_closing(x$not_distinctive,
                                  attr(x$not_distinctive, "of"))
-  if (!is.null(closing)) cat(ilm_wrap(closing, 76L, "    "), "\n\n")
+  if (!is.null(closing)) cat(ilm_wrap(closing, 76L, "    "), "\n\n", sep = "")
   ## The cluster descriptions above are always true OF THE CLUSTERS FOUND.
   ## Whether those clusters are worth describing is a separate question, and
   ## this is where it gets answered rather than left to a function the reader
@@ -249,18 +258,19 @@ print.ilm_profile <- function(x, ...) {
     ## logical index would name it here as "NA"
     dead <- v$variable[which(v$verdict == "no better than chance")]
     if (!is.null(dom)) {
-      cat("  ! this clustering is a re-labelling of `", dom, "`: it separates\n",
-          "    the clusters almost perfectly while nothing else does, so the\n",
-          "    descriptions above are all about that one variable. Exclude it\n",
-          "    with cols = if it is not the grouping you wanted.\n", sep = "")
+      ilm_profile_alert(paste0("this clustering is a re-labelling of `", dom,
+                               "`: it separates the clusters almost perfectly ",
+                               "while nothing else does, so the descriptions ",
+                               "above are all about that one variable. Exclude ",
+                               "it with cols = if it is not the grouping you wanted."))
     } else if (length(dead)) {
-      cat("  ! ", paste(dead, collapse = ", "), " separate",
-          if (length(dead) == 1L) "s" else "",
-          " the clusters no better than a\n",
-          "    shuffled label does, and nothing here selects variables, so ",
-          if (length(dead) == 1L) "it is" else "they are", "\n",
-          "    still contributing distance. Refit with cols = to drop ",
-          if (length(dead) == 1L) "it." else "them.", "\n", sep = "")
+      ilm_profile_alert(paste0(paste(dead, collapse = ", "), " separate",
+                               if (length(dead) == 1L) "s" else "",
+                               " the clusters no better than a shuffled label ",
+                               "does, and nothing here selects variables, so ",
+                               if (length(dead) == 1L) "it is" else "they are",
+                               " still contributing distance. Refit with cols = ",
+                               "to drop ", if (length(dead) == 1L) "it." else "them."))
     }
     cat("    ilm_var_contrib() for the full table.\n")
   }

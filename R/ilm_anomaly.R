@@ -343,7 +343,7 @@ ilm_anomaly_iforest <- function(data, sel, ntrees, alpha, seed,
 #' anomalies, the share of datasets with at least one flagged row was 0.84
 #' to 1.00 with lognormal noise, 0.01 to 0.17 with clustered rows, and up to
 #' 0.125 with normal noise and 5 columns (150 to 1,000 rows, 5 to 15
-#' columns; `dev/studies/anomaly_calibration3.R`).
+#' columns; [`dev/studies/anomaly_calibration3.R`](https://github.com/huttoncp/illumex/blob/main/dev/studies/anomaly_calibration3.R)).
 #'
 #' The scan therefore checks its own residuals, and warns when their tails
 #' are heavier than all but 2 of 40 reference datasets' (p <= 0.05, with the
@@ -354,7 +354,7 @@ ilm_anomaly_iforest <- function(data, sel, ntrees, alpha, seed,
 #' 0.135). Rows that fall into groups are [ilm_cluster()]'s to find.
 #'
 #' @section Size:
-#' On one core of a 16 GB Windows machine (`dev/studies/scale_check.R` in the source) the
+#' On one core of a 16 GB Windows machine ([`dev/studies/scale_check.R`](https://github.com/huttoncp/illumex/blob/main/dev/studies/scale_check.R)) the
 #' default method took 32 seconds at 10,000 rows and 13 minutes at 50,000 --
 #' the time grows about as the square of the rows -- and over 15 minutes at
 #' 100,000. `method = "iforest"` took 3.5 minutes at 10,000 rows and over 15
@@ -379,7 +379,7 @@ ilm_anomaly_iforest <- function(data, sel, ntrees, alpha, seed,
 #'   rows you are calling anomalous rather than an error rate being controlled.
 #'   Needs the isotree package.
 #' @param ntrees Trees in the isolation forest. Ignored by the default method.
-#' @param rank Number of directions; `NULL` uses parallel analysis.
+#' @param rank Number of dimensions; `NULL` uses parallel analysis.
 #' @param trim Share of the worst-fitting rows held out of the fit. `0` fits
 #'   every row, which lets the anomalies define the structure they are scored
 #'   against.
@@ -408,11 +408,10 @@ ilm_anomaly_iforest <- function(data, sel, ntrees, alpha, seed,
 #'   driver named the changed column for 0.85 to 0.99 of rows pushed out of a
 #'   column's range and 0.90 to 0.95 of rows pairing categories that never
 #'   otherwise occur, but for only 0.34 to 0.38 of rows whose category
-#'   contradicts their numbers (`dev/studies/driver_redesign.R` in the
-#'   source). Above 2,000 rows a category's nearest rows are searched among
+#'   contradicts their numbers ([`dev/studies/driver_redesign.R`](https://github.com/huttoncp/illumex/blob/main/dev/studies/driver_redesign.R)). Above 2,000 rows a category's nearest rows are searched among
 #'   2,000 drawn under `seed`, which gave the same driver as searching every
 #'   row for 0.998 to 1.000 of flagged rows at 10,000 rows
-#'   (`dev/studies/driver_pool.R`). Under either method, read `driver` as
+#'   ([`dev/studies/driver_pool.R`](https://github.com/huttoncp/illumex/blob/main/dev/studies/driver_pool.R)). Under either method, read `driver` as
 #'   where to look first, not as the cause.
 #' @seealso [ilm_outliers()] for the one-column-at-a-time question,
 #'   [ilm_cluster()] when the unusual rows turn out to be a group,

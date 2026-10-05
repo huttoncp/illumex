@@ -195,7 +195,7 @@ ilm_cluster_na_note <- function(data, fn) {
 #' @section Size:
 #' Every clustering computes each row's silhouette from a full distance
 #' matrix of n^2 / 2 numbers, so memory is the first limit. On one core of a
-#' 16 GB Windows machine (`dev/studies/scale_check.R` in the source), with
+#' 16 GB Windows machine ([`dev/studies/scale_check.R`](https://github.com/huttoncp/illumex/blob/main/dev/studies/scale_check.R)), with
 #' `k` given, k-means took 35 seconds and 1.2 GB at 10,000 rows and failed at
 #' 50,000 rows for want of 9.3 GB; `method = "hclust"` took 13 minutes at 10,000.
 #' Choosing `k` by the gap statistic, the default, took about a minute at
@@ -243,12 +243,13 @@ ilm_cluster_na_note <- function(data, fn) {
 #'   `is_anomalous`), and `coords`.
 #' @references
 #' Hennig, C. (2007). Cluster-wise assessment of cluster stability.
-#' Computational Statistics and Data Analysis 52(1).
+#' Computational Statistics and Data Analysis 52(1), 258-271.
 #'
 #' Tibshirani, R., Walther, G. and Hastie, T. (2001). Estimating the number of
-#' clusters in a data set via the gap statistic. JRSS B 63(2).
+#' clusters in a data set via the gap statistic. Journal of the Royal
+#' Statistical Society, Series B 63(2), 411-423.
 #' @seealso [ilm_reduce()], [ilm_profile()], [ilm_plot_cluster()].
-#' @examples
+#' @examplesIf requireNamespace("cluster", quietly = TRUE)
 #' cl <- ilm_cluster(ilm_reduce(mtcars), k_max = 5, B = 25, seed = 1)
 #' cl
 #' @export
@@ -430,7 +431,7 @@ ilm_cluster <- function(x, k = NULL, k_max = 10, method = c("kmeans", "hclust"),
 #' @return An object of class `"ilm_cluster_na"`, which is also an
 #'   `"ilm_cluster"`.
 #' @seealso [ilm_profile_na()].
-#' @examples
+#' @examplesIf requireNamespace("cluster", quietly = TRUE)
 #' cl <- ilm_cluster_na(ilm_reduce_na(airquality), k_max = 4, B = 25, seed = 1)
 #' cl
 #' @export

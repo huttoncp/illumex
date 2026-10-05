@@ -146,14 +146,15 @@ ilm_miss_outcome_test <- function(data, v, y, covars) {
 #'   way to write it: `outcome ~ x + z` sets the outcome and takes the
 #'   right-hand side as `covariates`.
 #' @param min_effect Smallest association worth reporting, as a correlation or
-#'   Cramer's V. With several thousand rows an association of 0.02 is
+#'   \enc{Cramér}{Cramer}'s V. With several thousand rows an association of 0.02 is
 #'   significant and means nothing.
 #' @param alpha Level for the adjusted p-values.
 #' @param adjust Multiplicity adjustment across pairs, passed to
 #'   [stats::p.adjust()].
 #' @param verbose Narrate the findings.
 #' @return An object of class `"ilm_missing"`: `variables`, `patterns`,
-#'   `associations`, `monotone` and a `verdict`.
+#'   `associations`, `outcome_test`, `monotone`, `n` (rows), `n_complete`
+#'   (complete rows), `y`, `min_effect` and a `verdict`.
 #' @seealso `illume::ilm_impute()`, [ilm_describe_na_all()], [ilm_plot_missing()].
 #' @examples
 #' d <- ilm_sim()

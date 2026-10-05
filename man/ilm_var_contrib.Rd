@@ -29,7 +29,7 @@ than losing information.
 }
 \details{
 The statistic is the \strong{between-cluster share of variance} -- eta squared
-for a numeric variable, Cramer's V for a categorical one -- so both are on
+for a numeric variable, \enc{Cramér}{Cramer}'s V for a categorical one -- so both are on
 a 0 to 1 scale and directly comparable. A permutation reference is computed
 by shuffling the cluster labels, which preserves each variable's own
 distribution and destroys only its relationship with the clustering, and the
@@ -65,10 +65,12 @@ variable and is not done here.
 }
 
 \examples{
+\dontshow{if (requireNamespace("cluster", quietly = TRUE)) (if (getRversion() >= "3.4") withAutoprint else force)(\{ # examplesIf}
 \donttest{
 p <- ilm_profile(mtcars, k = 3)
 ilm_var_contrib(p, mtcars)
 }
+\dontshow{\}) # examplesIf}
 }
 \seealso{
 \code{\link[=ilm_profile]{ilm_profile()}}, \code{\link[=ilm_cluster]{ilm_cluster()}}, \code{\link[=ilm_reduce]{ilm_reduce()}}.

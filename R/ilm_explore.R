@@ -126,13 +126,17 @@ ilm_counts_all <- function(data, by = NULL, cols = NULL, n = "all",
 
 #' Most and least frequent values for every column
 #'
+#' Applies [ilm_counts_tb()] to each column and stacks the results, led by a
+#' `variable` column.
+#'
 #' @inheritParams ilm_counts_tb
 #' @inheritParams ilm_reduce
 #' @param data A data frame.
 #' @param cols Columns to count. A character vector of names, a regular
 #'   expression, a predicate function such as `is.numeric`, or `NULL` for all
 #'   of them -- see [ilm_selection].
-#' @return A data frame with `variable` and the top/bottom columns.
+#' @return A data frame with `variable`, `top_value`, `top_n`, `bot_value`
+#'   and `bot_n`.
 #' @examples
 #' ilm_counts_tb_all(ilm_sim()[, c("grp", "site")], n = 2)
 #' @export
@@ -452,8 +456,8 @@ ilm_retype <- function(v) {
 #'
 #' Names follow the rules of janitor's `make_clean_names()`, without needing
 #' janitor, and no letter is dropped: `"%"` becomes `percent` and `"#"`
-#' `number`; camelCase is split; accented Latin letters become plain ones (an
-#' e with an accent becomes e, a sharp s ss, the oe ligature oe); letters of
+#' `number`; camelCase is split; accented Latin letters become plain ones
+#' (`"é"` becomes `e`, `"ß"` becomes `ss`, `"œ"` becomes `oe`); letters of
 #' other scripts are kept as they are; a name starting with a digit gains an
 #' `x`; and a repeated name gains `_2`, `_3` and so on, as janitor numbers it.
 #'

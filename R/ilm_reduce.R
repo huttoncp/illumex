@@ -25,14 +25,14 @@
 #' order, and by the rhythms in it that the other columns follow; see `time`.
 #'
 #' The mixed method is Chavent et al.'s, which belongs to the same
-#' generalised-PCA family as the FAMD of Pages without being a
+#' generalised-PCA family as the FAMD of \enc{Pagès}{Pages} without being a
 #' reimplementation of it. The two were checked against each other directly and
 #' agree for this purpose, matching on eigenvalues and on individual
 #' coordinates.
 #'
 #' @section Size:
 #' The default method is closed-form: on one core of a 16 GB Windows machine
-#' (`dev/studies/scale_check.R` in the source) it took under a second at 250,000 rows.
+#' ([`dev/studies/scale_check.R`](https://github.com/huttoncp/illumex/blob/main/dev/studies/scale_check.R)) it took under a second at 250,000 rows.
 #' `method = "glrm"` fits iteratively and first chooses its penalty from 18
 #' held-out fits: 30 seconds at 1,000 rows, 5 minutes at 10,000 and over 15
 #' minutes at 50,000. Giving `lambda` (passed to [ilm_glrm()]) saves the
@@ -43,8 +43,7 @@
 #'   regular expression, a predicate function such as `is.numeric`, or
 #'   `NULL` for all of them -- see [ilm_selection].
 #' @param cols_negate If `TRUE`, `cols` names the columns to leave out, and every
-#'   other eligible column is used; see [ilm_selection]. It needs `cols`. A
-#'   `by` argument is never negated.
+#'   other eligible column is used; see [ilm_selection]. It needs `cols`.
 #' @param cols_fixed If `TRUE`, a `cols` string read as a pattern is matched
 #'   literally, as a substring (as `grepl(fixed = TRUE)` does); a column name
 #'   still wins. It changes nothing when `cols` is names or a predicate.
@@ -59,8 +58,8 @@
 #'   as substrings. It changes nothing for a logical, positions or a sample.
 #' @param method `"famd"` (the default) for PCA, MCA or FAMD depending on
 #'   the column types, in closed form; `"pcamix"`, its name from when
-#'   PCAmixdata computed it, is still accepted and means the same. `"glrm"` fits a generalized low rank
-#'   model instead, which uses a loss appropriate to each column's type rather
+#'   PCAmixdata computed it, is still accepted and means the same. `"glrm"` fits a
+#'   generalised low rank model instead, which uses a loss appropriate to each column's type rather
 #'   than squared error on one-hot indicators, and reconstructs a category as a
 #'   category. It costs an iterative fit, and on all-numeric data the two are
 #'   the same model -- see [ilm_glrm()] for when it is worth that.
@@ -69,7 +68,7 @@
 #'   spacing, in one column -- and adds the time of day, the day of the week,
 #'   the day of the month and the time of year, each as a sine and cosine so
 #'   that the ends of the cycle meet, but only the cycles some other column
-#'   varies with, and only where the data cover two of the cycle. A cycle
+#'   varies with, and only where the data cover two full cycles. A cycle
 #'   nothing else follows is noise to a clustering: on two known clusters,
 #'   every cycle given unasked took recovery from 0.38 to 0.10 where the date
 #'   meant nothing, while the tested ones left it at 0.36 there and, where a
@@ -88,7 +87,8 @@
 #'   dimension -- this is what [ilm_cluster()] takes), `var_contrib`
 #'   (`variable`, `dim`, `sqload`: how strongly each original variable relates
 #'   to each dimension, on a 0 to 1 scale, for numeric and categorical
-#'   variables alike), `n`, and `fit`: the eigenvalues, coordinates and
+#'   variables alike), `n`, `cols` (the columns used), `time` (how each date
+#'   or date-time column was used), and `fit`: the eigenvalues, coordinates and
 #'   squared loadings as computed, for anyone who wants to go past this
 #'   wrapper. Each dimension's sign is fixed by a rule, so the same data give
 #'   the same coordinates everywhere: the column that loads most on a
@@ -106,8 +106,8 @@
 #' @seealso [ilm_cluster()] to group the rows, [ilm_profile()] for the whole
 #'   pipeline, [ilm_reduce_na()] for the same thing applied to missingness.
 #' @references
-#' Pages, J. (2004). Analyse factorielle de donnees mixtes. Revue de
-#' Statistique Appliquee 52(4), 93-111.
+#' \enc{Pagès}{Pages}, J. (2004). Analyse factorielle de \enc{données}{donnees} mixtes. Revue de
+#' Statistique \enc{Appliquée}{Appliquee} 52(4), 93-111.
 #'
 #' Chavent, M., Kuentz-Simonet, V., Labenne, A. and Saracco, J. (2014).
 #' Multivariate analysis of mixed data: the PCAmixdata R package. arXiv
@@ -233,7 +233,7 @@ print.ilm_reduce <- function(x, ...) {
   tag <- if (inherits(x, "ilm_reduce_na")) "ilm_reduce_na" else "ilm_reduce"
   fitted <- x$ndim_fitted %||% x$ndim
   if (fitted > x$ndim)
-    cat(sprintf("<%s> method = %s, n = %d, %d dimensions carry variation (%d fitted; after shrinkage %s)\n",
+    cat(sprintf("<%s> method = %s, n = %d, %d dimensions carry variation\n  (%d fitted; after shrinkage %s)\n",
                 tag, x$method, x$n, x$ndim, fitted, ilm_dropped_dims(x$ndim, fitted)))
   else
     cat(sprintf("<%s> method = %s, n = %d, %d dimension(s) retained\n",

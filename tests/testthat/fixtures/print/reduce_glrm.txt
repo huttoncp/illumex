@@ -1,4 +1,5 @@
-<ilm_reduce> method = glrm, n = 120, 4 dimensions carry variation (5 fitted; after shrinkage the 5th has none)
+<ilm_reduce> method = glrm, n = 120, 4 dimensions carry variation
+  (5 fitted; after shrinkage the 5th has none)
   first 3 dimension(s) explain 1.5% of the numeric columns' variance
   and carry 100.0% of the fitted categorical signal
 

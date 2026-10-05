@@ -36,8 +36,7 @@ cluster's description; see \code{\link[=ilm_profile]{ilm_profile()}}.}
 \item{top_n_vars}{Most columns to name for one cluster.}
 
 \item{cols_negate}{If \code{TRUE}, \code{cols} names the columns to leave out, and every
-other eligible column is used; see \link{ilm_selection}. It needs \code{cols}. A
-\code{by} argument is never negated.}
+other eligible column is used; see \link{ilm_selection}. It needs \code{cols}.}
 
 \item{cols_fixed}{If \code{TRUE}, a \code{cols} string read as a pattern is matched
 literally, as a substring (as \code{grepl(fixed = TRUE)} does); a column name
@@ -76,14 +75,16 @@ it threatens the model you intend to fit.
 
 It runs \code{\link[=ilm_cluster_na]{ilm_cluster_na()}}, and at its defaults shares that function's
 limits (see Size in \code{\link[=ilm_cluster]{ilm_cluster()}}): on one core of a 16 GB Windows
-machine (\code{dev/studies/scale_check.R} in the source) it took 17 seconds at 1,000 rows
+machine (\href{https://github.com/huttoncp/illumex/blob/main/dev/studies/scale_check.R}{\code{dev/studies/scale_check.R}}) it took 17 seconds at 1,000 rows
 and over 15 minutes at 10,000, nearly all of it the gap statistic
 choosing \code{k}; giving \code{k} saves that search.
 }
 
 \examples{
+\dontshow{if (requireNamespace("cluster", quietly = TRUE)) (if (getRversion() >= "3.4") withAutoprint else force)(\{ # examplesIf}
 p <- ilm_profile_na(airquality, k_max = 4, B = 25, seed = 1)
 cat(p$summary, sep = "\n")
+\dontshow{\}) # examplesIf}
 }
 \seealso{
 \code{\link[=ilm_check_missing]{ilm_check_missing()}}, \code{illume::ilm_impute()}, \code{\link[=ilm_profile]{ilm_profile()}}.

@@ -14,7 +14,7 @@ ilm_plot_profile_na(x, dims = c(1, 2), ...)
 \arguments{
 \item{x}{An \code{\link[=ilm_profile]{ilm_profile()}} result.}
 
-\item{dims}{Which two coordinates, by number.}
+\item{dims}{Which two dimensions, by number.}
 
 \item{...}{Passed to \code{\link[tinyplot:tinyplot]{tinyplot::tinyplot()}}.}
 }
@@ -26,7 +26,9 @@ Convenience wrapper for \code{\link[=ilm_plot_cluster]{ilm_plot_cluster()}} when
 \code{\link[=ilm_profile]{ilm_profile()}} rather than the clustering on its own.
 }
 \examples{
+\dontshow{if (requireNamespace("cluster", quietly = TRUE)) (if (getRversion() >= "3.4") withAutoprint else force)(\{ # examplesIf}
 ilm_plot_profile(ilm_profile(mtcars, k_max = 5, B = 25, seed = 1))
+\dontshow{\}) # examplesIf}
 }
 \seealso{
 \code{\link[=ilm_profile]{ilm_profile()}}.

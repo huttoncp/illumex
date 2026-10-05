@@ -52,7 +52,8 @@ as substrings. It changes nothing for a logical, positions or a sample.}
 \code{NULL}, invisibly.
 }
 \description{
-Histogram
+Draws the distribution of one numeric column as a histogram, optionally
+one per group, overlaid, or drawn in panels.
 }
 \examples{
 ilm_plot_histogram(mtcars, "mpg")
