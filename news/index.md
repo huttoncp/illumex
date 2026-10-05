@@ -2,6 +2,19 @@
 
 ## illumex 0.0.8.9003
 
+- illumex needs tinyplot 0.7.0 or later, as
+  [`ilm_plot_var_pairs()`](https://huttoncp.github.io/illumex/reference/ilm_plot_var_pairs.md)
+  does: it draws with
+  [`tinyplot::tinypairs()`](https://grantmcdermott.com/tinyplot/man/tinyplot.data.frame.html),
+  which 0.7.0 brought. It used to ask for 0.6.1 and stop on a pairs plot
+  there.
+  [`ilm_plot()`](https://huttoncp.github.io/illumex/reference/ilm_plot.md)’s
+  `theme` is now always checked against
+  [`tinyplot::tinytheme_list()`](https://grantmcdermott.com/tinyplot/man/tinytheme_register.html).
+- A test that calls
+  [`stats::alias()`](https://rdrr.io/r/stats/alias.html), which loads
+  MASS, skips when MASS is not installed, so the tests pass with no
+  suggested package installed.
 - A cluster that
   [`ilm_cluster()`](https://huttoncp.github.io/illumex/reference/ilm_cluster.md)
   marks small opens its paragraph in a profile by saying it is too small

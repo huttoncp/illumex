@@ -40,9 +40,7 @@ ilm_plot_var_pairs(
 - ...:
 
   Passed to
-  [`tinyplot::tinypairs()`](https://grantmcdermott.com/tinyplot/man/tinyplot.data.frame.html),
-  which needs tinyplot 0.7.0 or later. On an earlier tinyplot this is
-  the one plot in the package that cannot be drawn, and it says so.
+  [`tinyplot::tinypairs()`](https://grantmcdermott.com/tinyplot/man/tinyplot.data.frame.html).
 
 - cols_negate:
 

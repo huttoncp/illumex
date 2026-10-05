@@ -80,11 +80,10 @@ ilm_plot(
 
 - theme:
 
-  A tinyplot theme name, such as `"clean"`. With tinyplot 0.7.0 or later
-  the available names are listed by
-  [`tinyplot::tinytheme_list()`](https://grantmcdermott.com/tinyplot/man/tinytheme_register.html)
-  and an unknown one is reported here; on earlier versions tinyplot
-  reports it instead.
+  A tinyplot theme name, such as `"clean"`; the available names are
+  listed by
+  [`tinyplot::tinytheme_list()`](https://grantmcdermott.com/tinyplot/man/tinytheme_register.html),
+  and an unknown one is reported here.
 
 - n_max:
 
