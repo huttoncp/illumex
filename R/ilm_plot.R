@@ -228,10 +228,9 @@ ilm_geom_spec <- function(geom = NULL) {
 #' @param size Point size for `"point"`, line or border width elsewhere.
 #' @param palette Colours for groups: a vector of colour names, or the name of
 #'   a palette such as `"Dark 2"`.
-#' @param theme A tinyplot theme name, such as `"clean"`. With tinyplot 0.7.0
-#'   or later the available names are listed by `tinyplot::tinytheme_list()`
-#'   and an unknown one is reported here; on earlier versions tinyplot reports
-#'   it instead.
+#' @param theme A tinyplot theme name, such as `"clean"`; the available names
+#'   are listed by `tinyplot::tinytheme_list()`, and an unknown one is
+#'   reported here.
 #' @param n_max Above this many points a scatter becomes a binned density.
 #' @param max_levels Categorical levels beyond this are pooled into `(other)`.
 #' @param verdict Annotate the plot with the diagnostic verdict.
@@ -290,13 +289,8 @@ ilm_plot <- function(data, x, y = NULL, by = NULL, geom = "auto",
     if (length(theme) != 1L || !is.character(theme))
       stop("`theme` must be a single theme name, not ", length(theme), " ",
            class(theme)[1], " value(s)", call. = FALSE)
-    ## tinytheme_list() arrived in tinyplot 0.7.0. Older tinyplot still accepts
-    ## `theme` and still has tinytheme(); it just cannot enumerate the names.
-    ## Validate against the list where there is one and let tinyplot object
-    ## where there is not, rather than refusing a theme that would have worked.
-    ok <- tryCatch(unlist(getExportedValue("tinyplot", "tinytheme_list")(),
-                          use.names = FALSE), error = function(e) NULL)
-    if (!is.null(ok) && !theme %in% ok)
+    ok <- unlist(tinyplot::tinytheme_list(), use.names = FALSE)
+    if (!theme %in% ok)
       stop("unknown `theme`: ", sQuote(theme), ". Options are ",
            paste(sQuote(ok), collapse = ", "), ".", call. = FALSE)
   }

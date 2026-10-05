@@ -26,9 +26,7 @@ regular expression, a predicate function such as \code{is.numeric}, or
 
 \item{by}{Optional grouping column.}
 
-\item{...}{Passed to \code{tinyplot::tinypairs()}, which needs tinyplot 0.7.0 or
-later. On an earlier tinyplot this is the one plot in the package that
-cannot be drawn, and it says so.}
+\item{...}{Passed to \code{tinyplot::tinypairs()}.}
 
 \item{cols_negate}{If \code{TRUE}, \code{cols} names the columns to leave out, and every
 other eligible column is used; see \link{ilm_selection}. It needs \code{cols}. A

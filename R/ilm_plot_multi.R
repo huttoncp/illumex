@@ -254,9 +254,7 @@ ilm_plot_var_all <- function(data, var2 = NULL, by = NULL, cols = NULL,
 #'   regular expression, a predicate function such as `is.numeric`, or
 #'   `NULL` for all of them -- see [ilm_selection].
 #' @param by Optional grouping column.
-#' @param ... Passed to `tinyplot::tinypairs()`, which needs tinyplot 0.7.0 or
-#'   later. On an earlier tinyplot this is the one plot in the package that
-#'   cannot be drawn, and it says so.
+#' @param ... Passed to `tinyplot::tinypairs()`.
 #' @return `NULL`, invisibly.
 #' @seealso [ilm_plot_scatter()] for one pair,
 #'   `illume::ilm_check_collinearity()` for what a pairs plot cannot show about a fit.
@@ -276,21 +274,11 @@ ilm_plot_var_pairs <- function(data, cols = NULL, by = NULL, ..., cols_negate = 
     stop("at least 2 columns are needed to plot pairs of them; ",
          length(target), " given", call. = FALSE)
   bv <- if (length(g)) interaction(data[g], drop = TRUE, sep = " / ") else NULL
-  ## tinypairs() arrived in tinyplot 0.7.0 and is the only part of this package
-  ## that needs it -- everything else works from 0.6.1. Say so, and name what
-  ## to do instead, rather than failing on a missing object.
-  pairs_fn <- tryCatch(getExportedValue("tinyplot", "tinypairs"),
-                       error = function(e) NULL)
-  if (is.null(pairs_fn))
-    stop("a pairs plot needs tinyplot >= 0.7.0, which supplies tinypairs(); ",
-         "this is tinyplot ", utils::packageVersion("tinyplot"),
-         ". Either update tinyplot, or use ilm_plot_scatter() one pair at a ",
-         "time, or ilm_plot_var_all() for each column on its own.",
-         call. = FALSE)
   ## `by` only when there is one: tinypairs() keeps an explicit by = NULL
   ## from its call and then adds its own, so R refuses the call ("formal
   ## argument by matched by multiple actual arguments", tinyplot 0.7.0)
-  if (is.null(bv)) pairs_fn(data[target], ...) else pairs_fn(data[target], by = bv, ...)
+  if (is.null(bv)) tinyplot::tinypairs(data[target], ...) else
+    tinyplot::tinypairs(data[target], by = bv, ...)
   invisible(NULL)
 }
 
