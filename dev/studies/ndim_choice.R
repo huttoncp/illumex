@@ -75,12 +75,36 @@
 ##   addendum below, before the full run); the run stops and reports at twice
 ##   that estimate.
 ##
+## Addendum, after the first pilot and before any full run (2026-10-06).
+##   Why: in the first pilot (d429d97, replicates 1 and 2 of mixed_many and
+##   numeric_many), every arm, the oracle included, chose k = 1: the
+##   clusters as first drawn (a triangle of side 3; centres 4 apart through
+##   random loadings) could not be found at all, so those conditions could
+##   not separate the arms. None of that pilot's rows is kept.
+##   Change, the only one: mixed_many's triangle has side 6, and
+##   numeric_many's centres are 6 apart, each signal column loading 1 on
+##   its own latent dimension in turn. The other seven designs, the arms,
+##   the outcomes and the decision rule are unchanged.
+##   Gate, before the full run: a re-pilot on fresh replicates 101 and 102,
+##   from a clean tree at this commit. A redesigned condition passes when,
+##   in each of the 2 replicates, the oracle chooses the true k (3 for
+##   mixed_many, 4 for numeric_many) with ARI at least 0.8. The arms'
+##   results play no part. If either condition fails, the study stops
+##   there and the numbers are reported: no second round of changes, and
+##   no run without that condition, until that is reviewed.
+##   Cost, registered now: the first pilot measured the largest size (12
+##   clusterings at 1,000 rows in 221 s, 18 s each), and the redesign
+##   changes no size. The full run is 2 hours on one core (the five
+##   1,000-row conditions about 90 minutes, the four 300-row ones about
+##   20), and stops and reports at 4 hours.
+##
 ## Run from the package root, from a clean tree at the registration commit:
 ##   Rscript dev/studies/ndim_choice.R smoke|pilot|full <out.csv>
 ## "smoke" checks the code on every condition at one replicate with B = 5
 ## and 5 permutations; its output is not a result and is not kept.
 ## "pilot" runs conditions 4 and 6 (the 1,000-row mixed and numeric designs)
-## for replicates 1 and 2; "full" runs everything. A row is written as each
+## for replicates 101 and 102, outside the full run's 1 to 20, so the full
+## run's data stay unseen; "full" runs everything. A row is written as each
 ## replicate finishes, so a stopped run keeps what it did.
 
 suppressMessages(pkgload::load_all(".", quiet = TRUE, helpers = FALSE))
@@ -124,7 +148,7 @@ gen <- list(
   },
   mixed_many = function(n = 1000L) {
     g <- three_groups(n)
-    ctr <- rbind(c(0, 0), c(3, 0), c(1.5, 2.6))          # an equilateral triangle, side 3
+    ctr <- rbind(c(0, 0), c(6, 0), c(3, 5.2))            # an equilateral triangle, side 6 (addendum)
     L <- ctr[g, ] + matrix(stats::rnorm(2 * n), n, 2)
     W <- matrix(stats::rnorm(2 * 12), 2, 12)
     num <- L %*% W + matrix(stats::rnorm(12 * n), n, 12)
@@ -143,9 +167,10 @@ gen <- list(
   },
   numeric_many = function(n = 1000L) {
     g <- sample.int(4L, n, replace = TRUE)
-    ctr <- rbind(c(0, 0, 0), c(4, 0, 0), c(0, 4, 0), c(0, 0, 4))
+    ctr <- rbind(c(0, 0, 0), c(6, 0, 0), c(0, 6, 0), c(0, 0, 6))   # 6 apart (addendum)
     L <- ctr[g, ] + matrix(stats::rnorm(3 * n), n, 3)
-    sig <- L %*% matrix(stats::rnorm(3 * 10), 3, 10) + matrix(stats::rnorm(10 * n), n, 10)
+    ## each signal column loads 1 on its own latent dimension, in turn (addendum)
+    sig <- L[, rep(1:3, length.out = 10)] + matrix(stats::rnorm(10 * n), n, 10)
     noise <- matrix(stats::rnorm(10 * n), n, 10)
     d <- as.data.frame(cbind(sig, noise)); names(d) <- c(paste0("s", 1:10), paste0("z", 1:10))
     list(g = g, oracle = 3L, d = d)
@@ -212,7 +237,7 @@ write_row <- function(row) utils::write.table(row, OUT, sep = ",", append = file
 
 plan <- switch(MODE,
   smoke = expand.grid(rep = 1L, cond = CONDS, stringsAsFactors = FALSE),
-  pilot = expand.grid(rep = 1:2, cond = c("mixed_many", "numeric_many"), stringsAsFactors = FALSE),
+  pilot = expand.grid(rep = 101:102, cond = c("mixed_many", "numeric_many"), stringsAsFactors = FALSE),
   full = expand.grid(rep = seq_len(REPS), cond = CONDS, stringsAsFactors = FALSE),
   stop("mode is smoke, pilot or full", call. = FALSE))
 cat(sprintf("ndim_choice %s: %d replicates, to %s; started %s\n", MODE, nrow(plan), OUT,
