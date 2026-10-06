@@ -1,0 +1,51 @@
+rep  1 ndim 3: k 1  firstSEmax=1 Tibs2001SEmax=1 globalSEmax=8 firstmax=1 globalmax=10
+rep  1 ndim 5: k 4  firstSEmax=4 Tibs2001SEmax=4 globalSEmax=10 firstmax=4 globalmax=10
+rep  2 ndim 3: k 8  firstSEmax=8 Tibs2001SEmax=1 globalSEmax=8 firstmax=8 globalmax=8
+rep  2 ndim 5: k 4  firstSEmax=4 Tibs2001SEmax=4 globalSEmax=10 firstmax=4 globalmax=10
+rep  3 ndim 3: k 1  firstSEmax=1 Tibs2001SEmax=1 globalSEmax=8 firstmax=1 globalmax=8
+rep  3 ndim 5: k 9  firstSEmax=9 Tibs2001SEmax=4 globalSEmax=9 firstmax=10 globalmax=10
+rep  4 ndim 3: k 1  firstSEmax=1 Tibs2001SEmax=1 globalSEmax=8 firstmax=1 globalmax=8
+rep  4 ndim 5: k 10  firstSEmax=10 Tibs2001SEmax=1 globalSEmax=10 firstmax=10 globalmax=10
+rep  5 ndim 3: k 1  firstSEmax=1 Tibs2001SEmax=1 globalSEmax=8 firstmax=1 globalmax=8
+rep  5 ndim 5: k 9  firstSEmax=9 Tibs2001SEmax=1 globalSEmax=9 firstmax=10 globalmax=10
+rep  6 ndim 3: k 1  firstSEmax=1 Tibs2001SEmax=1 globalSEmax=9 firstmax=1 globalmax=10
+rep  6 ndim 5: k 4  firstSEmax=4 Tibs2001SEmax=4 globalSEmax=10 firstmax=4 globalmax=10
+rep  7 ndim 3: k 1  firstSEmax=1 Tibs2001SEmax=1 globalSEmax=8 firstmax=1 globalmax=8
+rep  7 ndim 5: k 4  firstSEmax=4 Tibs2001SEmax=4 globalSEmax=10 firstmax=4 globalmax=10
+rep  8 ndim 3: k 1  firstSEmax=1 Tibs2001SEmax=1 globalSEmax=8 firstmax=1 globalmax=8
+rep  8 ndim 5: k 1  firstSEmax=1 Tibs2001SEmax=1 globalSEmax=9 firstmax=1 globalmax=10
+rep  9 ndim 3: k 4  firstSEmax=4 Tibs2001SEmax=4 globalSEmax=8 firstmax=5 globalmax=9
+rep  9 ndim 5: k 1  firstSEmax=1 Tibs2001SEmax=1 globalSEmax=10 firstmax=1 globalmax=10
+rep 10 ndim 3: k 1  firstSEmax=1 Tibs2001SEmax=1 globalSEmax=8 firstmax=1 globalmax=10
+rep 10 ndim 5: k 4  firstSEmax=4 Tibs2001SEmax=4 globalSEmax=10 firstmax=4 globalmax=10
+rep 11 ndim 3: k 8  firstSEmax=8 Tibs2001SEmax=1 globalSEmax=8 firstmax=8 globalmax=8
+rep 11 ndim 5: k 4  firstSEmax=4 Tibs2001SEmax=4 globalSEmax=10 firstmax=4 globalmax=10
+rep 12 ndim 3: k 1  firstSEmax=1 Tibs2001SEmax=1 globalSEmax=8 firstmax=1 globalmax=10
+rep 12 ndim 5: k 4  firstSEmax=4 Tibs2001SEmax=4 globalSEmax=10 firstmax=4 globalmax=10
+rep 13 ndim 3: k 1  firstSEmax=1 Tibs2001SEmax=1 globalSEmax=8 firstmax=1 globalmax=8
+rep 13 ndim 5: k 1  firstSEmax=1 Tibs2001SEmax=1 globalSEmax=10 firstmax=1 globalmax=10
+rep 14 ndim 3: k 10  firstSEmax=10 Tibs2001SEmax=1 globalSEmax=10 firstmax=10 globalmax=10
+rep 14 ndim 5: k 4  firstSEmax=4 Tibs2001SEmax=4 globalSEmax=10 firstmax=4 globalmax=10
+rep 15 ndim 3: k 4  firstSEmax=4 Tibs2001SEmax=4 globalSEmax=10 firstmax=4 globalmax=10
+rep 15 ndim 5: k 4  firstSEmax=4 Tibs2001SEmax=4 globalSEmax=10 firstmax=4 globalmax=10
+rep 16 ndim 3: k 8  firstSEmax=8 Tibs2001SEmax=1 globalSEmax=8 firstmax=8 globalmax=10
+rep 16 ndim 5: k 4  firstSEmax=4 Tibs2001SEmax=4 globalSEmax=10 firstmax=4 globalmax=10
+rep 17 ndim 3: k 1  firstSEmax=1 Tibs2001SEmax=1 globalSEmax=8 firstmax=1 globalmax=8
+rep 17 ndim 5: k 4  firstSEmax=4 Tibs2001SEmax=1 globalSEmax=10 firstmax=4 globalmax=10
+rep 18 ndim 3: k 5  firstSEmax=5 Tibs2001SEmax=1 globalSEmax=8 firstmax=5 globalmax=8
+rep 18 ndim 5: k 4  firstSEmax=4 Tibs2001SEmax=4 globalSEmax=10 firstmax=4 globalmax=10
+rep 19 ndim 3: k 1  firstSEmax=1 Tibs2001SEmax=1 globalSEmax=8 firstmax=1 globalmax=10
+rep 19 ndim 5: k 4  firstSEmax=4 Tibs2001SEmax=4 globalSEmax=10 firstmax=4 globalmax=10
+rep 20 ndim 3: k 1  firstSEmax=1 Tibs2001SEmax=1 globalSEmax=8 firstmax=1 globalmax=9
+rep 20 ndim 5: k 1  firstSEmax=1 Tibs2001SEmax=1 globalSEmax=10 firstmax=1 globalmax=10
+
+k = 4 in 20 replicates, by rule and ndim
+  ndim firstSEmax Tibs2001SEmax globalSEmax firstmax globalmax
+1    3          2             2           0        1         0
+2    5         13            13           0       13         0
+
+k chosen by firstSEmax, by ndim
+   
+     1  4  5  8  9 10
+  3 13  2  1  3  0  1
+  5  4 13  0  0  2  1
