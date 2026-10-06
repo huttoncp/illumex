@@ -74,6 +74,22 @@ ilm_cluster_funcluster <- function(method, dist_method, hclust_method, nstart,
   }
 }
 
+## Clusters numbered by size, largest first; between clusters of one size, the
+## one whose first row comes first in the data. k-means numbers its clusters
+## in whatever order its random starts left them, so "Cluster 1" and
+## "Cluster 3" could swap between runs that found the same partition; this
+## numbering depends on the partition alone, puts small clusters last, and
+## keeps a cluster's colour in the plots. Stability below matches each
+## cluster to its best bootstrap counterpart, so it does not depend on the
+## numbering.
+#' @keywords internal
+#' @noRd
+ilm_cluster_by_size <- function(assign) {
+  lv <- unique(assign)                      # in order of first row
+  size <- tabulate(match(assign, lv), length(lv))
+  match(assign, lv[order(-size, seq_along(lv))])
+}
+
 #' @keywords internal
 #' @noRd
 ilm_cluster_stability <- function(coords, FUNcluster, k, orig_cluster, B,
@@ -241,6 +257,12 @@ ilm_cluster_na_note <- function(data, fn) {
 #'   plus `mean_silhouette` and `anomalous`), `ind_cluster` (one row per
 #'   observation, with `silhouette`, `is_small_cluster`, `is_ambiguous` and
 #'   `is_anomalous`), and `coords`.
+#'
+#'   Clusters are numbered by size, largest first, and between two of one
+#'   size the one whose first row comes first in the data is numbered first.
+#'   The numbers depend only on the partition, so the same partition found
+#'   from other random starts, or from the rows in another order, is numbered
+#'   the same; cluster 1 is the largest, and small clusters come last.
 #' @references
 #' Hennig, C. (2007). Cluster-wise assessment of cluster stability.
 #' Computational Statistics and Data Analysis 52(1), 258-271.
@@ -373,7 +395,9 @@ ilm_cluster <- function(x, k = NULL, k_max = 10, method = c("kmeans", "hclust"),
     }
   }
 
-  cluster_assign <- FUNcluster(coords, k)$cluster
+  ## numbered by size, largest first, before anything is computed from the
+  ## labels, so every table, paragraph and colour downstream shares them
+  cluster_assign <- ilm_cluster_by_size(FUNcluster(coords, k)$cluster)
   stability <- ilm_cluster_stability(coords, FUNcluster, k, cluster_assign, B,
                                      progress)
 
