@@ -30,7 +30,15 @@ ilm_profile(
 regular expression, a predicate function such as \code{is.numeric}, or
 \code{NULL} for all of them -- see \link{ilm_selection}.}
 
-\item{ndim}{Number of dimensions to keep.}
+\item{ndim}{Number of dimensions to keep. Five suits most data, but not
+all: on mixed data with few columns, the dimensions past the first few
+can carry a categorical column's own levels, and a clustering on them
+splits the groups along those levels. Look at the scree plot
+(\code{\link[=ilm_plot_reduce_scree]{ilm_plot_reduce_scree()}}) and keep the dimensions before it flattens;
+the profiling vignette shows a case. Choosing \code{ndim} by parallel
+analysis instead was measured and is not the default: it helped there,
+and did worse on numeric data with well-separated clusters
+(\href{https://github.com/huttoncp/illumex/blob/main/dev/studies/ndim_choice.R}{\code{dev/studies/ndim_choice.R}}).}
 
 \item{method}{\code{"famd"} (the default) for PCA, MCA or FAMD depending on
 the column types, in closed form; \code{"pcamix"}, its name from when

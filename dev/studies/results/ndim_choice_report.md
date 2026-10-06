@@ -9,6 +9,16 @@ The full run went from a clean tree at 1c14996, on one core:
 - 180 replicates, 520 rows, in 92 minutes, against 2 hours estimated;
 - rows in `ndim_choice.csv`, the summary in `ndim_choice_summary.txt`, the log in `ndim_choice_run.log`.
 
+**On the commit hashes.** The commits cited here, and in the study's header and run log, are the study branch's as it was run, on main 5008d2d:
+
+| as run | restacked | what |
+|---|---|---|
+| d429d97 | cc19b13 | the pre-registration |
+| 1c14996 | 12fcc01 | the addendum |
+| 0e05a37 | cdfb141 | the summary script |
+
+The branch was later restacked onto the release's documentation changes, with no change to these files. The package code the run used is main 5008d2d's.
+
 ## The rule, as registered
 
 | criterion | result |

@@ -1,5 +1,12 @@
 # illumex 0.0.8.9003
 
+* The help for `ndim` in `ilm_reduce()` and `ilm_profile()` says how to
+  choose it: on mixed data with few columns, dimensions past the first few
+  can carry one categorical column's levels, and clustering then splits
+  the groups along them. A study measured choosing `ndim` by parallel
+  analysis instead (`dev/studies/ndim_choice.R`): it recovered the groups
+  where five dimensions split them, but did worse on numeric data with
+  well-separated clusters, so the default stays five.
 * The help is corrected and made consistent:
   - `ilm_outliers_all()` documents its own `method` (`"iqr"`, `"mad"` or
     `"zscore"`), `na.rm` and `by`, where it showed `ilm_reduce()`'s;
