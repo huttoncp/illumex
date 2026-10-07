@@ -2,6 +2,19 @@
 
 ## illumex 0.0.8.9003
 
+- [`ilm_copies()`](https://huttoncp.github.io/illumex/reference/ilm_copies.md)
+  and
+  [`ilm_dupes()`](https://huttoncp.github.io/illumex/reference/ilm_dupes.md)
+  sort by text columns far faster, and
+  [`ilm_describe()`](https://huttoncp.github.io/illumex/reference/ilm_describe.md)
+  counts a text column’s empty strings without trimming every value; the
+  results are identical. On a million rows,
+  [`ilm_dupes()`](https://huttoncp.github.io/illumex/reference/ilm_dupes.md)
+  keyed on two text columns took 0.45 s, where it took 11.3 s, and
+  [`ilm_describe_all()`](https://huttoncp.github.io/illumex/reference/ilm_describe_all.md)
+  on three text columns 0.47 s, where it took 1.56 s. Copies of a value
+  that is not valid UTF-8 now sort together; they could be parted
+  before.
 - illumex needs tinyplot 0.7.0 or later, as
   [`ilm_plot_var_pairs()`](https://huttoncp.github.io/illumex/reference/ilm_plot_var_pairs.md)
   does: it draws with
