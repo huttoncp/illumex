@@ -145,6 +145,12 @@ ilm_apply_remedy.default <- function(object, remedies, which, ...)
 #' @export
 ilm_remedy_table <- function(object, ...) UseMethod("ilm_remedy_table")
 
+#' @export
+ilm_remedy_table.default <- function(object, ...)
+  stop("a remedy table cannot be built for an object of class ", class(object)[1],
+       ": remedies belong to a data frame, or to a fitted model whose package ",
+       "gives ilm_remedy_table() a method.", call. = FALSE)
+
 ## ---- keys -----------------------------------------------------------------
 
 #' Build a remedy key

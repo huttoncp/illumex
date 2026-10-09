@@ -249,6 +249,13 @@ test_that("a secret never reaches the table, the log or the script", {
   expect_error(ilm_apply_remedy(d, rem, 1), "ILM_TEST_SECRET, which is not set")
 })
 
+test_that("each generic says plainly when it has no method for an object", {
+  fit <- stats::lm(mpg ~ wt, data = mtcars)
+  expect_error(ilm_remedy_table(fit), "object of class lm")
+  expect_error(ilm_remedies(fit), "object of class lm")
+  expect_error(ilm_apply_remedy(fit, NULL, 1), "object of class lm")
+})
+
 test_that("a table of one's own is checked, and a call is required to be a call", {
   d <- data.frame(x = 1:3)
   expect_error(ilm_remedy_table(d, "c", "OK", "values", "r", list(quote(f(data))), "k/x"),
