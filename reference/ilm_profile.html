@@ -98,7 +98,15 @@ regular expression, a predicate function such as <code>is.numeric</code>, or
 
 
 <dt id="arg-ndim">ndim<a class="anchor" aria-label="anchor" href="#arg-ndim"></a></dt>
-<dd><p>Number of dimensions to keep.</p></dd>
+<dd><p>Number of dimensions to keep. Five suits most data, but not
+all: on mixed data with few columns, the dimensions past the first few
+can carry a categorical column's own levels, and a clustering on them
+splits the groups along those levels. Look at the scree plot
+(<code><a href="ilm_plot_reduce_scree.html">ilm_plot_reduce_scree()</a></code>) and keep the dimensions before it flattens;
+the profiling vignette shows a case. Choosing <code>ndim</code> by parallel
+analysis instead was measured and is not the default: it helped there,
+and did worse on numeric data with well-separated clusters
+(<a href="https://github.com/huttoncp/illumex/blob/main/dev/studies/ndim_choice.R" class="external-link"><code>dev/studies/ndim_choice.R</code></a>).</p></dd>
 
 
 <dt id="arg-method">method<a class="anchor" aria-label="anchor" href="#arg-method"></a></dt>

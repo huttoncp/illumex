@@ -48,7 +48,16 @@ ilm_profile(
 
 - ndim:
 
-  Number of dimensions to keep.
+  Number of dimensions to keep. Five suits most data, but not all: on
+  mixed data with few columns, the dimensions past the first few can
+  carry a categorical column's own levels, and a clustering on them
+  splits the groups along those levels. Look at the scree plot
+  ([`ilm_plot_reduce_scree()`](https://huttoncp.github.io/illumex/reference/ilm_plot_reduce_scree.md))
+  and keep the dimensions before it flattens; the profiling vignette
+  shows a case. Choosing `ndim` by parallel analysis instead was
+  measured and is not the default: it helped there, and did worse on
+  numeric data with well-separated clusters
+  ([`dev/studies/ndim_choice.R`](https://github.com/huttoncp/illumex/blob/main/dev/studies/ndim_choice.R)).
 
 - method:
 

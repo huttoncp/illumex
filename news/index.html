@@ -41,7 +41,8 @@
 
     <div class="section level2">
 <h2 class="pkg-version" data-toc-text="0.0.8.9003" id="illumex-0089003">illumex 0.0.8.9003<a class="anchor" aria-label="anchor" href="#illumex-0089003"></a></h2>
-<ul><li>The help is corrected and made consistent:
+<ul><li>The help for <code>ndim</code> in <code><a href="../reference/ilm_reduce.html">ilm_reduce()</a></code> and <code><a href="../reference/ilm_profile.html">ilm_profile()</a></code> says how to choose it: on mixed data with few columns, dimensions past the first few can carry one categorical column’s levels, and clustering then splits the groups along them. A study measured choosing <code>ndim</code> by parallel analysis instead (<code>dev/studies/ndim_choice.R</code>): it recovered the groups where five dimensions split them, but did worse on numeric data with well-separated clusters, so the default stays five.</li>
+<li>The help is corrected and made consistent:
 <ul><li>
 <code><a href="../reference/ilm_outliers_all.html">ilm_outliers_all()</a></code> documents its own <code>method</code> (<code>"iqr"</code>, <code>"mad"</code> or <code>"zscore"</code>), <code>na.rm</code> and <code>by</code>, where it showed <code><a href="../reference/ilm_reduce.html">ilm_reduce()</a></code>’s;</li>
 <li>the results of <code><a href="../reference/ilm_boot_ci.html">ilm_boot_ci()</a></code>, <code><a href="../reference/ilm_boot_diff.html">ilm_boot_diff()</a></code>, <code><a href="../reference/ilm_reduce.html">ilm_reduce()</a></code>, <code><a href="../reference/ilm_check_missing.html">ilm_check_missing()</a></code> and <code><a href="../reference/ilm_counts_tb_all.html">ilm_counts_tb_all()</a></code> name every column and element they hold;</li>
