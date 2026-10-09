@@ -160,8 +160,7 @@ on an <code><a href="ilm_reduce.html">ilm_reduce()</a></code> result is an error
 
 <dt id="arg-cols-negate">cols_negate<a class="anchor" aria-label="anchor" href="#arg-cols-negate"></a></dt>
 <dd><p>If <code>TRUE</code>, <code>cols</code> names the columns to leave out, and every
-other eligible column is used; see <a href="ilm_selection.html">ilm_selection</a>. It needs <code>cols</code>. A
-<code>by</code> argument is never negated.</p></dd>
+other eligible column is used; see <a href="ilm_selection.html">ilm_selection</a>. It needs <code>cols</code>.</p></dd>
 
 
 <dt id="arg-cols-fixed">cols_fixed<a class="anchor" aria-label="anchor" href="#arg-cols-fixed"></a></dt>
@@ -221,7 +220,7 @@ no substantial structure; the default threshold here is stricter at 0.1.</p>
 
 <p>Every clustering computes each row's silhouette from a full distance
 matrix of n^2 / 2 numbers, so memory is the first limit. On one core of a
-16 GB Windows machine (<code>dev/studies/scale_check.R</code> in the source), with
+16 GB Windows machine (<a href="https://github.com/huttoncp/illumex/blob/main/dev/studies/scale_check.R" class="external-link"><code>dev/studies/scale_check.R</code></a>), with
 <code>k</code> given, k-means took 35 seconds and 1.2 GB at 10,000 rows and failed at
 50,000 rows for want of 9.3 GB; <code>method = "hclust"</code> took 13 minutes at 10,000.
 Choosing <code>k</code> by the gap statistic, the default, took about a minute at
@@ -231,9 +230,10 @@ cluster a sample of the rows.</p>
     <div class="section level2">
     <h2 id="references">References<a class="anchor" aria-label="anchor" href="#references"></a></h2>
     <p>Hennig, C. (2007). Cluster-wise assessment of cluster stability.
-Computational Statistics and Data Analysis 52(1).</p>
+Computational Statistics and Data Analysis 52(1), 258-271.</p>
 <p>Tibshirani, R., Walther, G. and Hastie, T. (2001). Estimating the number of
-clusters in a data set via the gap statistic. JRSS B 63(2).</p>
+clusters in a data set via the gap statistic. Journal of the Royal
+Statistical Society, Series B 63(2), 411-423.</p>
     </div>
     <div class="section level2">
     <h2 id="see-also">See also<a class="anchor" aria-label="anchor" href="#see-also"></a></h2>

@@ -91,7 +91,7 @@ group, or a level, of its own.</p></dd>
 
 
 <dt id="arg-within">within<a class="anchor" aria-label="anchor" href="#arg-within"></a></dt>
-<dd><p>One column, or nested columns, whose clusters are each
+<dd><p>One column, or nested columns, whose sampling clusters are each
 sampled inside and all kept. A missing value is a cluster of its own.</p></dd>
 
 
@@ -125,7 +125,8 @@ both drawn – a two-way design sampled as one. A factor takes a share
 between 0 and 1, a count of its levels (2 or more), or 1 (or <code>"all"</code>)
 to keep it whole, which is how a factor with few levels is kept. <code>n</code> and
 <code>prop</code> are left out, since each factor carries its own.</p></li>
-<li><p><strong>Inside every cluster</strong>, with <code>within</code>: rows are drawn inside each
+<li><p><strong>Inside every sampling cluster</strong>, with <code>within</code> – a site, a school, a
+participant measured repeatedly: rows are drawn inside each
 cluster and every cluster is kept – the remedy when data are too large
 to fit but each cluster must stay in the model. The draw is proportional:
 a share <code>prop</code> of each cluster's rows, or <code>n</code> rows in all shared out in
@@ -134,7 +135,7 @@ rows, or all of them when it has fewer than <code>min</code>. That floor makes a
 small cluster's share larger than a large one's: a row's chance of being
 kept is its cluster's rows kept over its cluster's rows, and the result
 keeps the rule, the smallest, median and largest of those shares, and
-what derives each row's (<code>within</code>, <code>min</code> and <code>n</code> or <code>prop</code>), so a
+what derives each row's share (<code>within</code>, <code>min</code> and <code>n</code> or <code>prop</code>), so a
 weighted analysis can be checked against an unweighted one.</p></li>
 </ul><p><code>within</code> may name nested levels, coarsest first or in any order:
 <code>within = c("school", "classroom")</code> draws inside each classroom, so every

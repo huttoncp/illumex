@@ -117,7 +117,7 @@ ilm_cluster(
   If `TRUE`, `cols` names the columns to leave out, and every other
   eligible column is used; see
   [ilm_selection](https://huttoncp.github.io/illumex/reference/ilm_selection.md).
-  It needs `cols`. A `by` argument is never negated.
+  It needs `cols`.
 
 - cols_fixed:
 
@@ -176,7 +176,8 @@ threshold here is stricter at 0.1.
 
 Every clustering computes each row's silhouette from a full distance
 matrix of n^2 / 2 numbers, so memory is the first limit. On one core of
-a 16 GB Windows machine (`dev/studies/scale_check.R` in the source),
+a 16 GB Windows machine
+([`dev/studies/scale_check.R`](https://github.com/huttoncp/illumex/blob/main/dev/studies/scale_check.R)),
 with `k` given, k-means took 35 seconds and 1.2 GB at 10,000 rows and
 failed at 50,000 rows for want of 9.3 GB; `method = "hclust"` took 13
 minutes at 10,000. Choosing `k` by the gap statistic, the default, took
@@ -186,10 +187,11 @@ data, give `k`, or cluster a sample of the rows.
 ## References
 
 Hennig, C. (2007). Cluster-wise assessment of cluster stability.
-Computational Statistics and Data Analysis 52(1).
+Computational Statistics and Data Analysis 52(1), 258-271.
 
 Tibshirani, R., Walther, G. and Hastie, T. (2001). Estimating the number
-of clusters in a data set via the gap statistic. JRSS B 63(2).
+of clusters in a data set via the gap statistic. Journal of the Royal
+Statistical Society, Series B 63(2), 411-423.
 
 ## See also
 

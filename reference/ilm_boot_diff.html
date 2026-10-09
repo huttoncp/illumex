@@ -167,9 +167,12 @@ script or a knitted document. See <a href="ilm_progress_arg.html">ilm_progress_a
 </dl></div>
     <div class="section level2">
     <h2 id="value">Value<a class="anchor" aria-label="anchor" href="#value"></a></h2>
-    <p>One row per comparison, with <code>from</code>, <code>to</code>, <code>observed</code>, <code>lower</code>,
-<code>upper</code>, <code>p_value</code>, <code>p_adj</code>, <code>excludes_zero</code> and the settings used.
-Differences are <code>to</code> minus <code>from</code>.</p>
+    <p>One row per comparison: <code>stat</code>, <code>group</code> (the grouping column),
+<code>from</code>, <code>to</code>, <code>observed</code>, <code>lower</code>, <code>upper</code>, the settings used (<code>conf</code>,
+<code>R</code>, <code>ci_type</code>, <code>adjust</code>), <code>n_comparisons</code>, <code>n_from</code> and <code>n_to</code> (the rows
+in each group), <code>p_value</code>, <code>p_adj</code>, <code>p_superiority</code> and <code>excludes_zero</code>.
+Differences are <code>to</code> minus <code>from</code>. The replicate differences are kept as
+the attribute <code>"draws"</code>, which <code><a href="ilm_plot_boot_diff.html">ilm_plot_boot_diff()</a></code> draws.</p>
     </div>
     <div class="section level2">
     <h2 id="details">Details<a class="anchor" aria-label="anchor" href="#details"></a></h2>
@@ -179,7 +182,7 @@ jointly cover at 95%, and reporting them as though they did is the usual way
 a pairwise table misleads. <code>adjust</code> chooses how that is handled:</p><ul><li><p><code>"max_t"</code> (default) resamples all groups together, standardises each
 comparison by its own bootstrap standard error, and takes the <code>conf</code>
 quantile of the largest absolute standardised value across comparisons as
-one critical value for all of them. This is the single-step studentized
+one critical value for all of them. This is the single-step studentised
 maximum. It assumes neither normality nor a common variance, which is what
 separates it from Tukey's range test. Its intervals are symmetric about the
 observed difference, so <code>ci_type</code> does not apply to them.</p></li>
@@ -191,7 +194,7 @@ optimistic for several; use it when the comparisons were chosen in advance.</p><
 </ul><p>With a single comparison there is nothing to adjust, and the <code>adjust</code> column
 of the result reads <code>"none"</code> whatever was asked for.</p>
 <p><code>p_value</code> and <code>p_adj</code> are built the same way the interval is, so the two
-cannot contradict each other: under <code>"max_t"</code> both come off the studentized
+cannot contradict each other: under <code>"max_t"</code> both come off the studentised
 maximum, and otherwise both come off the bootstrap distribution directly.
 They are read off the same <code>R</code> replicates from opposite directions – a
 quantile and a tail proportion – so a comparison sitting within one
@@ -211,7 +214,7 @@ adjusted p-values to 0.011. Family-wise error over six comparisons at group
 sizes of 45 to 80 came to 0.068 on normal data with a common variance and
 0.072 with variances differing fourfold, against a nominal 0.05.</p>
 <p>Heavy skew at small n is the case to know about. On lognormal data with a
-spread parameter up to 1.2 and those same group sizes, a SINGLE unadjusted
+spread parameter up to 1.2 and those same group sizes, a single unadjusted
 comparison already erred 0.090 of the time, and no <code>ci_type</code> moved it
 (percentile 0.090, BCa 0.089, basic 0.093, normal 0.084). That is the
 bootstrapped mean of a heavily skewed small sample, not the multiplicity

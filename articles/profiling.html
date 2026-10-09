@@ -78,13 +78,83 @@ a set of correlated columns shares, group the rows in that space, and
 say what distinguishes each group.</p>
 <div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://github.com/huttoncp/illumex" class="external-link">illumex</a></span><span class="op">)</span></span></code></pre></div>
+<p>The examples use simulated survey data: 300 people, with their age,
+income, household size, number of visits and work, drawn so that younger
+people on lower incomes, people on higher incomes in larger households,
+and older people, mostly retired, who visit more often, are all in it –
+though nothing in the data says who is which. To keep this page quick to
+build, the clustering uses 25 resamples (<code>B</code>), where the
+default is 100.</p>
+<p>Two dimensions are kept (<code>ndim = 2</code>). With five columns,
+the dimensions past the first two mostly carry the levels of
+<code>work</code> on their own, and the gap statistic then splits the
+groups along them: kept at five, it chose 8 clusters here. Choose
+<code>ndim</code> from the scree plot below, not by default.</p>
+<div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/Random.html" class="external-link">set.seed</a></span><span class="op">(</span><span class="fl">1</span><span class="op">)</span></span>
+<span><span class="va">n</span> <span class="op">&lt;-</span> <span class="fl">300</span></span>
+<span><span class="va">g</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/sample.html" class="external-link">sample</a></span><span class="op">(</span><span class="fl">1</span><span class="op">:</span><span class="fl">3</span>, <span class="va">n</span>, <span class="cn">TRUE</span>, prob <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">0.4</span>, <span class="fl">0.35</span>, <span class="fl">0.25</span><span class="op">)</span><span class="op">)</span></span>
+<span><span class="va">d</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/data.frame.html" class="external-link">data.frame</a></span><span class="op">(</span></span>
+<span>  age <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/Round.html" class="external-link">round</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">31</span>, <span class="fl">47</span>, <span class="fl">71</span><span class="op">)</span><span class="op">[</span><span class="va">g</span><span class="op">]</span> <span class="op">+</span> <span class="fu"><a href="https://rdrr.io/r/stats/Normal.html" class="external-link">rnorm</a></span><span class="op">(</span><span class="va">n</span>, <span class="fl">0</span>, <span class="fl">6</span><span class="op">)</span><span class="op">)</span>,</span>
+<span>  income <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/Round.html" class="external-link">round</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">38</span>, <span class="fl">72</span>, <span class="fl">31</span><span class="op">)</span><span class="op">[</span><span class="va">g</span><span class="op">]</span> <span class="op">+</span> <span class="fu"><a href="https://rdrr.io/r/stats/Normal.html" class="external-link">rnorm</a></span><span class="op">(</span><span class="va">n</span>, <span class="fl">0</span>, <span class="fl">9</span><span class="op">)</span>, <span class="fl">1</span><span class="op">)</span>,</span>
+<span>  household <span class="op">=</span> <span class="fl">1</span> <span class="op">+</span> <span class="fu"><a href="https://rdrr.io/r/stats/Poisson.html" class="external-link">rpois</a></span><span class="op">(</span><span class="va">n</span>, <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">1.2</span>, <span class="fl">2.4</span>, <span class="fl">0.4</span><span class="op">)</span><span class="op">[</span><span class="va">g</span><span class="op">]</span><span class="op">)</span>,</span>
+<span>  visits <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/stats/Poisson.html" class="external-link">rpois</a></span><span class="op">(</span><span class="va">n</span>, <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">2</span>, <span class="fl">3</span>, <span class="fl">6</span><span class="op">)</span><span class="op">[</span><span class="va">g</span><span class="op">]</span><span class="op">)</span>,</span>
+<span>  work <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/factor.html" class="external-link">factor</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/ifelse.html" class="external-link">ifelse</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/stats/Uniform.html" class="external-link">runif</a></span><span class="op">(</span><span class="va">n</span><span class="op">)</span> <span class="op">&lt;</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">0.9</span>, <span class="fl">0.95</span>, <span class="fl">0.15</span><span class="op">)</span><span class="op">[</span><span class="va">g</span><span class="op">]</span>, <span class="st">"employed"</span>,</span>
+<span>                       <span class="fu"><a href="https://rdrr.io/r/base/ifelse.html" class="external-link">ifelse</a></span><span class="op">(</span><span class="va">g</span> <span class="op">==</span> <span class="fl">3</span>, <span class="st">"retired"</span>, <span class="st">"studying"</span><span class="op">)</span><span class="op">)</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
 <div class="section level2">
 <h2 id="the-whole-thing-in-one-call">The whole thing in one call<a class="anchor" aria-label="anchor" href="#the-whole-thing-in-one-call"></a>
 </h2>
-<div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">pr</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/ilm_profile.html">ilm_profile</a></span><span class="op">(</span><span class="va">d</span>, ndim <span class="op">=</span> <span class="fl">5</span><span class="op">)</span></span>
+<div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">pr</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/ilm_profile.html">ilm_profile</a></span><span class="op">(</span><span class="va">d</span>, ndim <span class="op">=</span> <span class="fl">2</span>, B <span class="op">=</span> <span class="fl">25</span>, seed <span class="op">=</span> <span class="fl">1</span><span class="op">)</span></span>
 <span><span class="va">pr</span></span>
+<span><span class="co">#&gt; &lt;ilm_profile&gt;</span></span>
+<span><span class="co">#&gt; </span></span>
+<span><span class="co">#&gt; &lt;ilm_reduce&gt; method = famd, n = 300, 2 dimension(s) retained</span></span>
+<span><span class="co">#&gt;   first 3 dimension(s) explain 80.3% of the variance</span></span>
+<span><span class="co">#&gt; </span></span>
+<span><span class="co">#&gt;   strongest variable per dimension (squared loading)</span></span>
+<span><span class="co">#&gt;     dim 1   work                     0.838</span></span>
+<span><span class="co">#&gt;     dim 2   income                   0.406</span></span>
+<span><span class="co">#&gt; </span></span>
+<span><span class="co">#&gt; &lt;ilm_cluster&gt; method = kmeans, k = 3 (chosen by gap statistic)</span></span>
+<span><span class="co">#&gt; </span></span>
+<span><span class="co">#&gt;   cluster   size    pct  jaccard  stability     sil</span></span>
+<span><span class="co">#&gt;         1     64   21.3    1.000     stable   0.700</span></span>
+<span><span class="co">#&gt;         2    109   36.3    0.964     stable   0.460</span></span>
+<span><span class="co">#&gt;         3    127   42.3    0.970     stable   0.543</span></span>
+<span><span class="co">#&gt;   11 observation(s) sit between clusters (silhouette below 0.10) and may be misassigned</span></span>
+<span><span class="co">#&gt; </span></span>
+<span><span class="co">#&gt;   what each cluster is</span></span>
+<span><span class="co">#&gt;     Cluster 1 holds 64 rows, 21.3% of the data (stable). What sets it</span></span>
+<span><span class="co">#&gt;     apart: work is 'retired' for 88% of them, against 19% across all rows;</span></span>
+<span><span class="co">#&gt;     age is higher: the middle 50% of its values lie between 68 and 75,</span></span>
+<span><span class="co">#&gt;     against 34 to 54 across all rows; visits is higher: the middle 50% of</span></span>
+<span><span class="co">#&gt;     its values lie between 4 and 8, against 1 to 4 across all rows; and</span></span>
+<span><span class="co">#&gt;     income is lower: the middle 50% of its values lie between 22 and 36.7,</span></span>
+<span><span class="co">#&gt;     against 31.4 to 66.4 across all rows. Less strongly, 1 more variable</span></span>
+<span><span class="co">#&gt;     sets it apart as well.</span></span>
+<span><span class="co">#&gt; </span></span>
+<span><span class="co">#&gt;     Cluster 2 holds 109 rows, 36.3% of the data (stable). What sets it</span></span>
+<span><span class="co">#&gt;     apart: income is higher: the middle 50% of its values lie between 61.9</span></span>
+<span><span class="co">#&gt;     and 76.6, against 31.4 to 66.4 across all rows; household is higher:</span></span>
+<span><span class="co">#&gt;     the middle 50% of its values lie between 2 and 5, against 1 to 3 across</span></span>
+<span><span class="co">#&gt;     all rows; and work is 'employed' for 100% of them, against 75% across</span></span>
+<span><span class="co">#&gt;     all rows. 9 of its members sit close enough to another cluster to be</span></span>
+<span><span class="co">#&gt;     uncertain.</span></span>
+<span><span class="co">#&gt; </span></span>
+<span><span class="co">#&gt;     Cluster 3 holds 127 rows, 42.3% of the data (stable). What sets it</span></span>
+<span><span class="co">#&gt;     apart: age is lower: the middle 50% of its values lie between 28 and</span></span>
+<span><span class="co">#&gt;     38, against 34 to 54 across all rows; visits is lower: the middle 50%</span></span>
+<span><span class="co">#&gt;     of its values lie between 1 and 3, against 1 to 4 across all rows; work</span></span>
+<span><span class="co">#&gt;     is 'retired' for none of them, against 19% across all rows; and income</span></span>
+<span><span class="co">#&gt;     is lower: the middle 50% of its values lie between 30.7 and 45.5,</span></span>
+<span><span class="co">#&gt;     against 31.4 to 66.4 across all rows. Less strongly, 1 more variable</span></span>
+<span><span class="co">#&gt;     sets it apart as well. 2 of its members sit close enough to another</span></span>
+<span><span class="co">#&gt;     cluster to be uncertain.</span></span>
+<span><span class="co">#&gt; </span></span>
+<span><span class="co">#&gt;     ilm_var_contrib() for the full table.</span></span>
 <span><span class="fu"><a href="../reference/ilm_plot_profile.html">ilm_plot_profile</a></span><span class="op">(</span><span class="va">pr</span><span class="op">)</span></span></code></pre></div>
+<p><img src="profiling_files/figure-html/unnamed-chunk-3-1.png" class="r-plt" alt="" width="672"></p>
 <p><code><a href="../reference/ilm_profile.html">ilm_profile()</a></code> runs <code><a href="../reference/ilm_reduce.html">ilm_reduce()</a></code>, then
 <code><a href="../reference/ilm_cluster.html">ilm_cluster()</a></code> on the dimensions it produced, then
 characterises the clusters. The three are also available separately,
@@ -94,12 +164,23 @@ choices.</p>
 <div class="section level2">
 <h2 id="reducing">Reducing<a class="anchor" aria-label="anchor" href="#reducing"></a>
 </h2>
-<div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">rr</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/ilm_reduce.html">ilm_reduce</a></span><span class="op">(</span><span class="va">d</span>, ndim <span class="op">=</span> <span class="fl">5</span><span class="op">)</span></span>
+<div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">rr</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/ilm_reduce.html">ilm_reduce</a></span><span class="op">(</span><span class="va">d</span>, ndim <span class="op">=</span> <span class="fl">2</span><span class="op">)</span></span>
 <span><span class="va">rr</span></span>
-<span><span class="fu"><a href="../reference/ilm_plot_reduce.html">ilm_plot_reduce</a></span><span class="op">(</span><span class="va">rr</span><span class="op">)</span></span>
-<span><span class="fu"><a href="../reference/ilm_plot_reduce_scree.html">ilm_plot_reduce_scree</a></span><span class="op">(</span><span class="va">rr</span><span class="op">)</span></span>
-<span><span class="fu"><a href="../reference/ilm_plot_reduce_contrib.html">ilm_plot_reduce_contrib</a></span><span class="op">(</span><span class="va">rr</span><span class="op">)</span></span></code></pre></div>
+<span><span class="co">#&gt; &lt;ilm_reduce&gt; method = famd, n = 300, 2 dimension(s) retained</span></span>
+<span><span class="co">#&gt;   first 3 dimension(s) explain 80.3% of the variance</span></span>
+<span><span class="co">#&gt; </span></span>
+<span><span class="co">#&gt;   strongest variable per dimension (squared loading)</span></span>
+<span><span class="co">#&gt;     dim 1   work                     0.838</span></span>
+<span><span class="co">#&gt;     dim 2   income                   0.406</span></span>
+<span><span class="fu"><a href="../reference/ilm_plot_reduce.html">ilm_plot_reduce</a></span><span class="op">(</span><span class="va">rr</span><span class="op">)</span></span></code></pre></div>
+<p><img src="profiling_files/figure-html/unnamed-chunk-4-1.png" class="r-plt" alt="" width="672"></p>
+<div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="fu"><a href="../reference/ilm_plot_reduce_scree.html">ilm_plot_reduce_scree</a></span><span class="op">(</span><span class="va">rr</span><span class="op">)</span></span></code></pre></div>
+<p><img src="profiling_files/figure-html/unnamed-chunk-4-2.png" class="r-plt" alt="" width="672"></p>
+<div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="fu"><a href="../reference/ilm_plot_reduce_contrib.html">ilm_plot_reduce_contrib</a></span><span class="op">(</span><span class="va">rr</span><span class="op">)</span></span></code></pre></div>
+<p><img src="profiling_files/figure-html/unnamed-chunk-4-3.png" class="r-plt" alt="" width="672"></p>
 <p>The method follows the column types without being told: PCA for
 all-numeric data, multiple correspondence analysis for all-categorical,
 and factor analysis of mixed data when both are present. All three are
@@ -119,9 +200,9 @@ the indicators and running PCA on the result. That is fast, has a closed
 form, and treats a category as though it were Gaussian – a
 reconstruction can come back at <code>-0.3</code>, which is not a
 category.</p>
-<div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">rr</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/ilm_reduce.html">ilm_reduce</a></span><span class="op">(</span><span class="va">d</span>, ndim <span class="op">=</span> <span class="fl">5</span>, method <span class="op">=</span> <span class="st">"glrm"</span><span class="op">)</span></span></code></pre></div>
-<p>A generalized low rank model keeps the low-rank structure and changes
+<div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">rr</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/ilm_reduce.html">ilm_reduce</a></span><span class="op">(</span><span class="va">d</span>, ndim <span class="op">=</span> <span class="fl">2</span>, method <span class="op">=</span> <span class="st">"glrm"</span>, lambda <span class="op">=</span> <span class="fl">2</span><span class="op">)</span>  <span class="co"># lambda given: no search</span></span></code></pre></div>
+<p>A generalised low rank model keeps the low-rank structure and changes
 the loss: quadratic for a numeric column, logistic for a binary one,
 multinomial across the levels of a categorical one, Poisson for a count.
 Each column is then reconstructed on its own scale, and a category comes
@@ -141,11 +222,21 @@ missingness rates.</p>
 <div class="section level2">
 <h2 id="clustering">Clustering<a class="anchor" aria-label="anchor" href="#clustering"></a>
 </h2>
-<div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">cl</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/ilm_cluster.html">ilm_cluster</a></span><span class="op">(</span><span class="va">rr</span>, k_max <span class="op">=</span> <span class="fl">10</span><span class="op">)</span></span>
+<div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">cl</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/ilm_cluster.html">ilm_cluster</a></span><span class="op">(</span><span class="va">rr</span>, B <span class="op">=</span> <span class="fl">25</span>, seed <span class="op">=</span> <span class="fl">1</span><span class="op">)</span></span>
 <span><span class="va">cl</span></span>
-<span><span class="fu"><a href="../reference/ilm_plot_cluster.html">ilm_plot_cluster</a></span><span class="op">(</span><span class="va">cl</span><span class="op">)</span></span>
-<span><span class="fu"><a href="../reference/ilm_plot_cluster_gap.html">ilm_plot_cluster_gap</a></span><span class="op">(</span><span class="va">cl</span><span class="op">)</span></span></code></pre></div>
+<span><span class="co">#&gt; &lt;ilm_cluster&gt; method = kmeans, k = 3 (chosen by gap statistic)</span></span>
+<span><span class="co">#&gt; </span></span>
+<span><span class="co">#&gt;   cluster   size    pct  jaccard  stability     sil</span></span>
+<span><span class="co">#&gt;         1     64   21.3    0.998     stable   0.690</span></span>
+<span><span class="co">#&gt;         2    104   34.7    0.944     stable   0.376</span></span>
+<span><span class="co">#&gt;         3    132   44.0    0.954     stable   0.497</span></span>
+<span><span class="co">#&gt;   19 observation(s) sit between clusters (silhouette below 0.10) and may be misassigned</span></span>
+<span><span class="fu"><a href="../reference/ilm_plot_cluster.html">ilm_plot_cluster</a></span><span class="op">(</span><span class="va">cl</span><span class="op">)</span></span></code></pre></div>
+<p><img src="profiling_files/figure-html/unnamed-chunk-6-1.png" class="r-plt" alt="" width="672"></p>
+<div class="sourceCode" id="cb9"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="fu"><a href="../reference/ilm_plot_cluster_gap.html">ilm_plot_cluster_gap</a></span><span class="op">(</span><span class="va">cl</span><span class="op">)</span></span></code></pre></div>
+<p><img src="profiling_files/figure-html/unnamed-chunk-6-2.png" class="r-plt" alt="" width="672"></p>
 <p><code>k</code> is chosen by the gap statistic rather than by eye. The
 result also reports what a cluster solution usually hides: how stable
 each cluster is under resampling (bootstrap Jaccard), how many rows sit
@@ -165,11 +256,108 @@ against everyone’s, a category by the value whose share in the cluster
 sits furthest from its share among all rows, a date by the middle 50% of
 its values and by any stretch of the week, month or year where the
 cluster stands out.</p>
-<div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb10"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/cat.html" class="external-link">cat</a></span><span class="op">(</span><span class="va">pr</span><span class="op">$</span><span class="va">summary</span>, sep <span class="op">=</span> <span class="st">"\n\n"</span><span class="op">)</span>   <span class="co"># a paragraph per cluster</span></span>
+<span><span class="co">#&gt; Cluster 1 holds 64 rows, 21.3% of the data (stable). What sets it apart: work is 'retired' for 88% of them, against 19% across all rows; age is higher: the middle 50% of its values lie between 68 and 75, against 34 to 54 across all rows; visits is higher: the middle 50% of its values lie between 4 and 8, against 1 to 4 across all rows; and income is lower: the middle 50% of its values lie between 22 and 36.7, against 31.4 to 66.4 across all rows. Less strongly, 1 more variable sets it apart as well.</span></span>
+<span><span class="co">#&gt; </span></span>
+<span><span class="co">#&gt; Cluster 2 holds 109 rows, 36.3% of the data (stable). What sets it apart: income is higher: the middle 50% of its values lie between 61.9 and 76.6, against 31.4 to 66.4 across all rows; household is higher: the middle 50% of its values lie between 2 and 5, against 1 to 3 across all rows; and work is 'employed' for 100% of them, against 75% across all rows. 9 of its members sit close enough to another cluster to be uncertain.</span></span>
+<span><span class="co">#&gt; </span></span>
+<span><span class="co">#&gt; Cluster 3 holds 127 rows, 42.3% of the data (stable). What sets it apart: age is lower: the middle 50% of its values lie between 28 and 38, against 34 to 54 across all rows; visits is lower: the middle 50% of its values lie between 1 and 3, against 1 to 4 across all rows; work is 'retired' for none of them, against 19% across all rows; and income is lower: the middle 50% of its values lie between 30.7 and 45.5, against 31.4 to 66.4 across all rows. Less strongly, 1 more variable sets it apart as well. 2 of its members sit close enough to another cluster to be uncertain.</span></span>
 <span><span class="va">pr</span><span class="op">$</span><span class="va">characterization</span>               <span class="co"># every comparison behind them</span></span>
+<span><span class="co">#&gt;    cluster  variable aspect   kind           v       size eligible</span></span>
+<span><span class="co">#&gt; 1        1      work         share  15.2584513 0.68833333     TRUE</span></span>
+<span><span class="co">#&gt; 2        1       age        number  14.1182581 1.56526006     TRUE</span></span>
+<span><span class="co">#&gt; 3        1    visits        number  10.9383941 1.21271557     TRUE</span></span>
+<span><span class="co">#&gt; 4        1    income        number  -8.1596097 0.90463788     TRUE</span></span>
+<span><span class="co">#&gt; 5        1 household        number  -6.5926228 0.73090952     TRUE</span></span>
+<span><span class="co">#&gt; 6        2    income        number  13.7256112 1.04899761     TRUE</span></span>
+<span><span class="co">#&gt; 7        2 household        number   9.9459608 0.76013293     TRUE</span></span>
+<span><span class="co">#&gt; 8        2      work         share   8.6697403 0.24666667     TRUE</span></span>
+<span><span class="co">#&gt; 9        2    visits        number  -0.8325940 0.06363208     TRUE</span></span>
+<span><span class="co">#&gt; 10       2       age        number   0.1527781 0.01167627     TRUE</span></span>
+<span><span class="co">#&gt; 11       3       age        number -11.8545484 0.79881384     TRUE</span></span>
+<span><span class="co">#&gt; 12       3    visits        number  -8.2588457 0.55651890     TRUE</span></span>
+<span><span class="co">#&gt; 13       3      work         share  -8.1304991 0.18666667     TRUE</span></span>
+<span><span class="co">#&gt; 14       3    income        number  -6.5955778 0.44444028     TRUE</span></span>
+<span><span class="co">#&gt; 15       3 household        number  -4.2155813 0.28406520     TRUE</span></span>
+<span><span class="co">#&gt;                                                                                                       description</span></span>
+<span><span class="co">#&gt; 1                                                  work is 'retired' for 88% of them, against 19% across all rows</span></span>
+<span><span class="co">#&gt; 2             age is higher: the middle 50% of its values lie between 68 and 75, against 34 to 54 across all rows</span></span>
+<span><span class="co">#&gt; 3              visits is higher: the middle 50% of its values lie between 4 and 8, against 1 to 4 across all rows</span></span>
+<span><span class="co">#&gt; 4     income is lower: the middle 50% of its values lie between 22 and 36.7, against 31.4 to 66.4 across all rows</span></span>
+<span><span class="co">#&gt; 5            household is lower: the middle 50% of its values lie between 1 and 2, against 1 to 3 across all rows</span></span>
+<span><span class="co">#&gt; 6  income is higher: the middle 50% of its values lie between 61.9 and 76.6, against 31.4 to 66.4 across all rows</span></span>
+<span><span class="co">#&gt; 7           household is higher: the middle 50% of its values lie between 2 and 5, against 1 to 3 across all rows</span></span>
+<span><span class="co">#&gt; 8                                                work is 'employed' for 100% of them, against 75% across all rows</span></span>
+<span><span class="co">#&gt; 9               visits is lower: the middle 50% of its values lie between 2 and 4, against 1 to 4 across all rows</span></span>
+<span><span class="co">#&gt; 10            age is higher: the middle 50% of its values lie between 42 and 50, against 34 to 54 across all rows</span></span>
+<span><span class="co">#&gt; 11             age is lower: the middle 50% of its values lie between 28 and 38, against 34 to 54 across all rows</span></span>
+<span><span class="co">#&gt; 12              visits is lower: the middle 50% of its values lie between 1 and 3, against 1 to 4 across all rows</span></span>
+<span><span class="co">#&gt; 13                                                work is 'retired' for none of them, against 19% across all rows</span></span>
+<span><span class="co">#&gt; 14  income is lower: the middle 50% of its values lie between 30.7 and 45.5, against 31.4 to 66.4 across all rows</span></span>
+<span><span class="co">#&gt; 15           household is lower: the middle 50% of its values lie between 1 and 3, against 1 to 3 across all rows</span></span>
 <span><span class="va">pr</span><span class="op">$</span><span class="va">frequencies</span>                    <span class="co"># every value of every category, per cluster</span></span>
-<span><span class="va">pr</span><span class="op">$</span><span class="va">by_cluster</span>                     <span class="co"># ilm_describe_all(), by cluster</span></span></code></pre></div>
+<span><span class="co">#&gt;   cluster variable    value   n share share_all</span></span>
+<span><span class="co">#&gt; 1       1     work  retired  56 0.875     0.187</span></span>
+<span><span class="co">#&gt; 2       1     work employed   8 0.125     0.753</span></span>
+<span><span class="co">#&gt; 3       1     work studying   0 0.000     0.060</span></span>
+<span><span class="co">#&gt; 4       2     work employed 109 1.000     0.753</span></span>
+<span><span class="co">#&gt; 5       2     work  retired   0 0.000     0.187</span></span>
+<span><span class="co">#&gt; 6       2     work studying   0 0.000     0.060</span></span>
+<span><span class="co">#&gt; 7       3     work employed 109 0.858     0.753</span></span>
+<span><span class="co">#&gt; 8       3     work studying  18 0.142     0.060</span></span>
+<span><span class="co">#&gt; 9       3     work  retired   0 0.000     0.187</span></span>
+<span><span class="va">pr</span><span class="op">$</span><span class="va">by_cluster</span>                     <span class="co"># ilm_describe_all(), by cluster</span></span>
+<span><span class="co">#&gt; $numeric</span></span>
+<span><span class="co">#&gt;     variable cluster obs   n na    sum   mean     sd    se   p0  p50  p100</span></span>
+<span><span class="co">#&gt; 1        age       1  64  64  0 4571.0 71.422  5.882 0.735 57.0 70.5  85.0</span></span>
+<span><span class="co">#&gt; 2        age       2 109 109  0 5017.0 46.028  7.408 0.710 27.0 46.0  76.0</span></span>
+<span><span class="co">#&gt; 3        age       3 127 127  0 4163.0 32.780  8.082 0.717 17.0 32.0  65.0</span></span>
+<span><span class="co">#&gt; 11    income       1  64  64  0 1898.0 29.656 10.571 1.321  8.2 29.1  55.1</span></span>
+<span><span class="co">#&gt; 21    income       2 109 109  0 7505.5 68.858 11.945 1.144 37.7 69.8 106.3</span></span>
+<span><span class="co">#&gt; 31    income       3 127 127  0 4939.1 38.891 12.103 1.074 16.3 36.6  86.1</span></span>
+<span><span class="co">#&gt; 12 household       1  64  64  0   85.0  1.328  0.592 0.074  1.0  1.0   4.0</span></span>
+<span><span class="co">#&gt; 22 household       2 109 109  0  392.0  3.596  1.673 0.160  1.0  4.0   9.0</span></span>
+<span><span class="co">#&gt; 32 household       3 127 127  0  255.0  2.008  0.972 0.086  1.0  2.0   5.0</span></span>
+<span><span class="co">#&gt; 13    visits       1  64  64  0  403.0  6.297  2.729 0.341  1.0  6.0  13.0</span></span>
+<span><span class="co">#&gt; 23    visits       2 109 109  0  333.0  3.055  1.815 0.174  0.0  3.0   8.0</span></span>
+<span><span class="co">#&gt; 33    visits       3 127 127  0  229.0  1.803  1.380 0.122  0.0  2.0   6.0</span></span>
+<span><span class="co">#&gt;    p_zero dispersion gauss</span></span>
+<span><span class="co">#&gt; 1   0.000      0.484 1.000</span></span>
+<span><span class="co">#&gt; 2   0.000      1.192 1.000</span></span>
+<span><span class="co">#&gt; 3   0.000      1.993 1.000</span></span>
+<span><span class="co">#&gt; 11  0.000         NA 1.000</span></span>
+<span><span class="co">#&gt; 21  0.000         NA 0.641</span></span>
+<span><span class="co">#&gt; 31  0.000         NA 0.931</span></span>
+<span><span class="co">#&gt; 12  0.000         NA 0.000</span></span>
+<span><span class="co">#&gt; 22  0.000         NA 0.127</span></span>
+<span><span class="co">#&gt; 32  0.000         NA 0.000</span></span>
+<span><span class="co">#&gt; 13  0.000      1.183 0.591</span></span>
+<span><span class="co">#&gt; 23  0.055      1.078 0.168</span></span>
+<span><span class="co">#&gt; 33  0.181      1.057 0.000</span></span>
+<span><span class="co">#&gt;                                                                                                                                gauss_note</span></span>
+<span><span class="co">#&gt; 1                                                                                                                                        </span></span>
+<span><span class="co">#&gt; 2                                                                                                                                        </span></span>
+<span><span class="co">#&gt; 3                                                                                                                                        </span></span>
+<span><span class="co">#&gt; 11                                                                                                                                       </span></span>
+<span><span class="co">#&gt; 21                                                                                          departs from normal, no single dominant cause</span></span>
+<span><span class="co">#&gt; 31                                                                                                             right-skewed; heavy-tailed</span></span>
+<span><span class="co">#&gt; 12 72% of values sit at the scale's lowest point (1): it cannot separate people there, see an ordinal model; discrete (4 distinct values)</span></span>
+<span><span class="co">#&gt; 22                                                                                              discrete (9 distinct values); left-skewed</span></span>
+<span><span class="co">#&gt; 32                                                                                                           discrete (5 distinct values)</span></span>
+<span><span class="co">#&gt; 13                                                                                                          discrete (13 distinct values)</span></span>
+<span><span class="co">#&gt; 23                                                                                          discrete (9 distinct values); bounded at zero</span></span>
+<span><span class="co">#&gt; 33                                                                                          discrete (7 distinct values); bounded at zero</span></span>
+<span><span class="co">#&gt; </span></span>
+<span><span class="co">#&gt; $categorical</span></span>
+<span><span class="co">#&gt;   variable cluster obs   n na n_empty n_unique ordered p_max n_rare n_unused</span></span>
+<span><span class="co">#&gt; 1     work       1  64  64  0       0        2   FALSE 0.875      0        1</span></span>
+<span><span class="co">#&gt; 2     work       2 109 109  0       0        1   FALSE 1.000      0        2</span></span>
+<span><span class="co">#&gt; 3     work       3 127 127  0       0        2   FALSE 0.858      0        1</span></span>
+<span><span class="co">#&gt;   case_variants                 counts_tb                           note</span></span>
+<span><span class="co">#&gt; 1             0    retired_56, employed_8                1 unused levels</span></span>
+<span><span class="co">#&gt; 2             0              employed_109 2 unused levels; near-constant</span></span>
+<span><span class="co">#&gt; 3             0 employed_109, studying_18                1 unused levels</span></span></code></pre></div>
 <p>The variables are ranked by a v-test – how far the cluster’s mean or
 share sits from everyone’s, in standard errors of a subset that size –
 and named, strongest first, when it clears 1.96 and the difference is
@@ -194,18 +382,69 @@ variable in a subsequent model – then testing whether the clusters
 differ on the variables that defined them – is circular.</p>
 <p>If the question is whether a <em>known</em> grouping differs, that is
 a model, and <code>illume</code>’s:</p>
-<div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb11"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu">illume</span><span class="fu">::</span><span class="fu">ilm_model</span><span class="op">(</span><span class="va">y</span> <span class="op">~</span> <span class="va">group</span>, data <span class="op">=</span> <span class="va">d</span>, family <span class="op">=</span> <span class="st">"gaussian"</span><span class="op">)</span></span></code></pre></div>
 </div>
 <div class="section level2">
 <h2 id="structure-in-the-missingness">Structure in the missingness<a class="anchor" aria-label="anchor" href="#structure-in-the-missingness"></a>
 </h2>
 <p>The same three steps run on the missingness pattern rather than the
-values.</p>
-<div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="fu"><a href="../reference/ilm_reduce_na.html">ilm_reduce_na</a></span><span class="op">(</span><span class="va">d</span><span class="op">)</span></span>
-<span><span class="fu"><a href="../reference/ilm_profile_na.html">ilm_profile_na</a></span><span class="op">(</span><span class="va">d</span><span class="op">)</span></span>
+values. In R’s <code>airquality</code>, two columns have missing
+values:</p>
+<div class="sourceCode" id="cb12"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="fu"><a href="../reference/ilm_reduce_na.html">ilm_reduce_na</a></span><span class="op">(</span><span class="va">airquality</span><span class="op">)</span></span>
+<span><span class="co">#&gt; ilm_reduce_na(): dropping column(s) whose missingness never varies (always or never missing): Wind, Temp, Month, Day</span></span>
+<span><span class="co">#&gt; &lt;ilm_reduce_na&gt; method = mca, n = 153, 2 dimension(s) retained</span></span>
+<span><span class="co">#&gt;   first 2 dimension(s) explain 100.0% of the variance</span></span>
+<span><span class="co">#&gt; </span></span>
+<span><span class="co">#&gt;   strongest variable per dimension (squared loading)</span></span>
+<span><span class="co">#&gt;     dim 1   Ozone                    0.511</span></span>
+<span><span class="co">#&gt;     dim 2   Ozone                    0.489</span></span>
+<span><span class="va">pr_na</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/ilm_profile_na.html">ilm_profile_na</a></span><span class="op">(</span><span class="va">airquality</span>, k_max <span class="op">=</span> <span class="fl">4</span>, B <span class="op">=</span> <span class="fl">25</span>, seed <span class="op">=</span> <span class="fl">1</span><span class="op">)</span></span>
+<span><span class="co">#&gt; ilm_reduce_na(): dropping column(s) whose missingness never varies (always or never missing): Wind, Temp, Month, Day</span></span>
+<span><span class="co">#&gt; Warning: k was chosen as 4, which is the largest value searched. The curve had</span></span>
+<span><span class="co">#&gt; not turned, so this is where the search stopped rather than where the evidence</span></span>
+<span><span class="co">#&gt; pointed. Raise `k_max`, or set `k` from what the design says. On mixed data a</span></span>
+<span><span class="co">#&gt; selector can also lock onto the number of category combinations rather than the</span></span>
+<span><span class="co">#&gt; number of clusters; plot(x) shows the gap curve.</span></span>
+<span><span class="va">pr_na</span></span>
+<span><span class="co">#&gt; &lt;ilm_profile_na&gt; (profiling the pattern of missing values)</span></span>
+<span><span class="co">#&gt; </span></span>
+<span><span class="co">#&gt; &lt;ilm_reduce_na&gt; method = mca, n = 153, 2 dimension(s) retained</span></span>
+<span><span class="co">#&gt;   first 2 dimension(s) explain 100.0% of the variance</span></span>
+<span><span class="co">#&gt; </span></span>
+<span><span class="co">#&gt;   strongest variable per dimension (squared loading)</span></span>
+<span><span class="co">#&gt;     dim 1   Ozone                    0.511</span></span>
+<span><span class="co">#&gt;     dim 2   Ozone                    0.489</span></span>
+<span><span class="co">#&gt; </span></span>
+<span><span class="co">#&gt; &lt;ilm_cluster_na&gt; method = kmeans, k = 4 (chosen by gap statistic)</span></span>
+<span><span class="co">#&gt; </span></span>
+<span><span class="co">#&gt;   cluster   size    pct  jaccard  stability     sil</span></span>
+<span><span class="co">#&gt;         1      5    3.3    1.000     stable   1.000  small</span></span>
+<span><span class="co">#&gt;         2     35   22.9    1.000     stable   1.000</span></span>
+<span><span class="co">#&gt;         3      2    1.3    1.000     stable   1.000  small</span></span>
+<span><span class="co">#&gt;         4    111   72.5    1.000     stable   1.000</span></span>
+<span><span class="co">#&gt; </span></span>
+<span><span class="co">#&gt;   7 observation(s) in a cluster holding less than 5% of the data</span></span>
+<span><span class="co">#&gt; </span></span>
+<span><span class="co">#&gt;   what each cluster is</span></span>
+<span><span class="co">#&gt;     Cluster 1 is too small to describe reliably: 5 rows, 3.3% of the data</span></span>
+<span><span class="co">#&gt;     (stable). What sets it apart: Solar.R is missing for 100% of them,</span></span>
+<span><span class="co">#&gt;     against 5% across all rows. It could be a real minority pattern or a</span></span>
+<span><span class="co">#&gt;     data problem, and is worth looking at either way.</span></span>
+<span><span class="co">#&gt; </span></span>
+<span><span class="co">#&gt;     Cluster 2 holds 35 rows, 22.9% of the data (stable). What sets it</span></span>
+<span><span class="co">#&gt;     apart: Ozone is missing for 100% of them, against 24% across all rows.</span></span>
+<span><span class="co">#&gt; </span></span>
+<span><span class="co">#&gt;     Cluster 3 is too small to describe reliably: 2 rows, 1.3% of the data</span></span>
+<span><span class="co">#&gt;     (stable). What sets it apart: Solar.R is missing for 100% of them,</span></span>
+<span><span class="co">#&gt;     against 5% across all rows. It could be a real minority pattern or a</span></span>
+<span><span class="co">#&gt;     data problem, and is worth looking at either way.</span></span>
+<span><span class="co">#&gt; </span></span>
+<span><span class="co">#&gt;     Cluster 4 holds 111 rows, 72.5% of the data (stable). What sets it</span></span>
+<span><span class="co">#&gt;     apart: Ozone is missing for none of them, against 24% across all rows.</span></span>
 <span><span class="fu"><a href="../reference/ilm_plot_profile.html">ilm_plot_profile_na</a></span><span class="op">(</span><span class="va">pr_na</span><span class="op">)</span></span></code></pre></div>
+<p><img src="profiling_files/figure-html/unnamed-chunk-9-1.png" class="r-plt" alt="" width="672"></p>
 <p>A questionnaire where income and savings go missing together, and
 separately from the health block, has structure in its non-response.
 Knowing that before choosing an imputation strategy is worth more than

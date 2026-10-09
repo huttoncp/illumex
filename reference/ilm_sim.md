@@ -56,7 +56,7 @@ A data frame with `n_id * n_period` rows and 13 columns.
 
 - score:
 
-  gaussian
+  Gaussian
 
 - income:
 
@@ -80,7 +80,7 @@ A data frame with `n_id * n_period` rows and 13 columns.
 
 - lab_value:
 
-  gaussian with missing values
+  Gaussian with missing values
 
 ## Examples
 

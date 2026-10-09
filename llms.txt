@@ -185,7 +185,7 @@ data frame before any model sees it.
 - [`ilm_frame_issues()`](https://huttoncp.github.io/illumex/reference/ilm_frame_issues.md)
   : Problems that belong to the data frame as a whole
 - [`ilm_gauss_check()`](https://huttoncp.github.io/illumex/reference/ilm_gauss_check.md)
-  : How far a variable is from gaussian, and why
+  : How far a variable is from Gaussian, and why
 - [`ilm_copies()`](https://huttoncp.github.io/illumex/reference/ilm_copies.md)
   : Find copied or duplicated rows
 - [`ilm_counts()`](https://huttoncp.github.io/illumex/reference/ilm_counts.md)
@@ -197,7 +197,7 @@ data frame before any model sees it.
 - [`ilm_counts_tb_all()`](https://huttoncp.github.io/illumex/reference/ilm_counts_tb_all.md)
   : Most and least frequent values for every column
 - [`ilm_describe_clusters()`](https://huttoncp.github.io/illumex/reference/ilm_describe_clusters.md)
-  : Describe data whose rows sit in clusters
+  : Describe data whose rows sit in sampling clusters
 - [`ilm_dupes()`](https://huttoncp.github.io/illumex/reference/ilm_dupes.md)
   : Duplicated rows only
 
@@ -249,7 +249,7 @@ same pipeline taken a step at a time, for when you want the coordinates
 or the partition on their own.
 
 - [`ilm_profile()`](https://huttoncp.github.io/illumex/reference/ilm_profile.md)
-  : Profile a data set: reduce, cluster, and describe the clusters
+  : Profile a dataset: reduce, cluster, and describe the clusters
 - [`ilm_var_contrib()`](https://huttoncp.github.io/illumex/reference/ilm_var_contrib.md)
   : What each variable contributes to a clustering
 - [`ilm_cluster()`](https://huttoncp.github.io/illumex/reference/ilm_cluster.md)

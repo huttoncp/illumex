@@ -97,8 +97,8 @@ regular expression, a predicate function such as <code>is.numeric</code>, or
 <dt id="arg-method">method<a class="anchor" aria-label="anchor" href="#arg-method"></a></dt>
 <dd><p><code>"famd"</code> (the default) for PCA, MCA or FAMD depending on
 the column types, in closed form; <code>"pcamix"</code>, its name from when
-PCAmixdata computed it, is still accepted and means the same. <code>"glrm"</code> fits a generalized low rank
-model instead, which uses a loss appropriate to each column's type rather
+PCAmixdata computed it, is still accepted and means the same. <code>"glrm"</code> fits a
+generalised low rank model instead, which uses a loss appropriate to each column's type rather
 than squared error on one-hot indicators, and reconstructs a category as a
 category. It costs an iterative fit, and on all-numeric data the two are
 the same model – see <code><a href="ilm_glrm.html">ilm_glrm()</a></code> for when it is worth that.</p></dd>
@@ -110,7 +110,7 @@ default, uses each as the time since its earliest value – its order and
 spacing, in one column – and adds the time of day, the day of the week,
 the day of the month and the time of year, each as a sine and cosine so
 that the ends of the cycle meet, but only the cycles some other column
-varies with, and only where the data cover two of the cycle. A cycle
+varies with, and only where the data cover two full cycles. A cycle
 nothing else follows is noise to a clustering: on two known clusters,
 every cycle given unasked took recovery from 0.38 to 0.10 where the date
 meant nothing, while the tested ones left it at 0.36 there and, where a
@@ -129,8 +129,7 @@ duration (<code>difftime</code>) is used as its number of days.</p></dd>
 
 <dt id="arg-cols-negate">cols_negate<a class="anchor" aria-label="anchor" href="#arg-cols-negate"></a></dt>
 <dd><p>If <code>TRUE</code>, <code>cols</code> names the columns to leave out, and every
-other eligible column is used; see <a href="ilm_selection.html">ilm_selection</a>. It needs <code>cols</code>. A
-<code>by</code> argument is never negated.</p></dd>
+other eligible column is used; see <a href="ilm_selection.html">ilm_selection</a>. It needs <code>cols</code>.</p></dd>
 
 
 <dt id="arg-cols-fixed">cols_fixed<a class="anchor" aria-label="anchor" href="#arg-cols-fixed"></a></dt>
@@ -165,7 +164,8 @@ cumulative total), <code>ind_coord</code> (<code>row_id</code> and one column pe
 dimension – this is what <code><a href="ilm_cluster.html">ilm_cluster()</a></code> takes), <code>var_contrib</code>
 (<code>variable</code>, <code>dim</code>, <code>sqload</code>: how strongly each original variable relates
 to each dimension, on a 0 to 1 scale, for numeric and categorical
-variables alike), <code>n</code>, and <code>fit</code>: the eigenvalues, coordinates and
+variables alike), <code>n</code>, <code>cols</code> (the columns used), <code>time</code> (how each date
+or date-time column was used), and <code>fit</code>: the eigenvalues, coordinates and
 squared loadings as computed, for anyone who wants to go past this
 wrapper. Each dimension's sign is fixed by a rule, so the same data give
 the same coordinates everywhere: the column that loads most on a
@@ -183,7 +183,7 @@ apart.</p>
     <div class="section level2">
     <h2 id="details">Details<a class="anchor" aria-label="anchor" href="#details"></a></h2>
     <p>The mixed method is Chavent et al.'s, which belongs to the same
-generalised-PCA family as the FAMD of Pages without being a
+generalised-PCA family as the FAMD of Pagès without being a
 reimplementation of it. The two were checked against each other directly and
 agree for this purpose, matching on eigenvalues and on individual
 coordinates.</p>
@@ -193,7 +193,7 @@ coordinates.</p>
 
 
 <p>The default method is closed-form: on one core of a 16 GB Windows machine
-(<code>dev/studies/scale_check.R</code> in the source) it took under a second at 250,000 rows.
+(<a href="https://github.com/huttoncp/illumex/blob/main/dev/studies/scale_check.R" class="external-link"><code>dev/studies/scale_check.R</code></a>) it took under a second at 250,000 rows.
 <code>method = "glrm"</code> fits iteratively and first chooses its penalty from 18
 held-out fits: 30 seconds at 1,000 rows, 5 minutes at 10,000 and over 15
 minutes at 50,000. Giving <code>lambda</code> (passed to <code><a href="ilm_glrm.html">ilm_glrm()</a></code>) saves the
@@ -201,8 +201,8 @@ search.</p>
     </div>
     <div class="section level2">
     <h2 id="references">References<a class="anchor" aria-label="anchor" href="#references"></a></h2>
-    <p>Pages, J. (2004). Analyse factorielle de donnees mixtes. Revue de
-Statistique Appliquee 52(4), 93-111.</p>
+    <p>Pagès, J. (2004). Analyse factorielle de données mixtes. Revue de
+Statistique Appliquée 52(4), 93-111.</p>
 <p>Chavent, M., Kuentz-Simonet, V., Labenne, A. and Saracco, J. (2014).
 Multivariate analysis of mixed data: the PCAmixdata R package. arXiv
 1411.4911.</p>

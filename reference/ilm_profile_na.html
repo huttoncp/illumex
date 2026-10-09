@@ -103,8 +103,7 @@ cluster's description; see <code><a href="ilm_profile.html">ilm_profile()</a></c
 
 <dt id="arg-cols-negate">cols_negate<a class="anchor" aria-label="anchor" href="#arg-cols-negate"></a></dt>
 <dd><p>If <code>TRUE</code>, <code>cols</code> names the columns to leave out, and every
-other eligible column is used; see <a href="ilm_selection.html">ilm_selection</a>. It needs <code>cols</code>. A
-<code>by</code> argument is never negated.</p></dd>
+other eligible column is used; see <a href="ilm_selection.html">ilm_selection</a>. It needs <code>cols</code>.</p></dd>
 
 
 <dt id="arg-cols-fixed">cols_fixed<a class="anchor" aria-label="anchor" href="#arg-cols-fixed"></a></dt>
@@ -150,7 +149,7 @@ it threatens the model you intend to fit.</p>
 
 <p>It runs <code><a href="ilm_cluster_na.html">ilm_cluster_na()</a></code>, and at its defaults shares that function's
 limits (see Size in <code><a href="ilm_cluster.html">ilm_cluster()</a></code>): on one core of a 16 GB Windows
-machine (<code>dev/studies/scale_check.R</code> in the source) it took 17 seconds at 1,000 rows
+machine (<a href="https://github.com/huttoncp/illumex/blob/main/dev/studies/scale_check.R" class="external-link"><code>dev/studies/scale_check.R</code></a>) it took 17 seconds at 1,000 rows
 and over 15 minutes at 10,000, nearly all of it the gap statistic
 choosing <code>k</code>; giving <code>k</code> saves that search.</p>
     </div>

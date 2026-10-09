@@ -37,7 +37,7 @@ ilm_frame_issues(
 
 - v_cut:
 
-  Cramer's V at or above which a pair of categorical columns is reported
+  Cramér's V at or above which a pair of categorical columns is reported
   as redundant.
 
 - cols:
@@ -52,7 +52,7 @@ ilm_frame_issues(
   If `TRUE`, `cols` names the columns to leave out, and every other
   eligible column is used; see
   [ilm_selection](https://huttoncp.github.io/illumex/reference/ilm_selection.md).
-  It needs `cols`. A `by` argument is never negated.
+  It needs `cols`.
 
 - cols_fixed:
 
@@ -97,7 +97,7 @@ grouping under different labels. One whose every level falls within a
 single level of the other is `nested`, as patients within clinics are;
 that is reported only when at least half of the finer column's levels
 have two or more rows, since a level seen once sits inside one level of
-anything. Otherwise a pair is `redundant_categories` when Cramer's V
+anything. Otherwise a pair is `redundant_categories` when Cramér's V
 reaches `v_cut`: nearly every level of one predicts a level of the
 other.
 
@@ -114,7 +114,7 @@ not reported again from it.
 
 ## References
 
-Cramer, H. (1946). Mathematical Methods of Statistics. Princeton
+Cramér, H. (1946). Mathematical Methods of Statistics. Princeton
 University Press.
 
 ## Examples
@@ -126,6 +126,7 @@ ilm_frame_issues(ilm_sim())
 #>                                                           remedy
 #> 1 Leave it out: a column with one value cannot explain anything.
 
+set.seed(1)
 d <- data.frame(a = rnorm(50), b = rnorm(50),
                 clinic = rep(c("x", "y"), each = 25),
                 ward = rep(c("x1", "x2", "y1", "y2"), c(12, 13, 12, 13)))

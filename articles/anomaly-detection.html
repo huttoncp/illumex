@@ -77,19 +77,68 @@
 whole point.</p>
 <div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://github.com/huttoncp/illumex" class="external-link">illumex</a></span><span class="op">)</span></span></code></pre></div>
+<p>The examples use simulated body measurements: four columns driven by
+one shared size, and three people who are short and heavy, each value
+inside its own column’s range.</p>
+<div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/Random.html" class="external-link">set.seed</a></span><span class="op">(</span><span class="fl">1</span><span class="op">)</span></span>
+<span><span class="va">n</span> <span class="op">&lt;-</span> <span class="fl">300</span></span>
+<span><span class="va">size</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/stats/Normal.html" class="external-link">rnorm</a></span><span class="op">(</span><span class="va">n</span><span class="op">)</span></span>
+<span><span class="va">d</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/data.frame.html" class="external-link">data.frame</a></span><span class="op">(</span>height <span class="op">=</span> <span class="fl">170</span> <span class="op">+</span> <span class="fl">9</span> <span class="op">*</span> <span class="va">size</span> <span class="op">+</span> <span class="fu"><a href="https://rdrr.io/r/stats/Normal.html" class="external-link">rnorm</a></span><span class="op">(</span><span class="va">n</span>, <span class="fl">0</span>, <span class="fl">4</span><span class="op">)</span>,</span>
+<span>                weight <span class="op">=</span> <span class="fl">72</span> <span class="op">+</span> <span class="fl">11</span> <span class="op">*</span> <span class="va">size</span> <span class="op">+</span> <span class="fu"><a href="https://rdrr.io/r/stats/Normal.html" class="external-link">rnorm</a></span><span class="op">(</span><span class="va">n</span>, <span class="fl">0</span>, <span class="fl">6</span><span class="op">)</span>,</span>
+<span>                waist <span class="op">=</span> <span class="fl">85</span> <span class="op">+</span> <span class="fl">9</span> <span class="op">*</span> <span class="va">size</span> <span class="op">+</span> <span class="fu"><a href="https://rdrr.io/r/stats/Normal.html" class="external-link">rnorm</a></span><span class="op">(</span><span class="va">n</span>, <span class="fl">0</span>, <span class="fl">5</span><span class="op">)</span>,</span>
+<span>                shoe <span class="op">=</span> <span class="fl">41</span> <span class="op">+</span> <span class="fl">2.5</span> <span class="op">*</span> <span class="va">size</span> <span class="op">+</span> <span class="fu"><a href="https://rdrr.io/r/stats/Normal.html" class="external-link">rnorm</a></span><span class="op">(</span><span class="va">n</span>, <span class="fl">0</span>, <span class="fl">1</span><span class="op">)</span><span class="op">)</span></span>
+<span><span class="va">d</span><span class="op">[</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">17</span>, <span class="fl">120</span>, <span class="fl">230</span><span class="op">)</span>, <span class="st">"height"</span><span class="op">]</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">152</span>, <span class="fl">150</span>, <span class="fl">155</span><span class="op">)</span></span>
+<span><span class="va">d</span><span class="op">[</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">17</span>, <span class="fl">120</span>, <span class="fl">230</span><span class="op">)</span>, <span class="st">"weight"</span><span class="op">]</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">98</span>, <span class="fl">100</span>, <span class="fl">97</span><span class="op">)</span></span></code></pre></div>
 <div class="section level2">
 <h2 id="one-column-or-the-combination">One column, or the combination<a class="anchor" aria-label="anchor" href="#one-column-or-the-combination"></a>
 </h2>
 <p><code><a href="../reference/ilm_outliers.html">ilm_outliers()</a></code> asks whether a <strong>value</strong> is
 extreme for its own column.</p>
-<div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="fu"><a href="../reference/ilm_outliers.html">ilm_outliers</a></span><span class="op">(</span><span class="va">d</span><span class="op">$</span><span class="va">height</span><span class="op">)</span></span>
-<span><span class="fu"><a href="../reference/ilm_outliers_all.html">ilm_outliers_all</a></span><span class="op">(</span><span class="va">d</span><span class="op">)</span>            <span class="co"># every column at once</span></span></code></pre></div>
+<div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">o</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/ilm_outliers.html">ilm_outliers</a></span><span class="op">(</span><span class="va">d</span><span class="op">$</span><span class="va">height</span><span class="op">)</span></span>
+<span><span class="va">o</span><span class="op">[</span><span class="va">o</span><span class="op">$</span><span class="va">is_outlier</span>, <span class="op">]</span>              <span class="co"># the flagged values only</span></span>
+<span><span class="co">#&gt;        value method threshold score is_outlier</span></span>
+<span><span class="co">#&gt; 206 198.8548    iqr       1.5 1.659       TRUE</span></span>
+<span><span class="co">#&gt; 257 139.0453    iqr       1.5 1.866       TRUE</span></span>
+<span><span class="fu"><a href="../reference/ilm_outliers_all.html">ilm_outliers_all</a></span><span class="op">(</span><span class="va">d</span><span class="op">)</span>            <span class="co"># every column at once</span></span>
+<span><span class="co">#&gt;    row_id variable     value score is_outlier</span></span>
+<span><span class="co">#&gt; 1     206   height 198.85482 1.659       TRUE</span></span>
+<span><span class="co">#&gt; 2     257   height 139.04529 1.866       TRUE</span></span>
+<span><span class="co">#&gt; 3      14   weight  39.24578 1.659       TRUE</span></span>
+<span><span class="co">#&gt; 4      70   weight 109.03724 1.894       TRUE</span></span>
+<span><span class="co">#&gt; 5     141   weight  37.47113 1.775       TRUE</span></span>
+<span><span class="co">#&gt; 6     166   weight 106.42377 1.723       TRUE</span></span>
+<span><span class="co">#&gt; 7     257   weight  40.97060 1.547       TRUE</span></span>
+<span><span class="co">#&gt; 8     232    waist  54.18962 1.754       TRUE</span></span>
+<span><span class="co">#&gt; 9     274    waist 116.44691 1.782       TRUE</span></span>
+<span><span class="co">#&gt; 10     70     shoe  48.04770 1.532       TRUE</span></span>
+<span><span class="co">#&gt; 11     95     shoe  48.60666 1.696       TRUE</span></span>
+<span><span class="co">#&gt; 12    141     shoe  34.17786 1.534       TRUE</span></span></code></pre></div>
 <p><code><a href="../reference/ilm_anomaly.html">ilm_anomaly()</a></code> asks whether a <strong>row</strong> is a
 plausible combination.</p>
-<div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="fu"><a href="../reference/ilm_anomaly.html">ilm_anomaly</a></span><span class="op">(</span><span class="va">d</span><span class="op">)</span></span></code></pre></div>
-<p>Someone 150 cm tall is unremarkable. Someone weighing 110 kg is
+<div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="fu"><a href="../reference/ilm_anomaly.html">ilm_anomaly</a></span><span class="op">(</span><span class="va">d</span>, seed <span class="op">=</span> <span class="fl">1</span><span class="op">)</span></span>
+<span><span class="co">#&gt; Multivariate anomalies: 3 of 300 rows flagged at 0.05</span></span>
+<span><span class="co">#&gt;   rank 1 over 4 columns, fitted on the best 75% of rows, 11700 null scores</span></span>
+<span><span class="co">#&gt;  row score        p   p_adj  flag driver</span></span>
+<span><span class="co">#&gt;  120 9.151 8.55e-05 0.00855  TRUE height</span></span>
+<span><span class="co">#&gt;   17 7.448 8.55e-05 0.00855  TRUE height</span></span>
+<span><span class="co">#&gt;  230 5.966 8.55e-05 0.00855  TRUE weight</span></span>
+<span><span class="co">#&gt;  228 2.990 2.82e-03 0.21200 FALSE  waist</span></span>
+<span><span class="co">#&gt;   75 2.665 6.07e-03 0.36400 FALSE  waist</span></span>
+<span><span class="co">#&gt;   22 2.318 1.26e-02 0.56800 FALSE weight</span></span>
+<span><span class="co">#&gt;  243 2.286 1.32e-02 0.56800 FALSE weight</span></span>
+<span><span class="co">#&gt;   48 2.067 2.21e-02 0.71800 FALSE  waist</span></span>
+<span><span class="co">#&gt;  150 2.007 2.49e-02 0.71800 FALSE weight</span></span>
+<span><span class="co">#&gt;  195 1.994 2.51e-02 0.71800 FALSE height</span></span>
+<span><span class="co">#&gt;   ... 290 more rows</span></span>
+<span><span class="co">#&gt; </span></span>
+<span><span class="co">#&gt;   `driver` is the column contributing most to each row's score.</span></span>
+<span><span class="co">#&gt;   A flagged row is a combination the other rows do not make. It is</span></span>
+<span><span class="co">#&gt;   not necessarily an error, and deleting it because a method said so</span></span>
+<span><span class="co">#&gt;   is how real effects get removed.</span></span></code></pre></div>
+<p>Someone 150 cm tall is unremarkable. Someone weighing 100 kg is
 unremarkable. Someone who is both is not, and nothing in either column’s
 distribution says so. On simulated data with ten rows pushed off the
 correlation structure but inside every column’s range, the
@@ -99,11 +148,8 @@ a few directions. Fit those directions, project each row onto them, and
 score how much of the row is left over. A row that respects the
 correlations needs only a few numbers to describe it; one that does not
 leaves a large remainder.</p>
-<div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">r</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/ilm_anomaly.html">ilm_anomaly</a></span><span class="op">(</span><span class="va">d</span><span class="op">)</span></span>
-<span><span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="va">r</span><span class="op">)</span></span>
-<span><span class="co">#&gt;  row score        p  p_adj  flag driver</span></span>
-<span><span class="co">#&gt;    1 3.746 8.55e-05 0.0256  TRUE      a</span></span></code></pre></div>
+<div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">r</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/ilm_anomaly.html">ilm_anomaly</a></span><span class="op">(</span><span class="va">d</span>, seed <span class="op">=</span> <span class="fl">1</span><span class="op">)</span></span></code></pre></div>
 <p><code>driver</code> is the column contributing most to that row’s
 score. An anomaly nobody can explain is not actionable, so it is
 reported alongside the score.</p>
@@ -185,11 +231,18 @@ are only the top few percent of a smooth continuum that the threshold
 happened to cut. Five genuine outliers and the upper tail of a
 heavy-tailed column can produce the same list.
 <code><a href="../reference/ilm_plot_anomaly.html">ilm_plot_anomaly()</a></code> shows the difference, four ways:</p>
-<div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="fu"><a href="../reference/ilm_plot_anomaly.html">ilm_plot_anomaly</a></span><span class="op">(</span><span class="va">r</span><span class="op">)</span>                    <span class="co"># scores against rank, and the reference</span></span>
-<span><span class="fu"><a href="../reference/ilm_plot_anomaly.html">ilm_plot_anomaly</a></span><span class="op">(</span><span class="va">r</span>, <span class="st">"drivers"</span><span class="op">)</span>         <span class="co"># which column drives the flags</span></span>
-<span><span class="fu"><a href="../reference/ilm_plot_anomaly.html">ilm_plot_anomaly</a></span><span class="op">(</span><span class="va">r</span>, <span class="st">"map"</span><span class="op">)</span>             <span class="co"># where the flagged rows sit</span></span>
-<span><span class="fu"><a href="../reference/ilm_plot_anomaly.html">ilm_plot_anomaly</a></span><span class="op">(</span><span class="va">r</span>, <span class="st">"row"</span>, row <span class="op">=</span> <span class="fl">17</span><span class="op">)</span>   <span class="co"># one row, column by column</span></span></code></pre></div>
+<div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="fu"><a href="../reference/ilm_plot_anomaly.html">ilm_plot_anomaly</a></span><span class="op">(</span><span class="va">r</span><span class="op">)</span>                    <span class="co"># scores against rank, and the reference</span></span></code></pre></div>
+<p><img src="anomaly-detection_files/figure-html/unnamed-chunk-6-1.png" class="r-plt" alt="" width="672"></p>
+<div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="fu"><a href="../reference/ilm_plot_anomaly.html">ilm_plot_anomaly</a></span><span class="op">(</span><span class="va">r</span>, <span class="st">"drivers"</span><span class="op">)</span>         <span class="co"># which column drives the flags</span></span></code></pre></div>
+<p><img src="anomaly-detection_files/figure-html/unnamed-chunk-6-2.png" class="r-plt" alt="" width="672"></p>
+<div class="sourceCode" id="cb9"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="fu"><a href="../reference/ilm_plot_anomaly.html">ilm_plot_anomaly</a></span><span class="op">(</span><span class="va">r</span>, <span class="st">"map"</span><span class="op">)</span>             <span class="co"># where the flagged rows sit</span></span></code></pre></div>
+<p><img src="anomaly-detection_files/figure-html/unnamed-chunk-6-3.png" class="r-plt" alt="" width="672"></p>
+<div class="sourceCode" id="cb10"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="fu"><a href="../reference/ilm_plot_anomaly.html">ilm_plot_anomaly</a></span><span class="op">(</span><span class="va">r</span>, <span class="st">"row"</span>, row <span class="op">=</span> <span class="fl">17</span><span class="op">)</span>   <span class="co"># one row, column by column</span></span></code></pre></div>
+<p><img src="anomaly-detection_files/figure-html/unnamed-chunk-6-4.png" class="r-plt" alt="" width="672"></p>
 <p><strong>Scores.</strong> Every row’s score against its rank, with a
 line at the number flagged and the band the scan simulated: where 95% of
 datasets with the same structure and no anomalies put the score at each
@@ -245,8 +298,25 @@ direction. Detection degrades accordingly: 0.89 at 5% contamination,
 <p>That is the method reaching its limit rather than failing quietly,
 and the tool for a second group is <code><a href="../reference/ilm_cluster.html">ilm_cluster()</a></code>, which is
 looking for exactly that.</p>
-<div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="fu"><a href="../reference/ilm_profile.html">ilm_profile</a></span><span class="op">(</span><span class="va">d</span><span class="op">)</span>                 <span class="co"># is it a group rather than a scattering?</span></span></code></pre></div>
+<div class="sourceCode" id="cb11"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="fu"><a href="../reference/ilm_profile.html">ilm_profile</a></span><span class="op">(</span><span class="va">d</span>, B <span class="op">=</span> <span class="fl">25</span>, seed <span class="op">=</span> <span class="fl">1</span><span class="op">)</span>  <span class="co"># a group rather than a scattering?</span></span>
+<span><span class="co">#&gt; &lt;ilm_profile&gt;</span></span>
+<span><span class="co">#&gt; </span></span>
+<span><span class="co">#&gt; &lt;ilm_reduce&gt; method = pca, n = 300, 4 dimension(s) retained</span></span>
+<span><span class="co">#&gt;   first 3 dimension(s) explain 95.9% of the variance</span></span>
+<span><span class="co">#&gt; </span></span>
+<span><span class="co">#&gt;   strongest variable per dimension (squared loading)</span></span>
+<span><span class="co">#&gt;     dim 1   shoe                     0.880</span></span>
+<span><span class="co">#&gt;     dim 2   weight                   0.197</span></span>
+<span><span class="co">#&gt;     dim 3   height                   0.128</span></span>
+<span><span class="co">#&gt;     dim 4   shoe                     0.120</span></span>
+<span><span class="co">#&gt; </span></span>
+<span><span class="co">#&gt; &lt;ilm_cluster&gt; method = kmeans, k = 1 (chosen by gap statistic)</span></span>
+<span><span class="co">#&gt; </span></span>
+<span><span class="co">#&gt;   No distinct clusters: the gap statistic finds no grouping better than one</span></span>
+<span><span class="co">#&gt;   group, so the 300 rows form a continuum rather than groups. Describe them</span></span>
+<span><span class="co">#&gt;   as one group with ilm_describe_all(), or follow how they vary with</span></span>
+<span><span class="co">#&gt;   ilm_reduce().</span></span></code></pre></div>
 </div>
 <div class="section level2">
 <h2 id="a-flagged-row-is-not-an-error">A flagged row is not an error<a class="anchor" aria-label="anchor" href="#a-flagged-row-is-not-an-error"></a>

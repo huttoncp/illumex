@@ -61,7 +61,7 @@ ilm_anomaly(
 
 - rank:
 
-  Number of directions; `NULL` uses parallel analysis.
+  Number of dimensions; `NULL` uses parallel analysis.
 
 - trim:
 
@@ -108,7 +108,7 @@ ilm_anomaly(
   If `TRUE`, `cols` names the columns to leave out, and every other
   eligible column is used; see
   [ilm_selection](https://huttoncp.github.io/illumex/reference/ilm_selection.md).
-  It needs `cols`. A `by` argument is never negated.
+  It needs `cols`.
 
 - cols_fixed:
 
@@ -152,12 +152,14 @@ replacement lowers it most. Against planted anomalies the forest's
 driver named the changed column for 0.85 to 0.99 of rows pushed out of a
 column's range and 0.90 to 0.95 of rows pairing categories that never
 otherwise occur, but for only 0.34 to 0.38 of rows whose category
-contradicts their numbers (`dev/studies/driver_redesign.R` in the
-source). Above 2,000 rows a category's nearest rows are searched among
-2,000 drawn under `seed`, which gave the same driver as searching every
-row for 0.998 to 1.000 of flagged rows at 10,000 rows
-(`dev/studies/driver_pool.R`). Under either method, read `driver` as
-where to look first, not as the cause.
+contradicts their numbers
+([`dev/studies/driver_redesign.R`](https://github.com/huttoncp/illumex/blob/main/dev/studies/driver_redesign.R)).
+Above 2,000 rows a category's nearest rows are searched among 2,000
+drawn under `seed`, which gave the same driver as searching every row
+for 0.998 to 1.000 of flagged rows at 10,000 rows
+([`dev/studies/driver_pool.R`](https://github.com/huttoncp/illumex/blob/main/dev/studies/driver_pool.R)).
+Under either method, read `driver` as where to look first, not as the
+cause.
 
 ## Details
 
@@ -238,7 +240,8 @@ the rows fall into clusters, and with few columns. On clean data with no
 anomalies, the share of datasets with at least one flagged row was 0.84
 to 1.00 with lognormal noise, 0.01 to 0.17 with clustered rows, and up
 to 0.125 with normal noise and 5 columns (150 to 1,000 rows, 5 to 15
-columns; `dev/studies/anomaly_calibration3.R`).
+columns;
+[`dev/studies/anomaly_calibration3.R`](https://github.com/huttoncp/illumex/blob/main/dev/studies/anomaly_calibration3.R)).
 
 The scan therefore checks its own residuals, and warns when their tails
 are heavier than all but 2 of 40 reference datasets' (p \<= 0.05, with
@@ -252,11 +255,12 @@ to find.
 
 ## Size
 
-On one core of a 16 GB Windows machine (`dev/studies/scale_check.R` in
-the source) the default method took 32 seconds at 10,000 rows and 13
-minutes at 50,000 – the time grows about as the square of the rows – and
-over 15 minutes at 100,000. `method = "iforest"` took 3.5 minutes at
-10,000 rows and over 15 at 50,000.
+On one core of a 16 GB Windows machine
+([`dev/studies/scale_check.R`](https://github.com/huttoncp/illumex/blob/main/dev/studies/scale_check.R))
+the default method took 32 seconds at 10,000 rows and 13 minutes at
+50,000 – the time grows about as the square of the rows – and over 15
+minutes at 100,000. `method = "iforest"` took 3.5 minutes at 10,000 rows
+and over 15 at 50,000.
 
 ## References
 

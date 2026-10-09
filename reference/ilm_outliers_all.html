@@ -74,8 +74,9 @@ and returns one row per flagged value with the row it came from.</p>
 
 
 <dt id="arg-by">by<a class="anchor" aria-label="anchor" href="#arg-by"></a></dt>
-<dd><p>Grouping column(s), as a character vector. Reference statistics,
-and so the flags, are computed separately within each group.</p></dd>
+<dd><p>Grouping column(s): names, a pattern or a predicate, as <code>cols</code>
+takes them (see <a href="ilm_selection.html">ilm_selection</a>). Reference statistics, and so the flags,
+are computed separately within each group.</p></dd>
 
 
 <dt id="arg-cols">cols<a class="anchor" aria-label="anchor" href="#arg-cols"></a></dt>
@@ -85,13 +86,7 @@ regular expression, a predicate function such as <code>is.numeric</code>, or
 
 
 <dt id="arg-method">method<a class="anchor" aria-label="anchor" href="#arg-method"></a></dt>
-<dd><p><code>"famd"</code> (the default) for PCA, MCA or FAMD depending on
-the column types, in closed form; <code>"pcamix"</code>, its name from when
-PCAmixdata computed it, is still accepted and means the same. <code>"glrm"</code> fits a generalized low rank
-model instead, which uses a loss appropriate to each column's type rather
-than squared error on one-hot indicators, and reconstructs a category as a
-category. It costs an iterative fit, and on all-numeric data the two are
-the same model – see <code><a href="ilm_glrm.html">ilm_glrm()</a></code> for when it is worth that.</p></dd>
+<dd><p><code>"iqr"</code>, <code>"mad"</code> or <code>"zscore"</code>, applied to each column.</p></dd>
 
 
 <dt id="arg-threshold">threshold<a class="anchor" aria-label="anchor" href="#arg-threshold"></a></dt>
@@ -106,15 +101,13 @@ value's score.</p></dd>
 
 
 <dt id="arg-na-rm">na.rm<a class="anchor" aria-label="anchor" href="#arg-na-rm"></a></dt>
-<dd><p>Compute the reference statistics with missing values removed.
-The result always has one row per element of <code>y</code>, with <code>NA</code> for <code>score</code>
-and <code>is_outlier</code> wherever <code>y</code> is <code>NA</code>.</p></dd>
+<dd><p>Compute each column's reference statistics with missing
+values removed; a missing value is never flagged.</p></dd>
 
 
 <dt id="arg-cols-negate">cols_negate<a class="anchor" aria-label="anchor" href="#arg-cols-negate"></a></dt>
 <dd><p>If <code>TRUE</code>, <code>cols</code> names the columns to leave out, and every
-other eligible column is used; see <a href="ilm_selection.html">ilm_selection</a>. It needs <code>cols</code>. A
-<code>by</code> argument is never negated.</p></dd>
+other eligible column is used; see <a href="ilm_selection.html">ilm_selection</a>. It needs <code>cols</code>.</p></dd>
 
 
 <dt id="arg-cols-fixed">cols_fixed<a class="anchor" aria-label="anchor" href="#arg-cols-fixed"></a></dt>

@@ -145,7 +145,7 @@ default, uses each as the time since its earliest value – its order and
 spacing, in one column – and adds the time of day, the day of the week,
 the day of the month and the time of year, each as a sine and cosine so
 that the ends of the cycle meet, but only the cycles some other column
-varies with, and only where the data cover two of the cycle. A cycle
+varies with, and only where the data cover two full cycles. A cycle
 nothing else follows is noise to a clustering: on two known clusters,
 every cycle given unasked took recovery from 0.38 to 0.10 where the date
 meant nothing, while the tested ones left it at 0.36 there and, where a
@@ -160,8 +160,7 @@ duration (<code>difftime</code>) is used as its number of days.</p></dd>
 
 <dt id="arg-cols-negate">cols_negate<a class="anchor" aria-label="anchor" href="#arg-cols-negate"></a></dt>
 <dd><p>If <code>TRUE</code>, <code>cols</code> names the columns to leave out, and every
-other eligible column is used; see <a href="ilm_selection.html">ilm_selection</a>. It needs <code>cols</code>. A
-<code>by</code> argument is never negated.</p></dd>
+other eligible column is used; see <a href="ilm_selection.html">ilm_selection</a>. It needs <code>cols</code>.</p></dd>
 
 
 <dt id="arg-cols-fixed">cols_fixed<a class="anchor" aria-label="anchor" href="#arg-cols-fixed"></a></dt>

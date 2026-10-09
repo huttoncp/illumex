@@ -1,6 +1,7 @@
 # Line plot
 
-Line plot
+Draws one column against another, usually a date or a sequence, as a
+line, optionally one line per group, or drawn in panels.
 
 ## Usage
 
@@ -41,7 +42,7 @@ ilm_plot_line(
 
 - pch:
 
-  Plotting character. Takes a NAME as well as a number:
+  Plotting character. Takes a name as well as a number:
   `"filled circle"` is 16, and every code from 0 to 25 has one. Case,
   spaces, underscores and hyphens are ignored. A single character is
   drawn literally, so `pch = "x"` is still the letter x.
@@ -90,6 +91,7 @@ ilm_plot_line(
 ## Examples
 
 ``` r
+set.seed(1)
 d <- data.frame(t = 1:40, v = cumsum(rnorm(40)))
 ilm_plot_line(d, "v", "t")
 ```

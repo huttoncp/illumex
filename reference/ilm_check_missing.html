@@ -90,7 +90,7 @@ predictors when they are a subset. Names, a pattern or a predicate, as
 
 <dt id="arg-min-effect">min_effect<a class="anchor" aria-label="anchor" href="#arg-min-effect"></a></dt>
 <dd><p>Smallest association worth reporting, as a correlation or
-Cramer's V. With several thousand rows an association of 0.02 is
+Cramér's V. With several thousand rows an association of 0.02 is
 significant and means nothing.</p></dd>
 
 
@@ -134,7 +134,8 @@ as substrings. It changes nothing for a logical, positions or a sample.</p></dd>
     <div class="section level2">
     <h2 id="value">Value<a class="anchor" aria-label="anchor" href="#value"></a></h2>
     <p>An object of class <code>"ilm_missing"</code>: <code>variables</code>, <code>patterns</code>,
-<code>associations</code>, <code>monotone</code> and a <code>verdict</code>.</p>
+<code>associations</code>, <code>outcome_test</code>, <code>monotone</code>, <code>n</code> (rows), <code>n_complete</code>
+(complete rows), <code>y</code>, <code>min_effect</code> and a <code>verdict</code>.</p>
     </div>
     <div class="section level2">
     <h2 id="what-can-and-cannot-be-established">What can and cannot be established<a class="anchor" aria-label="anchor" href="#what-can-and-cannot-be-established"></a></h2>

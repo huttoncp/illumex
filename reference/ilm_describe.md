@@ -1,7 +1,7 @@
 # Class-aware description of one variable
 
 Summarises a vector, or one column of a data frame, with statistics
-chosen for its class. Numeric variables also get a gaussian agreement
+chosen for its class. Numeric variables also get a Gaussian agreement
 index and, where that is low, a plain-language reason. A pile of values
 at a bound is named first; an ordered factor's note names one at its
 lowest or highest level (see

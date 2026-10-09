@@ -98,7 +98,7 @@ ilm_glrm(
   the time of day, the day of the week, the day of the month and the
   time of year, each as a sine and cosine so that the ends of the cycle
   meet, but only the cycles some other column varies with, and only
-  where the data cover two of the cycle. A cycle nothing else follows is
+  where the data cover two full cycles. A cycle nothing else follows is
   noise to a clustering: on two known clusters, every cycle given
   unasked took recovery from 0.38 to 0.10 where the date meant nothing,
   while the tested ones left it at 0.36 there and, where a rhythm was
@@ -115,7 +115,7 @@ ilm_glrm(
   If `TRUE`, `cols` names the columns to leave out, and every other
   eligible column is used; see
   [ilm_selection](https://huttoncp.github.io/illumex/reference/ilm_selection.md).
-  It needs `cols`. A `by` argument is never negated.
+  It needs `cols`.
 
 - cols_fixed:
 

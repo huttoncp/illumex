@@ -1,6 +1,7 @@
 # Histogram
 
-Histogram
+Draws the distribution of one numeric column as a histogram, optionally
+one per group, overlaid, or drawn in panels.
 
 ## Usage
 

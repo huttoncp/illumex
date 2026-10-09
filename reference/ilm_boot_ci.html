@@ -139,8 +139,9 @@ as substrings. It changes nothing for a logical, positions or a sample.</p></dd>
 </dl></div>
     <div class="section level2">
     <h2 id="value">Value<a class="anchor" aria-label="anchor" href="#value"></a></h2>
-    <p>A one-row data frame per group, with <code>observed</code>, <code>lower</code>, <code>upper</code>
-and the settings used. For several columns, or none named, one long table
+    <p>A data frame with one row per group (one row in all without
+<code>by</code>): the group, <code>stat</code>, <code>observed</code>, <code>lower</code>, <code>upper</code>, and the settings
+used – <code>conf</code>, <code>R</code>, <code>ci_type</code> – and <code>n</code>, the rows behind it. For several columns, or none named, one long table
 led by a <code>variable</code> column, as <code><a href="ilm_counts_tb_all.html">ilm_counts_tb_all()</a></code> gives. Each column
 starts from <code>seed</code>, so its rows are the ones it would get on its own.</p>
     </div>

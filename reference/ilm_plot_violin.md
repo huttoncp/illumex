@@ -1,6 +1,8 @@
 # Violin plot
 
-Violin plot
+Draws the distribution of a numeric column within each group as a
+violin, which shows the shape of each group's distribution where a box
+plot shows its quartiles.
 
 ## Usage
 
@@ -45,7 +47,7 @@ ilm_plot_violin(
 
 - pch:
 
-  Plotting character. Takes a NAME as well as a number:
+  Plotting character. Takes a name as well as a number:
   `"filled circle"` is 16, and every code from 0 to 25 has one. Case,
   spaces, underscores and hyphens are ignored. A single character is
   drawn literally, so `pch = "x"` is still the letter x.

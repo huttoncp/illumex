@@ -125,8 +125,8 @@ encoding is ever guessed. A value that does not convert, or does not
 convert back to the same bytes, is left as it is and reported as above.</p>
 <p>Names follow the rules of janitor's <code>make_clean_names()</code>, without needing
 janitor, and no letter is dropped: <code>"%"</code> becomes <code>percent</code> and <code>"#"</code>
-<code>number</code>; camelCase is split; accented Latin letters become plain ones (an
-e with an accent becomes e, a sharp s ss, the oe ligature oe); letters of
+<code>number</code>; camelCase is split; accented Latin letters become plain ones
+(<code>"é"</code> becomes <code>e</code>, <code>"ß"</code> becomes <code>ss</code>, <code>"œ"</code> becomes <code>oe</code>); letters of
 other scripts are kept as they are; a name starting with a digit gains an
 <code>x</code>; and a repeated name gains <code>_2</code>, <code>_3</code> and so on, as janitor numbers it.</p>
 <p>It washes the whole data frame, and takes no <code>subset</code> or <code>cols</code>: a column

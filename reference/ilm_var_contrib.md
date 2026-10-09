@@ -41,7 +41,7 @@ permutation mean, a p-value and a verdict. Sorted strongest first.
 ## Details
 
 The statistic is the **between-cluster share of variance** – eta squared
-for a numeric variable, Cramer's V for a categorical one – so both are
+for a numeric variable, Cramér's V for a categorical one – so both are
 on a 0 to 1 scale and directly comparable. A permutation reference is
 computed by shuffling the cluster labels, which preserves each
 variable's own distribution and destroys only its relationship with the

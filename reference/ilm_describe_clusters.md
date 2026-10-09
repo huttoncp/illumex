@@ -1,4 +1,4 @@
-# Describe data whose rows sit in clusters
+# Describe data whose rows sit in sampling clusters
 
 Counts the clusters and the rows in each, and describes each variable
 that is the same on every row of a cluster – a site's region, a school's

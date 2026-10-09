@@ -47,7 +47,7 @@ ilm_check_missing(
 
 - min_effect:
 
-  Smallest association worth reporting, as a correlation or Cramer's V.
+  Smallest association worth reporting, as a correlation or Cramér's V.
   With several thousand rows an association of 0.02 is significant and
   means nothing.
 
@@ -94,7 +94,8 @@ ilm_check_missing(
 ## Value
 
 An object of class `"ilm_missing"`: `variables`, `patterns`,
-`associations`, `monotone` and a `verdict`.
+`associations`, `outcome_test`, `monotone`, `n` (rows), `n_complete`
+(complete rows), `y`, `min_effect` and a `verdict`.
 
 ## What can and cannot be established
 

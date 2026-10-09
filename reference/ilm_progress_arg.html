@@ -55,10 +55,6 @@ written in a script, a test or a knitted document.</p>
     <h2 id="details">Details<a class="anchor" aria-label="anchor" href="#details"></a></h2>
     <p>The bar costs nothing worth measuring: on 2000 bootstrap replicates over
 20,000 rows the loop took no longer with a bar than without one.</p>
-<p>Where work is spread over several cores, the bar advances as each <strong>chunk</strong>
-of the work returns rather than each replicate: the workers are separate
-processes and cannot write to the parent's console. It is coarser, and it
-still tells you the run is alive and roughly how far along.</p>
     </div>
 
     <div class="section level2">
@@ -66,7 +62,7 @@ still tells you the run is alive and roughly how far along.</p>
     <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="va">d</span> <span class="op">&lt;-</span> <span class="fu"><a href="ilm_sim.html">ilm_sim</a></span><span class="op">(</span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="fu"><a href="ilm_boot_ci.html">ilm_boot_ci</a></span><span class="op">(</span><span class="va">d</span>, <span class="st">"score"</span>, R <span class="op">=</span> <span class="fl">200</span>, progress <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>   stat observed    lower    upper conf   R    ci_type   n</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 1 mean 49.67677 49.31202 50.00788 0.95 200 percentile 900</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 1 mean 49.67677 49.26611 50.06166 0.95 200 percentile 900</span>
 </code></pre></div>
     </div>
   </main><aside class="col-md-3"><nav id="toc" aria-label="Table of contents"><h2>On this page</h2>

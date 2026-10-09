@@ -65,7 +65,7 @@ ilm_profile_na(
   If `TRUE`, `cols` names the columns to leave out, and every other
   eligible column is used; see
   [ilm_selection](https://huttoncp.github.io/illumex/reference/ilm_selection.md).
-  It needs `cols`. A `by` argument is never negated.
+  It needs `cols`.
 
 - cols_fixed:
 
@@ -113,10 +113,10 @@ It runs
 [`ilm_cluster_na()`](https://huttoncp.github.io/illumex/reference/ilm_cluster_na.md),
 and at its defaults shares that function's limits (see Size in
 [`ilm_cluster()`](https://huttoncp.github.io/illumex/reference/ilm_cluster.md)):
-on one core of a 16 GB Windows machine (`dev/studies/scale_check.R` in
-the source) it took 17 seconds at 1,000 rows and over 15 minutes at
-10,000, nearly all of it the gap statistic choosing `k`; giving `k`
-saves that search.
+on one core of a 16 GB Windows machine
+([`dev/studies/scale_check.R`](https://github.com/huttoncp/illumex/blob/main/dev/studies/scale_check.R))
+it took 17 seconds at 1,000 rows and over 15 minutes at 10,000, nearly
+all of it the gap statistic choosing `k`; giving `k` saves that search.
 
 ## See also
 

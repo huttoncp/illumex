@@ -84,7 +84,7 @@ output. A factor summary reports how many levels are too thin to
 estimate, because that is the usual reason a model fails to fit. A date
 summary reports whether the spacing is regular, because an AR(1) term
 requires it. A numeric summary reports how far the variable is from
-gaussian <em>and why</em>, because the reason determines what you do
+Gaussian <em>and why</em>, because the reason determines what you do
 next.</p>
 <p>The functions share one prefix with <code>illume</code>, the
 modelling package this one was split from and which attaches it, so
@@ -145,7 +145,7 @@ far the variable is from normal and why.</p>
 <span><span class="co">#&gt; 1   cohort categorical 900 900  0  2024</span></span></code></pre></div>
 </div>
 <div class="section level2">
-<h2 id="the-gaussian-index-and-why-it-is-not-a-p-value">The gaussian index, and why it is not a p-value<a class="anchor" aria-label="anchor" href="#the-gaussian-index-and-why-it-is-not-a-p-value"></a>
+<h2 id="the-gaussian-index-and-why-it-is-not-a-p-value">The Gaussian index, and why it is not a p-value<a class="anchor" aria-label="anchor" href="#the-gaussian-index-and-why-it-is-not-a-p-value"></a>
 </h2>
 <p><code>gauss</code> runs from 0 to 1. A value of 1 means the departure
 from normality is no larger than sampling noise produces 95% of the time
@@ -313,7 +313,7 @@ give it, and annotates it with the same verdict
 <span><span class="co">#&gt; ilm_plot: gauss 0.00 — right-skewed; heavy-tailed</span></span></code></pre></div>
 <p><img src="exploring-data_files/figure-html/unnamed-chunk-15-1.png" class="r-plt" alt="" width="672"></p>
 <p>The subtitle is not decoration. A histogram of a skewed variable
-looks like a histogram; the annotation says how far from gaussian it is
+looks like a histogram; the annotation says how far from Gaussian it is
 and in which direction.</p>
 <p>You can ask what would be drawn without drawing it:</p>
 <div class="sourceCode" id="cb16"><pre class="downlit sourceCode r">
@@ -727,7 +727,7 @@ a boundary, which the two endpoints cannot show.</p>
 <div class="section level2">
 <h2 id="same-numbers-different-data">Same numbers, different data<a class="anchor" aria-label="anchor" href="#same-numbers-different-data"></a>
 </h2>
-<p>Base R’s <code>anscombe</code> holds four small data sets, stacked
+<p>Base R’s <code>anscombe</code> holds four small datasets, stacked
 here into one:</p>
 <div class="sourceCode" id="cb45"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">a</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/data.frame.html" class="external-link">data.frame</a></span><span class="op">(</span>set <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/rep.html" class="external-link">rep</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"I"</span>, <span class="st">"II"</span>, <span class="st">"III"</span>, <span class="st">"IV"</span><span class="op">)</span>, each <span class="op">=</span> <span class="fl">11</span><span class="op">)</span>,</span>
@@ -886,11 +886,11 @@ a model. With <code>illume</code> loaded:</p>
 <span><span class="fu">ilm_mi_pool</span><span class="op">(</span><span class="va">imp</span>, <span class="va">y</span> <span class="op">~</span> <span class="va">x</span> <span class="op">+</span> <span class="va">z</span>, family <span class="op">=</span> <span class="st">"gaussian"</span><span class="op">)</span></span></code></pre></div>
 <p>Each missing value is <strong>drawn</strong> from the predictive
 distribution rather than set to a fitted mean, and the <code>m</code>
-completed data sets are pooled by Rubin’s rules, where the spread of the
+completed datasets are pooled by Rubin’s rules, where the spread of the
 estimates <em>across</em> imputations becomes part of the reported
 uncertainty. <code>fmi</code> is the fraction of information lost to
 missingness.</p>
-<p><code>single = TRUE</code> gives one completed data set and warns.
+<p><code>single = TRUE</code> gives one completed dataset and warns.
 Filling values in once and analysing as though they had been observed
 gets the point estimate about right and the standard errors badly wrong:
 in that same simulation, single imputation covered 79% to 89% where the

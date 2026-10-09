@@ -9,7 +9,7 @@ That is a different emphasis, and it shows up everywhere in the output.
 A factor summary reports how many levels are too thin to estimate,
 because that is the usual reason a model fails to fit. A date summary
 reports whether the spacing is regular, because an AR(1) term requires
-it. A numeric summary reports how far the variable is from gaussian *and
+it. A numeric summary reports how far the variable is from Gaussian *and
 why*, because the reason determines what you do next.
 
 The functions share one prefix with `illume`, the modelling package this
@@ -82,7 +82,7 @@ r$constant
 #> 1   cohort categorical 900 900  0  2024
 ```
 
-## The gaussian index, and why it is not a p-value
+## The Gaussian index, and why it is not a p-value
 
 `gauss` runs from 0 to 1. A value of 1 means the departure from
 normality is no larger than sampling noise produces 95% of the time at
@@ -277,7 +277,7 @@ ilm_plot(d, "income")
 ![](exploring-data_files/figure-html/unnamed-chunk-15-1.png)
 
 The subtitle is not decoration. A histogram of a skewed variable looks
-like a histogram; the annotation says how far from gaussian it is and in
+like a histogram; the annotation says how far from Gaussian it is and in
 which direction.
 
 You can ask what would be drawn without drawing it:
@@ -796,7 +796,7 @@ which the two endpoints cannot show.
 
 ## Same numbers, different data
 
-Base R’s `anscombe` holds four small data sets, stacked here into one:
+Base R’s `anscombe` holds four small datasets, stacked here into one:
 
 ``` r
 
@@ -982,13 +982,13 @@ ilm_mi_pool(imp, y ~ x + z, family = "gaussian")
 ```
 
 Each missing value is **drawn** from the predictive distribution rather
-than set to a fitted mean, and the `m` completed data sets are pooled by
+than set to a fitted mean, and the `m` completed datasets are pooled by
 Rubin’s rules, where the spread of the estimates *across* imputations
 becomes part of the reported uncertainty. `fmi` is the fraction of
 information lost to missingness.
 
-`single = TRUE` gives one completed data set and warns. Filling values
-in once and analysing as though they had been observed gets the point
+`single = TRUE` gives one completed dataset and warns. Filling values in
+once and analysing as though they had been observed gets the point
 estimate about right and the standard errors badly wrong: in that same
 simulation, single imputation covered 79% to 89% where the nominal rate
 was 95%, because nothing in its standard errors knows part of the data

@@ -1,4 +1,4 @@
-# How far a variable is from gaussian, and why
+# How far a variable is from Gaussian, and why
 
 Reports an agreement index on 0-1 and, when it is low, the reason.
 

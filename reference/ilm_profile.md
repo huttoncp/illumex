@@ -1,4 +1,4 @@
-# Profile a data set: reduce, cluster, and describe the clusters
+# Profile a dataset: reduce, cluster, and describe the clusters
 
 Runs
 [`ilm_reduce()`](https://huttoncp.github.io/illumex/reference/ilm_reduce.md),
@@ -55,7 +55,7 @@ ilm_profile(
   `"famd"` (the default) for PCA, MCA or FAMD depending on the column
   types, in closed form; `"pcamix"`, its name from when PCAmixdata
   computed it, is still accepted and means the same. `"glrm"` fits a
-  generalized low rank model instead, which uses a loss appropriate to
+  generalised low rank model instead, which uses a loss appropriate to
   each column's type rather than squared error on one-hot indicators,
   and reconstructs a category as a category. It costs an iterative fit,
   and on all-numeric data the two are the same model – see
@@ -106,7 +106,7 @@ ilm_profile(
   If `TRUE`, `cols` names the columns to leave out, and every other
   eligible column is used; see
   [ilm_selection](https://huttoncp.github.io/illumex/reference/ilm_selection.md).
-  It needs `cols`. A `by` argument is never negated.
+  It needs `cols`.
 
 - cols_fixed:
 
@@ -185,11 +185,12 @@ are what speak to that.
 A profile runs
 [`ilm_cluster()`](https://huttoncp.github.io/illumex/reference/ilm_cluster.md),
 and at its defaults shares that function's limits (see Size there): on
-one core of a 16 GB Windows machine (`dev/studies/scale_check.R` in the
-source) it took about a minute at 1,000 rows and over 15 minutes at
-10,000, nearly all of it the gap statistic choosing `k`; giving `k`
-saves that search. Above about 40,000 rows the silhouettes' distance
-matrix does not fit in 16 GB.
+one core of a 16 GB Windows machine
+([`dev/studies/scale_check.R`](https://github.com/huttoncp/illumex/blob/main/dev/studies/scale_check.R))
+it took about a minute at 1,000 rows and over 15 minutes at 10,000,
+nearly all of it the gap statistic choosing `k`; giving `k` saves that
+search. Above about 40,000 rows the silhouettes' distance matrix does
+not fit in 16 GB.
 
 ## See also
 

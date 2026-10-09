@@ -101,33 +101,30 @@ pattern or a function given as `by` is an error. `by` is never negated.
 ## Examples
 
 ``` r
+set.seed(1)
 d <- data.frame(id = 1:5, score_a = rnorm(5), score_b = rnorm(5),
                 label = letters[1:5])
 ilm_outliers_all(d, cols = "^score_")
 #> Columns: 2 of 4 (excluded: id, label)
-#>   row_id variable     value score is_outlier
-#> 1      1  score_a -1.706430 3.513       TRUE
-#> 2      4  score_a  1.954017 2.572       TRUE
+#> [1] row_id     variable   value      score      is_outlier
+#> <0 rows> (or 0-length row.names)
 ilm_outliers_all(d, cols = is.numeric)
 #> Columns: 3 of 4 (excluded: label)
-#>   row_id variable     value score is_outlier
-#> 1      1  score_a -1.706430 3.513       TRUE
-#> 2      4  score_a  1.954017 2.572       TRUE
+#> [1] row_id     variable   value      score      is_outlier
+#> <0 rows> (or 0-length row.names)
 ## leaving columns out
 ilm_outliers_all(d, cols = "id", cols_negate = TRUE)
 #> Columns: 2 of 4 (excluded: id, label)
-#>   row_id variable     value score is_outlier
-#> 1      1  score_a -1.706430 3.513       TRUE
-#> 2      4  score_a  1.954017 2.572       TRUE
+#> [1] row_id     variable   value      score      is_outlier
+#> <0 rows> (or 0-length row.names)
 ilm_outliers_all(d, cols = "^score_", cols_negate = TRUE)
 #> Columns: 1 of 4 (excluded: score_a, score_b, label)
 #> [1] row_id     variable   value      score      is_outlier
 #> <0 rows> (or 0-length row.names)
 ilm_outliers_all(d, cols = function(v) all(v == round(v)), cols_negate = TRUE)
 #> Columns: 2 of 4 (excluded: id, label)
-#>   row_id variable     value score is_outlier
-#> 1      1  score_a -1.706430 3.513       TRUE
-#> 2      4  score_a  1.954017 2.572       TRUE
+#> [1] row_id     variable   value      score      is_outlier
+#> <0 rows> (or 0-length row.names)
 ## choosing rows
 ilm_outliers_all(d, subset = d$id > 2)
 #> 3 of 5 rows (subset)

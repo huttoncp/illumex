@@ -10,7 +10,7 @@ everything here is available as it always was.
 - Describing:
 
   [`ilm_describe_all()`](https://huttoncp.github.io/illumex/reference/ilm_describe_all.md)
-  summarises every column of a data frame at once, with a gaussian index
+  summarises every column of a data frame at once, with a Gaussian index
   in place of a normality test;
   [`ilm_counts()`](https://huttoncp.github.io/illumex/reference/ilm_counts.md),
   [`ilm_dupes()`](https://huttoncp.github.io/illumex/reference/ilm_dupes.md),
@@ -69,7 +69,7 @@ everything here is available as it always was.
 - Example data:
 
   [`ilm_sim()`](https://huttoncp.github.io/illumex/reference/ilm_sim.md),
-  a grouped data set with a known structure.
+  a grouped dataset with a known structure.
 
 ## Two spellings
 

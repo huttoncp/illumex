@@ -8,6 +8,23 @@ point.
 library(illumex)
 ```
 
+The examples use simulated body measurements: four columns driven by one
+shared size, and three people who are short and heavy, each value inside
+its own column’s range.
+
+``` r
+
+set.seed(1)
+n <- 300
+size <- rnorm(n)
+d <- data.frame(height = 170 + 9 * size + rnorm(n, 0, 4),
+                weight = 72 + 11 * size + rnorm(n, 0, 6),
+                waist = 85 + 9 * size + rnorm(n, 0, 5),
+                shoe = 41 + 2.5 * size + rnorm(n, 0, 1))
+d[c(17, 120, 230), "height"] <- c(152, 150, 155)
+d[c(17, 120, 230), "weight"] <- c(98, 100, 97)
+```
+
 ## One column, or the combination
 
 [`ilm_outliers()`](https://huttoncp.github.io/illumex/reference/ilm_outliers.md)
@@ -15,8 +32,25 @@ asks whether a **value** is extreme for its own column.
 
 ``` r
 
-ilm_outliers(d$height)
+o <- ilm_outliers(d$height)
+o[o$is_outlier, ]              # the flagged values only
+#>        value method threshold score is_outlier
+#> 206 198.8548    iqr       1.5 1.659       TRUE
+#> 257 139.0453    iqr       1.5 1.866       TRUE
 ilm_outliers_all(d)            # every column at once
+#>    row_id variable     value score is_outlier
+#> 1     206   height 198.85482 1.659       TRUE
+#> 2     257   height 139.04529 1.866       TRUE
+#> 3      14   weight  39.24578 1.659       TRUE
+#> 4      70   weight 109.03724 1.894       TRUE
+#> 5     141   weight  37.47113 1.775       TRUE
+#> 6     166   weight 106.42377 1.723       TRUE
+#> 7     257   weight  40.97060 1.547       TRUE
+#> 8     232    waist  54.18962 1.754       TRUE
+#> 9     274    waist 116.44691 1.782       TRUE
+#> 10     70     shoe  48.04770 1.532       TRUE
+#> 11     95     shoe  48.60666 1.696       TRUE
+#> 12    141     shoe  34.17786 1.534       TRUE
 ```
 
 [`ilm_anomaly()`](https://huttoncp.github.io/illumex/reference/ilm_anomaly.md)
@@ -24,10 +58,29 @@ asks whether a **row** is a plausible combination.
 
 ``` r
 
-ilm_anomaly(d)
+ilm_anomaly(d, seed = 1)
+#> Multivariate anomalies: 3 of 300 rows flagged at 0.05
+#>   rank 1 over 4 columns, fitted on the best 75% of rows, 11700 null scores
+#>  row score        p   p_adj  flag driver
+#>  120 9.151 8.55e-05 0.00855  TRUE height
+#>   17 7.448 8.55e-05 0.00855  TRUE height
+#>  230 5.966 8.55e-05 0.00855  TRUE weight
+#>  228 2.990 2.82e-03 0.21200 FALSE  waist
+#>   75 2.665 6.07e-03 0.36400 FALSE  waist
+#>   22 2.318 1.26e-02 0.56800 FALSE weight
+#>  243 2.286 1.32e-02 0.56800 FALSE weight
+#>   48 2.067 2.21e-02 0.71800 FALSE  waist
+#>  150 2.007 2.49e-02 0.71800 FALSE weight
+#>  195 1.994 2.51e-02 0.71800 FALSE height
+#>   ... 290 more rows
+#> 
+#>   `driver` is the column contributing most to each row's score.
+#>   A flagged row is a combination the other rows do not make. It is
+#>   not necessarily an error, and deleting it because a method said so
+#>   is how real effects get removed.
 ```
 
-Someone 150 cm tall is unremarkable. Someone weighing 110 kg is
+Someone 150 cm tall is unremarkable. Someone weighing 100 kg is
 unremarkable. Someone who is both is not, and nothing in either column’s
 distribution says so. On simulated data with ten rows pushed off the
 correlation structure but inside every column’s range, the
@@ -41,10 +94,7 @@ leaves a large remainder.
 
 ``` r
 
-r <- ilm_anomaly(d)
-head(r)
-#>  row score        p  p_adj  flag driver
-#>    1 3.746 8.55e-05 0.0256  TRUE      a
+r <- ilm_anomaly(d, seed = 1)
 ```
 
 `driver` is the column contributing most to that row’s score. An anomaly
@@ -134,10 +184,30 @@ shows the difference, four ways:
 ``` r
 
 ilm_plot_anomaly(r)                    # scores against rank, and the reference
+```
+
+![](anomaly-detection_files/figure-html/unnamed-chunk-6-1.png)
+
+``` r
+
 ilm_plot_anomaly(r, "drivers")         # which column drives the flags
+```
+
+![](anomaly-detection_files/figure-html/unnamed-chunk-6-2.png)
+
+``` r
+
 ilm_plot_anomaly(r, "map")             # where the flagged rows sit
+```
+
+![](anomaly-detection_files/figure-html/unnamed-chunk-6-3.png)
+
+``` r
+
 ilm_plot_anomaly(r, "row", row = 17)   # one row, column by column
 ```
+
+![](anomaly-detection_files/figure-html/unnamed-chunk-6-4.png)
 
 **Scores.** Every row’s score against its rank, with a line at the
 number flagged and the band the scan simulated: where 95% of datasets
@@ -205,7 +275,24 @@ which is looking for exactly that.
 
 ``` r
 
-ilm_profile(d)                 # is it a group rather than a scattering?
+ilm_profile(d, B = 25, seed = 1)  # a group rather than a scattering?
+#> <ilm_profile>
+#> 
+#> <ilm_reduce> method = pca, n = 300, 4 dimension(s) retained
+#>   first 3 dimension(s) explain 95.9% of the variance
+#> 
+#>   strongest variable per dimension (squared loading)
+#>     dim 1   shoe                     0.880
+#>     dim 2   weight                   0.197
+#>     dim 3   height                   0.128
+#>     dim 4   shoe                     0.120
+#> 
+#> <ilm_cluster> method = kmeans, k = 1 (chosen by gap statistic)
+#> 
+#>   No distinct clusters: the gap statistic finds no grouping better than one
+#>   group, so the 300 rows form a continuum rather than groups. Describe them
+#>   as one group with ilm_describe_all(), or follow how they vary with
+#>   ilm_reduce().
 ```
 
 ## A flagged row is not an error

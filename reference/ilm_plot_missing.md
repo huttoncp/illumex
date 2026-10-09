@@ -1,6 +1,7 @@
 # Proportion missing, by variable
 
-Proportion missing, by variable
+Draws the share of values missing in each column of a data frame, as
+bars.
 
 ## Usage
 
