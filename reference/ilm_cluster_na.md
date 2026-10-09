@@ -72,10 +72,10 @@ cl
 #> <ilm_cluster_na> method = kmeans, k = 4 (chosen by gap statistic)
 #> 
 #>   cluster   size    pct  jaccard  stability     sil
-#>         1      5    3.3    1.000     stable   1.000  small
+#>         1    111   72.5    1.000     stable   1.000
 #>         2     35   22.9    1.000     stable   1.000
-#>         3      2    1.3    1.000     stable   1.000  small
-#>         4    111   72.5    1.000     stable   1.000
+#>         3      5    3.3    1.000     stable   1.000  small
+#>         4      2    1.3    1.000     stable   1.000  small
 #> 
 #>   7 observation(s) in a cluster holding less than 5% of the data
 ```

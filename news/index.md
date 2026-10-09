@@ -2,6 +2,15 @@
 
 ## illumex 0.0.8.9003
 
+- Clusters are numbered by size, largest first; between two of one size,
+  the one whose first row comes first in the data is numbered first.
+  [`ilm_cluster()`](https://huttoncp.github.io/illumex/reference/ilm_cluster.md)
+  numbered them as k-means left them, so the same partition could be
+  “Cluster 1” in one run and “Cluster 3” in the next. The numbers now
+  depend only on the partition: cluster 1 is the largest, small clusters
+  come last, and a cluster keeps its colour in the plots. The cluster
+  tables, a profile’s paragraphs and the `_na` versions follow the same
+  numbers; the figures are unchanged.
 - `ilm_plot_anomaly(type = "row")` draws on a narrow device. On one 3
   inches wide or less – a small plot pane, or a vignette’s default
   figure – it stopped with “invalid graphics state”, since its legend

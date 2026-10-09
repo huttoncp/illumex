@@ -869,13 +869,13 @@ cars$am  <- factor(cars$am)
 
 p <- ilm_profile(cars, k_max = 5, B = 25, seed = 1)
 cat(p$summary, sep = "\n\n")
-#> Cluster 1 holds 5 rows, 15.6% of the data (stable). What sets it apart: carb is higher: the middle 50% of its values lie between 4 and 6, against 2 to 4 across all rows; qsec is lower: the middle 50% of its values lie between 14.6 and 16.5, against 16.9 to 18.9 across all rows; gear is higher: the middle 50% of its values lie between 4 and 5, against 3 to 4 across all rows; and am is '0' for none of them, against 59% across all rows. Less strongly, 1 more variable sets it apart as well.
+#> Cluster 1 holds 12 rows, 37.5% of the data (stable). What sets it apart: cyl is '8' for 100% of them, against 44% across all rows; disp is higher: the middle 50% of its values lie between 276 and 400, against 120 to 318 across all rows; gear is lower: the middle 50% of its values lie between 3 and 3, against 3 to 4 across all rows; and wt is higher: the middle 50% of its values lie between 3.52 and 4.07, against 2.47 to 3.57 across all rows. Less strongly, 5 more variables set it apart as well.
 #> 
-#> Cluster 2 holds 7 rows, 21.9% of the data (moderate). What sets it apart: qsec is higher: the middle 50% of its values lie between 18.9 and 20.2, against 16.9 to 18.9 across all rows; vs is higher: the middle 50% of its values lie between 1 and 1, against 0 to 1 across all rows; cyl is '8' for none of them, against 44% across all rows; and am is '0' for 100% of them, against 59% across all rows. 1 of its members sits close enough to another cluster to be uncertain.
+#> Cluster 2 holds 8 rows, 25.0% of the data (stable). What sets it apart: mpg is higher: the middle 50% of its values lie between 22.8 and 30.4, against 15.2 to 22.8 across all rows; cyl is '4' for 100% of them, against 34% across all rows; wt is lower: the middle 50% of its values lie between 1.62 and 2.20, against 2.47 to 3.57 across all rows; and am is '0' for none of them, against 59% across all rows. Less strongly, 6 more variables set it apart as well.
 #> 
-#> Cluster 3 holds 12 rows, 37.5% of the data (stable). What sets it apart: cyl is '8' for 100% of them, against 44% across all rows; disp is higher: the middle 50% of its values lie between 276 and 400, against 120 to 318 across all rows; gear is lower: the middle 50% of its values lie between 3 and 3, against 3 to 4 across all rows; and wt is higher: the middle 50% of its values lie between 3.52 and 4.07, against 2.47 to 3.57 across all rows. Less strongly, 5 more variables set it apart as well.
+#> Cluster 3 holds 7 rows, 21.9% of the data (moderate). What sets it apart: qsec is higher: the middle 50% of its values lie between 18.9 and 20.2, against 16.9 to 18.9 across all rows; vs is higher: the middle 50% of its values lie between 1 and 1, against 0 to 1 across all rows; cyl is '8' for none of them, against 44% across all rows; and am is '0' for 100% of them, against 59% across all rows. 1 of its members sits close enough to another cluster to be uncertain.
 #> 
-#> Cluster 4 holds 8 rows, 25.0% of the data (stable). What sets it apart: mpg is higher: the middle 50% of its values lie between 22.8 and 30.4, against 15.2 to 22.8 across all rows; cyl is '4' for 100% of them, against 34% across all rows; wt is lower: the middle 50% of its values lie between 1.62 and 2.20, against 2.47 to 3.57 across all rows; and am is '0' for none of them, against 59% across all rows. Less strongly, 6 more variables set it apart as well.
+#> Cluster 4 holds 5 rows, 15.6% of the data (stable). What sets it apart: carb is higher: the middle 50% of its values lie between 4 and 6, against 2 to 4 across all rows; qsec is lower: the middle 50% of its values lie between 14.6 and 16.5, against 16.9 to 18.9 across all rows; gear is higher: the middle 50% of its values lie between 4 and 5, against 3 to 4 across all rows; and am is '0' for none of them, against 59% across all rows. Less strongly, 1 more variable sets it apart as well.
 ```
 
 The reduction picks its own method from the column types: PCA when they
@@ -894,10 +894,10 @@ never surface.
 
 p$cluster$clusters
 #>   cluster size    pct   jaccard stability mean_silhouette anomalous
-#> 1       1    5 15.625 0.7656190    stable       0.2860767     FALSE
-#> 2       2    7 21.875 0.6975873  moderate       0.2524941     FALSE
-#> 3       3   12 37.500 0.9950000    stable       0.6753886     FALSE
-#> 4       4    8 25.000 0.8216667    stable       0.5484379     FALSE
+#> 1       1   12 37.500 0.9950000    stable       0.6753886     FALSE
+#> 2       2    8 25.000 0.8216667    stable       0.5484379     FALSE
+#> 3       3    7 21.875 0.6975873  moderate       0.2524941     FALSE
+#> 4       4    5 15.625 0.7656190    stable       0.2860767     FALSE
 ```
 
 A cluster is characterised by v-test, the same device `FactoMineR`’s
@@ -1006,7 +1006,7 @@ pn <- ilm_profile_na(airquality, k_max = 4, B = 25, seed = 1)
 #> selector can also lock onto the number of category combinations rather than the
 #> number of clusters; plot(x) shows the gap curve.
 cat(pn$summary[1:2], sep = "\n\n")
-#> Cluster 1 is too small to describe reliably: 5 rows, 3.3% of the data (stable). What sets it apart: Solar.R is missing for 100% of them, against 5% across all rows. It could be a real minority pattern or a data problem, and is worth looking at either way.
+#> Cluster 1 holds 111 rows, 72.5% of the data (stable). What sets it apart: Ozone is missing for none of them, against 24% across all rows.
 #> 
 #> Cluster 2 holds 35 rows, 22.9% of the data (stable). What sets it apart: Ozone is missing for 100% of them, against 24% across all rows.
 ```

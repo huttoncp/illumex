@@ -54,20 +54,21 @@ pr
 #> <ilm_cluster> method = kmeans, k = 3 (chosen by gap statistic)
 #> 
 #>   cluster   size    pct  jaccard  stability     sil
-#>         1     64   21.3    1.000     stable   0.700
+#>         1    127   42.3    0.970     stable   0.543
 #>         2    109   36.3    0.964     stable   0.460
-#>         3    127   42.3    0.970     stable   0.543
+#>         3     64   21.3    1.000     stable   0.700
 #>   11 observation(s) sit between clusters (silhouette below 0.10) and may be misassigned
 #> 
 #>   what each cluster is
-#>     Cluster 1 holds 64 rows, 21.3% of the data (stable). What sets it
-#>     apart: work is 'retired' for 88% of them, against 19% across all rows;
-#>     age is higher: the middle 50% of its values lie between 68 and 75,
-#>     against 34 to 54 across all rows; visits is higher: the middle 50% of
-#>     its values lie between 4 and 8, against 1 to 4 across all rows; and
-#>     income is lower: the middle 50% of its values lie between 22 and 36.7,
+#>     Cluster 1 holds 127 rows, 42.3% of the data (stable). What sets it
+#>     apart: age is lower: the middle 50% of its values lie between 28 and
+#>     38, against 34 to 54 across all rows; visits is lower: the middle 50%
+#>     of its values lie between 1 and 3, against 1 to 4 across all rows; work
+#>     is 'retired' for none of them, against 19% across all rows; and income
+#>     is lower: the middle 50% of its values lie between 30.7 and 45.5,
 #>     against 31.4 to 66.4 across all rows. Less strongly, 1 more variable
-#>     sets it apart as well.
+#>     sets it apart as well. 2 of its members sit close enough to another
+#>     cluster to be uncertain.
 #> 
 #>     Cluster 2 holds 109 rows, 36.3% of the data (stable). What sets it
 #>     apart: income is higher: the middle 50% of its values lie between 61.9
@@ -77,15 +78,14 @@ pr
 #>     all rows. 9 of its members sit close enough to another cluster to be
 #>     uncertain.
 #> 
-#>     Cluster 3 holds 127 rows, 42.3% of the data (stable). What sets it
-#>     apart: age is lower: the middle 50% of its values lie between 28 and
-#>     38, against 34 to 54 across all rows; visits is lower: the middle 50%
-#>     of its values lie between 1 and 3, against 1 to 4 across all rows; work
-#>     is 'retired' for none of them, against 19% across all rows; and income
-#>     is lower: the middle 50% of its values lie between 30.7 and 45.5,
+#>     Cluster 3 holds 64 rows, 21.3% of the data (stable). What sets it
+#>     apart: work is 'retired' for 88% of them, against 19% across all rows;
+#>     age is higher: the middle 50% of its values lie between 68 and 75,
+#>     against 34 to 54 across all rows; visits is higher: the middle 50% of
+#>     its values lie between 4 and 8, against 1 to 4 across all rows; and
+#>     income is lower: the middle 50% of its values lie between 22 and 36.7,
 #>     against 31.4 to 66.4 across all rows. Less strongly, 1 more variable
-#>     sets it apart as well. 2 of its members sit close enough to another
-#>     cluster to be uncertain.
+#>     sets it apart as well.
 #> 
 #>     ilm_var_contrib() for the full table.
 ilm_plot_profile(pr)
@@ -185,9 +185,9 @@ cl
 #> <ilm_cluster> method = kmeans, k = 3 (chosen by gap statistic)
 #> 
 #>   cluster   size    pct  jaccard  stability     sil
-#>         1     64   21.3    0.998     stable   0.690
+#>         1    132   44.0    0.954     stable   0.497
 #>         2    104   34.7    0.944     stable   0.376
-#>         3    132   44.0    0.954     stable   0.497
+#>         3     64   21.3    0.998     stable   0.690
 #>   19 observation(s) sit between clusters (silhouette below 0.10) and may be misassigned
 ilm_plot_cluster(cl)
 ```
@@ -224,106 +224,106 @@ stands out.
 ``` r
 
 cat(pr$summary, sep = "\n\n")   # a paragraph per cluster
-#> Cluster 1 holds 64 rows, 21.3% of the data (stable). What sets it apart: work is 'retired' for 88% of them, against 19% across all rows; age is higher: the middle 50% of its values lie between 68 and 75, against 34 to 54 across all rows; visits is higher: the middle 50% of its values lie between 4 and 8, against 1 to 4 across all rows; and income is lower: the middle 50% of its values lie between 22 and 36.7, against 31.4 to 66.4 across all rows. Less strongly, 1 more variable sets it apart as well.
+#> Cluster 1 holds 127 rows, 42.3% of the data (stable). What sets it apart: age is lower: the middle 50% of its values lie between 28 and 38, against 34 to 54 across all rows; visits is lower: the middle 50% of its values lie between 1 and 3, against 1 to 4 across all rows; work is 'retired' for none of them, against 19% across all rows; and income is lower: the middle 50% of its values lie between 30.7 and 45.5, against 31.4 to 66.4 across all rows. Less strongly, 1 more variable sets it apart as well. 2 of its members sit close enough to another cluster to be uncertain.
 #> 
 #> Cluster 2 holds 109 rows, 36.3% of the data (stable). What sets it apart: income is higher: the middle 50% of its values lie between 61.9 and 76.6, against 31.4 to 66.4 across all rows; household is higher: the middle 50% of its values lie between 2 and 5, against 1 to 3 across all rows; and work is 'employed' for 100% of them, against 75% across all rows. 9 of its members sit close enough to another cluster to be uncertain.
 #> 
-#> Cluster 3 holds 127 rows, 42.3% of the data (stable). What sets it apart: age is lower: the middle 50% of its values lie between 28 and 38, against 34 to 54 across all rows; visits is lower: the middle 50% of its values lie between 1 and 3, against 1 to 4 across all rows; work is 'retired' for none of them, against 19% across all rows; and income is lower: the middle 50% of its values lie between 30.7 and 45.5, against 31.4 to 66.4 across all rows. Less strongly, 1 more variable sets it apart as well. 2 of its members sit close enough to another cluster to be uncertain.
+#> Cluster 3 holds 64 rows, 21.3% of the data (stable). What sets it apart: work is 'retired' for 88% of them, against 19% across all rows; age is higher: the middle 50% of its values lie between 68 and 75, against 34 to 54 across all rows; visits is higher: the middle 50% of its values lie between 4 and 8, against 1 to 4 across all rows; and income is lower: the middle 50% of its values lie between 22 and 36.7, against 31.4 to 66.4 across all rows. Less strongly, 1 more variable sets it apart as well.
 pr$characterization               # every comparison behind them
 #>    cluster  variable aspect   kind           v       size eligible
-#> 1        1      work         share  15.2584513 0.68833333     TRUE
-#> 2        1       age        number  14.1182581 1.56526006     TRUE
-#> 3        1    visits        number  10.9383941 1.21271557     TRUE
-#> 4        1    income        number  -8.1596097 0.90463788     TRUE
-#> 5        1 household        number  -6.5926228 0.73090952     TRUE
+#> 1        1       age        number -11.8545484 0.79881384     TRUE
+#> 2        1    visits        number  -8.2588457 0.55651890     TRUE
+#> 3        1      work         share  -8.1304991 0.18666667     TRUE
+#> 4        1    income        number  -6.5955778 0.44444028     TRUE
+#> 5        1 household        number  -4.2155813 0.28406520     TRUE
 #> 6        2    income        number  13.7256112 1.04899761     TRUE
 #> 7        2 household        number   9.9459608 0.76013293     TRUE
 #> 8        2      work         share   8.6697403 0.24666667     TRUE
 #> 9        2    visits        number  -0.8325940 0.06363208     TRUE
 #> 10       2       age        number   0.1527781 0.01167627     TRUE
-#> 11       3       age        number -11.8545484 0.79881384     TRUE
-#> 12       3    visits        number  -8.2588457 0.55651890     TRUE
-#> 13       3      work         share  -8.1304991 0.18666667     TRUE
-#> 14       3    income        number  -6.5955778 0.44444028     TRUE
-#> 15       3 household        number  -4.2155813 0.28406520     TRUE
+#> 11       3      work         share  15.2584513 0.68833333     TRUE
+#> 12       3       age        number  14.1182581 1.56526006     TRUE
+#> 13       3    visits        number  10.9383941 1.21271557     TRUE
+#> 14       3    income        number  -8.1596097 0.90463788     TRUE
+#> 15       3 household        number  -6.5926228 0.73090952     TRUE
 #>                                                                                                       description
-#> 1                                                  work is 'retired' for 88% of them, against 19% across all rows
-#> 2             age is higher: the middle 50% of its values lie between 68 and 75, against 34 to 54 across all rows
-#> 3              visits is higher: the middle 50% of its values lie between 4 and 8, against 1 to 4 across all rows
-#> 4     income is lower: the middle 50% of its values lie between 22 and 36.7, against 31.4 to 66.4 across all rows
-#> 5            household is lower: the middle 50% of its values lie between 1 and 2, against 1 to 3 across all rows
+#> 1              age is lower: the middle 50% of its values lie between 28 and 38, against 34 to 54 across all rows
+#> 2               visits is lower: the middle 50% of its values lie between 1 and 3, against 1 to 4 across all rows
+#> 3                                                 work is 'retired' for none of them, against 19% across all rows
+#> 4   income is lower: the middle 50% of its values lie between 30.7 and 45.5, against 31.4 to 66.4 across all rows
+#> 5            household is lower: the middle 50% of its values lie between 1 and 3, against 1 to 3 across all rows
 #> 6  income is higher: the middle 50% of its values lie between 61.9 and 76.6, against 31.4 to 66.4 across all rows
 #> 7           household is higher: the middle 50% of its values lie between 2 and 5, against 1 to 3 across all rows
 #> 8                                                work is 'employed' for 100% of them, against 75% across all rows
 #> 9               visits is lower: the middle 50% of its values lie between 2 and 4, against 1 to 4 across all rows
 #> 10            age is higher: the middle 50% of its values lie between 42 and 50, against 34 to 54 across all rows
-#> 11             age is lower: the middle 50% of its values lie between 28 and 38, against 34 to 54 across all rows
-#> 12              visits is lower: the middle 50% of its values lie between 1 and 3, against 1 to 4 across all rows
-#> 13                                                work is 'retired' for none of them, against 19% across all rows
-#> 14  income is lower: the middle 50% of its values lie between 30.7 and 45.5, against 31.4 to 66.4 across all rows
-#> 15           household is lower: the middle 50% of its values lie between 1 and 3, against 1 to 3 across all rows
+#> 11                                                 work is 'retired' for 88% of them, against 19% across all rows
+#> 12            age is higher: the middle 50% of its values lie between 68 and 75, against 34 to 54 across all rows
+#> 13             visits is higher: the middle 50% of its values lie between 4 and 8, against 1 to 4 across all rows
+#> 14    income is lower: the middle 50% of its values lie between 22 and 36.7, against 31.4 to 66.4 across all rows
+#> 15           household is lower: the middle 50% of its values lie between 1 and 2, against 1 to 3 across all rows
 pr$frequencies                    # every value of every category, per cluster
 #>   cluster variable    value   n share share_all
-#> 1       1     work  retired  56 0.875     0.187
-#> 2       1     work employed   8 0.125     0.753
-#> 3       1     work studying   0 0.000     0.060
+#> 1       1     work employed 109 0.858     0.753
+#> 2       1     work studying  18 0.142     0.060
+#> 3       1     work  retired   0 0.000     0.187
 #> 4       2     work employed 109 1.000     0.753
 #> 5       2     work  retired   0 0.000     0.187
 #> 6       2     work studying   0 0.000     0.060
-#> 7       3     work employed 109 0.858     0.753
-#> 8       3     work studying  18 0.142     0.060
-#> 9       3     work  retired   0 0.000     0.187
+#> 7       3     work  retired  56 0.875     0.187
+#> 8       3     work employed   8 0.125     0.753
+#> 9       3     work studying   0 0.000     0.060
 pr$by_cluster                     # ilm_describe_all(), by cluster
 #> $numeric
 #>     variable cluster obs   n na    sum   mean     sd    se   p0  p50  p100
-#> 1        age       1  64  64  0 4571.0 71.422  5.882 0.735 57.0 70.5  85.0
+#> 1        age       1 127 127  0 4163.0 32.780  8.082 0.717 17.0 32.0  65.0
 #> 2        age       2 109 109  0 5017.0 46.028  7.408 0.710 27.0 46.0  76.0
-#> 3        age       3 127 127  0 4163.0 32.780  8.082 0.717 17.0 32.0  65.0
-#> 11    income       1  64  64  0 1898.0 29.656 10.571 1.321  8.2 29.1  55.1
+#> 3        age       3  64  64  0 4571.0 71.422  5.882 0.735 57.0 70.5  85.0
+#> 11    income       1 127 127  0 4939.1 38.891 12.103 1.074 16.3 36.6  86.1
 #> 21    income       2 109 109  0 7505.5 68.858 11.945 1.144 37.7 69.8 106.3
-#> 31    income       3 127 127  0 4939.1 38.891 12.103 1.074 16.3 36.6  86.1
-#> 12 household       1  64  64  0   85.0  1.328  0.592 0.074  1.0  1.0   4.0
+#> 31    income       3  64  64  0 1898.0 29.656 10.571 1.321  8.2 29.1  55.1
+#> 12 household       1 127 127  0  255.0  2.008  0.972 0.086  1.0  2.0   5.0
 #> 22 household       2 109 109  0  392.0  3.596  1.673 0.160  1.0  4.0   9.0
-#> 32 household       3 127 127  0  255.0  2.008  0.972 0.086  1.0  2.0   5.0
-#> 13    visits       1  64  64  0  403.0  6.297  2.729 0.341  1.0  6.0  13.0
+#> 32 household       3  64  64  0   85.0  1.328  0.592 0.074  1.0  1.0   4.0
+#> 13    visits       1 127 127  0  229.0  1.803  1.380 0.122  0.0  2.0   6.0
 #> 23    visits       2 109 109  0  333.0  3.055  1.815 0.174  0.0  3.0   8.0
-#> 33    visits       3 127 127  0  229.0  1.803  1.380 0.122  0.0  2.0   6.0
+#> 33    visits       3  64  64  0  403.0  6.297  2.729 0.341  1.0  6.0  13.0
 #>    p_zero dispersion gauss
-#> 1   0.000      0.484 1.000
+#> 1   0.000      1.993 1.000
 #> 2   0.000      1.192 1.000
-#> 3   0.000      1.993 1.000
-#> 11  0.000         NA 1.000
+#> 3   0.000      0.484 1.000
+#> 11  0.000         NA 0.931
 #> 21  0.000         NA 0.641
-#> 31  0.000         NA 0.931
+#> 31  0.000         NA 1.000
 #> 12  0.000         NA 0.000
 #> 22  0.000         NA 0.127
 #> 32  0.000         NA 0.000
-#> 13  0.000      1.183 0.591
+#> 13  0.181      1.057 0.000
 #> 23  0.055      1.078 0.168
-#> 33  0.181      1.057 0.000
+#> 33  0.000      1.183 0.591
 #>                                                                                                                                gauss_note
 #> 1                                                                                                                                        
 #> 2                                                                                                                                        
 #> 3                                                                                                                                        
-#> 11                                                                                                                                       
+#> 11                                                                                                             right-skewed; heavy-tailed
 #> 21                                                                                          departs from normal, no single dominant cause
-#> 31                                                                                                             right-skewed; heavy-tailed
-#> 12 72% of values sit at the scale's lowest point (1): it cannot separate people there, see an ordinal model; discrete (4 distinct values)
+#> 31                                                                                                                                       
+#> 12                                                                                                           discrete (5 distinct values)
 #> 22                                                                                              discrete (9 distinct values); left-skewed
-#> 32                                                                                                           discrete (5 distinct values)
-#> 13                                                                                                          discrete (13 distinct values)
+#> 32 72% of values sit at the scale's lowest point (1): it cannot separate people there, see an ordinal model; discrete (4 distinct values)
+#> 13                                                                                          discrete (7 distinct values); bounded at zero
 #> 23                                                                                          discrete (9 distinct values); bounded at zero
-#> 33                                                                                          discrete (7 distinct values); bounded at zero
+#> 33                                                                                                          discrete (13 distinct values)
 #> 
 #> $categorical
 #>   variable cluster obs   n na n_empty n_unique ordered p_max n_rare n_unused
-#> 1     work       1  64  64  0       0        2   FALSE 0.875      0        1
+#> 1     work       1 127 127  0       0        2   FALSE 0.858      0        1
 #> 2     work       2 109 109  0       0        1   FALSE 1.000      0        2
-#> 3     work       3 127 127  0       0        2   FALSE 0.858      0        1
+#> 3     work       3  64  64  0       0        2   FALSE 0.875      0        1
 #>   case_variants                 counts_tb                           note
-#> 1             0    retired_56, employed_8                1 unused levels
+#> 1             0 employed_109, studying_18                1 unused levels
 #> 2             0              employed_109 2 unused levels; near-constant
-#> 3             0 employed_109, studying_18                1 unused levels
+#> 3             0    retired_56, employed_8                1 unused levels
 ```
 
 The variables are ranked by a v-test – how far the cluster’s mean or
@@ -392,29 +392,29 @@ pr_na
 #> <ilm_cluster_na> method = kmeans, k = 4 (chosen by gap statistic)
 #> 
 #>   cluster   size    pct  jaccard  stability     sil
-#>         1      5    3.3    1.000     stable   1.000  small
+#>         1    111   72.5    1.000     stable   1.000
 #>         2     35   22.9    1.000     stable   1.000
-#>         3      2    1.3    1.000     stable   1.000  small
-#>         4    111   72.5    1.000     stable   1.000
+#>         3      5    3.3    1.000     stable   1.000  small
+#>         4      2    1.3    1.000     stable   1.000  small
 #> 
 #>   7 observation(s) in a cluster holding less than 5% of the data
 #> 
 #>   what each cluster is
-#>     Cluster 1 is too small to describe reliably: 5 rows, 3.3% of the data
-#>     (stable). What sets it apart: Solar.R is missing for 100% of them,
-#>     against 5% across all rows. It could be a real minority pattern or a
-#>     data problem, and is worth looking at either way.
+#>     Cluster 1 holds 111 rows, 72.5% of the data (stable). What sets it
+#>     apart: Ozone is missing for none of them, against 24% across all rows.
 #> 
 #>     Cluster 2 holds 35 rows, 22.9% of the data (stable). What sets it
 #>     apart: Ozone is missing for 100% of them, against 24% across all rows.
 #> 
-#>     Cluster 3 is too small to describe reliably: 2 rows, 1.3% of the data
+#>     Cluster 3 is too small to describe reliably: 5 rows, 3.3% of the data
 #>     (stable). What sets it apart: Solar.R is missing for 100% of them,
 #>     against 5% across all rows. It could be a real minority pattern or a
 #>     data problem, and is worth looking at either way.
 #> 
-#>     Cluster 4 holds 111 rows, 72.5% of the data (stable). What sets it
-#>     apart: Ozone is missing for none of them, against 24% across all rows.
+#>     Cluster 4 is too small to describe reliably: 2 rows, 1.3% of the data
+#>     (stable). What sets it apart: Solar.R is missing for 100% of them,
+#>     against 5% across all rows. It could be a real minority pattern or a
+#>     data problem, and is worth looking at either way.
 ilm_plot_profile_na(pr_na)
 ```
 

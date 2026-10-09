@@ -156,6 +156,12 @@ plus `mean_silhouette` and `anomalous`), `ind_cluster` (one row per
 observation, with `silhouette`, `is_small_cluster`, `is_ambiguous` and
 `is_anomalous`), and `coords`.
 
+Clusters are numbered by size, largest first, and between two of one
+size the one whose first row comes first in the data is numbered first.
+The numbers depend only on the partition, so the same partition found
+from other random starts, or from the rows in another order, is numbered
+the same; cluster 1 is the largest, and small clusters come last.
+
 ## Two different things called anomalous
 
 A **small cluster** is a property of the cluster: a handful of rows that
@@ -207,8 +213,8 @@ cl
 #> <ilm_cluster> method = kmeans, k = 4 (chosen by gap statistic)
 #> 
 #>   cluster   size    pct  jaccard  stability     sil
-#>         1      5   15.6    0.834     stable   0.281
-#>         2      7   21.9    0.944     stable   0.363
-#>         3     12   37.5    1.000     stable   0.625
-#>         4      8   25.0    0.881     stable   0.487
+#>         1     12   37.5    1.000     stable   0.625
+#>         2      8   25.0    0.881     stable   0.487
+#>         3      7   21.9    0.944     stable   0.363
+#>         4      5   15.6    0.834     stable   0.281
 ```
