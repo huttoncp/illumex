@@ -60,8 +60,9 @@ where it is \code{NA} stay out either way.}
 as substrings. It changes nothing for a logical, positions or a sample.}
 }
 \value{
-A one-row data frame per group, with \code{observed}, \code{lower}, \code{upper}
-and the settings used. For several columns, or none named, one long table
+A data frame with one row per group (one row in all without
+\code{by}): the group, \code{stat}, \code{observed}, \code{lower}, \code{upper}, and the settings
+used -- \code{conf}, \code{R}, \code{ci_type} -- and \code{n}, the rows behind it. For several columns, or none named, one long table
 led by a \code{variable} column, as \code{\link[=ilm_counts_tb_all]{ilm_counts_tb_all()}} gives. Each column
 starts from \code{seed}, so its rows are the ones it would get on its own.
 }

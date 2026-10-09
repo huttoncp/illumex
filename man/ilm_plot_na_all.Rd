@@ -35,8 +35,7 @@ of them -- see \link{ilm_selection}. \code{by} columns are never among them.}
 \item{...}{Passed to \code{\link[tinyplot:tinyplot]{tinyplot::tinyplot()}}.}
 
 \item{cols_negate}{If \code{TRUE}, \code{cols} names the columns to leave out, and every
-other eligible column is used; see \link{ilm_selection}. It needs \code{cols}. A
-\code{by} argument is never negated.}
+other eligible column is used; see \link{ilm_selection}. It needs \code{cols}.}
 
 \item{cols_fixed}{If \code{TRUE}, a \code{cols} string read as a pattern is matched
 literally, as a substring (as \code{grepl(fixed = TRUE)} does); a column name
@@ -58,7 +57,7 @@ as substrings. It changes nothing for a logical, positions or a sample.}
 \code{NULL}, invisibly.
 }
 \description{
-A bar per column. The first question to ask of an unfamiliar data set, and
+A bar per column. The first question to ask of an unfamiliar dataset, and
 the one \code{\link[=ilm_check_missing]{ilm_check_missing()}} then turns into advice.
 }
 \examples{

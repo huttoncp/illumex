@@ -41,8 +41,10 @@ together. A type-checked wrapper -- the clustering is identical, only the
 input differs.
 }
 \examples{
+\dontshow{if (requireNamespace("cluster", quietly = TRUE)) (if (getRversion() >= "3.4") withAutoprint else force)(\{ # examplesIf}
 cl <- ilm_cluster_na(ilm_reduce_na(airquality), k_max = 4, B = 25, seed = 1)
 cl
+\dontshow{\}) # examplesIf}
 }
 \seealso{
 \code{\link[=ilm_profile_na]{ilm_profile_na()}}.

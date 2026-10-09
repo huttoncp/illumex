@@ -1,4 +1,4 @@
-<ilm_profile> 
+<ilm_profile>
 
 <ilm_reduce> method = famd, n = 120, 5 dimension(s) retained
   first 3 dimension(s) explain 51.6% of the variance
@@ -21,22 +21,22 @@
   what each cluster is
     Cluster 1 holds 23 rows, 19.2% of the data (moderate). What sets it
     apart: grp is 'gamma' for 87% of them, against 17% across all rows. 3
-    of its members sit close enough to another cluster to be uncertain. 
+    of its members sit close enough to another cluster to be uncertain.
 
     Cluster 2 holds 38 rows, 31.7% of the data (moderate). What sets it
     apart: grp is 'beta' for 100% of them, against 32% across all rows; and
     claims is higher: the middle 50% of its values lie between 2 and 7,
     against 1 to 6 across all rows. 2 of its members sit close enough to
-    another cluster to be uncertain. 
+    another cluster to be uncertain.
 
     Cluster 3 holds 59 rows, 49.2% of the data (moderate). What sets it
     apart: grp is 'alpha' for 100% of them, against 49% across all rows. 1
-    of its members sits close enough to another cluster to be uncertain. 
+    of its members sits close enough to another cluster to be uncertain.
 
-    Not distinctive in any cluster: score, income, and visits. 
+    Not distinctive in any cluster: score, income, and visits.
 
-  ! this clustering is a re-labelling of `grp`: it separates
-    the clusters almost perfectly while nothing else does, so the
-    descriptions above are all about that one variable. Exclude it
-    with cols = if it is not the grouping you wanted.
+  ! this clustering is a re-labelling of `grp`: it separates the
+    clusters almost perfectly while nothing else does, so the
+    descriptions above are all about that one variable. Exclude it with
+    cols = if it is not the grouping you wanted.
     ilm_var_contrib() for the full table.

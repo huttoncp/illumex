@@ -40,7 +40,8 @@ as substrings. It changes nothing for a logical, positions or a sample.}
 A data frame with \code{obs}, \code{n}, \code{na} and \code{p_na}.
 }
 \description{
-Missingness in one variable
+Counts the missing values in one column, overall or within groups, as a
+count and a share.
 }
 \examples{
 ilm_describe_na(ilm_sim(), "lab_value")

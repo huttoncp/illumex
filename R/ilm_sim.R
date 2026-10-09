@@ -33,13 +33,13 @@
 #'   \item{site}{character with case and whitespace variants, and empty strings}
 #'   \item{flag}{balanced logical}
 #'   \item{consented}{near-constant logical, a separation risk}
-#'   \item{score}{gaussian}
+#'   \item{score}{Gaussian}
 #'   \item{income}{lognormal: right-skewed and bounded at zero}
 #'   \item{visits}{Poisson counts, dispersion near 1}
 #'   \item{claims}{negative binomial counts, dispersion above 1}
 #'   \item{downtime}{zero-inflated counts}
 #'   \item{cohort}{constant}
-#'   \item{lab_value}{gaussian with missing values}
+#'   \item{lab_value}{Gaussian with missing values}
 #' }
 #'
 #' @param n_id Number of units.

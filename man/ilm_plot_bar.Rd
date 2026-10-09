@@ -49,7 +49,8 @@ as substrings. It changes nothing for a logical, positions or a sample.}
 \code{NULL}, invisibly.
 }
 \description{
-Bar plot
+Draws the count of each level of one categorical column, optionally split
+by a grouping column or drawn in panels.
 }
 \examples{
 ilm_plot_bar(mtcars, "cyl", by = "am")

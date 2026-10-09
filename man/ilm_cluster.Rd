@@ -74,8 +74,7 @@ dimensions are chosen after it, with \code{ndim} in \code{\link[=ilm_reduce]{ilm
 on an \code{\link[=ilm_reduce]{ilm_reduce()}} result is an error. See \link{ilm_selection}.}
 
 \item{cols_negate}{If \code{TRUE}, \code{cols} names the columns to leave out, and every
-other eligible column is used; see \link{ilm_selection}. It needs \code{cols}. A
-\code{by} argument is never negated.}
+other eligible column is used; see \link{ilm_selection}. It needs \code{cols}.}
 
 \item{cols_fixed}{If \code{TRUE}, a \code{cols} string read as a pattern is matched
 literally, as a substring (as \code{grepl(fixed = TRUE)} does); a column name
@@ -130,7 +129,7 @@ no substantial structure; the default threshold here is stricter at 0.1.
 
 Every clustering computes each row's silhouette from a full distance
 matrix of n^2 / 2 numbers, so memory is the first limit. On one core of a
-16 GB Windows machine (\code{dev/studies/scale_check.R} in the source), with
+16 GB Windows machine (\href{https://github.com/huttoncp/illumex/blob/main/dev/studies/scale_check.R}{\code{dev/studies/scale_check.R}}), with
 \code{k} given, k-means took 35 seconds and 1.2 GB at 10,000 rows and failed at
 50,000 rows for want of 9.3 GB; \code{method = "hclust"} took 13 minutes at 10,000.
 Choosing \code{k} by the gap statistic, the default, took about a minute at
@@ -139,15 +138,18 @@ cluster a sample of the rows.
 }
 
 \examples{
+\dontshow{if (requireNamespace("cluster", quietly = TRUE)) (if (getRversion() >= "3.4") withAutoprint else force)(\{ # examplesIf}
 cl <- ilm_cluster(ilm_reduce(mtcars), k_max = 5, B = 25, seed = 1)
 cl
+\dontshow{\}) # examplesIf}
 }
 \references{
 Hennig, C. (2007). Cluster-wise assessment of cluster stability.
-Computational Statistics and Data Analysis 52(1).
+Computational Statistics and Data Analysis 52(1), 258-271.
 
 Tibshirani, R., Walther, G. and Hastie, T. (2001). Estimating the number of
-clusters in a data set via the gap statistic. JRSS B 63(2).
+clusters in a data set via the gap statistic. Journal of the Royal
+Statistical Society, Series B 63(2), 411-423.
 }
 \seealso{
 \code{\link[=ilm_reduce]{ilm_reduce()}}, \code{\link[=ilm_profile]{ilm_profile()}}, \code{\link[=ilm_plot_cluster]{ilm_plot_cluster()}}.

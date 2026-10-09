@@ -30,8 +30,8 @@ regular expression, a predicate function such as \code{is.numeric}, or
 
 \item{method}{\code{"famd"} (the default) for PCA, MCA or FAMD depending on
 the column types, in closed form; \code{"pcamix"}, its name from when
-PCAmixdata computed it, is still accepted and means the same. \code{"glrm"} fits a generalized low rank
-model instead, which uses a loss appropriate to each column's type rather
+PCAmixdata computed it, is still accepted and means the same. \code{"glrm"} fits a
+generalised low rank model instead, which uses a loss appropriate to each column's type rather
 than squared error on one-hot indicators, and reconstructs a category as a
 category. It costs an iterative fit, and on all-numeric data the two are
 the same model -- see \code{\link[=ilm_glrm]{ilm_glrm()}} for when it is worth that.}
@@ -41,7 +41,7 @@ default, uses each as the time since its earliest value -- its order and
 spacing, in one column -- and adds the time of day, the day of the week,
 the day of the month and the time of year, each as a sine and cosine so
 that the ends of the cycle meet, but only the cycles some other column
-varies with, and only where the data cover two of the cycle. A cycle
+varies with, and only where the data cover two full cycles. A cycle
 nothing else follows is noise to a clustering: on two known clusters,
 every cycle given unasked took recovery from 0.38 to 0.10 where the date
 meant nothing, while the tested ones left it at 0.36 there and, where a
@@ -56,8 +56,7 @@ duration (\code{difftime}) is used as its number of days.}
 \item{...}{Passed to \code{\link[=ilm_glrm]{ilm_glrm()}} when \code{method = "glrm"}.}
 
 \item{cols_negate}{If \code{TRUE}, \code{cols} names the columns to leave out, and every
-other eligible column is used; see \link{ilm_selection}. It needs \code{cols}. A
-\code{by} argument is never negated.}
+other eligible column is used; see \link{ilm_selection}. It needs \code{cols}.}
 
 \item{cols_fixed}{If \code{TRUE}, a \code{cols} string read as a pattern is matched
 literally, as a substring (as \code{grepl(fixed = TRUE)} does); a column name
@@ -82,7 +81,8 @@ cumulative total), \code{ind_coord} (\code{row_id} and one column per retained
 dimension -- this is what \code{\link[=ilm_cluster]{ilm_cluster()}} takes), \code{var_contrib}
 (\code{variable}, \code{dim}, \code{sqload}: how strongly each original variable relates
 to each dimension, on a 0 to 1 scale, for numeric and categorical
-variables alike), \code{n}, and \code{fit}: the eigenvalues, coordinates and
+variables alike), \code{n}, \code{cols} (the columns used), \code{time} (how each date
+or date-time column was used), and \code{fit}: the eigenvalues, coordinates and
 squared loadings as computed, for anyone who wants to go past this
 wrapper. Each dimension's sign is fixed by a rule, so the same data give
 the same coordinates everywhere: the column that loads most on a
@@ -108,7 +108,7 @@ order, and by the rhythms in it that the other columns follow; see \code{time}.
 }
 \details{
 The mixed method is Chavent et al.'s, which belongs to the same
-generalised-PCA family as the FAMD of Pages without being a
+generalised-PCA family as the FAMD of \enc{Pagès}{Pages} without being a
 reimplementation of it. The two were checked against each other directly and
 agree for this purpose, matching on eigenvalues and on individual
 coordinates.
@@ -116,7 +116,7 @@ coordinates.
 \section{Size}{
 
 The default method is closed-form: on one core of a 16 GB Windows machine
-(\code{dev/studies/scale_check.R} in the source) it took under a second at 250,000 rows.
+(\href{https://github.com/huttoncp/illumex/blob/main/dev/studies/scale_check.R}{\code{dev/studies/scale_check.R}}) it took under a second at 250,000 rows.
 \code{method = "glrm"} fits iteratively and first chooses its penalty from 18
 held-out fits: 30 seconds at 1,000 rows, 5 minutes at 10,000 and over 15
 minutes at 50,000. Giving \code{lambda} (passed to \code{\link[=ilm_glrm]{ilm_glrm()}}) saves the
@@ -129,8 +129,8 @@ r
 head(r$var_contrib[order(-r$var_contrib$sqload), ])
 }
 \references{
-Pages, J. (2004). Analyse factorielle de donnees mixtes. Revue de
-Statistique Appliquee 52(4), 93-111.
+\enc{Pagès}{Pages}, J. (2004). Analyse factorielle de \enc{données}{donnees} mixtes. Revue de
+Statistique \enc{Appliquée}{Appliquee} 52(4), 93-111.
 
 Chavent, M., Kuentz-Simonet, V., Labenne, A. and Saracco, J. (2014).
 Multivariate analysis of mixed data: the PCAmixdata R package. arXiv

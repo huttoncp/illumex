@@ -95,7 +95,7 @@ A one-row data frame, or one row per group when \code{by} is used.
 }
 \description{
 Summarises a vector, or one column of a data frame, with statistics chosen
-for its class. Numeric variables also get a gaussian agreement index and,
+for its class. Numeric variables also get a Gaussian agreement index and,
 where that is low, a plain-language reason. A pile of values at a bound
 is named first; an ordered factor's note names one at its lowest or
 highest level (see \code{\link[=ilm_gauss_check]{ilm_gauss_check()}}).

@@ -23,7 +23,7 @@ ilm_frame_issues(
 \item{cor_cut}{Absolute correlation at or above which a numeric pair is
 reported as collinear.}
 
-\item{v_cut}{Cramer's V at or above which a pair of categorical columns is
+\item{v_cut}{\enc{Cramér}{Cramer}'s V at or above which a pair of categorical columns is
 reported as redundant.}
 
 \item{cols}{Columns to use. A character vector of names, a
@@ -31,8 +31,7 @@ regular expression, a predicate function such as \code{is.numeric}, or
 \code{NULL} for all of them -- see \link{ilm_selection}.}
 
 \item{cols_negate}{If \code{TRUE}, \code{cols} names the columns to leave out, and every
-other eligible column is used; see \link{ilm_selection}. It needs \code{cols}. A
-\code{by} argument is never negated.}
+other eligible column is used; see \link{ilm_selection}. It needs \code{cols}.}
 
 \item{cols_fixed}{If \code{TRUE}, a \code{cols} string read as a pattern is matched
 literally, as a substring (as \code{grepl(fixed = TRUE)} does); a column name
@@ -72,7 +71,7 @@ grouping under different labels. One whose every level falls within a
 single level of the other is \code{nested}, as patients within clinics are; that
 is reported only when at least half of the finer column's levels have two or
 more rows, since a level seen once sits inside one level of anything.
-Otherwise a pair is \code{redundant_categories} when Cramer's V reaches \code{v_cut}:
+Otherwise a pair is \code{redundant_categories} when \enc{Cramér}{Cramer}'s V reaches \code{v_cut}:
 nearly every level of one predicts a level of the other.
 
 Pairs are not the whole story: a column can be an exact combination of
@@ -88,6 +87,7 @@ that matrix, and a nested pair is not reported again from it.
 \examples{
 ilm_frame_issues(ilm_sim())
 
+set.seed(1)
 d <- data.frame(a = rnorm(50), b = rnorm(50),
                 clinic = rep(c("x", "y"), each = 25),
                 ward = rep(c("x1", "x2", "y1", "y2"), c(12, 13, 12, 13)))
@@ -95,6 +95,6 @@ d$total <- d$a + d$b
 ilm_frame_issues(d)
 }
 \references{
-Cramer, H. (1946). Mathematical Methods of Statistics. Princeton University
+\enc{Cramér}{Cramer}, H. (1946). Mathematical Methods of Statistics. Princeton University
 Press.
 }

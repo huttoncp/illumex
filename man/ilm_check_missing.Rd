@@ -35,7 +35,7 @@ predictors when they are a subset. Names, a pattern or a predicate, as
 \code{cols} takes them (\link{ilm_selection}).}
 
 \item{min_effect}{Smallest association worth reporting, as a correlation or
-Cramer's V. With several thousand rows an association of 0.02 is
+\enc{Cramér}{Cramer}'s V. With several thousand rows an association of 0.02 is
 significant and means nothing.}
 
 \item{alpha}{Level for the adjusted p-values.}
@@ -63,7 +63,8 @@ as substrings. It changes nothing for a logical, positions or a sample.}
 }
 \value{
 An object of class \code{"ilm_missing"}: \code{variables}, \code{patterns},
-\code{associations}, \code{monotone} and a \code{verdict}.
+\code{associations}, \code{outcome_test}, \code{monotone}, \code{n} (rows), \code{n_complete}
+(complete rows), \code{y}, \code{min_effect} and a \code{verdict}.
 }
 \description{
 Reports how much is missing, which variables go missing together, and what

@@ -70,7 +70,7 @@ ilm_n_modes <- function(x, rel = 0.10, drop = 0.5) {
 ## the middle of the scale, as if half normal. At 0.06 (Craig's ruling,
 ## 2026-09-28) every one of them scores 0.07 or less, and normal data 1. It
 ## is exposed as an argument.
-#' How far a variable is from gaussian, and why
+#' How far a variable is from Gaussian, and why
 #'
 #' Reports an agreement index on 0-1 and, when it is low, the reason.
 #'
@@ -577,7 +577,7 @@ ILM_CLASSES <- c("numeric", "categorical", "logical", "time")
 #' Class-aware description of one variable
 #'
 #' Summarises a vector, or one column of a data frame, with statistics chosen
-#' for its class. Numeric variables also get a gaussian agreement index and,
+#' for its class. Numeric variables also get a Gaussian agreement index and,
 #' where that is low, a plain-language reason. A pile of values at a bound
 #' is named first; an ordered factor's note names one at its lowest or
 #' highest level (see [ilm_gauss_check()]).
@@ -844,6 +844,7 @@ ilm_constant_tbl <- function(data, cols) {
 #' padding every other table with rows of `NA`: a variable with one value tells
 #' you nothing a statistic can show, and it will break a model matrix.
 #'
+#' @param data A data frame.
 #' @inheritParams ilm_describe
 #' @inheritParams ilm_reduce
 #' @param cols Columns to describe. A character vector of names, a regular
@@ -966,7 +967,7 @@ ilm_describe_all <- function(data, by = NULL, cols = NULL, digits = 3,
 #' single level of the other is `nested`, as patients within clinics are; that
 #' is reported only when at least half of the finer column's levels have two or
 #' more rows, since a level seen once sits inside one level of anything.
-#' Otherwise a pair is `redundant_categories` when Cramer's V reaches `v_cut`:
+#' Otherwise a pair is `redundant_categories` when \enc{Cramér}{Cramer}'s V reaches `v_cut`:
 #' nearly every level of one predicts a level of the other.
 #'
 #' Pairs are not the whole story: a column can be an exact combination of
@@ -982,16 +983,17 @@ ilm_describe_all <- function(data, by = NULL, cols = NULL, digits = 3,
 #' @param data A data frame.
 #' @param cor_cut Absolute correlation at or above which a numeric pair is
 #'   reported as collinear.
-#' @param v_cut Cramer's V at or above which a pair of categorical columns is
+#' @param v_cut \enc{Cramér}{Cramer}'s V at or above which a pair of categorical columns is
 #'   reported as redundant.
 #' @return A data frame with `issue`, `columns`, `detail` and `remedy`, one row
 #'   per problem; zero rows when nothing is found.
 #' @references
-#' Cramer, H. (1946). Mathematical Methods of Statistics. Princeton University
+#' \enc{Cramér}{Cramer}, H. (1946). Mathematical Methods of Statistics. Princeton University
 #' Press.
 #' @examples
 #' ilm_frame_issues(ilm_sim())
 #'
+#' set.seed(1)
 #' d <- data.frame(a = rnorm(50), b = rnorm(50),
 #'                 clinic = rep(c("x", "y"), each = 25),
 #'                 ward = rep(c("x1", "x2", "y1", "y2"), c(12, 13, 12, 13)))

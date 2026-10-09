@@ -114,8 +114,12 @@ ilm_outliers <- function(y, method = c("iqr", "mad", "zscore"),
 #' without `by` on data that has groups mostly rediscovers the groups.
 #'
 #' @param data A data frame.
-#' @param by Grouping column(s), as a character vector. Reference statistics,
-#'   and so the flags, are computed separately within each group.
+#' @param by Grouping column(s): names, a pattern or a predicate, as `cols`
+#'   takes them (see [ilm_selection]). Reference statistics, and so the flags,
+#'   are computed separately within each group.
+#' @param method `"iqr"`, `"mad"` or `"zscore"`, applied to each column.
+#' @param na.rm Compute each column's reference statistics with missing
+#'   values removed; a missing value is never flagged.
 #' @inheritParams ilm_reduce
 #' @param cols Columns to use. A character vector of names, a
 #'   regular expression, a predicate function such as `is.numeric`, or
