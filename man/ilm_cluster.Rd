@@ -100,6 +100,12 @@ with \code{size}, \code{pct}, \code{jaccard}, \code{stability} labelled \code{"s
 plus \code{mean_silhouette} and \code{anomalous}), \code{ind_cluster} (one row per
 observation, with \code{silhouette}, \code{is_small_cluster}, \code{is_ambiguous} and
 \code{is_anomalous}), and \code{coords}.
+
+Clusters are numbered by size, largest first, and between two of one
+size the one whose first row comes first in the data is numbered first.
+The numbers depend only on the partition, so the same partition found
+from other random starts, or from the rows in another order, is numbered
+the same; cluster 1 is the largest, and small clusters come last.
 }
 \description{
 Groups the rows of an \code{\link[=ilm_reduce]{ilm_reduce()}} result, or any numeric coordinates, by
