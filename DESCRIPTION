@@ -3,7 +3,7 @@ Type: Package
 Title: A Data Interrogation Engine for Enabling Inference
 Version: 0.0.8.9003
 Authors@R: person(given = "Craig", family = "Hutton",
-                  role = c("aut", "cre"),
+                  role = c("aut", "cre", "cph"),
                   email = "craig.hutton@gmail.com")
 Description: The exploratory half of the 'illume' workflow, usable on its
     own. It describes every column of a data frame in one call, with a
@@ -19,7 +19,7 @@ Description: The exploratory half of the 'illume' workflow, usable on its
     for what they show, and the grouped arithmetic runs on 'collapse'.
     Every function is prefixed ilm_, as in 'illume', which attaches this
     package.
-License: MIT + file LICENSE
+License: GPL (>= 2)
 Encoding: UTF-8
 Language: en-GB
 Roxygen: list(markdown = TRUE)
