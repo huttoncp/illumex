@@ -1017,12 +1017,22 @@ ilm_frame_issues <- function(data, cor_cut = 0.999, v_cut = 0.95, cols = NULL,
     if (!is.numeric(v) || length(v) != 1L || !is.finite(v) || v <= 0 || v > 1)
       stop("`", a, "` must be a single number in (0, 1]", call. = FALSE)
   }
-  out <- list()
-  ## each row's words for a person
-  add <- function(issue, cols, detail, remedy) {
+  fin(ilm_as_result(ilm_frame_find(data, cor_cut, v_cut)$table, "ilm_frame_issues"))
+}
+
+## What ilm_frame_issues() finds, as its table and, for each row, the columns
+## it is about as names rather than the words that print them ("a = b"), for
+## ilm_check_frame() to build remedies on.
+#' @keywords internal
+#' @noRd
+ilm_frame_find <- function(data, cor_cut = 0.999, v_cut = 0.95) {
+  out <- list(); vars <- list()
+  ## each row's words for a person, and the columns it names
+  add <- function(issue, cols, detail, remedy, cols_vec = cols) {
     out[[length(out) + 1L]] <<- data.frame(issue = issue, columns = cols,
                                            detail = detail, remedy = remedy,
                                            stringsAsFactors = FALSE)
+    vars[[length(vars) + 1L]] <<- cols_vec
   }
   n <- nrow(data)
   ## columns the model-matrix check below leaves out, because a problem
@@ -1049,7 +1059,7 @@ ilm_frame_issues <- function(data, cor_cut = 0.999, v_cut = 0.95, cols = NULL,
   if (length(nm) > 1L) for (i in seq_len(length(nm) - 1L)) for (j in (i + 1L):length(nm))
     if (identical(unname(data[[i]]), unname(data[[j]]))) {
       add("duplicate_columns", paste(nm[i], nm[j], sep = " = "), "identical values",
-          "Keep one of the two.")
+          "Keep one of the two.", c(nm[i], nm[j]))
       set_aside <- c(set_aside, nm[j])
       dups <- c(dups, paste(nm[i], nm[j]))
     }
@@ -1065,17 +1075,17 @@ ilm_frame_issues <- function(data, cor_cut = 0.999, v_cut = 0.95, cols = NULL,
             sprintf("r = %s; coefficients will be unstable", ilm_fx(r, 4)),
             paste0("Keep one, or combine them into one column (their average, ",
                    "or a score from ilm_reduce()); their separate effects ",
-                   "cannot be estimated reliably."))
+                   "cannot be estimated reliably."), c(num[i], num[j]))
     }
   }
   cat_res <- ilm_frame_categories(data, set_aside, v_cut, add)
   ilm_frame_rank(data, setdiff(names(data), c(set_aside, cat_res$aliased)), add,
                  cat_res$nested)
   if (!length(out))
-    return(fin(ilm_as_result(data.frame(issue = character(0), columns = character(0),
-                                        detail = character(0), remedy = character(0),
-                                        stringsAsFactors = FALSE), "ilm_frame_issues")))
-  fin(ilm_as_result(do.call(rbind, out), "ilm_frame_issues"))
+    return(list(table = data.frame(issue = character(0), columns = character(0),
+                                   detail = character(0), remedy = character(0),
+                                   stringsAsFactors = FALSE), vars = list()))
+  list(table = do.call(rbind, out), vars = vars)
 }
 
 ## Pairs of categorical columns: the same grouping relabelled, one grouping
@@ -1105,7 +1115,7 @@ ilm_frame_categories <- function(data, skip, v_cut, add) {
       add("aliased_factors", paste(A, B, sep = " = "),
           sprintf("the same %d groups under different labels", la),
           paste0("Keep one of the two; a model cannot tell their effects ",
-                 "apart."))
+                 "apart."), c(A, B))
       aliased <- c(aliased, B)
       next
     }
@@ -1123,7 +1133,7 @@ ilm_frame_categories <- function(data, skip, v_cut, add) {
             sprintf(paste0("Expected for grouping factors: as random effects, ",
                            "write (1 | %s/%s). As fixed effects keep one of ",
                            "them, since %s absorbs every difference between ",
-                           "levels of %s."), outer, inner, inner, outer))
+                           "levels of %s."), outer, inner, inner, outer), c(inner, outer))
         nested[[length(nested) + 1L]] <- c(inner, outer)
       }
       next
@@ -1133,7 +1143,7 @@ ilm_frame_categories <- function(data, skip, v_cut, add) {
       add("redundant_categories", paste(A, B, sep = " ~ "),
           sprintf("Cramer's V = %s; each largely predicts the other", ilm_fx(V, 3)),
           paste0("Keep one, or cross them into one factor with interaction(); ",
-                 "their separate effects are barely distinguishable."))
+                 "their separate effects are barely distinguishable."), c(A, B))
   }
   res()
 }
@@ -1181,7 +1191,7 @@ ilm_frame_rank <- function(data, use, add, nested = list()) {
     add("rank_unchecked", paste(use, collapse = ", "),
         sprintf("%d complete rows for %d model-matrix columns", sum(cc), ncol(X)),
         paste0("Too few complete rows to judge; check a subset of columns, ",
-               "as in ilm_frame_issues(data[c(\"x\", \"y\")])."))
+               "as in ilm_frame_issues(data[c(\"x\", \"y\")])."), use)
     return(invisible(NULL))
   }
   ## scaled so the tolerance means the same thing for every column
@@ -1218,7 +1228,7 @@ ilm_frame_rank <- function(data, use, add, nested = list()) {
         sprintf("%s %s an exact linear combination of %s", lab(v),
                 if (v %in% cats) "are" else "is", ilm_and(lab(from))),
         sprintf(paste0("Leave out %s or one of the columns it is built from; ",
-                       "with all of them a model has no unique solution."), v))
+                       "with all of them a model has no unique solution."), v), c(v, from))
   }
   invisible(NULL)
 }

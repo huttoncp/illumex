@@ -21,6 +21,11 @@ iml_anomalous <- ilm_anomalous
 #' @export
 iml_anomaly <- ilm_anomaly
 
+#' @rdname ilm_apply_remedy
+#' @usage NULL
+#' @export
+iml_apply_remedy <- ilm_apply_remedy
+
 #' @rdname ilm_boot_ci
 #' @usage NULL
 #' @export
@@ -31,10 +36,30 @@ iml_boot_ci <- ilm_boot_ci
 #' @export
 iml_boot_diff <- ilm_boot_diff
 
+#' @rdname ilm_check_data
+#' @usage NULL
+#' @export
+iml_check_data <- ilm_check_data
+
+#' @rdname ilm_check_frame
+#' @usage NULL
+#' @export
+iml_check_frame <- ilm_check_frame
+
 #' @rdname ilm_check_missing
 #' @usage NULL
 #' @export
 iml_check_missing <- ilm_check_missing
+
+#' @rdname ilm_cleaning_log
+#' @usage NULL
+#' @export
+iml_cleaning_log <- ilm_cleaning_log
+
+#' @rdname ilm_cleaning_script
+#' @usage NULL
+#' @export
+iml_cleaning_script <- ilm_cleaning_script
 
 #' @rdname ilm_cluster
 #' @usage NULL
@@ -71,6 +96,11 @@ iml_counts_tb <- ilm_counts_tb
 #' @export
 iml_counts_tb_all <- ilm_counts_tb_all
 
+#' @rdname ilm_data_id
+#' @usage NULL
+#' @export
+iml_data_id <- ilm_data_id
+
 #' @rdname ilm_describe
 #' @usage NULL
 #' @export
@@ -95,6 +125,11 @@ iml_describe_na <- ilm_describe_na
 #' @usage NULL
 #' @export
 iml_describe_na_all <- ilm_describe_na_all
+
+#' @rdname ilm_drop_cols
+#' @usage NULL
+#' @export
+iml_drop_cols <- ilm_drop_cols
 
 #' @rdname ilm_dupes
 #' @usage NULL
@@ -321,10 +356,40 @@ iml_reduce <- ilm_reduce
 #' @export
 iml_reduce_na <- ilm_reduce_na
 
+#' @rdname ilm_remedies
+#' @usage NULL
+#' @export
+iml_remedies <- ilm_remedies
+
+#' @rdname ilm_remedy_assemble
+#' @usage NULL
+#' @export
+iml_remedy_assemble <- ilm_remedy_assemble
+
+#' @rdname ilm_remedy_find
+#' @usage NULL
+#' @export
+iml_remedy_find <- ilm_remedy_find
+
+#' @rdname ilm_remedy_key
+#' @usage NULL
+#' @export
+iml_remedy_key <- ilm_remedy_key
+
+#' @rdname ilm_remedy_table
+#' @usage NULL
+#' @export
+iml_remedy_table <- ilm_remedy_table
+
 #' @rdname ilm_sample
 #' @usage NULL
 #' @export
 iml_sample <- ilm_sample
+
+#' @rdname ilm_secret
+#' @usage NULL
+#' @export
+iml_secret <- ilm_secret
 
 #' @rdname ilm_sim
 #' @usage NULL
