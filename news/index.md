@@ -2,6 +2,21 @@
 
 ## illumex 0.0.8.9003
 
+- `ilm_plot_anomaly(type = "row")` draws on a narrow device. On one 3
+  inches wide or less – a small plot pane, or a vignette’s default
+  figure – it stopped with “invalid graphics state”, since its legend
+  left the bars no room. The legend is now dropped when the plot would
+  have less than an inch beside it, with a message saying which colour
+  is which, and in this view and `"drivers"` long column names are
+  shortened to fit, where they stopped with “figure margins too large”.
+- When the data, not `k_max`, set the most clusters there can be – as
+  many as distinct points, such as four patterns of missing values –
+  [`ilm_cluster()`](https://huttoncp.github.io/illumex/reference/ilm_cluster.md)
+  says so in a message (“k = 4 is the most these data allow: they have 4
+  distinct patterns of missing values … Raising `k_max` would change
+  nothing”). It used to warn that the search had run out of room and to
+  raise `k_max`, which changed nothing. The warning stays for a `k` at
+  `k_max` when `k_max` was the limit.
 - The help for `ndim` in
   [`ilm_reduce()`](https://huttoncp.github.io/illumex/reference/ilm_reduce.md)
   and
