@@ -345,7 +345,9 @@ ilm_cluster <- function(x, k = NULL, k_max = 10, method = c("kmeans", "hclust"),
     ## clusters than there are distinct positions is always degenerate, and
     ## low-cardinality input such as missingness indicators can have far fewer
     ## distinct rows than observations
-    k_max <- max(1L, min(k_max, n - 1L, nrow(unique(coords))))
+    n_distinct <- nrow(unique(coords))
+    k_asked <- k_max
+    k_max <- max(1L, min(k_max, n - 1L, n_distinct))
     gap <- cluster::clusGap(coords, FUNcluster = FUNcluster, K.max = k_max, B = B)
     k <- cluster::maxSE(gap$Tab[, "gap"], gap$Tab[, "SE.sim"], method = gap_method)
     ## A chosen k sitting on the edge of the search is not a choice, it is a
@@ -353,14 +355,22 @@ ilm_cluster <- function(x, k = NULL, k_max = 10, method = c("kmeans", "hclust"),
     ## mixed data this is not hypothetical: every k-selector tried over-shot,
     ## and an average-silhouette search on the same data peaked at exactly the
     ## number of level combinations rather than at the number of clusters.
-    if (k >= k_max && k_max > 1L)
-      warning("k was chosen as ", k, ", which is the largest value searched. ",
-              "The curve had not turned, so this is where the search stopped ",
-              "rather than where the evidence pointed. Raise `k_max`, or set ",
-              "`k` from what the design says. On mixed data a selector can ",
-              "also lock onto the number of category combinations rather ",
-              "than the number of clusters; plot(x) shows the gap curve.",
-              call. = FALSE)
+    ## When the data set the edge -- as many clusters as distinct points, as
+    ## with a few patterns of missing values -- there was no further to go,
+    ## and raising `k_max` would change nothing: that is said instead.
+    if (k >= k_max && k_max > 1L) {
+      if (k_max < k_asked)
+        message(ilm_cluster_data_cap(k, n_distinct, n,
+                                     inherits(x, "ilm_reduce_na")))
+      else
+        warning("k was chosen as ", k, ", which is the largest value searched. ",
+                "The curve had not turned, so this is where the search stopped ",
+                "rather than where the evidence pointed. Raise `k_max`, or set ",
+                "`k` from what the design says. On mixed data a selector can ",
+                "also lock onto the number of category combinations rather ",
+                "than the number of clusters; plot(x) shows the gap curve.",
+                call. = FALSE)
+    }
   }
 
   cluster_assign <- FUNcluster(coords, k)$cluster
@@ -456,6 +466,23 @@ ILM_NO_CLUSTERS_GAP <- paste(
 ILM_NO_CLUSTERS_GIVEN <- paste(
   "No distinct clusters: with k = 1, as given, the %s rows are one group.",
   "Describe them with ilm_describe_all().")
+
+## k at the most the data allow: as many clusters as distinct points (for a
+## missingness profile, distinct patterns of missing values), or one fewer
+## than the rows
+#' @keywords internal
+#' @noRd
+ilm_cluster_data_cap <- function(k, n_distinct, n, missingness = FALSE) {
+  if (k >= n_distinct)
+    sprintf(paste0("k = %d is the most these data allow: they have %s distinct %s, ",
+                   "and each is its own cluster. Raising `k_max` would change nothing."),
+            k, ilm_fmt_count(n_distinct),
+            if (missingness) "patterns of missing values" else "points")
+  else
+    sprintf(paste0("k = %d is the most these data allow, one fewer than their %s ",
+                   "rows. Raising `k_max` would change nothing."),
+            k, ilm_fmt_count(n))
+}
 
 #' @export
 print.ilm_cluster <- function(x, ...) {
