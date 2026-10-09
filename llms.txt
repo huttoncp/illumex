@@ -157,7 +157,9 @@ elucidate’s and it would be poor form to pretend otherwise.
 
 ## License
 
-MIT. See `LICENSE`.
+GPL (\>= 2): the GNU General Public License, version 2 or any later
+version. Versions released before this change remain available under the
+MIT licence.
 
 ## Contributing
 

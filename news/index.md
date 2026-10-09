@@ -2,6 +2,8 @@
 
 ## illumex 0.0.8.9003
 
+- illumex is now licensed under the GPL (version 2 or later). Versions
+  released before this change remain available under the MIT licence.
 - Clusters are numbered by size, largest first; between two of one size,
   the one whose first row comes first in the data is numbered first.
   [`ilm_cluster()`](https://huttoncp.github.io/illumex/reference/ilm_cluster.md)
