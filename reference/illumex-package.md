@@ -98,4 +98,5 @@ Useful links:
 
 ## Author
 
-**Maintainer**: Craig Hutton <craig.hutton@gmail.com>
+**Maintainer**: Craig Hutton <craig.hutton@gmail.com> \[copyright
+holder\]

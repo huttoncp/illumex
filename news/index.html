@@ -7,7 +7,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">illumex</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.0.8.9004</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.0.8.9005</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -39,6 +39,11 @@
       <small>Source: <a href="https://github.com/huttoncp/illumex/blob/main/NEWS.md" class="external-link"><code>NEWS.md</code></a></small>
     </div>
 
+    <div class="section level2">
+<h2 class="pkg-version" data-toc-text="0.0.8.9005" id="illumex-0089005">illumex 0.0.8.9005<a class="anchor" aria-label="anchor" href="#illumex-0089005"></a></h2>
+<ul><li>
+<code><a href="../reference/ilm_remedy_tiers.html">ilm_remedy_tiers()</a></code> gives the ordered tiers a target’s remedies are ranked by: <code>representation</code>, <code>values</code> and <code>rows</code> for a data frame, and <code>numerical</code>, <code>structural</code> and <code>estimand</code> for a fitted model unless its class has a method of its own, as a Bayesian fit’s may, with a <code>prior</code> tier. A package building a remedies table asks it rather than assuming a set, and <code><a href="https://rdrr.io/r/base/c.html" class="external-link">c()</a></code> refuses to combine tables ranked by different sets, which would rank one table’s remedies by the other’s order.</li>
+</ul></div>
     <div class="section level2">
 <h2 class="pkg-version" data-toc-text="0.0.8.9004" id="illumex-0089004">illumex 0.0.8.9004<a class="anchor" aria-label="anchor" href="#illumex-0089004"></a></h2>
 <ul><li>A cleaning loop: checks that find messy data, remedies written out as code, and a record of what was done and why. <code><a href="../reference/ilm_check_data.html">ilm_check_data()</a></code> runs the checks and says what each found; <code><a href="../reference/ilm_remedies.html">ilm_remedies()</a></code> lists the remedies, each with a key that names the change (<code>drop_cols/same</code>) and stays the same from one version to the next; <code><a href="../reference/ilm_apply_remedy.html">ilm_apply_remedy()</a></code> makes one, runs its check again, and logs it with the reason given; and <code><a href="../reference/ilm_cleaning_script.html">ilm_cleaning_script()</a></code> writes the log as an R script that replays the cleaning on the raw data. Nothing changes until a remedy is applied. The first check is <code><a href="../reference/ilm_check_frame.html">ilm_check_frame()</a></code>, the whole-frame problems <code><a href="../reference/ilm_frame_issues.html">ilm_frame_issues()</a></code> finds, with <code><a href="../reference/ilm_drop_cols.html">ilm_drop_cols()</a></code> as their remedy; the others follow. A remedy table belongs to the data it was listed for, identified by <code><a href="../reference/ilm_data_id.html">ilm_data_id()</a></code>, which changes with any value or any reordering of rows or columns, and a remedy listed for other data is refused. A secret a remedy needs is given as <code>ilm_secret("VAR")</code> and is never written into the table, the log or the script.</li>

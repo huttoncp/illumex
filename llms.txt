@@ -235,6 +235,8 @@ a script that replays the cleaning.
 - [`ilm_remedy_table()`](https://huttoncp.github.io/illumex/reference/ilm_remedy_table.md)
   [`c(`*`<ilm_remedies>`*`)`](https://huttoncp.github.io/illumex/reference/ilm_remedy_table.md)
   : A table of remedies of one's own
+- [`ilm_remedy_tiers()`](https://huttoncp.github.io/illumex/reference/ilm_remedy_tiers.md)
+  : The tiers a target's remedies are ranked by
 - [`ilm_secret()`](https://huttoncp.github.io/illumex/reference/ilm_secret.md)
   : Keep a secret out of the record
 

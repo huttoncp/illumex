@@ -43,7 +43,7 @@ d2 <- ilm_apply_remedy(d, rem, "drop_cols/same", reason = "one value only")
 #>   frame check now: OK
 ilm_cleaning_log(d2)
 #>   step                time            key    check status   tier
-#> 1    1 2026-10-10 16:41:00 drop_cols/same constant   FAIL values
+#> 1    1 2026-10-10 18:42:07 drop_cols/same constant   FAIL values
 #>                                                             remedy
 #> 1 Leave out same: a column with one value cannot explain anything.
 #>                        change         reason secrets       id_before
