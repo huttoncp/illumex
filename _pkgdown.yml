@@ -41,6 +41,23 @@ reference:
   - ilm_counts_tb_all
   - ilm_describe_clusters
   - ilm_dupes
+- title: "The cleaning loop"
+  desc: >
+    Checks that find messy data and say what they saw, remedies written out as code, and a log of every remedy applied and why, which writes out as a script that replays the cleaning.
+  contents:
+  - ilm_check_data
+  - ilm_remedies
+  - ilm_apply_remedy
+  - ilm_cleaning_script
+  - ilm_cleaning_log
+  - ilm_check_frame
+  - ilm_data_id
+  - ilm_drop_cols
+  - ilm_remedy_assemble
+  - ilm_remedy_find
+  - ilm_remedy_key
+  - ilm_remedy_table
+  - ilm_secret
 - title: "Cleaning"
   desc: >
     Tidying a data frame and recoding values that were entered wrongly.
