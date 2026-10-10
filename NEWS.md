@@ -1,3 +1,13 @@
+# illumex 0.0.8.9005
+
+* `ilm_remedy_tiers()` gives the ordered tiers a target's remedies are
+  ranked by: `representation`, `values` and `rows` for a data frame, and
+  `numerical`, `structural` and `estimand` for a fitted model unless its
+  class has a method of its own, as a Bayesian fit's may, with a `prior`
+  tier. A package building a remedies table asks it rather than assuming a
+  set, and `c()` refuses to combine tables ranked by different sets, which
+  would rank one table's remedies by the other's order.
+
 # illumex 0.0.8.9004
 
 * A cleaning loop: checks that find messy data, remedies written out as

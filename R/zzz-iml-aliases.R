@@ -381,6 +381,11 @@ iml_remedy_key <- ilm_remedy_key
 #' @export
 iml_remedy_table <- ilm_remedy_table
 
+#' @rdname ilm_remedy_tiers
+#' @usage NULL
+#' @export
+iml_remedy_tiers <- ilm_remedy_tiers
+
 #' @rdname ilm_sample
 #' @usage NULL
 #' @export

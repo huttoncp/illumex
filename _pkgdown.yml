@@ -57,6 +57,7 @@ reference:
   - ilm_remedy_find
   - ilm_remedy_key
   - ilm_remedy_table
+  - ilm_remedy_tiers
   - ilm_secret
 - title: "Cleaning"
   desc: >
