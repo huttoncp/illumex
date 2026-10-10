@@ -296,7 +296,7 @@ ilm_apply_remedy.data.frame <- function(object, remedies, which, reason = NULL,
   if (!ilm_rem_whole(remedies))
     stop("`remedies` has lost what ties it to its data, as a subset of it does. ",
          "Pass the whole table from ilm_remedies() and choose with `which`.", call. = FALSE)
-  if (!identical(attr(remedies, "tiers"), ilm_clean_tiers))
+  if (!identical(attr(remedies, "tiers"), ilm_remedy_tiers(object)$tiers))
     stop("`remedies` was listed for a fitted model, not for data.", call. = FALSE)
   id0 <- ilm_data_id(object)
   if (!identical(attr(remedies, "target_id"), id0))

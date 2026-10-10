@@ -1,7 +1,7 @@
 Package: illumex
 Type: Package
 Title: A Data Interrogation Engine for Enabling Inference
-Version: 0.0.8.9004
+Version: 0.0.8.9005
 Authors@R: person(given = "Craig", family = "Hutton",
                   role = c("aut", "cre", "cph"),
                   email = "craig.hutton@gmail.com")

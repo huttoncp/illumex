@@ -151,6 +151,48 @@ ilm_remedy_table.default <- function(object, ...)
        ": remedies belong to a data frame, or to a fitted model whose package ",
        "gives ilm_remedy_table() a method.", call. = FALSE)
 
+## ---- tiers ----------------------------------------------------------------
+
+## the tiers of a fitted model's remedies, least to most consequential: the
+## same model fitted harder; a different random-effect or variance structure,
+## with the fixed effects meaning what they did; a change to what they estimate
+ilm_rem_model_tiers <- c("numerical", "structural", "estimand")
+
+#' The tiers a target's remedies are ranked by
+#'
+#' Every remedies table ranks its remedies by an ordered set of tiers, least
+#' to most consequential, and a target -- a data frame, or a fitted model --
+#' has one set, so that every package listing remedies for it ranks them the
+#' same way and their tables can be combined with `c()`. A package building
+#' a table asks this generic for the set rather than assuming one.
+#'
+#' For a data frame the tiers are `representation`, `values` and `rows`
+#' (see [ilm_remedies()]). For a fitted model they are illume's `numerical`,
+#' `structural` and `estimand`, unless the model's class gives this generic a
+#' method: a package whose fits admit another kind of change -- a revised
+#' prior, for a Bayesian fit -- returns its own ordered set, which must keep
+#' the model tiers in their order.
+#'
+#' @param object The target: a data frame or a fitted model.
+#' @param ... Arguments for methods.
+#' @return A list: `tiers`, the ordered tier names, and `note`, the paragraph
+#'   a printed table closes with to say what they mean, or `NULL` when the
+#'   package printing the table supplies its own.
+#' @seealso [ilm_remedy_assemble()], which takes the set, and [ilm_remedies()].
+#' @examples
+#' ilm_remedy_tiers(data.frame(x = 1))$tiers
+#' ilm_remedy_tiers(lm(mpg ~ wt, data = mtcars))$tiers
+#' @export
+ilm_remedy_tiers <- function(object, ...) UseMethod("ilm_remedy_tiers")
+
+#' @export
+ilm_remedy_tiers.default <- function(object, ...)
+  list(tiers = ilm_rem_model_tiers, note = NULL)
+
+#' @export
+ilm_remedy_tiers.data.frame <- function(object, ...)
+  list(tiers = ilm_clean_tiers, note = ilm_clean_note)
+
 ## ---- keys -----------------------------------------------------------------
 
 #' Build a remedy key
@@ -304,6 +346,15 @@ c.ilm_remedies <- function(...) {
     stop("these remedy tables were listed for different targets -- different ",
          "data, or different fits -- and only one target's remedies can be ",
          "combined.", call. = FALSE)
+  ## one target has one tier set; two tables that rank by different sets
+  ## were built without asking ilm_remedy_tiers(), and merging them would
+  ## rank one table's remedies by the other's order
+  sets <- lapply(tabs, attr, "tiers")
+  if (length(unique(sets)) > 1L)
+    stop("these remedy tables rank their remedies by different tier sets (",
+         paste(vapply(unique(sets), paste, "", collapse = " < "), collapse = "; "),
+         "), so they cannot be combined. Each package should build its table ",
+         "with the tiers ilm_remedy_tiers() gives for the target.", call. = FALSE)
   rows <- list()
   for (t in tabs) {
     p <- attr(t, "payload")

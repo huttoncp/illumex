@@ -60,7 +60,7 @@ Useful links:
 
 }
 \author{
-\strong{Maintainer}: Craig Hutton \email{craig.hutton@gmail.com}
+\strong{Maintainer}: Craig Hutton \email{craig.hutton@gmail.com} [copyright holder]
 
 }
 \keyword{internal}
