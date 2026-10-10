@@ -1,5 +1,40 @@
 # Changelog
 
+## illumex 0.0.8.9004
+
+- A cleaning loop: checks that find messy data, remedies written out as
+  code, and a record of what was done and why.
+  [`ilm_check_data()`](https://huttoncp.github.io/illumex/reference/ilm_check_data.md)
+  runs the checks and says what each found;
+  [`ilm_remedies()`](https://huttoncp.github.io/illumex/reference/ilm_remedies.md)
+  lists the remedies, each with a key that names the change
+  (`drop_cols/same`) and stays the same from one version to the next;
+  [`ilm_apply_remedy()`](https://huttoncp.github.io/illumex/reference/ilm_apply_remedy.md)
+  makes one, runs its check again, and logs it with the reason given;
+  and
+  [`ilm_cleaning_script()`](https://huttoncp.github.io/illumex/reference/ilm_cleaning_script.md)
+  writes the log as an R script that replays the cleaning on the raw
+  data. Nothing changes until a remedy is applied. The first check is
+  [`ilm_check_frame()`](https://huttoncp.github.io/illumex/reference/ilm_check_frame.md),
+  the whole-frame problems
+  [`ilm_frame_issues()`](https://huttoncp.github.io/illumex/reference/ilm_frame_issues.md)
+  finds, with
+  [`ilm_drop_cols()`](https://huttoncp.github.io/illumex/reference/ilm_drop_cols.md)
+  as their remedy; the others follow. A remedy table belongs to the data
+  it was listed for, identified by
+  [`ilm_data_id()`](https://huttoncp.github.io/illumex/reference/ilm_data_id.md),
+  which changes with any value or any reordering of rows or columns, and
+  a remedy listed for other data is refused. A secret a remedy needs is
+  given as `ilm_secret("VAR")` and is never written into the table, the
+  log or the script.
+- [`ilm_remedies()`](https://huttoncp.github.io/illumex/reference/ilm_remedies.md),
+  [`ilm_apply_remedy()`](https://huttoncp.github.io/illumex/reference/ilm_apply_remedy.md)
+  and
+  [`ilm_remedy_table()`](https://huttoncp.github.io/illumex/reference/ilm_remedy_table.md)
+  are now generics in illumex, with tables built by
+  [`ilm_remedy_assemble()`](https://huttoncp.github.io/illumex/reference/ilm_remedy_assemble.md),
+  so illume’s model remedies and illumex’s data remedies are one system.
+
 ## illumex 0.0.8.9003
 
 - illumex is now licensed under the GPL (version 2 or later). Versions

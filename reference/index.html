@@ -7,7 +7,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">illumex</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.0.8.9003</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.0.8.9004</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -124,6 +124,106 @@
 
         </dt>
         <dd>Duplicated rows only</dd>
+      </dl></div><div class="section level2">
+      <h2 id="the-cleaning-loop">The cleaning loop<a class="anchor" aria-label="anchor" href="#the-cleaning-loop"></a></h2>
+
+      <div class="section-desc"><p>Checks that find messy data and say what they saw, remedies written out as code, and a log of every remedy applied and why, which writes out as a script that replays the cleaning.</p></div>
+
+      <dl></dl></div><div class="section level2">
+
+
+
+
+      <dl><dt>
+
+          <code><a href="ilm_check_data.html">ilm_check_data()</a></code>
+
+        </dt>
+        <dd>Check a data frame for problems, all at once</dd>
+
+        <dt>
+
+          <code><a href="ilm_remedies.html">ilm_remedies()</a></code> <code><a href="ilm_remedies.html">print(<i>&lt;ilm_remedies&gt;</i>)</a></code>
+
+        </dt>
+        <dd>Remedies for what a check found</dd>
+
+        <dt>
+
+          <code><a href="ilm_apply_remedy.html">ilm_apply_remedy()</a></code>
+
+        </dt>
+        <dd>Make one remedy</dd>
+
+        <dt>
+
+          <code><a href="ilm_cleaning_script.html">ilm_cleaning_script()</a></code>
+
+        </dt>
+        <dd>Write the cleaning as an R script</dd>
+
+        <dt>
+
+          <code><a href="ilm_cleaning_log.html">ilm_cleaning_log()</a></code>
+
+        </dt>
+        <dd>The cleaning log</dd>
+
+        <dt>
+
+          <code><a href="ilm_check_frame.html">ilm_check_frame()</a></code>
+
+        </dt>
+        <dd>Check the data frame as a whole</dd>
+
+        <dt>
+
+          <code><a href="ilm_data_id.html">ilm_data_id()</a></code>
+
+        </dt>
+        <dd>A data frame's fingerprint</dd>
+
+        <dt>
+
+          <code><a href="ilm_drop_cols.html">ilm_drop_cols()</a></code>
+
+        </dt>
+        <dd>Leave columns out</dd>
+
+        <dt>
+
+          <code><a href="ilm_remedy_assemble.html">ilm_remedy_assemble()</a></code>
+
+        </dt>
+        <dd>Assemble a remedies table</dd>
+
+        <dt>
+
+          <code><a href="ilm_remedy_find.html">ilm_remedy_find()</a></code>
+
+        </dt>
+        <dd>Find a remedy in a table by id or key</dd>
+
+        <dt>
+
+          <code><a href="ilm_remedy_key.html">ilm_remedy_key()</a></code>
+
+        </dt>
+        <dd>Build a remedy key</dd>
+
+        <dt>
+
+          <code><a href="ilm_remedy_table.html">ilm_remedy_table()</a></code> <code><a href="ilm_remedy_table.html">c(<i>&lt;ilm_remedies&gt;</i>)</a></code>
+
+        </dt>
+        <dd>A table of remedies of one's own</dd>
+
+        <dt>
+
+          <code><a href="ilm_secret.html">ilm_secret()</a></code>
+
+        </dt>
+        <dd>Keep a secret out of the record</dd>
       </dl></div><div class="section level2">
       <h2 id="cleaning">Cleaning<a class="anchor" aria-label="anchor" href="#cleaning"></a></h2>
 

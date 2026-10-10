@@ -7,7 +7,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">illumex</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.0.8.9003</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.0.8.9004</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -39,6 +39,12 @@
       <small>Source: <a href="https://github.com/huttoncp/illumex/blob/main/NEWS.md" class="external-link"><code>NEWS.md</code></a></small>
     </div>
 
+    <div class="section level2">
+<h2 class="pkg-version" data-toc-text="0.0.8.9004" id="illumex-0089004">illumex 0.0.8.9004<a class="anchor" aria-label="anchor" href="#illumex-0089004"></a></h2>
+<ul><li>A cleaning loop: checks that find messy data, remedies written out as code, and a record of what was done and why. <code><a href="../reference/ilm_check_data.html">ilm_check_data()</a></code> runs the checks and says what each found; <code><a href="../reference/ilm_remedies.html">ilm_remedies()</a></code> lists the remedies, each with a key that names the change (<code>drop_cols/same</code>) and stays the same from one version to the next; <code><a href="../reference/ilm_apply_remedy.html">ilm_apply_remedy()</a></code> makes one, runs its check again, and logs it with the reason given; and <code><a href="../reference/ilm_cleaning_script.html">ilm_cleaning_script()</a></code> writes the log as an R script that replays the cleaning on the raw data. Nothing changes until a remedy is applied. The first check is <code><a href="../reference/ilm_check_frame.html">ilm_check_frame()</a></code>, the whole-frame problems <code><a href="../reference/ilm_frame_issues.html">ilm_frame_issues()</a></code> finds, with <code><a href="../reference/ilm_drop_cols.html">ilm_drop_cols()</a></code> as their remedy; the others follow. A remedy table belongs to the data it was listed for, identified by <code><a href="../reference/ilm_data_id.html">ilm_data_id()</a></code>, which changes with any value or any reordering of rows or columns, and a remedy listed for other data is refused. A secret a remedy needs is given as <code>ilm_secret("VAR")</code> and is never written into the table, the log or the script.</li>
+<li>
+<code><a href="../reference/ilm_remedies.html">ilm_remedies()</a></code>, <code><a href="../reference/ilm_apply_remedy.html">ilm_apply_remedy()</a></code> and <code><a href="../reference/ilm_remedy_table.html">ilm_remedy_table()</a></code> are now generics in illumex, with tables built by <code><a href="../reference/ilm_remedy_assemble.html">ilm_remedy_assemble()</a></code>, so illume’s model remedies and illumex’s data remedies are one system.</li>
+</ul></div>
     <div class="section level2">
 <h2 class="pkg-version" data-toc-text="0.0.8.9003" id="illumex-0089003">illumex 0.0.8.9003<a class="anchor" aria-label="anchor" href="#illumex-0089003"></a></h2>
 <ul><li>illumex is now licensed under the GPL (version 2 or later). Versions released before this change remain available under the MIT licence.</li>

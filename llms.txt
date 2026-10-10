@@ -203,6 +203,41 @@ data frame before any model sees it.
 - [`ilm_dupes()`](https://huttoncp.github.io/illumex/reference/ilm_dupes.md)
   : Duplicated rows only
 
+## The cleaning loop
+
+Checks that find messy data and say what they saw, remedies written out
+as code, and a log of every remedy applied and why, which writes out as
+a script that replays the cleaning.
+
+- [`ilm_check_data()`](https://huttoncp.github.io/illumex/reference/ilm_check_data.md)
+  : Check a data frame for problems, all at once
+- [`ilm_remedies()`](https://huttoncp.github.io/illumex/reference/ilm_remedies.md)
+  [`print(`*`<ilm_remedies>`*`)`](https://huttoncp.github.io/illumex/reference/ilm_remedies.md)
+  : Remedies for what a check found
+- [`ilm_apply_remedy()`](https://huttoncp.github.io/illumex/reference/ilm_apply_remedy.md)
+  : Make one remedy
+- [`ilm_cleaning_script()`](https://huttoncp.github.io/illumex/reference/ilm_cleaning_script.md)
+  : Write the cleaning as an R script
+- [`ilm_cleaning_log()`](https://huttoncp.github.io/illumex/reference/ilm_cleaning_log.md)
+  : The cleaning log
+- [`ilm_check_frame()`](https://huttoncp.github.io/illumex/reference/ilm_check_frame.md)
+  : Check the data frame as a whole
+- [`ilm_data_id()`](https://huttoncp.github.io/illumex/reference/ilm_data_id.md)
+  : A data frame's fingerprint
+- [`ilm_drop_cols()`](https://huttoncp.github.io/illumex/reference/ilm_drop_cols.md)
+  : Leave columns out
+- [`ilm_remedy_assemble()`](https://huttoncp.github.io/illumex/reference/ilm_remedy_assemble.md)
+  : Assemble a remedies table
+- [`ilm_remedy_find()`](https://huttoncp.github.io/illumex/reference/ilm_remedy_find.md)
+  : Find a remedy in a table by id or key
+- [`ilm_remedy_key()`](https://huttoncp.github.io/illumex/reference/ilm_remedy_key.md)
+  : Build a remedy key
+- [`ilm_remedy_table()`](https://huttoncp.github.io/illumex/reference/ilm_remedy_table.md)
+  [`c(`*`<ilm_remedies>`*`)`](https://huttoncp.github.io/illumex/reference/ilm_remedy_table.md)
+  : A table of remedies of one's own
+- [`ilm_secret()`](https://huttoncp.github.io/illumex/reference/ilm_secret.md)
+  : Keep a secret out of the record
+
 ## Cleaning
 
 Tidying a data frame and recoding values that were entered wrongly.
