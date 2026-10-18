@@ -2,6 +2,8 @@
 
 ## illumex 0.0.8.9003
 
+- illumex is now licensed under the GNU General Public License, version
+  2 or later (GPL (\>= 2)).
 - illumex needs tinyplot 0.7.0 or later, as
   [`ilm_plot_var_pairs()`](https://huttoncp.github.io/illumex/reference/ilm_plot_var_pairs.md)
   does: it draws with

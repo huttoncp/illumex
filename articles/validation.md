@@ -26,10 +26,10 @@ retained dimension, and every squared loading:
 
 | data             | rows | eigenvalues | coordinates | loadings |
 |:-----------------|-----:|------------:|------------:|---------:|
-| mixed            |  900 |     3.6e-15 |     4.3e-13 |  1.6e-14 |
-| numeric_only     |  900 |     2.0e-15 |     9.1e-15 |  1.2e-15 |
-| categorical_only |  900 |     4.4e-15 |     3.8e-12 |  5.3e-14 |
-| mixed_with_gaps  |  900 |     2.7e-15 |     2.0e-13 |  7.3e-15 |
+| mixed            |  900 |     3.3e-15 |     2.2e-13 |  1.2e-14 |
+| numeric_only     |  900 |     1.8e-15 |     1.0e-14 |  1.4e-15 |
+| categorical_only |  900 |     4.6e-15 |     3.6e-12 |  6.5e-14 |
+| mixed_with_gaps  |  900 |     2.9e-15 |     4.5e-13 |  9.1e-15 |
 
 A coordinate’s sign is arbitrary in any implementation – the same
 dimension read from the other end – so coordinates are compared after
@@ -49,8 +49,8 @@ eigenvalues, and every row’s coordinates on the first three dimensions.
 
 | quantity                       | largest_difference |
 |:-------------------------------|-------------------:|
-| eigenvalues 1 to 5             |            2.1e-15 |
-| coordinates, dimensions 1 to 3 |            2.0e-13 |
+| eigenvalues 1 to 5             |            4.0e-15 |
+| coordinates, dimensions 1 to 3 |            1.7e-13 |
 
 [`ilm_profile()`](https://huttoncp.github.io/illumex/reference/ilm_profile.md)
 describes each cluster by v-tests, as `FactoMineR::catdes()` does: for a

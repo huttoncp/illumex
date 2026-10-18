@@ -99,3 +99,32 @@ Useful links:
 ## Author
 
 **Maintainer**: Craig Hutton <craig.hutton@gmail.com>
+
+Other contributors:
+
+- François Husson (FactoMineR: ilm_vtest_share() and ilm_vtest_mean()
+  adapted from catdes()) \[copyright holder\]
+
+- Julie Josse (FactoMineR: ilm_vtest_share() and ilm_vtest_mean()
+  adapted from catdes()) \[copyright holder\]
+
+- Sébastien Lê (FactoMineR: ilm_vtest_share() and ilm_vtest_mean()
+  adapted from catdes()) \[copyright holder\]
+
+- Jérémy Mazet (FactoMineR: ilm_vtest_share() and ilm_vtest_mean()
+  adapted from catdes()) \[copyright holder\]
+
+- Marie Chavent (PCAmixdata: ilm_famd() validated against, and possibly
+  adapted from, PCAmix()) \[copyright holder\]
+
+- Vanessa Kuentz (PCAmixdata: ilm_famd() validated against, and possibly
+  adapted from, PCAmix()) \[copyright holder\]
+
+- Amaury Labenne (PCAmixdata: ilm_famd() validated against, and possibly
+  adapted from, PCAmix()) \[copyright holder\]
+
+- Benoit Liquet (PCAmixdata: ilm_famd() validated against, and possibly
+  adapted from, PCAmix()) \[copyright holder\]
+
+- Jérôme Saracco (PCAmixdata: ilm_famd() validated against, and possibly
+  adapted from, PCAmix()) \[copyright holder\]

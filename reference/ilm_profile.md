@@ -191,6 +191,16 @@ source) it took about a minute at 1,000 rows and over 15 minutes at
 saves that search. Above about 40,000 rows the silhouettes' distance
 matrix does not fit in 16 GB.
 
+## References
+
+Husson, F., Lê, S. and Pagès, J. (2017). Exploratory Multivariate
+Analysis by Example Using R, 2nd ed. Chapman & Hall/CRC. Section 3.7.2,
+pp. 154-157 (the v-test, and FactoMineR's `catdes()`).
+
+Husson, F., Josse, J., Lê, S. and Mazet, J. FactoMineR: Multivariate
+Exploratory Data Analysis and Data Mining. R package version 2.11. The
+v-tests here are adapted from its `catdes()`.
+
 ## See also
 
 [`ilm_reduce()`](https://huttoncp.github.io/illumex/reference/ilm_reduce.md),

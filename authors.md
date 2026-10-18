@@ -4,6 +4,42 @@
 
 - **Craig Hutton**. Author, maintainer.
 
+- **François Husson**. Copyright holder.  
+  FactoMineR: ilm_vtest_share() and ilm_vtest_mean() adapted from
+  catdes()
+
+- **Julie Josse**. Copyright holder.  
+  FactoMineR: ilm_vtest_share() and ilm_vtest_mean() adapted from
+  catdes()
+
+- **Sébastien Lê**. Copyright holder.  
+  FactoMineR: ilm_vtest_share() and ilm_vtest_mean() adapted from
+  catdes()
+
+- **Jérémy Mazet**. Copyright holder.  
+  FactoMineR: ilm_vtest_share() and ilm_vtest_mean() adapted from
+  catdes()
+
+- **Marie Chavent**. Copyright holder.  
+  PCAmixdata: ilm_famd() validated against, and possibly adapted from,
+  PCAmix()
+
+- **Vanessa Kuentz**. Copyright holder.  
+  PCAmixdata: ilm_famd() validated against, and possibly adapted from,
+  PCAmix()
+
+- **Amaury Labenne**. Copyright holder.  
+  PCAmixdata: ilm_famd() validated against, and possibly adapted from,
+  PCAmix()
+
+- **Benoit Liquet**. Copyright holder.  
+  PCAmixdata: ilm_famd() validated against, and possibly adapted from,
+  PCAmix()
+
+- **Jérôme Saracco**. Copyright holder.  
+  PCAmixdata: ilm_famd() validated against, and possibly adapted from,
+  PCAmix()
+
 ## Citation
 
 Source:

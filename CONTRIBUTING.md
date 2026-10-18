@@ -62,6 +62,16 @@ contribution is the standard the package holds itself to – that a claim
 about behaviour comes with a measurement, and that the measurement is
 against something somebody else wrote.
 
+## Licence and sign-off
+
+illumex is licensed under the GNU General Public License, version 2 or
+(at your option) any later version, and contributions are accepted under
+the same licence. Sign off every commit (`git commit -s`), certifying
+the Developer Certificate of Origin
+(<https://developercertificate.org/>): that you wrote the change, or
+otherwise have the right to submit it under that licence. No contributor
+licence agreement is needed.
+
 ## Code of conduct
 
 By participating you agree to abide by the [code of

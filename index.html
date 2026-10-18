@@ -219,9 +219,24 @@
 <p><strong>And one predecessor.</strong> This package is a direct descendant of <a href="https://github.com/bcgov/elucidate" class="external-link"><code>elucidate</code></a>, written by the same author for the BC Public Service. The lineage is visible in the function names: <code>describe()</code>, <code>describe_all()</code>, <code>counts()</code>, <code>counts_tb()</code>, <code>dupes()</code>, <code>copies()</code>, <code>wash_df()</code>, <code>recode_errors()</code>, <code>translate()</code> and the whole <code>plot_*()</code> family became <code><a href="reference/ilm_describe.html">ilm_describe()</a></code>, <code><a href="reference/ilm_counts.html">ilm_counts()</a></code>, <code><a href="reference/ilm_dupes.html">ilm_dupes()</a></code> and the rest, with the same idea behind them – that the routine work before a model should be one call with a consistent interface, rather than six lines of <code><a href="https://rdrr.io/r/base/lapply.html" class="external-link">sapply()</a></code> reassembled from memory every time. <code>illumex</code> reimplements that on a different backend and extends it – elucidate is built on <code>data.table</code>, <code>dplyr</code> and <code>ggplot2</code>, this on <code>collapse</code> and <code>tinyplot</code>, and the two share an interface rather than an implementation – but the design is elucidate’s and it would be poor form to pretend otherwise.</p>
 </div>
 <div class="section level2">
+<h2 id="acknowledgements">Acknowledgements<a class="anchor" aria-label="anchor" href="#acknowledgements"></a>
+</h2>
+<ul>
+<li>
+<code>ilm_vtest_mean()</code> and <code>ilm_vtest_share()</code>, the v-tests behind <code><a href="reference/ilm_profile.html">ilm_profile()</a></code>, are adapted from <code>catdes()</code> in <a href="https://CRAN.R-project.org/package=FactoMineR" class="external-link"><code>FactoMineR</code></a>, by François Husson, Julie Josse, Sébastien Lê and Jérémy Mazet (GPL (&gt;= 2)). They are listed as copyright holders.</li>
+<li>The factor analysis of mixed data in <code><a href="reference/ilm_reduce.html">ilm_reduce()</a></code> was validated against, and may be adapted from, <code>PCAmix()</code> in <a href="https://CRAN.R-project.org/package=PCAmixdata" class="external-link"><code>PCAmixdata</code></a>, by Marie Chavent, Vanessa Kuentz, Amaury Labenne, Benoit Liquet and Jérôme Saracco (GPL (&gt;= 2)). They are listed as copyright holders.</li>
+<li>
+<code>ilm_snake()</code> follows the naming behaviour of <a href="https://CRAN.R-project.org/package=janitor" class="external-link"><code>janitor</code></a>’s <code>make_clean_names()</code>, by Sam Firke and contributors.</li>
+<li>
+<code><a href="reference/ilm_cluster.html">ilm_cluster()</a></code> calls the gap statistic and silhouettes from <a href="https://CRAN.R-project.org/package=cluster" class="external-link"><code>cluster</code></a>, by Martin Maechler, Peter Rousseeuw, Anja Struyf, Mia Hubert, Kurt Hornik and contributors. Its cluster-wise bootstrap stability follows Christian Hennig’s method (Hennig 2007, Computational Statistics &amp; Data Analysis 52, 258-271), the author of <a href="https://CRAN.R-project.org/package=fpc" class="external-link"><code>fpc</code></a>.</li>
+<li>illumex’s interface was inspired by the <a href="https://github.com/bcgov/elucidate" class="external-link"><code>elucidate</code></a> package (Apache-2.0).</li>
+<li>illumex is built on <a href="https://CRAN.R-project.org/package=collapse" class="external-link"><code>collapse</code></a>, by Sebastian Krantz, and <a href="https://CRAN.R-project.org/package=tinyplot" class="external-link"><code>tinyplot</code></a>, by Grant McDermott, Vincent Arel-Bundock and Achim Zeileis.</li>
+</ul>
+</div>
+<div class="section level2">
 <h2 id="license">License<a class="anchor" aria-label="anchor" href="#license"></a>
 </h2>
-<p>MIT. See <code>LICENSE</code>.</p>
+<p>GPL (&gt;= 2): the GNU General Public License, version 2 or (at your option) any later version.</p>
 </div>
 <div class="section level2">
 <h2 id="contributing">Contributing<a class="anchor" aria-label="anchor" href="#contributing"></a>
@@ -241,8 +256,7 @@
 <div class="license">
 <h2 data-toc-skip>License</h2>
 <ul class="list-unstyled">
-<li><a href="LICENSE.html">Full license</a></li>
-<li><small><a href="https://opensource.org/licenses/mit-license.php" class="external-link">MIT</a> + file <a href="LICENSE-text.html">LICENSE</a></small></li>
+<li>GPL (&gt;= 2)</li>
 </ul>
 </div>
 
@@ -265,6 +279,7 @@
 <h2 data-toc-skip>Developers</h2>
 <ul class="list-unstyled">
 <li>Craig Hutton <br><small class="roles"> Author, maintainer </small>   </li>
+<li><a href="authors.html">More about authors...</a></li>
 </ul>
 </div>
 
