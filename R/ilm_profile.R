@@ -86,6 +86,14 @@
 #'   `by_cluster` ([ilm_describe_all()] of the variables, by cluster),
 #'   `var_contrib` (or `NULL`), `summary` (a paragraph per cluster) and
 #'   `not_distinctive` (the variables that set no cluster apart).
+#' @references
+#' Husson, F., \enc{Lê}{Le}, S. and \enc{Pagès}{Pages}, J. (2017). Exploratory
+#' Multivariate Analysis by Example Using R, 2nd ed. Chapman & Hall/CRC.
+#' Section 3.7.2, pp. 154-157 (the v-test, and FactoMineR's `catdes()`).
+#'
+#' Husson, F., Josse, J., \enc{Lê}{Le}, S. and Mazet, J. FactoMineR:
+#' Multivariate Exploratory Data Analysis and Data Mining. R package version
+#' 2.11. The v-tests here are adapted from its `catdes()`.
 #' @seealso [ilm_reduce()], [ilm_cluster()], [ilm_plot_profile()],
 #'   [ilm_profile_na()].
 #' @examples

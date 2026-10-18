@@ -63,6 +63,13 @@ ilm_is_whole <- function(v) !is.na(v) & is.finite(v) & abs(v - round(v)) < 1e-9 
 ilm_fmt_pct <- function(p, decimals = 0L) ilm_disp(p, "percent", decimals)$text
 
 ## The v-test of the rows in `m` against all rows, for a mean and for a share.
+##
+## Copyright notice: ilm_vtest_mean() and ilm_vtest_share() are adapted from
+## catdes() in the FactoMineR package (version 2.11), Copyright (C) Francois
+## Husson, Julie Josse, Sebastien Le and Jeremy Mazet, licensed under the GNU
+## General Public License, version 2 or later. See Husson, Le and Pages (2017),
+## Exploratory Multivariate Analysis by Example Using R, 2nd ed., section
+## 3.7.2, pp. 154-157.
 #' @keywords internal
 #' @noRd
 ilm_vtest_mean <- function(x, m) {
