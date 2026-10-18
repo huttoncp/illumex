@@ -135,6 +135,11 @@ Statistique Appliquee 52(4), 93-111.
 Chavent, M., Kuentz-Simonet, V., Labenne, A. and Saracco, J. (2014).
 Multivariate analysis of mixed data: the PCAmixdata R package. arXiv
 1411.4911.
+
+Chavent, M., Kuentz, V., Labenne, A., Liquet, B. and Saracco, J.
+PCAmixdata: Multivariate Analysis of Mixed Data. R package version 3.1.
+The factor analysis of mixed data here was validated against, and may be
+adapted from, its \code{PCAmix()}.
 }
 \seealso{
 \code{\link[=ilm_cluster]{ilm_cluster()}} to group the rows, \code{\link[=ilm_profile]{ilm_profile()}} for the whole

@@ -27,6 +27,10 @@
 ##     arXiv:1411.4911.
 ## ---------------------------------------------------------------------------
 
+## Copyright notice: ilm_famd() was validated against, and may be adapted from,
+## PCAmix() in the PCAmixdata package (version 3.1), Copyright (C) Marie
+## Chavent, Vanessa Kuentz, Amaury Labenne, Benoit Liquet and Jerome Saracco,
+## licensed under the GNU General Public License, version 2 or later.
 #' @keywords internal
 #' @noRd
 ilm_famd <- function(quanti = NULL, quali = NULL, ndim = 5L) {

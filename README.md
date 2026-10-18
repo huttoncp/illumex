@@ -142,9 +142,38 @@ and `ggplot2`, this on `collapse` and `tinyplot`, and the two share an
 interface rather than an implementation -- but the design is elucidate's and it
 would be poor form to pretend otherwise.
 
+## Acknowledgements
+
+- `ilm_vtest_mean()` and `ilm_vtest_share()`, the v-tests behind
+  `ilm_profile()`, are adapted from `catdes()` in
+  [`FactoMineR`](https://CRAN.R-project.org/package=FactoMineR), by François
+  Husson, Julie Josse, Sébastien Lê and Jérémy Mazet (GPL (>= 2)). They are
+  listed as copyright holders.
+- The factor analysis of mixed data in `ilm_reduce()` was validated against,
+  and may be adapted from, `PCAmix()` in
+  [`PCAmixdata`](https://CRAN.R-project.org/package=PCAmixdata), by Marie
+  Chavent, Vanessa Kuentz, Amaury Labenne, Benoit Liquet and Jérôme Saracco
+  (GPL (>= 2)). They are listed as copyright holders.
+- `ilm_snake()` follows the naming behaviour of
+  [`janitor`](https://CRAN.R-project.org/package=janitor)'s
+  `make_clean_names()`, by Sam Firke and contributors.
+- `ilm_cluster()` calls the gap statistic and silhouettes from
+  [`cluster`](https://CRAN.R-project.org/package=cluster), by Martin
+  Maechler, Peter Rousseeuw, Anja Struyf, Mia Hubert, Kurt Hornik and
+  contributors. Its cluster-wise bootstrap stability follows Christian
+  Hennig's method (Hennig 2007, Computational Statistics & Data Analysis 52,
+  258-271), the author of [`fpc`](https://CRAN.R-project.org/package=fpc).
+- illumex's interface was inspired by the
+  [`elucidate`](https://github.com/bcgov/elucidate) package (Apache-2.0).
+- illumex is built on [`collapse`](https://CRAN.R-project.org/package=collapse),
+  by Sebastian Krantz, and
+  [`tinyplot`](https://CRAN.R-project.org/package=tinyplot), by Grant
+  McDermott, Vincent Arel-Bundock and Achim Zeileis.
+
 ## License
 
-MIT. See `LICENSE`.
+GPL (>= 2): the GNU General Public License, version 2 or (at your option)
+any later version.
 
 ## Contributing
 

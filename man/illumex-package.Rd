@@ -62,5 +62,18 @@ Useful links:
 \author{
 \strong{Maintainer}: Craig Hutton \email{craig.hutton@gmail.com}
 
+Other contributors:
+\itemize{
+  \item François Husson (FactoMineR: ilm_vtest_share() and ilm_vtest_mean() adapted from catdes()) [copyright holder]
+  \item Julie Josse (FactoMineR: ilm_vtest_share() and ilm_vtest_mean() adapted from catdes()) [copyright holder]
+  \item Sébastien Lê (FactoMineR: ilm_vtest_share() and ilm_vtest_mean() adapted from catdes()) [copyright holder]
+  \item Jérémy Mazet (FactoMineR: ilm_vtest_share() and ilm_vtest_mean() adapted from catdes()) [copyright holder]
+  \item Marie Chavent (PCAmixdata: ilm_famd() validated against, and possibly adapted from, PCAmix()) [copyright holder]
+  \item Vanessa Kuentz (PCAmixdata: ilm_famd() validated against, and possibly adapted from, PCAmix()) [copyright holder]
+  \item Amaury Labenne (PCAmixdata: ilm_famd() validated against, and possibly adapted from, PCAmix()) [copyright holder]
+  \item Benoit Liquet (PCAmixdata: ilm_famd() validated against, and possibly adapted from, PCAmix()) [copyright holder]
+  \item Jérôme Saracco (PCAmixdata: ilm_famd() validated against, and possibly adapted from, PCAmix()) [copyright holder]
+}
+
 }
 \keyword{internal}

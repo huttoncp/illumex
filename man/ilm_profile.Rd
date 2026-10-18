@@ -149,6 +149,15 @@ silhouettes' distance matrix does not fit in 16 GB.
 p <- ilm_profile(mtcars, k_max = 5, B = 25, seed = 1)
 cat(p$summary, sep = "\n")
 }
+\references{
+Husson, F., \enc{Lê}{Le}, S. and \enc{Pagès}{Pages}, J. (2017). Exploratory
+Multivariate Analysis by Example Using R, 2nd ed. Chapman & Hall/CRC.
+Section 3.7.2, pp. 154-157 (the v-test, and FactoMineR's \code{catdes()}).
+
+Husson, F., Josse, J., \enc{Lê}{Le}, S. and Mazet, J. FactoMineR:
+Multivariate Exploratory Data Analysis and Data Mining. R package version
+2.11. The v-tests here are adapted from its \code{catdes()}.
+}
 \seealso{
 \code{\link[=ilm_reduce]{ilm_reduce()}}, \code{\link[=ilm_cluster]{ilm_cluster()}}, \code{\link[=ilm_plot_profile]{ilm_plot_profile()}},
 \code{\link[=ilm_profile_na]{ilm_profile_na()}}.

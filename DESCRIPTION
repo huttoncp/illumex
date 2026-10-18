@@ -2,9 +2,27 @@ Package: illumex
 Type: Package
 Title: A Data Interrogation Engine for Enabling Inference
 Version: 0.0.8.9003
-Authors@R: person(given = "Craig", family = "Hutton",
+Authors@R: c(person(given = "Craig", family = "Hutton",
                   role = c("aut", "cre"),
-                  email = "craig.hutton@gmail.com")
+                  email = "craig.hutton@gmail.com"),
+    person("François", "Husson", role = "cph",
+           comment = "FactoMineR: ilm_vtest_share() and ilm_vtest_mean() adapted from catdes()"),
+    person("Julie", "Josse", role = "cph",
+           comment = "FactoMineR: ilm_vtest_share() and ilm_vtest_mean() adapted from catdes()"),
+    person("Sébastien", "Lê", role = "cph",
+           comment = "FactoMineR: ilm_vtest_share() and ilm_vtest_mean() adapted from catdes()"),
+    person("Jérémy", "Mazet", role = "cph",
+           comment = "FactoMineR: ilm_vtest_share() and ilm_vtest_mean() adapted from catdes()"),
+    person("Marie", "Chavent", role = "cph",
+           comment = "PCAmixdata: ilm_famd() validated against, and possibly adapted from, PCAmix()"),
+    person("Vanessa", "Kuentz", role = "cph",
+           comment = "PCAmixdata: ilm_famd() validated against, and possibly adapted from, PCAmix()"),
+    person("Amaury", "Labenne", role = "cph",
+           comment = "PCAmixdata: ilm_famd() validated against, and possibly adapted from, PCAmix()"),
+    person("Benoit", "Liquet", role = "cph",
+           comment = "PCAmixdata: ilm_famd() validated against, and possibly adapted from, PCAmix()"),
+    person("Jérôme", "Saracco", role = "cph",
+           comment = "PCAmixdata: ilm_famd() validated against, and possibly adapted from, PCAmix()"))
 Description: The exploratory half of the 'illume' workflow, usable on its
     own. It describes every column of a data frame in one call, with a
     gaussian index in place of a normality test; counts values, finds
@@ -19,7 +37,7 @@ Description: The exploratory half of the 'illume' workflow, usable on its
     for what they show, and the grouped arithmetic runs on 'collapse'.
     Every function is prefixed ilm_, as in 'illume', which attaches this
     package.
-License: MIT + file LICENSE
+License: GPL (>= 2)
 Encoding: UTF-8
 Language: en-GB
 Roxygen: list(markdown = TRUE)
