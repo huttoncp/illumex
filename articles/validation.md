@@ -5,15 +5,16 @@ and so
 [`ilm_cluster()`](https://huttoncp.github.io/illumex/reference/ilm_cluster.md)
 and
 [`ilm_profile()`](https://huttoncp.github.io/illumex/reference/ilm_profile.md),
-compute their dimensions by factor analysis of mixed data (Pagès 2004):
-principal components when every column is a number, multiple
-correspondence analysis when every column is a category, and the mixed
-method in between. illumex computes it itself. It used to call
-`PCAmixdata::PCAmix()`, and before relying on its own it was held to
-that and to `FactoMineR::FAMD()`, the two established implementations.
-The outputs of both are stored with the package’s tests, so every check
-of the package repeats the comparison without either being installed.
-This page runs it again as the site is built.
+compute their dimensions by factor analysis of mixed data (FAMD), which
+Escofier (1979) proposed and Pagès (2004) named: principal components
+when every column is a number, multiple correspondence analysis when
+every column is a category, and the mixed method in between. illumex
+computes it itself. It used to call `PCAmixdata::PCAmix()`, and before
+relying on its own it was held to that and to `FactoMineR::FAMD()`, the
+two established implementations. The outputs of both are stored with the
+package’s tests, so every check of the package repeats the comparison
+without either being installed. This page runs it again as the site is
+built.
 
 ## Against PCAmixdata
 
@@ -88,6 +89,10 @@ recorded by `dev/studies/make_pcamix_fixtures.R` (PCAmixdata 3.1) and
 again if either package changes its method.
 
 ## References
+
+Escofier, B. (1979). Traitement simultané de variables qualitatives et
+quantitatives en analyse factorielle. *Les Cahiers de l’Analyse des
+Données* 4(2), 137-146.
 
 Pagès, J. (2004). Analyse factorielle de données mixtes. *Revue de
 Statistique Appliquée* 52(4), 93-111.

@@ -75,14 +75,15 @@
     
 <p><code><a href="../reference/ilm_reduce.html">ilm_reduce()</a></code>, and so <code><a href="../reference/ilm_cluster.html">ilm_cluster()</a></code> and
 <code><a href="../reference/ilm_profile.html">ilm_profile()</a></code>, compute their dimensions by factor analysis
-of mixed data (Pagès 2004): principal components when every column is a
-number, multiple correspondence analysis when every column is a
-category, and the mixed method in between. illumex computes it itself.
-It used to call <code>PCAmixdata::PCAmix()</code>, and before relying on
-its own it was held to that and to <code>FactoMineR::FAMD()</code>, the
-two established implementations. The outputs of both are stored with the
-package’s tests, so every check of the package repeats the comparison
-without either being installed. This page runs it again as the site is
+of mixed data (FAMD), which Escofier (1979) proposed and Pagès (2004)
+named: principal components when every column is a number, multiple
+correspondence analysis when every column is a category, and the mixed
+method in between. illumex computes it itself. It used to call
+<code>PCAmixdata::PCAmix()</code>, and before relying on its own it was
+held to that and to <code>FactoMineR::FAMD()</code>, the two established
+implementations. The outputs of both are stored with the package’s
+tests, so every check of the package repeats the comparison without
+either being installed. This page runs it again as the site is
 built.</p>
 <div class="section level2">
 <h2 id="against-pcamixdata">Against PCAmixdata<a class="anchor" aria-label="anchor" href="#against-pcamixdata"></a>
@@ -253,6 +254,9 @@ run them again if either package changes its method.</p>
 <div class="section level2">
 <h2 id="references">References<a class="anchor" aria-label="anchor" href="#references"></a>
 </h2>
+<p>Escofier, B. (1979). Traitement simultané de variables qualitatives
+et quantitatives en analyse factorielle. <em>Les Cahiers de l’Analyse
+des Données</em> 4(2), 137-146.</p>
 <p>Pagès, J. (2004). Analyse factorielle de données mixtes. <em>Revue de
 Statistique Appliquée</em> 52(4), 93-111.</p>
 <p>Chavent, M., Kuentz-Simonet, V., Labenne, A. and Saracco, J. (2014).

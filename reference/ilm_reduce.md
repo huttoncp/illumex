@@ -142,11 +142,10 @@ categorical signal, which is on the logit scale and so reported apart.
 
 ## Details
 
-The mixed method is Chavent et al.'s, which belongs to the same
-generalised-PCA family as the FAMD of Pages without being a
-reimplementation of it. The two were checked against each other directly
-and agree for this purpose, matching on eigenvalues and on individual
-coordinates.
+The mixed method is the factor analysis of mixed data (FAMD). Escofier
+(1979) proposed it, and Pagès (2004, pp. 93-94) named it. It is computed
+in this package and agrees with PCAmixdata's `PCAmix()` and FactoMineR's
+`FAMD()` on eigenvalues and on individual coordinates.
 
 ## Size
 
@@ -161,8 +160,12 @@ saves the search.
 
 ## References
 
-Pages, J. (2004). Analyse factorielle de donnees mixtes. Revue de
-Statistique Appliquee 52(4), 93-111.
+Escofier, B. (1979). Traitement simultané de variables qualitatives et
+quantitatives en analyse factorielle. Les Cahiers de l'Analyse des
+Données 4(2), 137-146.
+
+Pagès, J. (2004). Analyse factorielle de données mixtes. Revue de
+Statistique Appliquée 52(4), 93-111.
 
 Chavent, M., Kuentz-Simonet, V., Labenne, A. and Saracco, J. (2014).
 Multivariate analysis of mixed data: the PCAmixdata R package. arXiv

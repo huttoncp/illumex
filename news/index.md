@@ -4,6 +4,17 @@
 
 - illumex is now licensed under the GNU General Public License, version
   2 or later (GPL (\>= 2)).
+- [`ilm_frame_issues()`](https://huttoncp.github.io/illumex/reference/ilm_frame_issues.md)
+  now spells Cramér’s V with its accent in the `detail` of a
+  `redundant_categories` row (“Cramér’s V = …; each largely predicts the
+  other”), so code that matches the old “Cramer’s V” text needs
+  updating. The help, comments and this file spell Cramér’s name
+  throughout.
+- [`ilm_reduce()`](https://huttoncp.github.io/illumex/reference/ilm_reduce.md)’s
+  help and the validation article credit the factor analysis of mixed
+  data to Escofier (1979), who proposed it, and to Pagès (2004), who
+  named it, and cite Escofier (1979). They had credited the mixed method
+  to Chavent et al., or FAMD to Pagès alone.
 - illumex needs tinyplot 0.7.0 or later, as
   [`ilm_plot_var_pairs()`](https://huttoncp.github.io/illumex/reference/ilm_plot_var_pairs.md)
   does: it draws with
@@ -718,7 +729,7 @@
   numeric correlations shows: categorical columns that are the same
   grouping under different labels (`aliased_factors`), one grouping
   inside another (`nested`, which is expected for random effects and a
-  trap for fixed ones), categorical pairs with Cramer’s V at or above
+  trap for fixed ones), categorical pairs with Cramér’s V at or above
   the new `v_cut` (default 0.95, `redundant_categories`), and columns
   that are an exact linear combination of others, found from a pivoted
   QR of the model matrix and named with what they are made of

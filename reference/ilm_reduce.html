@@ -182,11 +182,10 @@ apart.</p>
     </div>
     <div class="section level2">
     <h2 id="details">Details<a class="anchor" aria-label="anchor" href="#details"></a></h2>
-    <p>The mixed method is Chavent et al.'s, which belongs to the same
-generalised-PCA family as the FAMD of Pages without being a
-reimplementation of it. The two were checked against each other directly and
-agree for this purpose, matching on eigenvalues and on individual
-coordinates.</p>
+    <p>The mixed method is the factor analysis of mixed data (FAMD). Escofier
+(1979) proposed it, and Pagès (2004, pp. 93-94) named it. It
+is computed in this package and agrees with PCAmixdata's <code>PCAmix()</code> and
+FactoMineR's <code>FAMD()</code> on eigenvalues and on individual coordinates.</p>
     </div>
     <div class="section level2">
     <h2 id="size">Size<a class="anchor" aria-label="anchor" href="#size"></a></h2>
@@ -201,8 +200,12 @@ search.</p>
     </div>
     <div class="section level2">
     <h2 id="references">References<a class="anchor" aria-label="anchor" href="#references"></a></h2>
-    <p>Pages, J. (2004). Analyse factorielle de donnees mixtes. Revue de
-Statistique Appliquee 52(4), 93-111.</p>
+    <p>Escofier, B. (1979). Traitement simultané de variables
+qualitatives et quantitatives en analyse factorielle. Les Cahiers de
+l'Analyse des Données 4(2), 137-146.</p>
+<p>Pagès, J. (2004). Analyse factorielle de
+données mixtes. Revue de Statistique
+Appliquée 52(4), 93-111.</p>
 <p>Chavent, M., Kuentz-Simonet, V., Labenne, A. and Saracco, J. (2014).
 Multivariate analysis of mixed data: the PCAmixdata R package. arXiv
 1411.4911.</p>

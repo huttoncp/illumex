@@ -47,7 +47,7 @@ ilm_check_missing(
 
 - min_effect:
 
-  Smallest association worth reporting, as a correlation or Cramer's V.
+  Smallest association worth reporting, as a correlation or Cramér's V.
   With several thousand rows an association of 0.02 is significant and
   means nothing.
 
