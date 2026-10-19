@@ -20,8 +20,8 @@
 ## the centre of its column and pulls on nothing.
 ##
 ## References:
-##   Pages, J. (2004). Analyse factorielle de donnees mixtes. Revue de
-##     Statistique Appliquee 52(4), 93-111.
+##   Pagès, J. (2004). Analyse factorielle de données mixtes. Revue de
+##     Statistique Appliquée 52(4), 93-111.
 ##   Chavent, M., Kuentz-Simonet, V., Labenne, A. and Saracco, J. (2014).
 ##     Multivariate analysis of mixed data: the PCAmixdata R package.
 ##     arXiv:1411.4911.
@@ -29,7 +29,7 @@
 
 ## Copyright notice: ilm_famd() was validated against, and may be adapted from,
 ## PCAmix() in the PCAmixdata package (version 3.1), Copyright (C) Marie
-## Chavent, Vanessa Kuentz, Amaury Labenne, Benoit Liquet and Jerome Saracco,
+## Chavent, Vanessa Kuentz, Amaury Labenne, Benoit Liquet and Jérôme Saracco,
 ## licensed under the GNU General Public License, version 2 or later.
 #' @keywords internal
 #' @noRd

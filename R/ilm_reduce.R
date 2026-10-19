@@ -106,8 +106,9 @@
 #' @seealso [ilm_cluster()] to group the rows, [ilm_profile()] for the whole
 #'   pipeline, [ilm_reduce_na()] for the same thing applied to missingness.
 #' @references
-#' Pages, J. (2004). Analyse factorielle de donnees mixtes. Revue de
-#' Statistique Appliquee 52(4), 93-111.
+#' \enc{Pagès}{Pages}, J. (2004). Analyse factorielle de
+#' \enc{données}{donnees} mixtes. Revue de Statistique
+#' \enc{Appliquée}{Appliquee} 52(4), 93-111.
 #'
 #' Chavent, M., Kuentz-Simonet, V., Labenne, A. and Saracco, J. (2014).
 #' Multivariate analysis of mixed data: the PCAmixdata R package. arXiv

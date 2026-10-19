@@ -129,8 +129,9 @@ r
 head(r$var_contrib[order(-r$var_contrib$sqload), ])
 }
 \references{
-Pages, J. (2004). Analyse factorielle de donnees mixtes. Revue de
-Statistique Appliquee 52(4), 93-111.
+\enc{Pagès}{Pages}, J. (2004). Analyse factorielle de
+\enc{données}{donnees} mixtes. Revue de Statistique
+\enc{Appliquée}{Appliquee} 52(4), 93-111.
 
 Chavent, M., Kuentz-Simonet, V., Labenne, A. and Saracco, J. (2014).
 Multivariate analysis of mixed data: the PCAmixdata R package. arXiv
