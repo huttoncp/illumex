@@ -107,11 +107,10 @@ column is used as the time elapsed since its earliest value, which keeps its
 order, and by the rhythms in it that the other columns follow; see \code{time}.
 }
 \details{
-The mixed method is Chavent et al.'s, which belongs to the same
-generalised-PCA family as the FAMD of Pages without being a
-reimplementation of it. The two were checked against each other directly and
-agree for this purpose, matching on eigenvalues and on individual
-coordinates.
+The mixed method is the factor analysis of mixed data (FAMD). Escofier
+(1979) proposed it, and \enc{Pagès}{Pages} (2004, pp. 93-94) named it. It
+is computed in this package and agrees with PCAmixdata's \code{PCAmix()} and
+FactoMineR's \code{FAMD()} on eigenvalues and on individual coordinates.
 }
 \section{Size}{
 
@@ -129,8 +128,13 @@ r
 head(r$var_contrib[order(-r$var_contrib$sqload), ])
 }
 \references{
-Pages, J. (2004). Analyse factorielle de donnees mixtes. Revue de
-Statistique Appliquee 52(4), 93-111.
+Escofier, B. (1979). Traitement \enc{simultané}{simultane} de variables
+qualitatives et quantitatives en analyse factorielle. Les Cahiers de
+l'Analyse des \enc{Données}{Donnees} 4(2), 137-146.
+
+\enc{Pagès}{Pages}, J. (2004). Analyse factorielle de
+\enc{données}{donnees} mixtes. Revue de Statistique
+\enc{Appliquée}{Appliquee} 52(4), 93-111.
 
 Chavent, M., Kuentz-Simonet, V., Labenne, A. and Saracco, J. (2014).
 Multivariate analysis of mixed data: the PCAmixdata R package. arXiv

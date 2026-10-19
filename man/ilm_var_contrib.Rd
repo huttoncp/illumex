@@ -29,11 +29,12 @@ than losing information.
 }
 \details{
 The statistic is the \strong{between-cluster share of variance} -- eta squared
-for a numeric variable, Cramer's V for a categorical one -- so both are on
-a 0 to 1 scale and directly comparable. A permutation reference is computed
-by shuffling the cluster labels, which preserves each variable's own
-distribution and destroys only its relationship with the clustering, and the
-variable is called uninformative when it does not beat that.
+for a numeric variable, \enc{Cramér}{Cramer}'s V for a categorical one --
+so both are on a 0 to 1 scale and directly comparable. A permutation
+reference is computed by shuffling the cluster labels, which preserves each
+variable's own distribution and destroys only its relationship with the
+clustering, and the variable is called uninformative when it does not beat
+that.
 
 Neither FAMD nor any distance used here selects variables, and an
 uninformative one is not harmless: on three known clusters with two

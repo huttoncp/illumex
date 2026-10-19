@@ -23,8 +23,8 @@ ilm_frame_issues(
 \item{cor_cut}{Absolute correlation at or above which a numeric pair is
 reported as collinear.}
 
-\item{v_cut}{Cramer's V at or above which a pair of categorical columns is
-reported as redundant.}
+\item{v_cut}{\enc{Cramér}{Cramer}'s V at or above which a pair of
+categorical columns is reported as redundant.}
 
 \item{cols}{Columns to use. A character vector of names, a
 regular expression, a predicate function such as \code{is.numeric}, or
@@ -72,8 +72,8 @@ grouping under different labels. One whose every level falls within a
 single level of the other is \code{nested}, as patients within clinics are; that
 is reported only when at least half of the finer column's levels have two or
 more rows, since a level seen once sits inside one level of anything.
-Otherwise a pair is \code{redundant_categories} when Cramer's V reaches \code{v_cut}:
-nearly every level of one predicts a level of the other.
+Otherwise a pair is \code{redundant_categories} when \enc{Cramér}{Cramer}'s V
+reaches \code{v_cut}: nearly every level of one predicts a level of the other.
 
 Pairs are not the whole story: a column can be an exact combination of
 several others (a total and its parts, a numeric code fixed by a factor's
@@ -95,6 +95,6 @@ d$total <- d$a + d$b
 ilm_frame_issues(d)
 }
 \references{
-Cramer, H. (1946). Mathematical Methods of Statistics. Princeton University
-Press.
+\enc{Cramér}{Cramer}, H. (1946). Mathematical Methods of Statistics.
+Princeton University Press.
 }

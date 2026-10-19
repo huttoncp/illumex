@@ -35,8 +35,8 @@ predictors when they are a subset. Names, a pattern or a predicate, as
 \code{cols} takes them (\link{ilm_selection}).}
 
 \item{min_effect}{Smallest association worth reporting, as a correlation or
-Cramer's V. With several thousand rows an association of 0.02 is
-significant and means nothing.}
+\enc{Cramér}{Cramer}'s V. With several thousand rows an association of
+0.02 is significant and means nothing.}
 
 \item{alpha}{Level for the adjusted p-values.}
 
