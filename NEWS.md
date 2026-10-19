@@ -6,6 +6,10 @@
   of a `redundant_categories` row ("Cramér's V = ...; each largely predicts
   the other"), so code that matches the old "Cramer's V" text needs
   updating. The help, comments and this file spell Cramér's name throughout.
+* `ilm_reduce()`'s help and the validation article credit the factor
+  analysis of mixed data to Escofier (1979), who proposed it, and to Pagès
+  (2004), who named it, and cite Escofier (1979). They had credited the
+  mixed method to Chavent et al., or FAMD to Pagès alone.
 * illumex needs tinyplot 0.7.0 or later, as `ilm_plot_var_pairs()` does: it
   draws with `tinyplot::tinypairs()`, which 0.7.0 brought. It used to ask for
   0.6.1 and stop on a pairs plot there. `ilm_plot()`'s `theme` is now always

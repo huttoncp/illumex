@@ -6,9 +6,10 @@
 ## asked for, because the choice is forced by the column types and making the
 ## user name it only invites getting it wrong.
 ##
-## All three are Pages' factor analysis of mixed data, which reduces to PCA
-## and MCA when one kind of column is absent, computed by ilm_famd() in this
-## package (R/ilm_famd.R). It replaced PCAmixdata::PCAmix() after agreeing with
+## All three are the factor analysis of mixed data that Escofier (1979)
+## proposed and Pagès (2004) named, which reduces to PCA and MCA when one
+## kind of column is absent, computed by ilm_famd() in this package
+## (R/ilm_famd.R). It replaced PCAmixdata::PCAmix() after agreeing with
 ## it and with FactoMineR::FAMD() to 4e-12 on eigenvalues, coordinates and
 ## loadings, and running faster from 2,000 rows up; their outputs are stored
 ## in tests/testthat/fixtures and the agreement is tested there and reported
@@ -24,11 +25,10 @@
 #' column is used as the time elapsed since its earliest value, which keeps its
 #' order, and by the rhythms in it that the other columns follow; see `time`.
 #'
-#' The mixed method is Chavent et al.'s, which belongs to the same
-#' generalised-PCA family as the FAMD of Pages without being a
-#' reimplementation of it. The two were checked against each other directly and
-#' agree for this purpose, matching on eigenvalues and on individual
-#' coordinates.
+#' The mixed method is the factor analysis of mixed data (FAMD). Escofier
+#' (1979) proposed it, and \enc{Pagès}{Pages} (2004, pp. 93-94) named it. It
+#' is computed in this package and agrees with PCAmixdata's `PCAmix()` and
+#' FactoMineR's `FAMD()` on eigenvalues and on individual coordinates.
 #'
 #' @section Size:
 #' The default method is closed-form: on one core of a 16 GB Windows machine
@@ -106,6 +106,10 @@
 #' @seealso [ilm_cluster()] to group the rows, [ilm_profile()] for the whole
 #'   pipeline, [ilm_reduce_na()] for the same thing applied to missingness.
 #' @references
+#' Escofier, B. (1979). Traitement \enc{simultané}{simultane} de variables
+#' qualitatives et quantitatives en analyse factorielle. Les Cahiers de
+#' l'Analyse des \enc{Données}{Donnees} 4(2), 137-146.
+#'
 #' \enc{Pagès}{Pages}, J. (2004). Analyse factorielle de
 #' \enc{données}{donnees} mixtes. Revue de Statistique
 #' \enc{Appliquée}{Appliquee} 52(4), 93-111.

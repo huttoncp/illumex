@@ -7,7 +7,8 @@
 ## quantity; 1.6 to 5 times faster than PCAmix from 2,000 rows up). Their
 ## stored outputs stay in the tests as a permanent check.
 ##
-## The method is Pages' FAMD, which PCAmix reproduces: every numeric column
+## The method is FAMD, which Escofier (1979) proposed and Pagès (2004) named.
+## PCAmix reproduces it: every numeric column
 ## centred and divided by its standard deviation (the 1/n form); every level
 ## of a categorical column an indicator, centred and divided by the square
 ## root of the level's share, so a rare level weighs as much as its rarity
@@ -20,6 +21,9 @@
 ## the centre of its column and pulls on nothing.
 ##
 ## References:
+##   Escofier, B. (1979). Traitement simultané de variables qualitatives et
+##     quantitatives en analyse factorielle. Les Cahiers de l'Analyse des
+##     Données 4(2), 137-146.
 ##   Pagès, J. (2004). Analyse factorielle de données mixtes. Revue de
 ##     Statistique Appliquée 52(4), 93-111.
 ##   Chavent, M., Kuentz-Simonet, V., Labenne, A. and Saracco, J. (2014).
