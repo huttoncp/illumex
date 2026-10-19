@@ -158,7 +158,7 @@ ilm_time_encode <- function(sub, time, caller) {
 ##   stayed at 0.36: a number that only grows cannot see a rhythm.
 ##
 ## The test compares the strongest separation any other column shows across
-## the cycle's positions (eta squared or Cramer's V, as ilm_var_contrib()
+## the cycle's positions (eta squared or Cramér's V, as ilm_var_contrib()
 ## scores them) with the same when the positions are shuffled -- the maximum,
 ## so that one column following a month-end rhythm is not averaged away among
 ## thirty that do not. The cycle is let in when that separation stands five
@@ -220,7 +220,7 @@ ilm_sep_prep <- function(others, max_levels = 50L) {
 }
 
 ## The separation of each prepared column across the groups `b`: eta squared
-## for a numeric column, Cramer's V for a categorical one -- the values
+## for a numeric column, Cramér's V for a categorical one -- the values
 ## ilm_var_sep() gives, from between-group sums of squares of the centred
 ## columns (for an indicator, that sum over n and over its share is its part
 ## of chi-squared over n).

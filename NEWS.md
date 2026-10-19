@@ -2,6 +2,10 @@
 
 * illumex is now licensed under the GNU General Public License, version 2 or
   later (GPL (>= 2)).
+* `ilm_frame_issues()` now spells Cramér's V with its accent in the `detail`
+  of a `redundant_categories` row ("Cramér's V = ...; each largely predicts
+  the other"), so code that matches the old "Cramer's V" text needs
+  updating. The help, comments and this file spell Cramér's name throughout.
 * illumex needs tinyplot 0.7.0 or later, as `ilm_plot_var_pairs()` does: it
   draws with `tinyplot::tinypairs()`, which 0.7.0 brought. It used to ask for
   0.6.1 and stop on a pairs plot there. `ilm_plot()`'s `theme` is now always
@@ -504,7 +508,7 @@
   that no pair of numeric correlations shows: categorical columns that are
   the same grouping under different labels (`aliased_factors`), one grouping
   inside another (`nested`, which is expected for random effects and a trap
-  for fixed ones), categorical pairs with Cramer's V at or above the new
+  for fixed ones), categorical pairs with Cramér's V at or above the new
   `v_cut` (default 0.95, `redundant_categories`), and columns that are an
   exact linear combination of others, found from a pivoted QR of the model
   matrix and named with what they are made of (`rank_deficient`). Every row

@@ -32,11 +32,12 @@
 #'
 #' @details
 #' The statistic is the **between-cluster share of variance** -- eta squared
-#' for a numeric variable, Cramer's V for a categorical one -- so both are on
-#' a 0 to 1 scale and directly comparable. A permutation reference is computed
-#' by shuffling the cluster labels, which preserves each variable's own
-#' distribution and destroys only its relationship with the clustering, and the
-#' variable is called uninformative when it does not beat that.
+#' for a numeric variable, \enc{Cramér}{Cramer}'s V for a categorical one --
+#' so both are on a 0 to 1 scale and directly comparable. A permutation
+#' reference is computed by shuffling the cluster labels, which preserves each
+#' variable's own distribution and destroys only its relationship with the
+#' clustering, and the variable is called uninformative when it does not beat
+#' that.
 #'
 #' Neither FAMD nor any distance used here selects variables, and an
 #' uninformative one is not harmless: on three known clusters with two
@@ -171,7 +172,7 @@ ilm_var_contrib_time <- function(x) {
 
 ## Between-cluster share of variance, on one 0-1 scale for both types so the
 ## two can be ranked against each other: eta squared for a numeric variable,
-## Cramer's V for a categorical one. A matrix -- the sine and cosine of a
+## Cramér's V for a categorical one. A matrix -- the sine and cosine of a
 ## cycle -- is scored as one variable: the between-cluster share of its
 ## total variance, which does not depend on where the cycle was started.
 #' @keywords internal

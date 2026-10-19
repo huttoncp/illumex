@@ -26,7 +26,7 @@
 ## ---------------------------------------------------------------------------
 
 ## Association between a missingness indicator and an observed variable, on one
-## scale whatever the variable's type: a correlation for numeric, Cramer's V for
+## scale whatever the variable's type: a correlation for numeric, Cramér's V for
 ## a factor. Both sit in [0, 1] and are comparable enough to sort by.
 #' @keywords internal
 #' @noRd
@@ -146,8 +146,8 @@ ilm_miss_outcome_test <- function(data, v, y, covars) {
 #'   way to write it: `outcome ~ x + z` sets the outcome and takes the
 #'   right-hand side as `covariates`.
 #' @param min_effect Smallest association worth reporting, as a correlation or
-#'   Cramer's V. With several thousand rows an association of 0.02 is
-#'   significant and means nothing.
+#'   \enc{Cramér}{Cramer}'s V. With several thousand rows an association of
+#'   0.02 is significant and means nothing.
 #' @param alpha Level for the adjusted p-values.
 #' @param adjust Multiplicity adjustment across pairs, passed to
 #'   [stats::p.adjust()].

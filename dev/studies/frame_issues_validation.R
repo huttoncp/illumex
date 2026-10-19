@@ -4,7 +4,7 @@
 ##                     on the same model matrix: which variables are exact
 ##                     combinations of the others
 ##   nesting, aliasing lme4::isNested(), in both directions
-##   Cramer's V        DescTools::CramerV() (no continuity correction)
+##   Cramér's V        DescTools::CramerV() (no continuity correction)
 ##
 ## Each replicate draws a data frame with structure planted at random, so the
 ## comparison covers data with and without each problem. Agreement is counted
@@ -123,5 +123,5 @@ cat(sprintf("nesting and aliasing, %d pairs: same verdict as lme4::isNested(): %
 tt <- table(truth)
 cat("  lme4's verdicts:", paste(names(tt), tt, collapse = ", "), "\n")
 if (any(!res_cat)) cat("  disagreements at seeds:", head(which(!res_cat), 20), "\n")
-cat(sprintf("Cramer's V, %d pairs: largest difference from DescTools::CramerV(): %.2e\n",
+cat(sprintf("Cram\u00e9r's V, %d pairs: largest difference from DescTools::CramerV(): %.2e\n",
             reps, max(vdiff)))

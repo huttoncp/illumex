@@ -963,8 +963,8 @@ ilm_describe_all <- function(data, by = NULL, cols = NULL, digits = 3,
 #' single level of the other is `nested`, as patients within clinics are; that
 #' is reported only when at least half of the finer column's levels have two or
 #' more rows, since a level seen once sits inside one level of anything.
-#' Otherwise a pair is `redundant_categories` when Cramer's V reaches `v_cut`:
-#' nearly every level of one predicts a level of the other.
+#' Otherwise a pair is `redundant_categories` when \enc{Cramér}{Cramer}'s V
+#' reaches `v_cut`: nearly every level of one predicts a level of the other.
 #'
 #' Pairs are not the whole story: a column can be an exact combination of
 #' several others (a total and its parts, a numeric code fixed by a factor's
@@ -979,13 +979,13 @@ ilm_describe_all <- function(data, by = NULL, cols = NULL, digits = 3,
 #' @param data A data frame.
 #' @param cor_cut Absolute correlation at or above which a numeric pair is
 #'   reported as collinear.
-#' @param v_cut Cramer's V at or above which a pair of categorical columns is
-#'   reported as redundant.
+#' @param v_cut \enc{Cramér}{Cramer}'s V at or above which a pair of
+#'   categorical columns is reported as redundant.
 #' @return A data frame with `issue`, `columns`, `detail` and `remedy`, one row
 #'   per problem; zero rows when nothing is found.
 #' @references
-#' Cramer, H. (1946). Mathematical Methods of Statistics. Princeton University
-#' Press.
+#' \enc{Cramér}{Cramer}, H. (1946). Mathematical Methods of Statistics.
+#' Princeton University Press.
 #' @examples
 #' ilm_frame_issues(ilm_sim())
 #'
@@ -1126,14 +1126,14 @@ ilm_frame_categories <- function(data, skip, v_cut, add) {
     V <- ilm_cramer_v(a, b)
     if (is.finite(V) && V >= v_cut)
       add("redundant_categories", paste(A, B, sep = " ~ "),
-          sprintf("Cramer's V = %s; each largely predicts the other", ilm_fx(V, 3)),
+          sprintf("Cram\u00e9r's V = %s; each largely predicts the other", ilm_fx(V, 3)),
           paste0("Keep one, or cross them into one factor with interaction(); ",
                  "their separate effects are barely distinguishable."))
   }
   res()
 }
 
-## Cramer's V from two integer codings, without a continuity correction.
+## Cramér's V from two integer codings, without a continuity correction.
 #' @keywords internal
 #' @noRd
 ilm_cramer_v <- function(a, b) {

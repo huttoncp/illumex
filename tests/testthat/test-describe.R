@@ -204,7 +204,7 @@ test_that("the rank check agrees with stats::alias() on a fitted lm", {
                    c("total", "dose"))
 })
 
-test_that("Cramer's V matches the chi-square definition, and v_cut is honoured", {
+test_that("Cram\u00e9r's V matches the chi-square definition, and v_cut is honoured", {
   d <- frame_fixture()
   a <- as.integer(factor(d$arm)); b <- as.integer(factor(d$arm2))
   x2 <- suppressWarnings(chisq.test(table(a, b), correct = FALSE))$statistic

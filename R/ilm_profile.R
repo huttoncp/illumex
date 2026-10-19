@@ -136,7 +136,7 @@ ilm_profile <- function(data, cols = NULL, ndim = 5,
   ## function nobody calls produces exactly the analyses this package exists
   ## to prevent, so it goes in the path and its verdict is printed.
   ##
-  ## It is cheap -- eta squared and Cramer's V on permuted labels, no models
+  ## It is cheap -- eta squared and Cramér's V on permuted labels, no models
   ## refitted -- so it costs a fraction of the clustering it follows.
   vc <- if (isFALSE(var_contrib)) NULL else {
     tryCatch(ilm_var_contrib(structure(list(reduce = rr, cluster = cr),
