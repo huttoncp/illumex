@@ -2,6 +2,15 @@
 
 * illumex is now licensed under the GNU General Public License, version 2 or
   later (GPL (>= 2)).
+* Versions of illumex before 18 October 2026 (commit 31b6b1a) were labelled
+  with the MIT licence. That label was wrong for part of the code: those
+  versions included code adapted from FactoMineR, and possibly from
+  PCAmixdata, both licensed under the GPL (>= 2). Code adapted from
+  GPL-licensed packages can't be offered under the MIT licence, and those
+  versions also didn't credit the authors of those packages. The adapted code
+  was never available under MIT and remains under its original licences. From
+  18 October 2026, illumex is licensed under the GPL (>= 2), and DESCRIPTION
+  credits the authors of FactoMineR and PCAmixdata.
 * `ilm_frame_issues()` now spells Cramér's V with its accent in the `detail`
   of a `redundant_categories` row ("Cramér's V = ...; each largely predicts
   the other"), so code that matches the old "Cramer's V" text needs
