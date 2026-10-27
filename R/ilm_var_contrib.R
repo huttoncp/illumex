@@ -74,7 +74,7 @@
 #' @return A data frame, one row per variable, with the separation statistic,
 #'   the permutation mean, a p-value and a verdict. Sorted strongest first.
 #' @seealso [ilm_profile()], [ilm_cluster()], [ilm_reduce()].
-#' @examples
+#' @examplesIf requireNamespace("cluster", quietly = TRUE)
 #' \donttest{
 #' p <- ilm_profile(mtcars, k = 3)
 #' ilm_var_contrib(p, mtcars)

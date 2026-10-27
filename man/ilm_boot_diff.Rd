@@ -83,9 +83,12 @@ bar appears when someone is watching and nothing is written in a
 script or a knitted document. See \link{ilm_progress_arg}.}
 }
 \value{
-One row per comparison, with \code{from}, \code{to}, \code{observed}, \code{lower},
-\code{upper}, \code{p_value}, \code{p_adj}, \code{excludes_zero} and the settings used.
-Differences are \code{to} minus \code{from}.
+One row per comparison: \code{stat}, \code{group} (the grouping column),
+\code{from}, \code{to}, \code{observed}, \code{lower}, \code{upper}, the settings used (\code{conf},
+\code{R}, \code{ci_type}, \code{adjust}), \code{n_comparisons}, \code{n_from} and \code{n_to} (the rows
+in each group), \code{p_value}, \code{p_adj}, \code{p_superiority} and \code{excludes_zero}.
+Differences are \code{to} minus \code{from}. The replicate differences are kept as
+the attribute \code{"draws"}, which \code{\link[=ilm_plot_boot_diff]{ilm_plot_boot_diff()}} draws.
 }
 \description{
 Reports each difference with its own interval, rather than a set of intervals
@@ -101,7 +104,7 @@ a pairwise table misleads. \code{adjust} chooses how that is handled:
 \item \code{"max_t"} (default) resamples all groups together, standardises each
 comparison by its own bootstrap standard error, and takes the \code{conf}
 quantile of the largest absolute standardised value across comparisons as
-one critical value for all of them. This is the single-step studentized
+one critical value for all of them. This is the single-step studentised
 maximum. It assumes neither normality nor a common variance, which is what
 separates it from Tukey's range test. Its intervals are symmetric about the
 observed difference, so \code{ci_type} does not apply to them.
@@ -116,7 +119,7 @@ With a single comparison there is nothing to adjust, and the \code{adjust} colum
 of the result reads \code{"none"} whatever was asked for.
 
 \code{p_value} and \code{p_adj} are built the same way the interval is, so the two
-cannot contradict each other: under \code{"max_t"} both come off the studentized
+cannot contradict each other: under \code{"max_t"} both come off the studentised
 maximum, and otherwise both come off the bootstrap distribution directly.
 They are read off the same \code{R} replicates from opposite directions -- a
 quantile and a tail proportion -- so a comparison sitting within one
@@ -135,7 +138,7 @@ sizes of 45 to 80 came to 0.068 on normal data with a common variance and
 0.072 with variances differing fourfold, against a nominal 0.05.
 
 Heavy skew at small n is the case to know about. On lognormal data with a
-spread parameter up to 1.2 and those same group sizes, a SINGLE unadjusted
+spread parameter up to 1.2 and those same group sizes, a single unadjusted
 comparison already erred 0.090 of the time, and no \code{ci_type} moved it
 (percentile 0.090, BCa 0.089, basic 0.093, normal 0.084). That is the
 bootstrapped mean of a heavily skewed small sample, not the multiplicity

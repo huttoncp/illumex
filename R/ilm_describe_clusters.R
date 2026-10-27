@@ -17,7 +17,7 @@ ILM_CLUSTERS_SAME <- "Rows per cluster: %s in every cluster"
 ILM_CLUSTERS_ONCE <- "Described once per cluster (the same on every row of a cluster):"
 ILM_CLUSTERS_VARY <- "Vary within clusters, so described over rows by ilm_describe_all(): %s"
 
-#' Describe data whose rows sit in clusters
+#' Describe data whose rows sit in sampling clusters
 #'
 #' Counts the clusters and the rows in each, and describes each variable
 #' that is the same on every row of a cluster -- a site's region, a school's

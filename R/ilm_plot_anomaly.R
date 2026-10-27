@@ -449,7 +449,8 @@ ilm_plot_anom_drivers <- function(x, d, top_n, main, ...) {
   k <- min(nrow(v$table), if (is.null(top_n)) 15L else as.integer(top_n))
   tab <- v$table[rev(seq_len(k)), , drop = FALSE]  # flipped: the first level is drawn at the bottom
   f <- factor(tab$column, levels = tab$column)
-  op <- ilm_anom_label_margin(tab$column)
+  lab <- ilm_anom_axis_labels(tab$column)
+  op <- ilm_anom_label_margin(lab)
   on.exit(graphics::par(op), add = TRUE)
   args <- list(x = f, y = tab$flagged, type = "barplot", flip = TRUE,
                xlab = "", xaxt = "n",
@@ -457,7 +458,7 @@ ilm_plot_anom_drivers <- function(x, d, top_n, main, ...) {
                main = if (is.null(main)) "Which column drives each flag" else main,
                sub = v$sub)
   do.call(tinyplot::tinyplot, utils::modifyList(args, list(...)))
-  graphics::axis(2, at = seq_len(k), labels = ilm_show_text(tab$column), las = 1, tick = FALSE)
+  graphics::axis(2, at = seq_len(k), labels = lab, las = 1, tick = FALSE)
   graphics::segments(tab$expected, seq_len(k) - 0.35, tab$expected,
                      seq_len(k) + 0.35, col = "firebrick", lwd = 2)
   if (!is.null(v$message)) message(v$message)
@@ -470,6 +471,24 @@ ilm_plot_anom_drivers <- function(x, d, top_n, main, ...) {
 ## which is the one that matters. So the left margin is sized to the longest
 ## name here, the caller draws the axis itself, and the caller restores `mar`
 ## on exit.
+## The labels as they will be drawn: printable, and each shortened, with
+## "...", to fit in `share` of the figure's width, so that long column names
+## on a narrow device leave room for the bars rather than stopping on
+## "figure margins too large".
+#' @keywords internal
+#' @noRd
+ilm_anom_axis_labels <- function(labels, share = 0.4) {
+  labels <- ilm_show_text(labels)
+  cex <- graphics::par("cex.axis")
+  room <- share * ilm_anom_fig_width() - 1.5 * graphics::par("csi")
+  wide <- function(s) graphics::strwidth(s, units = "inches", cex = cex)
+  vapply(labels, function(s) {
+    if (wide(s) <= room) return(s)
+    while (nchar(s) > 3L && wide(paste0(s, "...")) > room) s <- substr(s, 1L, nchar(s) - 1L)
+    paste0(s, "...")
+  }, "", USE.NAMES = FALSE)
+}
+
 #' @keywords internal
 #' @noRd
 ilm_anom_label_margin <- function(labels) {
@@ -478,6 +497,28 @@ ilm_anom_label_margin <- function(labels) {
   mar <- graphics::par("mar")
   mar[2L] <- max(mar[2L], w / graphics::par("csi") + 1.5)
   graphics::par(mar = mar)
+}
+
+## Whether a legend set outside the plot, on the right, leaves the plot at
+## least an inch: the width less its margins (the left one already
+## sized to the labels), the longest legend text and half an inch for the
+## key and its padding.
+#' @keywords internal
+#' @noRd
+ilm_anom_legend_fits <- function(texts, min_plot = 1) {
+  w <- max(graphics::strwidth(texts, units = "inches"))
+  mai <- graphics::par("mai")
+  ilm_anom_fig_width() - mai[2L] - mai[4L] - w - 0.5 >= min_plot
+}
+
+## The width the next plot will have, in inches: the device's when it holds
+## one plot, since tinyplot leaves par("fin") shrunk after drawing a legend
+## outside (4.5 inches on a 7-inch device), and the figure's inside a layout.
+#' @keywords internal
+#' @noRd
+ilm_anom_fig_width <- function() {
+  if (identical(graphics::par("mfrow"), c(1L, 1L))) graphics::par("din")[1L]
+  else graphics::par("fin")[1L]
 }
 
 ## ---- shared: the data that was scanned ----------------------------------------
@@ -620,7 +661,8 @@ ilm_plot_anom_row <- function(x, d, row, top_n, data, main, ...) {
   vals <- v$values[rev(seq_len(k)), , drop = FALSE]  # flipped: largest on top
   lv <- vals$column
   meas <- c("in its own column (z)", "off the structure (residual)")
-  op <- ilm_anom_label_margin(lv)
+  lab <- ilm_anom_axis_labels(lv)
+  op <- ilm_anom_label_margin(lab)
   on.exit(graphics::par(op), add = TRUE)
   args <- list(x = factor(rep(lv, 2L), levels = lv),
                y = c(vals$z, vals$residual),
@@ -643,9 +685,16 @@ ilm_plot_anom_row <- function(x, d, row, top_n, data, main, ...) {
     args$legend <- FALSE
     message("ilm_plot_anomaly(): legend dropped inside a multi-panel layout; ",
             "grey is the z-score, red the residual.")
+  } else if (is.null(dots$legend) && !ilm_anom_legend_fits(c(meas, "how far out"))) {
+    ## On a narrow device the legend outside the plot leaves the bars no
+    ## room, and tinyplot stops with "invalid graphics state" (3 inches wide
+    ## did; 3.5 drew, with a third of an inch for the bars)
+    args$legend <- FALSE
+    message("ilm_plot_anomaly(): legend dropped, the plot is too narrow for it; ",
+            "grey is the z-score, red the residual.")
   }
   do.call(tinyplot::tinyplot, utils::modifyList(args, dots))
-  graphics::axis(2, at = seq_len(k), labels = ilm_show_text(lv), las = 1, tick = FALSE)
+  graphics::axis(2, at = seq_len(k), labels = lab, las = 1, tick = FALSE)
   graphics::abline(v = 0, col = "grey30")
   graphics::abline(v = c(-3, 3), lty = 3, col = "grey50")
   invisible(NULL)

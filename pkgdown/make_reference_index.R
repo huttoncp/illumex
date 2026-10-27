@@ -28,6 +28,13 @@ grp <- list(
                     !grepl("_na", x)),
        c("ilm_describe_all", "ilm_describe", "ilm_frame_issues", "ilm_gauss_check")),
 
+  list("The cleaning loop",
+       "Checks that find messy data and say what they saw, remedies written out as code, and a log of every remedy applied and why, which writes out as a script that replays the cleaning.",
+       function(x) grepl("^ilm_check_(data|frame)$", x) ||
+                   grepl("^ilm_(remed|apply_remedy|cleaning_|data_id|drop_cols|secret)", x),
+       c("ilm_check_data", "ilm_remedies", "ilm_apply_remedy", "ilm_cleaning_script",
+         "ilm_cleaning_log", "ilm_check_frame")),
+
   list("Cleaning",
        "Tidying a data frame and recoding values that were entered wrongly.",
        function(x) grepl("^ilm_(wash_df|recode_errors|translate)", x)),

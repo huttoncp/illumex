@@ -1,9 +1,8 @@
 ## ---------------------------------------------------------------------------
 ## Helpers the family's packages share.
 ##
-## This file is the same, byte for byte, in each of them; illumex's
-## dev/check_shared_helpers.R compares it with illume's main. A change is
-## made in all of them at once, in the same bytes.
+## This file is the same, byte for byte, in each of them. A change is made
+## in all of them at once, in the same bytes.
 ## ---------------------------------------------------------------------------
 
 `%||%` <- function(a, b) if (is.null(a)) b else a
@@ -473,11 +472,11 @@ ilm_disp_text <- function(z, d, big_mark = ",", drop_zeros = FALSE) {
   out
 }
 
-## Scientific notation in R's form (Craig's item 290): the figures of z (as
+## Scientific notation in R's form: the figures of z (as
 ## ilm_disp_signif_digits() gives them) as a mantissa, one figure before the
 ## point, and the power of ten with its sign and at least two digits --
-## 1.23e+300, 5.05e-08, 4.9e-324. Zeros at the mantissa's end are kept unless
-## `drop_zeros`, and with none left the point goes too (1e+15).
+## 1.23e+300, 5.05e-08, 4.9e-324. Zeros at the mantissa's end are kept
+## unless `drop_zeros`, and with none left the point goes too (1e+15).
 #' @keywords internal
 #' @noRd
 ilm_disp_sci <- function(z, drop_zeros = FALSE) {
@@ -499,13 +498,13 @@ ilm_disp_sci <- function(z, drop_zeros = FALSE) {
   out
 }
 
-## Which values of z are written in scientific notation (item 290): those
-## that, rounded, have 16 or more figures before the point (1e15 and up),
-## or, with `small`, a value under 1 whose text would need more than 6
-## decimals, counting the zeros kept at its end (0.0001 to 3 figures,
-## "0.000100", is written in full; 0.00001, "1.00e-05", is not). A value
-## of 1 or more is never written in scientific notation for its decimals:
-## pi to 10 figures is 3.141592654. Between, a number is written in full.
+## Which values of z are written in scientific notation: those that,
+## rounded, have 16 or more figures before the point (1e15 and up), or, with
+## `small`, a value under 1 whose text would need more than 6 decimals,
+## counting the zeros kept at its end (0.0001 to 3 figures, "0.000100", is
+## written in full; 0.00001, "1.00e-05", is not). A value of 1 or more is
+## never written in scientific notation for its decimals: pi to 10 figures
+## is 3.141592654. Between, a number is written in full.
 #' @keywords internal
 #' @noRd
 ilm_disp_far <- function(z, small = TRUE) {
@@ -520,7 +519,6 @@ ilm_disp_far <- function(z, small = TRUE) {
 
 ## `d` decimals as the text shows them, the declared decimals at any size
 ## below 1e15 (rounded), and 7 figures in scientific notation from 1e15 up
-## (item 290)
 #' @keywords internal
 #' @noRd
 ilm_disp_fixed_text <- function(v, d, big_mark = ",") {
@@ -531,14 +529,13 @@ ilm_disp_fixed_text <- function(v, d, big_mark = ",") {
   s
 }
 
-## The decimals a group of numbers is written at together (Craig's item
-## 306): an estimate with its interval, a list of predicted values -- the
-## caller decides what belongs together. A value that will be written in
-## scientific notation sets nothing: one needing more than 6 decimals to
-## show a figure, or one of 1e15 or more (item 290). Over the rest, none
-## when every finite non-zero value is whole (or none is left); otherwise
-## enough for `sig` figures at their median size, and for the smallest to
-## show a figure, at most 6.
+## The decimals a group of numbers is written at together: an estimate with
+## its interval, a list of predicted values -- the caller decides what
+## belongs together. A value that will be written in scientific notation
+## sets nothing: one needing more than 6 decimals to show a figure, or one
+## of 1e15 or more. Over the rest, none when every finite non-zero value is
+## whole (or none is left); otherwise enough for `sig` figures at their
+## median size, and for the smallest to show a figure, at most 6.
 #' @keywords internal
 #' @noRd
 ilm_disp_group_decimals <- function(x, sig = 3L) {
@@ -549,8 +546,8 @@ ilm_disp_group_decimals <- function(x, sig = 3L) {
   as.integer(min(d, 6))
 }
 
-## A group's value set aside for scientific notation (item 306): non-zero,
-## and needing more than 6 decimals to show a figure, or 1e15 or more
+## A group's value set aside for scientific notation: non-zero, and needing
+## more than 6 decimals to show a figure, or 1e15 or more
 #' @keywords internal
 #' @noRd
 ilm_disp_group_far <- function(v) {
@@ -558,10 +555,9 @@ ilm_disp_group_far <- function(v) {
   is.finite(a) & a != 0 & (a >= 1e15 | -floor(log10(a)) > 6)
 }
 
-## A group's values at its decimals (item 306), each by the shared
-## rounding. A value set aside (ilm_disp_group_far()), or a non-zero one
-## the decimals would show as zero, is written in scientific notation at 3
-## figures (item 290).
+## A group's values at its decimals, each by the shared rounding. A value
+## set aside (ilm_disp_group_far()), or a non-zero one the decimals would
+## show as zero, is written in scientific notation at 3 figures.
 #' @keywords internal
 #' @noRd
 ilm_disp_group_text <- function(v, d, big_mark = ",") {
@@ -576,8 +572,8 @@ ilm_disp_group_text <- function(v, d, big_mark = ",") {
 ## `x`, NA where `x` is NA; `rule` and `digits` the rule applied (`digits`
 ## NULL for "p"). Each value's text depends on that value alone.
 ##   "signif"  `digits` significant figures, trailing zeros kept (51.0, 10.0,
-##             2.50; Craig's item 256), or dropped with `trailing_zeros =
-##             FALSE` (51, 10, 2.5). An estimate that happens to be whole
+##             2.50), or dropped with `trailing_zeros = FALSE` (51, 10,
+##             2.5). An estimate that happens to be whole
 ##             still shows its figures (51.0, and 19234 is 19,200): a count,
 ##             or a data value that is a whole number, takes "fixed" with 0
 ##             digits instead, as its caller declares -- whole numbers are
@@ -585,8 +581,8 @@ ilm_disp_group_text <- function(v, d, big_mark = ",") {
 ##   "fixed"   `digits` decimals, zeros kept; a count, or a whole data
 ##             value, is "fixed" with 0
 ##   "percent" a proportion times 100 at `digits` decimals, with "%"
-##   "p"       Craig's rule: three significant figures down to 0.001, and
-##             "< 0.001" below (the text of the number only; the sentence
+##   "p"       three significant figures down to 0.001, and "< 0.001"
+##             below (the text of the number only; the sentence
 ##             supplies "p = " or "p ")
 ##   "clock"   an hour (0 to 23) as a time of day: "21:00" at the start of a
 ##             stretch, and with `end = TRUE` its last minute, "02:59"
@@ -595,18 +591,17 @@ ilm_disp_group_text <- function(v, d, big_mark = ",") {
 ##   "decimals" `x` a group read together -- an estimate with its interval,
 ##             a list of predicted values -- every value at the group's
 ##             decimals, ilm_disp_group_decimals(x), or at `digits` when
-##             given (Craig's item 306). A value needing more than 6
+##             given. A value needing more than 6
 ##             decimals to show a figure, or of 1e15 or more, is in
 ##             scientific notation at 3 figures and sets nothing; so is a
 ##             non-zero value the decimals would show as zero. The one rule
 ##             whose text depends on the other values
-## A number is written in full with at most 15 figures before the point
-## and, below 1, at most 6 decimals, after rounding, and in R's scientific
-## notation beyond, as R's tables print it (Craig's item 290): "signif"
-## with its `digits` figures (1.23e+300, 1.00e-05), "fixed" and "percent"
-## only from 1e15, with 7 figures and no zeros at the end, R's default
-## print (1.234568e+20) -- their declared decimals hold however small the
-## value.
+## A number is written in full with at most 15 figures before the point and,
+## below 1, at most 6 decimals, after rounding, and in R's scientific
+## notation beyond, as R's tables print it: "signif" with its `digits`
+## figures (1.23e+300, 1.00e-05), "fixed" and "percent" only from 1e15, with
+## 7 figures and no zeros at the end, R's default print (1.234568e+20) --
+## their declared decimals hold however small the value.
 ## Thousands are grouped from 1,000 up ("1,230"), the family's rule. Only
 ## quantities come through here: a year, an identifier or a code that happens
 ## to be numeric is data, written as it is ("2024", never "2,024").

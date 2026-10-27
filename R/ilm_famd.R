@@ -38,30 +38,8 @@
 #' @keywords internal
 #' @noRd
 ilm_famd <- function(quanti = NULL, quali = NULL, ndim = 5L) {
-  n <- if (!is.null(quanti)) nrow(quanti) else nrow(quali)
-  Z <- NULL; owner <- character(0); num <- NULL
-  if (!is.null(quanti)) {
-    X <- as.matrix(quanti)
-    mu <- colMeans(X, na.rm = TRUE)
-    X[is.na(X)] <- mu[col(X)[is.na(X)]]
-    s <- sqrt(colMeans(sweep(X, 2L, mu)^2))
-    s[!is.finite(s) | s == 0] <- 1
-    Z <- sweep(sweep(X, 2L, mu), 2L, s, "/")
-    owner <- colnames(X)
-    num <- X
-  }
-  if (!is.null(quali)) for (v in names(quali)) {
-    f <- droplevels(as.factor(quali[[v]]))
-    G <- vapply(levels(f), function(l) as.numeric(!is.na(f) & f == l),
-                numeric(n))
-    if (n == 1L) G <- matrix(G, 1L)
-    p <- colMeans(G)
-    keep <- p > 0
-    Zc <- sweep(sweep(G[, keep, drop = FALSE], 2L, p[keep]), 2L,
-                sqrt(p[keep]), "/")
-    Z <- cbind(Z, Zc)
-    owner <- c(owner, rep(v, sum(keep)))
-  }
+  enc <- ilm_famd_z(quanti, quali)
+  Z <- enc$Z; owner <- enc$owner; num <- enc$num; n <- nrow(Z)
   sv <- svd(Z / sqrt(n), nu = 0L, nv = min(ndim, ncol(Z)))
   eig <- sv$d^2
   eig <- eig[eig > 1e-10 * max(eig)]
@@ -101,4 +79,37 @@ ilm_famd <- function(quanti = NULL, quali = NULL, ndim = 5L) {
   pct <- 100 * eig / sum(eig)
   list(eig = cbind(eigenvalue = eig, pct = pct, cum_pct = cumsum(pct)),
        ind = list(coord = coord), sqload = sq, loadings = V)
+}
+
+## The weighted matrix ilm_famd() takes the SVD of, before the 1/sqrt(n) row
+## weight, and which original column each of its columns came from. Split out
+## so that parallel analysis (R/ilm_pa.R) permutes exactly what is reduced.
+#' @keywords internal
+#' @noRd
+ilm_famd_z <- function(quanti = NULL, quali = NULL) {
+  n <- if (!is.null(quanti)) nrow(quanti) else nrow(quali)
+  Z <- NULL; owner <- character(0); num <- NULL
+  if (!is.null(quanti)) {
+    X <- as.matrix(quanti)
+    mu <- colMeans(X, na.rm = TRUE)
+    X[is.na(X)] <- mu[col(X)[is.na(X)]]
+    s <- sqrt(colMeans(sweep(X, 2L, mu)^2))
+    s[!is.finite(s) | s == 0] <- 1
+    Z <- sweep(sweep(X, 2L, mu), 2L, s, "/")
+    owner <- colnames(X)
+    num <- X
+  }
+  if (!is.null(quali)) for (v in names(quali)) {
+    f <- droplevels(as.factor(quali[[v]]))
+    G <- vapply(levels(f), function(l) as.numeric(!is.na(f) & f == l),
+                numeric(n))
+    if (n == 1L) G <- matrix(G, 1L)
+    p <- colMeans(G)
+    keep <- p > 0
+    Zc <- sweep(sweep(G[, keep, drop = FALSE], 2L, p[keep]), 2L,
+                sqrt(p[keep]), "/")
+    Z <- cbind(Z, Zc)
+    owner <- c(owner, rep(v, sum(keep)))
+  }
+  list(Z = Z, owner = owner, num = num)
 }

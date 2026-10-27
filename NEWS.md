@@ -1,3 +1,57 @@
+# illumex 0.0.8.9005
+
+* A category's test-value in `ilm_profile()` now follows its published
+  definition (Lebart, Piron and Morineau 2006): the probability of a count
+  at least as large as the cluster's, under random allocation, as a standard
+  normal quantile. The sources define it for an over-represented value; an
+  under-represented one takes the mirrored lower tail, and a count exactly at
+  its expectation 0, as illumex's own extension. It used a mid-p probability, which counts
+  only half of the observed count's own probability; the published
+  definition counts all of it, and reproduces the worked example of Husson,
+  Lê and Pagès (2017, p. 157) exactly (6.64). Test-values for categories are
+  therefore smaller in size than before, most on thin levels (by 0.51 on a
+  level of 3 rows in 900), and a count exactly at its expectation now gets
+  0. On the package's examples every profile sentence is unchanged. The
+  function was rewritten from the published definition.
+* `ilm_frame_issues()` and `ilm_check_frame()` no longer call a unit-level
+  covariate rank deficient. In repeated measures a subject's age, repeated
+  over the subject's visits, is a combination of the subject's levels by
+  construction; it was reported as `rank_deficient`, a FAIL in
+  `ilm_check_frame()` with a remedy to drop it, though with the subject as a
+  grouping it is estimable and wanted. A number built from one categorical
+  column alone is now reported as `unit_level` ("age per subject"), OK in
+  the check, with words saying it is confounded with the grouping only if
+  that enters a model as fixed effects. A combination of several columns is
+  still `rank_deficient`.
+* `ilm_remedy_tiers()` gives the ordered tiers a target's remedies are
+  ranked by: `representation`, `values` and `rows` for a data frame, and
+  `numerical`, `structural` and `estimand` for a fitted model unless its
+  class has a method of its own, as a Bayesian fit's may, with a `prior`
+  tier. A package building a remedies table asks it rather than assuming a
+  set, and `c()` refuses to combine tables ranked by different sets, which
+  would rank one table's remedies by the other's order.
+
+# illumex 0.0.8.9004
+
+* A cleaning loop: checks that find messy data, remedies written out as
+  code, and a record of what was done and why. `ilm_check_data()` runs the
+  checks and says what each found; `ilm_remedies()` lists the remedies,
+  each with a key that names the change (`drop_cols/same`) and stays the
+  same from one version to the next; `ilm_apply_remedy()` makes one, runs
+  its check again, and logs it with the reason given; and
+  `ilm_cleaning_script()` writes the log as an R script that replays the
+  cleaning on the raw data. Nothing changes until a remedy is applied. The
+  first check is `ilm_check_frame()`, the whole-frame problems
+  `ilm_frame_issues()` finds, with `ilm_drop_cols()` as their remedy; the
+  others follow. A remedy table belongs to the data it was listed for,
+  identified by `ilm_data_id()`, which changes with any value or any
+  reordering of rows or columns, and a remedy listed for other data is
+  refused. A secret a remedy needs is given as `ilm_secret("VAR")` and is
+  never written into the table, the log or the script.
+* `ilm_remedies()`, `ilm_apply_remedy()` and `ilm_remedy_table()` are now
+  generics in illumex, with tables built by `ilm_remedy_assemble()`, so
+  illume's model remedies and illumex's data remedies are one system.
+
 # illumex 0.0.8.9003
 
 * illumex is now licensed under the GNU General Public License, version 2 or
@@ -19,6 +73,63 @@
   analysis of mixed data to Escofier (1979), who proposed it, and to Pagès
   (2004), who named it, and cite Escofier (1979). They had credited the
   mixed method to Chavent et al., or FAMD to Pagès alone.
+* Clusters are numbered by size, largest first; between two of one size,
+  the one whose first row comes first in the data is numbered first.
+  `ilm_cluster()` numbered them as k-means left them, so the same
+  partition could be "Cluster 1" in one run and "Cluster 3" in the next.
+  The numbers now depend only on the partition: cluster 1 is the largest,
+  small clusters come last, and a cluster keeps its colour in the plots.
+  The cluster tables, a profile's paragraphs and the `_na` versions follow
+  the same numbers; the figures are unchanged.
+* `ilm_plot_anomaly(type = "row")` draws on a narrow device. On one 3 inches
+  wide or less -- a small plot pane, or a vignette's default figure -- it
+  stopped with "invalid graphics state", since its legend left the bars no
+  room. The legend is now dropped when the plot would have less than an
+  inch beside it, with a message saying which colour is which, and in this
+  view and `"drivers"` long column names are shortened to fit, where they
+  stopped with "figure margins too large".
+* When the data, not `k_max`, set the most clusters there can be -- as many
+  as distinct points, such as four patterns of missing values --
+  `ilm_cluster()` says so in a message ("k = 4 is the most these data
+  allow: they have 4 distinct patterns of missing values ... Raising `k_max`
+  would change nothing"). It used to warn that the search had run out of
+  room and to raise `k_max`, which changed nothing. The warning stays for a
+  `k` at `k_max` when `k_max` was the limit.
+* The help for `ndim` in `ilm_reduce()` and `ilm_profile()` says how to
+  choose it: on mixed data with few columns, dimensions past the first few
+  can carry one categorical column's levels, and clustering then splits
+  the groups along them. A study measured choosing `ndim` by parallel
+  analysis instead (`dev/studies/ndim_choice.R`): it recovered the groups
+  where five dimensions split them, but did worse on numeric data with
+  well-separated clusters, so the default stays five.
+* The help is corrected and made consistent:
+  - `ilm_outliers_all()` documents its own `method` (`"iqr"`, `"mad"` or
+    `"zscore"`), `na.rm` and `by`, where it showed `ilm_reduce()`'s;
+  - the results of `ilm_boot_ci()`, `ilm_boot_diff()`, `ilm_reduce()`,
+    `ilm_check_missing()` and `ilm_counts_tb_all()` name every column and
+    element they hold;
+  - pages with no `by` no longer say it is never negated, and the progress
+    bar's page no longer describes several cores;
+  - the plot pages say what each plot draws;
+  - studies the help cites are linked on GitHub;
+  - the examples that cluster run only when the cluster package is
+    installed, and the examples that draw random numbers set a seed;
+  - British spelling throughout, as DESCRIPTION declares ("generalised",
+    "studentised"), "Gaussian" in prose, "dataset", and authors' names as
+    they write them (Cramér, Pagès).
+* The profiling and anomaly-detection vignettes now run their code, on
+  simulated data shown on the page, where before their output was typed by
+  hand.
+* Prints lose their trailing spaces; `ilm_reduce(method = "glrm")`'s header
+  is split to stay under 80 characters, and a profile's warning about a
+  re-labelling clustering is wrapped as its paragraphs are.
+* `ilm_copies()` and `ilm_dupes()` sort by text columns far faster, and
+  `ilm_describe()` counts a text column's empty strings without trimming
+  every value; the results are identical. On a million rows,
+  `ilm_dupes()` keyed on two text columns took 0.45 s, where it took
+  11.3 s, and `ilm_describe_all()` on three text columns 0.47 s, where it
+  took 1.56 s. Copies of a value that is not valid UTF-8 now sort
+  together; they could be parted before.
 * illumex needs tinyplot 0.7.0 or later, as `ilm_plot_var_pairs()` does: it
   draws with `tinyplot::tinypairs()`, which 0.7.0 brought. It used to ask for
   0.6.1 and stop on a pairs plot there. `ilm_plot()`'s `theme` is now always
@@ -26,22 +137,22 @@
 * A test that calls `stats::alias()`, which loads MASS, skips when MASS is
   not installed, so the tests pass with no suggested package installed.
 * A cluster that `ilm_cluster()` marks small opens its paragraph in a
-  profile by saying it is too small to describe reliably (item 291):
+  profile by saying it is too small to describe reliably:
   "Cluster 3 is too small to describe reliably: 2 rows, 1.3% of the data
   (stable)." Its figures are all still given; the closing sentence keeps
   that it could be a real minority pattern or a data problem.
 * `ilm_boot_diff()`'s `p_superiority` and `ilm_outliers()`'s `score` (and
-  `ilm_outliers_all()`'s) are no longer rounded in the result (item 289):
+  `ilm_outliers_all()`'s) are no longer rounded in the result:
   they keep their full value, and their prints round them, to 4 and 3
   decimals, by the shared rule. What prints is unchanged.
-* At k = 1, `ilm_cluster()` prints "No distinct clusters" (item 259): the
+* At k = 1, `ilm_cluster()` prints "No distinct clusters": the
   one-row table and its stability, which said nothing, give way to what the
   rows are -- a continuum, when the gap statistic finds no grouping better
   than one group, to describe with `ilm_describe_all()` or follow with
   `ilm_reduce()`. `ilm_profile()` then has no cluster to describe, and says
   no more.
-* `ilm_anomaly()` keeps its default scoring and checks its own residuals
-  (item 282): when their tails are heavier than all but 2 of 40 reference
+* `ilm_anomaly()` keeps its default scoring and checks its own residuals:
+  when their tails are heavier than all but 2 of 40 reference
   datasets' (p <= 0.05), it warns that on such data the scan flags rows
   that are not anomalous. The scores, p-values and flags are unchanged; the
   check's p is kept as `attr(x, "tail_p")`. The help gains a section on
@@ -49,7 +160,7 @@
   and says the warning covers heavy tails but not clustering.
 * A floor or a ceiling is named first in `gauss_note`, whatever the index,
   on every numeric variable with at least 5 distinct values, or 4 on a
-  short scale (items 274, 275 and 292): when the count at the bound is at
+  short scale: when the count at the bound is at
   least 5 and 2% of the values, at least twice the next value's count, and
   significantly above it (one-sided exact test at 0.001). The rule is the
   one the floor-rule studies confirmed, at the stricter ratio of 2
@@ -84,10 +195,10 @@
   a measurement is classed by its values like any other.
 * `ilm_describe()`'s `dispersion` is left blank for a variable read as a
   rating -- whole numbers from 1 spanning at most 10 points -- as it was
-  already for one centred on 0 (item 297): a variance-to-mean ratio means
+  already for one centred on 0: a variance-to-mean ratio means
   nothing there. Counts keep it, and so do whole numbers from 0 to at most
   10, which may be counts.
-* A description prints the same numbers on every computer (item 272).
+* A description prints the same numbers on every computer.
   `ilm_describe()`, `ilm_describe_all()`, `ilm_describe_na()` and the
   clusters' table in `ilm_describe_clusters()` round by the shared display
   rules, half away from zero after clearing floating-point noise, and write
@@ -108,7 +219,7 @@
   split by exposure -- and names a level of the second as the reference:
   exposed against unexposed controls, never cases against controls. Only
   `smd` changes; every other print is as before.
-* Choosing rows (items 277, 279 and 280). Every function that acts on a data
+* Choosing rows. Every function that acts on a data
   frame takes `subset`, applied first, before `cols`, `by` and everything
   else: a logical vector (`NA` left out), row positions, named patterns
   (`subset = c(site = "^north")`), or `ilm_sample()`. `subset_negate = TRUE`
@@ -117,14 +228,14 @@
   they join back as they are. A subset of an `ilm_anomaly()` result is an
   error: subset the data before `ilm_anomaly()`. See `?ilm_selection`.
 * `ilm_describe_clusters()`, new, for data whose rows sit in clusters --
-  patients within sites, visits within people (item 121). It counts the
+  patients within sites, visits within people. It counts the
   clusters and the rows in each, and describes each variable that is the
   same on every row of a cluster once per cluster, where described over the
   rows a large cluster would count many times over. The variables that vary
   within clusters are named, for `ilm_describe_all()`. It takes `cols` and
   `subset` as every function does.
-* A model is a fifth form of `subset`, for the rows it analysed (items 146
-  and 150): `ilm_describe_all(d, subset = fit)` describes the rows a fit from
+* A model is a fifth form of `subset`, for the rows it analysed:
+  `ilm_describe_all(d, subset = fit)` describes the rows a fit from
   illume's `ilm_model()` used, without the ones it dropped, and an
   `ilm_dag_model()` the rows every adjustment set used. `subset_negate =
   TRUE` gives the rows the model dropped, to check whether they differ. The
@@ -134,14 +245,14 @@
 * `ilm_sample(n, prop, by, seed, within, min)`, new, draws rows for
   `subset`: `n` of them, or a share `prop`; with `by`, whole groups, so a
   holdout never splits one; with `within`, rows inside every cluster, every
-  cluster kept -- the remedy for data too large to fit (item 283). The draw
+  cluster kept -- the remedy for data too large to fit. The draw
   inside clusters is proportional, at least `min` rows from each (all of a
   smaller one), and nested levels (`within = c("school", "classroom")`) draw
   inside the finest; an id repeated across a coarser level, or crossed
   groupings, are refused for now. The result keeps the shares kept (the
   smallest, median and largest) and what derives each row's chance of being
   kept, which `ilm_subset()` carries as `attr(, "ilm_inclusion")`. Crossed
-  factors are drawn by factor (item 284): `by = c(rater = 0.3, item = 0.2)`
+  factors are drawn by factor: `by = c(rater = 0.3, item = 0.2)`
   draws a share (or a count) of each factor's levels on its own and keeps
   the rows whose levels were all drawn; 1 or `"all"` keeps a factor whole.
   `within` is for nested levels only, and points a crossed pair to `by`.
@@ -186,7 +297,7 @@
   `subset`, which takes the place of tinyplot's.
 * `ilm_describe_all()`, `ilm_describe_na_all()`, `ilm_counts_all()`,
   `ilm_counts_tb_all()`, `ilm_plot_all()` and `ilm_plot_na_all()` take `cols`
-  and `cols_negate`, as `ilm_outliers_all()` does (item 278). Where `class`
+  and `cols_negate`, as `ilm_outliers_all()` does. Where `class`
   already narrows the columns, `cols` chooses among those. `cols` comes right
   after `by` (after `data` in `ilm_counts_tb_all()`, which has no `by`), so a
   call that passed the next argument by position now needs its name:
@@ -195,7 +306,7 @@
 * Every function that takes `cols` takes `cols_negate`: with `cols_negate = TRUE`,
   `cols` names the columns to leave out -- `cols = c("id", "site")`,
   `cols = "^score_"` or `cols = is.numeric` -- and every other column the
-  function can use is used (item 276). `by` is never negated. See
+  function can use is used. `by` is never negated. See
   `?ilm_selection`.
 * A `by` argument takes column names, as the help now says; only
   `ilm_outliers_all()`'s also takes a pattern or a predicate. A pattern or a
@@ -221,7 +332,7 @@
   for 15 figures, because `log10()` of it is 15.
 * The shared display rules take a group of numbers read together -- an
   estimate with its interval, a list of predicted values -- and write every
-  value at the group's decimals (item 306): none when every value is whole;
+  value at the group's decimals: none when every value is whole;
   otherwise enough for 3 figures at the group's median size, and for its
   smallest value to show a figure, at most 6. A value that needs more than
   6 decimals to show a figure, or is 1e15 or more, is written in
@@ -247,7 +358,7 @@
   27.3%. A duration's quartiles are printed by the same rule as a number's
   ("1,230 days", not "1230 days").
 * Numbers shown at three significant figures keep their trailing zeros
-  (10.0, 2.50, 51.0; Craig's item 256), and an estimate that happens to be
+  (10.0, 2.50, 51.0), and an estimate that happens to be
   whole still shows its figures: 42 is "42.0" and 19234 "19,200". A count,
   or a data value that is a whole number (a profile's quartile of
   whole-number data), is shown whole. The prints the tests hold are
@@ -274,8 +385,8 @@
     encoding or convert it with `iconv()`; the result keeps the same table
     as `attr(x, "not_utf8")`. A column name that is not valid UTF-8 is
     cleaned with its stray byte spelled out (`caf_e9`).
-  - `ilm_wash_df(encoding = )` converts such text, given the file's encoding
-    (item 298): `encoding = "windows-1252"` converts the values, factor
+  - `ilm_wash_df(encoding = )` converts such text, given the file's encoding:
+    `encoding = "windows-1252"` converts the values, factor
     levels and column names that are not valid UTF-8 from it, and a message
     says how many values were converted in each column (also
     `attr(x, "converted")`). Valid text is never touched and no encoding is
@@ -295,7 +406,7 @@
   `tinyplot::tinypairs()` keeps an explicit `by = NULL` from its call and
   adds its own, so `by` is now passed only when there is one.
 * `ilm_reduce(method = "glrm")` keeps only the dimensions that carry
-  variation (Craig's item 265): a singular value of the centred low-rank
+  variation: a singular value of the centred low-rank
   product at or below `sqrt(.Machine$double.eps)` times the first, the
   numerical-rank cut `MASS::ginv()` uses, is zero to rounding. Heavy
   shrinkage can leave fewer such dimensions than were fitted, and a zero

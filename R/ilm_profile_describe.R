@@ -5,10 +5,11 @@
 ## retired, small households" against "young students who rent" -- so a
 ## cluster is described by the original variables that set it apart, in their
 ## own units. Each cluster is compared with all rows on every variable the
-## clustering used, and the comparisons are ranked by a v-test, Lebart's
-## statistic as in FactoMineR's catdes(): how far the cluster's mean (for a
-## number) or share (for a category) sits from everyone's, in standard errors
-## of a subset of that size drawn without replacement.
+## clustering used, and the comparisons are ranked by a test-value (Lebart,
+## Piron and Morineau 2006, section 6.3.2; Morineau 1984): how far the
+## cluster's mean (for a number) or share (for a category) sits from
+## everyone's, on the scale of a standard normal, for a subset of that size
+## drawn without replacement.
 ##
 ## It used to go through the dimensions instead: find those a cluster sits
 ## far along, and name the variables that load on them. That names which
@@ -70,6 +71,10 @@ ilm_fmt_pct <- function(p, decimals = 0L) ilm_disp(p, "percent", decimals)$text
 ## General Public License, version 2 or later. See Husson, Lê and Pagès (2017),
 ## Exploratory Multivariate Analysis by Example Using R, 2nd ed., section
 ## 3.7.2, pp. 154-157.
+##
+## The test-value of the rows in `m` against all rows, for a mean: the
+## difference of means over the standard deviation of a mean of n_k values
+## drawn without replacement (Lebart, Piron and Morineau 2006, p. 291).
 #' @keywords internal
 #' @noRd
 ilm_vtest_mean <- function(x, m) {
@@ -80,22 +85,112 @@ ilm_vtest_mean <- function(x, m) {
   (mean(x[m]) - mean(x)) / sqrt(s2 / nc * (n - nc) / (n - 1))
 }
 
-## For a share, as FactoMineR's catdes() computes it: the count of the value
-## among the cluster's rows is hypergeometric under random allocation, its
-## two-sided mid-p probability is put on the normal scale, and the sign says
-## whether the value is over- or under-represented. The normal approximation
-## used before differed by up to 0.18 on a thin level.
+## ilm_vtest_share(): the test-value of a category (level) within a cluster.
+##
+## Published definition (Lebart, Piron and Morineau 2006, section 6.3.2,
+## pp. 291-294; Husson, Le and Pages 2017, section 3.7.2.3, pp. 156-157):
+##
+##   Let n be the number of rows, n_k the number in the cluster, n_j the
+##   number with the level and x the number in the cluster with the level.
+##   If the cluster's n_k rows were drawn at random without replacement from
+##   the n rows, the count N in the cluster with the level would follow the
+##   hypergeometric distribution with n_j successes among n, in n_k draws.
+##   The test-value re-expresses how unlikely the observed count is as a
+##   number of standard deviations of a standard normal Z:
+##
+##   - over-representation, x / n_k > n_j / n: p = P(N >= x), the full upper
+##     tail including the observed count (not a mid-p), and the test-value is
+##     the z > 0 with P(Z >= z) = p. This is the published definition
+##     (Lebart et al., p. 293 and its footnote 2).
+##
+##   Two cases the sources do not define, decided here as this package's own
+##   extension, not Lebart's:
+##   - under-representation, x / n_k < n_j / n: by symmetry, p = P(N <= x),
+##     the full lower tail including the observed count, and the test-value
+##     is the z < 0 with P(Z <= z) = p, so a mirrored count gets the mirrored
+##     value. (Husson et al., p. 157, say only that the sign indicates
+##     over- or under-representation.)
+##   - x / n_k = n_j / n exactly: the test-value is 0.
+##
+##   So a positive value means the level is over-represented in the cluster
+##   and a negative value means it is under-represented. The normal
+##   approximation of Lebart et al. (p. 294) is not used; the tail is exact.
+##
+## NA cases: the result is NA when, after rows with a missing `hit` are
+## dropped, fewer than 2 rows remain; when the cluster has fewer than 2 rows
+## or is every row (n_k < 2 or n_k = n); or when the level is absent or is
+## every row's (n_j = 0 or n_j = n).
+##
+## Numerical care: the tail probability is computed on the log scale
+## (phyper(log.p = TRUE)) and turned into a normal quantile on the log scale
+## (qnorm(log.p = TRUE)), so a tiny p gives a large finite value rather than
+## Inf. Largest value: the tail always contains the observed point, whose
+## probability is at least 1 / choose(n, n_k) >= 2^-n, so log(p) >= -n log 2;
+## and P(Z >= z) <= exp(-z^2 / 2) for z >= 0. Hence the absolute test-value
+## never exceeds sqrt(2 n log 2), about 1.1774 * sqrt(n) (for example about
+## 166.5 for n = 20000 and about 1177 for n = 1e6). It is always finite.
+##
+## Provenance: written from a specification and the published definition
+## (Lebart, Piron and Morineau 2006, section 6.3.2), without reference to
+## illumex's earlier implementation or to any other package's source.
+## FactoMineR::catdes() output is used only as an outside comparison.
+
+#' Test-value of a level within a cluster
+#'
+#' @param hit Logical vector, TRUE where the row has the level.
+#' @param m Logical vector of the same length, TRUE where the row is in the
+#'   cluster.
+#' @return One double: the test-value, or NA.
 #' @keywords internal
 #' @noRd
 ilm_vtest_share <- function(hit, m) {
-  ok <- !is.na(hit); hit <- hit[ok]; m <- m[ok]
-  n <- length(hit); nc <- sum(m); nh <- sum(hit)
-  if (nc < 2L || nc == n || nh %in% c(0, n)) return(NA_real_)
-  x <- sum(hit & m)
-  d <- stats::dhyper(x, nc, n - nc, nh)
-  p <- min(2 * stats::phyper(x - 1, nc, n - nc, nh) + d,
-           2 * stats::phyper(x, nc, n - nc, nh, lower.tail = FALSE) + d, 1)
-  (if (x / nc > nh / n) -1 else 1) * stats::qnorm(p / 2)
+  stopifnot(is.logical(hit), is.logical(m), length(hit) == length(m))
+
+  # Rows with an unknown level say nothing about the level; leave them out.
+  keep <- !is.na(hit)
+  hit <- hit[keep]
+  m <- m[keep]
+
+  n <- length(hit)
+  if (n < 2L) {
+    return(NA_real_)
+  }
+
+  # Counts as doubles, so the products below cannot overflow integers.
+  n_k <- as.numeric(sum(m))
+  n_j <- as.numeric(sum(hit))
+  x <- as.numeric(sum(hit & m))
+
+  # No comparison is possible for a tiny or all-rows cluster, or for a level
+  # that is absent or universal.
+  if (is.na(n_k) || n_k < 2 || n_k == n || n_j == 0 || n_j == n) {
+    return(NA_real_)
+  }
+
+  # Compare x / n_k with n_j / n by cross-multiplying, so the exact-equality
+  # case is decided on whole numbers, not on rounded fractions.
+  observed <- x * n
+  expected <- n_j * n_k
+
+  if (observed == expected) {
+    return(0)
+  }
+
+  if (observed > expected) {
+    # Over-represented: log P(N >= x) = log P(N > x - 1), upper tail.
+    log_p <- stats::phyper(x - 1, n_j, n - n_j, n_k,
+                           lower.tail = FALSE, log.p = TRUE)
+    # The z with P(Z >= z) = p; positive.
+    z <- stats::qnorm(log_p, lower.tail = FALSE, log.p = TRUE)
+  } else {
+    # Under-represented: log P(N <= x), lower tail.
+    log_p <- stats::phyper(x, n_j, n - n_j, n_k,
+                           lower.tail = TRUE, log.p = TRUE)
+    # The z with P(Z <= z) = p; negative.
+    z <- stats::qnorm(log_p, lower.tail = TRUE, log.p = TRUE)
+  }
+
+  z
 }
 
 ## How a middle 50% is said, in one place (Craig's rulings, items 112 and

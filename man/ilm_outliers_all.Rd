@@ -23,20 +23,15 @@ ilm_outliers_all(
 \arguments{
 \item{data}{A data frame.}
 
-\item{by}{Grouping column(s), as a character vector. Reference statistics,
-and so the flags, are computed separately within each group.}
+\item{by}{Grouping column(s): names, a pattern or a predicate, as \code{cols}
+takes them (see \link{ilm_selection}). Reference statistics, and so the flags,
+are computed separately within each group.}
 
 \item{cols}{Columns to use. A character vector of names, a
 regular expression, a predicate function such as \code{is.numeric}, or
 \code{NULL} for all of them -- see \link{ilm_selection}.}
 
-\item{method}{\code{"famd"} (the default) for PCA, MCA or FAMD depending on
-the column types, in closed form; \code{"pcamix"}, its name from when
-PCAmixdata computed it, is still accepted and means the same. \code{"glrm"} fits a generalized low rank
-model instead, which uses a loss appropriate to each column's type rather
-than squared error on one-hot indicators, and reconstructs a category as a
-category. It costs an iterative fit, and on all-numeric data the two are
-the same model -- see \code{\link[=ilm_glrm]{ilm_glrm()}} for when it is worth that.}
+\item{method}{\code{"iqr"}, \code{"mad"} or \code{"zscore"}, applied to each column.}
 
 \item{threshold}{Flagging threshold. Defaults per rule: 1.5 for \code{"iqr"}
 (the boxplot convention), 3.5 for \code{"mad"} (Iglewicz and Hoaglin), 3 for
@@ -45,13 +40,11 @@ the same model -- see \code{\link[=ilm_glrm]{ilm_glrm()}} for when it is worth t
 \item{flagged_only}{Return only the flagged values. \code{FALSE} returns every
 value's score.}
 
-\item{na.rm}{Compute the reference statistics with missing values removed.
-The result always has one row per element of \code{y}, with \code{NA} for \code{score}
-and \code{is_outlier} wherever \code{y} is \code{NA}.}
+\item{na.rm}{Compute each column's reference statistics with missing
+values removed; a missing value is never flagged.}
 
 \item{cols_negate}{If \code{TRUE}, \code{cols} names the columns to leave out, and every
-other eligible column is used; see \link{ilm_selection}. It needs \code{cols}. A
-\code{by} argument is never negated.}
+other eligible column is used; see \link{ilm_selection}. It needs \code{cols}.}
 
 \item{cols_fixed}{If \code{TRUE}, a \code{cols} string read as a pattern is matched
 literally, as a substring (as \code{grepl(fixed = TRUE)} does); a column name

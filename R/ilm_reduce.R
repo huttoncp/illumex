@@ -32,7 +32,7 @@
 #'
 #' @section Size:
 #' The default method is closed-form: on one core of a 16 GB Windows machine
-#' (`dev/studies/scale_check.R` in the source) it took under a second at 250,000 rows.
+#' ([`dev/studies/scale_check.R`](https://github.com/huttoncp/illumex/blob/main/dev/studies/scale_check.R)) it took under a second at 250,000 rows.
 #' `method = "glrm"` fits iteratively and first chooses its penalty from 18
 #' held-out fits: 30 seconds at 1,000 rows, 5 minutes at 10,000 and over 15
 #' minutes at 50,000. Giving `lambda` (passed to [ilm_glrm()]) saves the
@@ -43,8 +43,7 @@
 #'   regular expression, a predicate function such as `is.numeric`, or
 #'   `NULL` for all of them -- see [ilm_selection].
 #' @param cols_negate If `TRUE`, `cols` names the columns to leave out, and every
-#'   other eligible column is used; see [ilm_selection]. It needs `cols`. A
-#'   `by` argument is never negated.
+#'   other eligible column is used; see [ilm_selection]. It needs `cols`.
 #' @param cols_fixed If `TRUE`, a `cols` string read as a pattern is matched
 #'   literally, as a substring (as `grepl(fixed = TRUE)` does); a column name
 #'   still wins. It changes nothing when `cols` is names or a predicate.
@@ -59,8 +58,8 @@
 #'   as substrings. It changes nothing for a logical, positions or a sample.
 #' @param method `"famd"` (the default) for PCA, MCA or FAMD depending on
 #'   the column types, in closed form; `"pcamix"`, its name from when
-#'   PCAmixdata computed it, is still accepted and means the same. `"glrm"` fits a generalized low rank
-#'   model instead, which uses a loss appropriate to each column's type rather
+#'   PCAmixdata computed it, is still accepted and means the same. `"glrm"` fits a
+#'   generalised low rank model instead, which uses a loss appropriate to each column's type rather
 #'   than squared error on one-hot indicators, and reconstructs a category as a
 #'   category. It costs an iterative fit, and on all-numeric data the two are
 #'   the same model -- see [ilm_glrm()] for when it is worth that.
@@ -69,7 +68,7 @@
 #'   spacing, in one column -- and adds the time of day, the day of the week,
 #'   the day of the month and the time of year, each as a sine and cosine so
 #'   that the ends of the cycle meet, but only the cycles some other column
-#'   varies with, and only where the data cover two of the cycle. A cycle
+#'   varies with, and only where the data cover two full cycles. A cycle
 #'   nothing else follows is noise to a clustering: on two known clusters,
 #'   every cycle given unasked took recovery from 0.38 to 0.10 where the date
 #'   meant nothing, while the tested ones left it at 0.36 there and, where a
@@ -81,14 +80,23 @@
 #'   large data or when only order matters. `"drop"` leaves dates out. A
 #'   duration (`difftime`) is used as its number of days.
 #' @param ... Passed to [ilm_glrm()] when `method = "glrm"`.
-#' @param ndim Number of dimensions to keep.
+#' @param ndim Number of dimensions to keep. Five suits most data, but not
+#'   all: on mixed data with few columns, the dimensions past the first few
+#'   can carry a categorical column's own levels, and a clustering on them
+#'   splits the groups along those levels. Look at the scree plot
+#'   ([ilm_plot_reduce_scree()]) and keep the dimensions before it flattens;
+#'   the profiling vignette shows a case. Choosing `ndim` by parallel
+#'   analysis instead was measured and is not the default: it helped there,
+#'   and did worse on numeric data with well-separated clusters
+#'   ([`dev/studies/ndim_choice.R`](https://github.com/huttoncp/illumex/blob/main/dev/studies/ndim_choice.R)).
 #' @return An object of class `"ilm_reduce"`: `method` (`"pca"`, `"mca"` or
 #'   `"famd"`), `eig` (dimension, eigenvalue, percent of variance and its
 #'   cumulative total), `ind_coord` (`row_id` and one column per retained
 #'   dimension -- this is what [ilm_cluster()] takes), `var_contrib`
 #'   (`variable`, `dim`, `sqload`: how strongly each original variable relates
 #'   to each dimension, on a 0 to 1 scale, for numeric and categorical
-#'   variables alike), `n`, and `fit`: the eigenvalues, coordinates and
+#'   variables alike), `n`, `cols` (the columns used), `time` (how each date
+#'   or date-time column was used), and `fit`: the eigenvalues, coordinates and
 #'   squared loadings as computed, for anyone who wants to go past this
 #'   wrapper. Each dimension's sign is fixed by a rule, so the same data give
 #'   the same coordinates everywhere: the column that loads most on a
@@ -155,44 +163,10 @@ ilm_reduce <- function(data, cols = NULL, ndim = 5,
                              cols_fixed = cols_fixed))
   }
   keep <- ilm_resolve_cols(data, cols, negate = cols_negate, fixed = cols_fixed)
-  ilm_stop_not_utf8_names(keep, "ilm_reduce")
-  sub <- ilm_time_encode(data[keep], time, "ilm_reduce")
-  tmap <- attr(sub, "time_map")
+  inp <- ilm_reduce_inputs(data, keep, time)
+  sub <- inp$sub; tmap <- inp$tmap; quanti <- inp$quanti; quali <- inp$quali
+  method <- inp$method; max_dim <- inp$max_dim
 
-  is_num <- vapply(sub, is.numeric, TRUE)
-  is_cat <- vapply(sub, function(x)
-    is.factor(x) || is.character(x) || is.logical(x), TRUE)
-  dropped <- names(sub)[!is_num & !is_cat]
-  if (length(dropped))
-    message("ilm_reduce(): dropping column(s) that are neither numeric nor ",
-            "categorical, so no method here can use them: ",
-            paste(dropped, collapse = ", "))
-  if (!any(is_num) && !any(is_cat))
-    stop("no numeric or categorical columns to reduce", call. = FALSE)
-
-  ## as.data.frame(), not just the subset. `sub[is_num]` on a TIBBLE returns a
-  ## tibble, and PCAmix (which computed this before ilm_famd()) checked its
-  ## columns with `is.numeric(X.quanti[, j])` --
-  ## which for a tibble is a one-column tibble rather than a vector, so every
-  ## column looks non-numeric and the whole call dies on "All variables in
-  ## X.quanti must be numeric". Nothing in that message mentions tibbles, and
-  ## a tibble is what anyone gets from readr, dplyr or gapminder, so this hit
-  ## the most ordinary way to arrive at the function. `quali` was already
-  ## coerced on the next line, which is why only the numeric half broke.
-  quanti <- if (any(is_num)) as.data.frame(sub[is_num]) else NULL
-  quali <- if (any(is_cat)) as.data.frame(lapply(sub[is_cat], as.factor)) else NULL
-  method <- if (!is.null(quanti) && !is.null(quali)) "famd"
-            else if (!is.null(quanti)) "pca" else "mca"
-
-  ## How many dimensions exist at all. For MCA that is the number of levels
-  ## less the number of variables. For PCA and the mixed case it is
-  ## min(n - 1, p) -- NOT p - 1, which is a different quantity and one short:
-  ## two columns have two components, not one, and asking PCAmix for one was an
-  ## error rather than a smaller answer, so ilm_reduce() used to fail outright
-  ## on any two-column selection.
-  max_dim <- if (method == "mca")
-               sum(vapply(quali, nlevels, 1L)) - ncol(quali)
-             else min(nrow(sub) - 1L, ncol(sub))
   ## a reduction needs at least two, and with fewer than two available there is
   ## nothing to reduce
   ndim <- min(ndim, max_dim)
@@ -238,12 +212,60 @@ ilm_reduce <- function(data, cols = NULL, ndim = 5,
                     cols_fixed = cols_fixed)
 }
 
+## What ilm_reduce() reduces: the chosen columns with dates encoded, split
+## into numeric and categorical, the method that follows, and how many
+## dimensions exist. Parallel analysis (R/ilm_pa.R) starts from the same.
+#' @keywords internal
+#' @noRd
+ilm_reduce_inputs <- function(data, keep, time) {
+  ilm_stop_not_utf8_names(keep, "ilm_reduce")
+  sub <- ilm_time_encode(data[keep], time, "ilm_reduce")
+  tmap <- attr(sub, "time_map")
+
+  is_num <- vapply(sub, is.numeric, TRUE)
+  is_cat <- vapply(sub, function(x)
+    is.factor(x) || is.character(x) || is.logical(x), TRUE)
+  dropped <- names(sub)[!is_num & !is_cat]
+  if (length(dropped))
+    message("ilm_reduce(): dropping column(s) that are neither numeric nor ",
+            "categorical, so no method here can use them: ",
+            paste(dropped, collapse = ", "))
+  if (!any(is_num) && !any(is_cat))
+    stop("no numeric or categorical columns to reduce", call. = FALSE)
+
+  ## as.data.frame(), not just the subset. `sub[is_num]` on a TIBBLE returns a
+  ## tibble, and PCAmix (which computed this before ilm_famd()) checked its
+  ## columns with `is.numeric(X.quanti[, j])` --
+  ## which for a tibble is a one-column tibble rather than a vector, so every
+  ## column looks non-numeric and the whole call dies on "All variables in
+  ## X.quanti must be numeric". Nothing in that message mentions tibbles, and
+  ## a tibble is what anyone gets from readr, dplyr or gapminder, so this hit
+  ## the most ordinary way to arrive at the function. `quali` was already
+  ## coerced on the next line, which is why only the numeric half broke.
+  quanti <- if (any(is_num)) as.data.frame(sub[is_num]) else NULL
+  quali <- if (any(is_cat)) as.data.frame(lapply(sub[is_cat], as.factor)) else NULL
+  method <- if (!is.null(quanti) && !is.null(quali)) "famd"
+            else if (!is.null(quanti)) "pca" else "mca"
+
+  ## How many dimensions exist at all. For MCA that is the number of levels
+  ## less the number of variables. For PCA and the mixed case it is
+  ## min(n - 1, p) -- NOT p - 1, which is a different quantity and one short:
+  ## two columns have two components, not one, and asking PCAmix for one was an
+  ## error rather than a smaller answer, so ilm_reduce() used to fail outright
+  ## on any two-column selection.
+  max_dim <- if (method == "mca")
+               sum(vapply(quali, nlevels, 1L)) - ncol(quali)
+             else min(nrow(sub) - 1L, ncol(sub))
+  list(sub = sub, quanti = quanti, quali = quali, method = method,
+       max_dim = max_dim, tmap = tmap, cols = keep)
+}
+
 #' @export
 print.ilm_reduce <- function(x, ...) {
   tag <- if (inherits(x, "ilm_reduce_na")) "ilm_reduce_na" else "ilm_reduce"
   fitted <- x$ndim_fitted %||% x$ndim
   if (fitted > x$ndim)
-    cat(sprintf("<%s> method = %s, n = %d, %d dimensions carry variation (%d fitted; after shrinkage %s)\n",
+    cat(sprintf("<%s> method = %s, n = %d, %d dimensions carry variation\n  (%d fitted; after shrinkage %s)\n",
                 tag, x$method, x$n, x$ndim, fitted, ilm_dropped_dims(x$ndim, fitted)))
   else
     cat(sprintf("<%s> method = %s, n = %d, %d dimension(s) retained\n",

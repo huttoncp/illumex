@@ -1,7 +1,7 @@
 # The display rules (R/shared-helpers.R, the same byte for byte in each of
 # the family's packages), held to the hand-written cases in
-# fixtures/format_cases.csv, which every package's copy tests against, and to
-# what illumex printed before they moved (14aba64).
+# fixtures/format_cases.csv, which every package's copy tests against.
+# A package's own formatters built on these rules are tested in its own files.
 
 cases_file <- function(f) utils::read.csv(test_path("fixtures", f),
                                           colClasses = "character", na.strings = NULL)
@@ -26,19 +26,19 @@ test_that("every display rule gives the hand-written text of every case", {
                                 "note"))
   expect_true(all(cs$rule %in% c("signif", "fixed", "percent", "p", "clock", "ordinal",
                                  "decimals")))
-  ## a group's values (rule "decimals", item 306) and their texts are
+  ## a group's values (rule "decimals") and their texts are
   ## separated by ";"
   got <- vapply(seq_len(nrow(cs)), function(i)
     paste(ilm_disp(as.numeric(strsplit(cs$input[i], ";", fixed = TRUE)[[1]]), cs$rule[i],
                    if (nzchar(cs$digits[i])) as.integer(cs$digits[i]),
                    end = identical(cs$end[i], "TRUE"),
-                   ## kept unless a case says dropped (item 256)
+                   ## kept unless a case says dropped
                    trailing_zeros = !identical(cs$trailing_zeros[i], "FALSE"))$text,
           collapse = ";"), "")
   expect_identical(got, cs$expected)
 })
 
-test_that("a group's decimals follow its median and its smallest value, at most 6 (item 306)", {
+test_that("a group's decimals follow its median and its smallest value, at most 6", {
   expect_identical(ilm_disp_group_decimals(c(12.3456, 0.5, 250.75)), 1L)
   expect_identical(ilm_disp_group_decimals(c(3, 120, -7, NA, Inf)), 0L)
   ## a value that will be scientific sets nothing (more than 6 decimals to
@@ -72,30 +72,4 @@ test_that("a rule returns its text with the rule and its precision", {
   ## each value's text depends on it alone
   expect_identical(ilm_disp(c(1230, 12345.6, NA), "signif", 3L)$text, c("1,230", "12,300", NA))
   expect_error(ilm_disp(1, "signif"), "needs `digits`")
-})
-
-test_that("illumex prints the tie set by item 256's convention", {
-  ## The convention changed with Craig's item 256: an estimate keeps its
-  ## trailing zeros and is never shown whole for being whole (10.0, 42.0,
-  ## 0.610, 12,300); a count, or a data value that is a whole number, is
-  ## whole. Before it, 9.9951 printed "10", 42 "42", 0.61 "0.61", 12345
-  ## "12,345".
-  num <- c(0.125, 1.2345, 12.35, -12.35, 2.675, 1.005, 0.0125, 9.9951, 99.95, 999.95, 999,
-           1000, 1230, 12345, 19234, 19234.5, 12345.6, 1234567.8, -0.125, 0, 42, 48.9, 0.61)
-  expect_identical(vapply(num, ilm_fmt_num, ""),
-    c("0.125", "1.23", "12.4", "-12.4", "2.68", "1.01", "0.0125", "10.0", "100", "1,000",
-      "999", "1,000", "1,230", "12,300", "19,200", "19,200", "12,300", "1,230,000",
-      "-0.125", "0", "42.0", "48.9", "0.610"))
-  ## a data value: whole when it is a whole number, else three figures
-  expect_identical(vapply(num, ilm_fmt_data, ""),
-    c("0.125", "1.23", "12.4", "-12.4", "2.68", "1.01", "0.0125", "10.0", "100", "1,000",
-      "999", "1,000", "1,230", "12,345", "19,234", "19,200", "12,300", "1,230,000",
-      "-0.125", "0", "42", "48.9", "0.610"))
-  expect_identical(ilm_fmt_count(c(40, 1234)), c("40", "1,234"))
-  pct <- c(0.2725, 109 / 400, 0.2724, 0.125, 0.005, 0.995, 0.5, 0.35, 0.294, 0.033)
-  expect_identical(vapply(pct, ilm_fmt_pct, "", 0L),
-                   c("27%", "27%", "27%", "13%", "1%", "100%", "50%", "35%", "29%", "3%"))
-  expect_identical(vapply(pct, ilm_fmt_pct, "", 1L),
-                   c("27.3%", "27.3%", "27.2%", "12.5%", "0.5%", "99.5%", "50.0%", "35.0%",
-                     "29.4%", "3.3%"))
 })

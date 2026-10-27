@@ -206,8 +206,9 @@ ilm_stat_fun <- function(stat) {
 #' @param progress Show a progress bar. Defaults to [interactive()], so a
 #'   bar appears when someone is watching and nothing is written in a
 #'   script or a knitted document. See [ilm_progress_arg].
-#' @return A one-row data frame per group, with `observed`, `lower`, `upper`
-#'   and the settings used. For several columns, or none named, one long table
+#' @return A data frame with one row per group (one row in all without
+#'   `by`): the group, `stat`, `observed`, `lower`, `upper`, and the settings
+#'   used -- `conf`, `R`, `ci_type` -- and `n`, the rows behind it. For several columns, or none named, one long table
 #'   led by a `variable` column, as [ilm_counts_tb_all()] gives. Each column
 #'   starts from `seed`, so its rows are the ones it would get on its own.
 #' @references
@@ -398,7 +399,7 @@ ilm_boot_pairs <- function(lv, ref = NULL) {
 #' * `"max_t"` (default) resamples all groups together, standardises each
 #'   comparison by its own bootstrap standard error, and takes the `conf`
 #'   quantile of the largest absolute standardised value across comparisons as
-#'   one critical value for all of them. This is the single-step studentized
+#'   one critical value for all of them. This is the single-step studentised
 #'   maximum. It assumes neither normality nor a common variance, which is what
 #'   separates it from Tukey's range test. Its intervals are symmetric about the
 #'   observed difference, so `ci_type` does not apply to them.
@@ -412,7 +413,7 @@ ilm_boot_pairs <- function(lv, ref = NULL) {
 #' of the result reads `"none"` whatever was asked for.
 #'
 #' `p_value` and `p_adj` are built the same way the interval is, so the two
-#' cannot contradict each other: under `"max_t"` both come off the studentized
+#' cannot contradict each other: under `"max_t"` both come off the studentised
 #' maximum, and otherwise both come off the bootstrap distribution directly.
 #' They are read off the same `R` replicates from opposite directions -- a
 #' quantile and a tail proportion -- so a comparison sitting within one
@@ -430,7 +431,7 @@ ilm_boot_pairs <- function(lv, ref = NULL) {
 #' 0.072 with variances differing fourfold, against a nominal 0.05.
 #'
 #' Heavy skew at small n is the case to know about. On lognormal data with a
-#' spread parameter up to 1.2 and those same group sizes, a SINGLE unadjusted
+#' spread parameter up to 1.2 and those same group sizes, a single unadjusted
 #' comparison already erred 0.090 of the time, and no `ci_type` moved it
 #' (percentile 0.090, BCa 0.089, basic 0.093, normal 0.084). That is the
 #' bootstrapped mean of a heavily skewed small sample, not the multiplicity
@@ -460,9 +461,12 @@ ilm_boot_pairs <- function(lv, ref = NULL) {
 #'   `J - 1` comparisons instead of `J * (J - 1) / 2`.
 #' @param seed Random seed.
 #' @param ... Passed between methods.
-#' @return One row per comparison, with `from`, `to`, `observed`, `lower`,
-#'   `upper`, `p_value`, `p_adj`, `excludes_zero` and the settings used.
-#'   Differences are `to` minus `from`.
+#' @return One row per comparison: `stat`, `group` (the grouping column),
+#'   `from`, `to`, `observed`, `lower`, `upper`, the settings used (`conf`,
+#'   `R`, `ci_type`, `adjust`), `n_comparisons`, `n_from` and `n_to` (the rows
+#'   in each group), `p_value`, `p_adj`, `p_superiority` and `excludes_zero`.
+#'   Differences are `to` minus `from`. The replicate differences are kept as
+#'   the attribute `"draws"`, which [ilm_plot_boot_diff()] draws.
 #' @references
 #' Efron, B. and Tibshirani, R. J. (1993). An Introduction to the Bootstrap.
 #' Chapman and Hall.
@@ -698,6 +702,9 @@ ilm_boot_diff_infer <- function(D, dh, conf, ci_type, adjust) {
 
 #' Missingness in one variable
 #'
+#' Counts the missing values in one column, overall or within groups, as a
+#' count and a share.
+#'
 #' @param data A data frame, or a vector when `y` is `NULL`.
 #' @param y Name of the column.
 #' @param by Optional grouping columns.
@@ -744,6 +751,7 @@ ilm_describe_na <- function(data, y = NULL, by = NULL, digits = 4, subset = NULL
 #' Sorted with the most missing first, since those are the variables worth
 #' looking at.
 #'
+#' @param data A data frame.
 #' @inheritParams ilm_describe_na
 #' @inheritParams ilm_reduce
 #' @param cols Columns to describe. A character vector of names, a regular

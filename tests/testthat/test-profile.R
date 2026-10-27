@@ -286,12 +286,13 @@ test_that("the v-tests and the words for them", {
   s2 <- mean((x - mean(x))^2)
   expect_equal(vm(x, m), (11 - mean(x)) / sqrt(s2 / 2 * 4 / 5))
   hit <- c(TRUE, FALSE, FALSE, FALSE, TRUE, TRUE)
-  ## catdes()'s form: both cluster rows are hits, P = C(2,2) C(4,1) / C(6,3)
-  ## = 0.2 and nothing is more extreme, so the mid-p is 0.2; over-represented,
-  ## so positive
-  expect_equal(vs(hit, m), -qnorm(0.2 / 2))
+  ## the published definition (Lebart, Piron and Morineau 2006, p. 293): both
+  ## cluster rows are hits, P(N >= 2) = C(3,2) C(3,0) / C(6,2) = 3/15 = 0.2,
+  ## the observed count's own probability counted in full; over-represented,
+  ## so positive. (A mid-p would halve it, to 0.1, and give 1.28.)
+  expect_equal(vs(hit, m), qnorm(0.2, lower.tail = FALSE))
   ## and the mirror image, under-represented, is negative
-  expect_equal(vs(!hit, m), qnorm(0.2 / 2))
+  expect_equal(vs(!hit, m), qnorm(0.2))
   expect_true(is.na(vm(rep(1, 6), m)))
   expect_identical(illumex:::ilm_fmt_num(c(54400, 90700)), c("54,400", "90,700"))
   expect_identical(illumex:::ilm_fmt_num(0.12345), "0.123")

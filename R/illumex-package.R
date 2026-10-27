@@ -8,7 +8,7 @@
 #' @section What is in it:
 #' \describe{
 #'   \item{Describing}{[ilm_describe_all()] summarises every column of a data
-#'     frame at once, with a gaussian index in place of a normality test;
+#'     frame at once, with a Gaussian index in place of a normality test;
 #'     [ilm_counts()], [ilm_dupes()], [ilm_copies()] and [ilm_frame_issues()]
 #'     find what is wrong with a data frame before any model sees it.}
 #'   \item{Cleaning}{[ilm_wash_df()], [ilm_recode_errors()], [ilm_translate()].}
@@ -24,7 +24,7 @@
 #'     `illume`'s: see `illume::ilm_impute()`.}
 #'   \item{Plots}{[ilm_plot()] and the `ilm_plot_*()` family, built on
 #'     `tinyplot` and named for what they show.}
-#'   \item{Example data}{[ilm_sim()], a grouped data set with a known
+#'   \item{Example data}{[ilm_sim()], a grouped dataset with a known
 #'     structure.}
 #' }
 #'

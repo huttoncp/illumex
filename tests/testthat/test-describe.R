@@ -186,7 +186,7 @@ test_that("ilm_frame_issues finds structure that breaks a model matrix", {
                          "aliased_factors: clinic = clinic_code",
                          "redundant_categories: arm ~ arm2",
                          "rank_deficient: total ~ a + b + c",
-                         "rank_deficient: dose ~ clinic"))
+                         "unit_level: dose per clinic"))
   expect_true(all(nzchar(r$remedy)))
   expect_match(r$remedy[r$issue == "nested"], "(1 | clinic/ward)", fixed = TRUE)
 })
@@ -200,8 +200,11 @@ test_that("the rank check agrees with stats::alias() on a fitted lm", {
   al <- alias(lm(y ~ a + b + c + total + clinic + dose, data = d))
   expect_identical(rownames(al$Complete), c("total", "dose"))
   r <- ilm_frame_issues(d[c("a", "b", "c", "total", "clinic", "dose")])
-  expect_identical(sub(" ~.*", "", r$columns[r$issue == "rank_deficient"]),
-                   c("total", "dose"))
+  ## with clinic as fixed effects alias() finds dose too; the frame check
+  ## names it a clinic-level variable rather than a deficiency, since as a
+  ## grouping clinic leaves it estimable
+  expect_identical(sub(" ~.*", "", r$columns[r$issue == "rank_deficient"]), "total")
+  expect_identical(r$columns[r$issue == "unit_level"], "dose per clinic")
 })
 
 test_that("Cram\u00e9r's V matches the chi-square definition, and v_cut is honoured", {

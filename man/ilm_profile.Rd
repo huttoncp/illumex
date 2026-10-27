@@ -3,7 +3,7 @@
 \name{ilm_profile}
 \alias{ilm_profile}
 \alias{iml_profile}
-\title{Profile a data set: reduce, cluster, and describe the clusters}
+\title{Profile a dataset: reduce, cluster, and describe the clusters}
 \usage{
 ilm_profile(
   data,
@@ -30,12 +30,20 @@ ilm_profile(
 regular expression, a predicate function such as \code{is.numeric}, or
 \code{NULL} for all of them -- see \link{ilm_selection}.}
 
-\item{ndim}{Number of dimensions to keep.}
+\item{ndim}{Number of dimensions to keep. Five suits most data, but not
+all: on mixed data with few columns, the dimensions past the first few
+can carry a categorical column's own levels, and a clustering on them
+splits the groups along those levels. Look at the scree plot
+(\code{\link[=ilm_plot_reduce_scree]{ilm_plot_reduce_scree()}}) and keep the dimensions before it flattens;
+the profiling vignette shows a case. Choosing \code{ndim} by parallel
+analysis instead was measured and is not the default: it helped there,
+and did worse on numeric data with well-separated clusters
+(\href{https://github.com/huttoncp/illumex/blob/main/dev/studies/ndim_choice.R}{\code{dev/studies/ndim_choice.R}}).}
 
 \item{method}{\code{"famd"} (the default) for PCA, MCA or FAMD depending on
 the column types, in closed form; \code{"pcamix"}, its name from when
-PCAmixdata computed it, is still accepted and means the same. \code{"glrm"} fits a generalized low rank
-model instead, which uses a loss appropriate to each column's type rather
+PCAmixdata computed it, is still accepted and means the same. \code{"glrm"} fits a
+generalised low rank model instead, which uses a loss appropriate to each column's type rather
 than squared error on one-hot indicators, and reconstructs a category as a
 category. It costs an iterative fit, and on all-numeric data the two are
 the same model -- see \code{\link[=ilm_glrm]{ilm_glrm()}} for when it is worth that.}
@@ -64,8 +72,7 @@ clustering takes; \code{var_contrib = FALSE} leaves it out.}
 \item{var_contrib_B}{Permutations for that check.}
 
 \item{cols_negate}{If \code{TRUE}, \code{cols} names the columns to leave out, and every
-other eligible column is used; see \link{ilm_selection}. It needs \code{cols}. A
-\code{by} argument is never negated.}
+other eligible column is used; see \link{ilm_selection}. It needs \code{cols}.}
 
 \item{cols_fixed}{If \code{TRUE}, a \code{cols} string read as a pattern is matched
 literally, as a substring (as \code{grepl(fixed = TRUE)} does); a column name
@@ -117,8 +124,11 @@ Sat-Sun for 87\% of them, against 50\% across all rows".
 The variables are ranked by a v-test -- how far the cluster's mean or share
 sits from everyone's, on the scale of a standard normal: for a mean, in
 standard errors of a subset that size; for a share, from the hypergeometric
-probability of the cluster's count (Lebart's, computed as FactoMineR's
-\code{catdes()} computes it) -- and named, strongest first, up to
+probability of the cluster's count, as a standard normal quantile (the
+test-value of Lebart, Piron and Morineau 2006, who define it for an
+over-represented value; an under-represented one takes the mirrored lower
+tail, and a count exactly at its expectation 0, illumex's own extension)
+-- and named, strongest first, up to
 \code{top_n_vars}, when the v-test clears \code{vtest_threshold} and the difference
 is big enough to matter: 0.2 standard deviations for a number, 10
 percentage points for a share. With many rows a chance difference clears
@@ -139,15 +149,25 @@ stability and silhouette figures in \code{\link[=ilm_cluster]{ilm_cluster()}} ar
 
 A profile runs \code{\link[=ilm_cluster]{ilm_cluster()}}, and at its defaults shares that
 function's limits (see Size there): on one core of a 16 GB Windows
-machine (\code{dev/studies/scale_check.R} in the source) it took about a minute at 1,000
+machine (\href{https://github.com/huttoncp/illumex/blob/main/dev/studies/scale_check.R}{\code{dev/studies/scale_check.R}}) it took about a minute at 1,000
 rows and over 15 minutes at 10,000, nearly all of it the gap statistic
 choosing \code{k}; giving \code{k} saves that search. Above about 40,000 rows the
 silhouettes' distance matrix does not fit in 16 GB.
 }
 
 \examples{
+\dontshow{if (requireNamespace("cluster", quietly = TRUE)) (if (getRversion() >= "3.4") withAutoprint else force)(\{ # examplesIf}
 p <- ilm_profile(mtcars, k_max = 5, B = 25, seed = 1)
 cat(p$summary, sep = "\n")
+\dontshow{\}) # examplesIf}
+}
+\references{
+Lebart, L., Piron, M. and Morineau, A. (2006). Statistique exploratoire
+multidimensionnelle, 4th ed. Dunod, Paris. Section 6.3.2.
+
+Morineau, A. (1984). Note sur la caract\enc{é}{e}risation statistique d'une
+classe et les valeurs-tests. Bulletin technique du Centre de Statistique
+et d'Informatique Appliqu\enc{é}{e}es 2(1-2), 20-27.
 }
 \references{
 Husson, F., \enc{Lê}{Le}, S. and \enc{Pagès}{Pages}, J. (2017). Exploratory

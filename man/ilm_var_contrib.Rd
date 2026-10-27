@@ -66,10 +66,12 @@ variable and is not done here.
 }
 
 \examples{
+\dontshow{if (requireNamespace("cluster", quietly = TRUE)) (if (getRversion() >= "3.4") withAutoprint else force)(\{ # examplesIf}
 \donttest{
 p <- ilm_profile(mtcars, k = 3)
 ilm_var_contrib(p, mtcars)
 }
+\dontshow{\}) # examplesIf}
 }
 \seealso{
 \code{\link[=ilm_profile]{ilm_profile()}}, \code{\link[=ilm_cluster]{ilm_cluster()}}, \code{\link[=ilm_reduce]{ilm_reduce()}}.
