@@ -137,7 +137,7 @@
 #' when the chance of being a complete case is independent of `y` given X,
 #' even when it depends strongly on X (White and Carlin 2010, section 2.2,
 #' p. 2921; Hughes et al. 2019, p. 1296 and Table 1, p. 1297; Little and Rubin
-#' 2019, Example 3.3, p. 49, citing Glynn and Laird 1986). That condition is
+#' 2019, Example 3.3, p. 49). That condition is
 #' weaker than MCAR, and it cuts across MCAR, MAR and MNAR. X includes the
 #' incomplete covariate's own values: the condition can hold when a
 #' covariate's missingness depends on its own missing values (White and
@@ -251,10 +251,11 @@
 #' 2019, p. 49); comparing the complete with the incomplete units to judge
 #' MCAR, and the limits of doing so (Little and Rubin 2019, p. 50); the
 #' definition of a monotone pattern (Little and Rubin 2019, p. 11);
-#' \enc{Cramér}{Cramer}'s V (Agresti 2013, p. 110, citing
-#' \enc{Cramér}{Cramer} 1946); and the sandwich variance of the independence
-#' working model (Liang and Zeger 1986, pp. 14-15; Agresti 2013, pp.
-#' 467-469).
+#' \enc{Cramér}{Cramer}'s V, the square root of \enc{Cramér}{Cramer}'s measure
+#' of association X^2 / (n (q - 1)), q the smaller of the table's numbers of
+#' rows and columns (\enc{Cramér}{Cramer} 1946, section 30.5, p. 443; Agresti
+#' 2013, p. 110); and the sandwich variance of the independence working model
+#' (Liang and Zeger 1986, pp. 14-15; Agresti 2013, pp. 467-469).
 #'
 #' illumex's own operationalisations, which no source prescribes: the
 #' association screen's per-variable form (it compares by each variable's own
@@ -842,8 +843,9 @@ ilm_miss_screen_pair <- function(miss_v, w, w_name, miss_w, units) {
     k <- nlevels(f)
     if (k < 2L) return(NULL)  # fewer than two levels present
     # Pearson's chi-squared test of independence on the 2 x k table, WITHOUT
-    # a continuity correction. [published: Agresti 2013, p. 110, Exercise
-    # 3.32, citing Cramer 1946] Cramer's V^2 = X^2 / (n min(I - 1, J - 1));
+    # a continuity correction. [published: Cramer 1946, section 30.5, p. 443,
+    # the measure X^2 / (n (q - 1)); its square root is Cramer's V, Agresti
+    # 2013, p. 110, Exercise 3.32] Cramer's V^2 = X^2 / (n min(I - 1, J - 1));
     # here I = 2 (missing or not), so min(I - 1, J - 1) = 1.
     cs <- ilm_miss_chisq(z, as.integer(f), k)
     effect <- sqrt(cs$stat / (length(z) * min(2L - 1L, k - 1L)))

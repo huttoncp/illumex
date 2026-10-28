@@ -220,7 +220,7 @@ Complete-case analysis of a regression of \code{y} on covariates X is unbiased
 when the chance of being a complete case is independent of \code{y} given X,
 even when it depends strongly on X (White and Carlin 2010, section 2.2,
 p. 2921; Hughes et al. 2019, p. 1296 and Table 1, p. 1297; Little and Rubin
-2019, Example 3.3, p. 49, citing Glynn and Laird 1986). That condition is
+2019, Example 3.3, p. 49). That condition is
 weaker than MCAR, and it cuts across MCAR, MAR and MNAR. X includes the
 incomplete covariate's own values: the condition can hold when a
 covariate's missingness depends on its own missing values (White and
@@ -342,10 +342,11 @@ Carlin 2010, p. 2921; Hughes et al. 2019, pp. 1296-1298; Little and Rubin
 2019, p. 49); comparing the complete with the incomplete units to judge
 MCAR, and the limits of doing so (Little and Rubin 2019, p. 50); the
 definition of a monotone pattern (Little and Rubin 2019, p. 11);
-\enc{Cramér}{Cramer}'s V (Agresti 2013, p. 110, citing
-\enc{Cramér}{Cramer} 1946); and the sandwich variance of the independence
-working model (Liang and Zeger 1986, pp. 14-15; Agresti 2013, pp.
-467-469).
+\enc{Cramér}{Cramer}'s V, the square root of \enc{Cramér}{Cramer}'s measure
+of association X^2 / (n (q - 1)), q the smaller of the table's numbers of
+rows and columns (\enc{Cramér}{Cramer} 1946, section 30.5, p. 443; Agresti
+2013, p. 110); and the sandwich variance of the independence working model
+(Liang and Zeger 1986, pp. 14-15; Agresti 2013, pp. 467-469).
 
 illumex's own operationalisations, which no source prescribes: the
 association screen's per-variable form (it compares by each variable's own
