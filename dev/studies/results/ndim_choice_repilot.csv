@@ -1,0 +1,13 @@
+"cond","rep","arm","ndim","k","truth","k_ok","ari","seconds"
+"mixed_many",101,"fixed5",5,3,3,TRUE,0.976818553185599,22.94
+"mixed_many",101,"pa",3,3,3,TRUE,0.974390939887121,21.29
+"mixed_many",101,"oracle",2,3,3,TRUE,0.974390939887121,17.09
+"mixed_many",102,"fixed5",5,10,3,FALSE,0.354289536861519,22.57
+"mixed_many",102,"pa",2,3,3,TRUE,0.96238324563881,14.41
+"mixed_many",102,"oracle",2,3,3,TRUE,0.96238324563881,14.25
+"numeric_many",101,"fixed5",5,4,4,TRUE,0.968223502456423,23.22
+"numeric_many",101,"pa",3,4,4,TRUE,0.963003017044313,18.9
+"numeric_many",101,"oracle",3,4,4,TRUE,0.963003017044313,18
+"numeric_many",102,"fixed5",5,4,4,TRUE,0.983871256789584,23.68
+"numeric_many",102,"pa",3,4,4,TRUE,0.986469398440545,18.37
+"numeric_many",102,"oracle",3,4,4,TRUE,0.986469398440545,18.35

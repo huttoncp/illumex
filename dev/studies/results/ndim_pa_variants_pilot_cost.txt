@@ -1,0 +1,14 @@
+            cond wall seconds full_20_min
+    bimodal_null 89.0  88.255        29.7
+       separated 80.5  80.390        26.8
+    numeric_many 78.5  77.820        26.2
+     overlapping 78.0  77.365        26.0
+      mixed_many 77.0  76.810        25.7
+       continuum 57.0  56.895        19.0
+  unimodal_heavy 57.0  56.635        19.0
+    mixed_counts 17.5  17.055         5.8
+ mixed_few_noise 14.5  14.150         4.8
+     numeric_few 14.0  13.695         4.7
+       mixed_few 11.0  10.445         3.7
+
+pilot wall time 19.1 min; full run (20 replicates x 11 designs) estimate 3.2 h on 1 core; stop at 6.4 h
