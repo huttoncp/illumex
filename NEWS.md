@@ -18,8 +18,11 @@
     * A test whose missingness and variables are constant within each unit
       runs on one row per unit.
     * Any other test uses a cluster-robust (sandwich) variance (Liang and
-      Zeger 1986). With fewer than 20 units, the sandwich test gives no
+      Zeger 1986). With fewer than 30 units, the sandwich test gives no
       p-value.
+      * The floor of 30 units comes from a simulation of the test's size:
+        below 30 units, or when units have different numbers of rows, it
+        rejected too often.
     * The result gains `unit`, `n_units` and, in `associations` and
       `outcome_test`, a `method` column saying which way each test ran.
   * Without `unit`, data that look like several rows per unit (a numeric

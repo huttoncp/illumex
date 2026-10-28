@@ -306,9 +306,18 @@ value to keep.
 by ordinary maximum likelihood on the rows, its covariance is estimated by
 the sandwich with the scores summed within units (Liang and Zeger 1986),
 and the tested coefficients (of \code{w}, or of \code{y}) get a Wald test. With
-fewer than 20 units among the rows the test uses, the p-value is NA. No
-small-sample correction is applied; with few units the sandwich standard
-errors tend to underestimate the true ones (Agresti 2013, p. 468).
+fewer than 30 units among the rows the test uses, the p-value is NA. No
+small-sample correction is applied. Standard errors from the sandwich tend
+to be too small in finite samples (Firth 1993, p. 344), and with few units
+they tend to underestimate the true ones (Agresti 2013, p. 468), so the
+test can reject too often. illumex's own size study measured this for this
+function, at alpha = 0.05 over 2,000 simulated data sets per setting: with
+5 rows in every unit, the rejection rate was 0.08 to 0.09 at 20 and 25
+units, and between 0.05 and 0.07 from 30 units up, within the band of 0.025
+to 0.075 that Bradley (1978, p. 146) calls liberal; with between 2 and 8
+rows per unit, it was 0.08 to 0.10 at 20 and at 30 units, above that band.
+Treat a p-value near alpha with caution when units are few, or when their
+sizes differ.
 }
 
 On the cluster-robust route, effects are computed on the rows as described
@@ -343,14 +352,15 @@ association screen's per-variable form (it compares by each variable's own
 missingness indicator, a variant of Little and Rubin's comparison of
 complete with incomplete units); its effect measures, and sorting them on
 one scale; the thresholds (\code{min_effect}, the 10- and 20-row floors, the
-20-level cut-off) and the defaults of \code{alpha} and \code{adjust}; the multiplicity
-rule and the requirement of both significance and size for a flag; the way
-monotonicity is checked; the outcome test and its effect measure; the
-treatment of Date, date-time and duration columns (categorical in the
-screen; one numeric column in the outcome test, whatever their number of
-distinct values); the verdict labels, their precedence and the wording
-of their messages; the rule choosing between one row per unit and the
-sandwich; and the Wald test of several coefficients at once.
+30-unit floor, the 20-level cut-off) and the defaults of \code{alpha} and
+\code{adjust}; the multiplicity rule and the requirement of both significance
+and size for a flag; the way monotonicity is checked; the outcome test and
+its effect measure; the treatment of Date, date-time and duration columns
+(categorical in the screen; one numeric column in the outcome test,
+whatever their number of distinct values); the verdict labels, their
+precedence and the wording of their messages; the rule choosing between
+one row per unit and the sandwich; and the Wald test of several
+coefficients at once.
 }
 
 \examples{
@@ -366,8 +376,14 @@ ilm_check_missing(d, y = "score", unit = "id", verbose = FALSE)
 \references{
 Agresti, A. (2013). \emph{Categorical Data Analysis}, 3rd ed. Wiley.
 
+Bradley, J. V. (1978). Robustness? \emph{British Journal of Mathematical and
+Statistical Psychology} 31, 144-152.
+
 \enc{Cramér}{Cramer}, H. (1946). \emph{Mathematical Methods of Statistics}.
 Princeton University Press.
+
+Firth, D. (1993). Recent developments in quasi-likelihood methods.
+\emph{Bulletin of the International Statistical Institute} 55, 341-358.
 
 Hughes, R. A., Heron, J., Sterne, J. A. C. and Tilling, K. (2019).
 Accounting for missing data in statistical analyses: multiple imputation is

@@ -630,7 +630,7 @@ test_that("the outcome test is NA with fewer than 20 rows, or a constant indicat
   expect_true(all(is.na(o$p_value)))
 })
 
-test_that("the sandwich test is NA with fewer than 20 units", {
+test_that("the sandwich test is NA with fewer than 30 units", {
   set.seed(23)
   K <- 10
   m <- 5
@@ -646,6 +646,37 @@ test_that("the sandwich test is NA with fewer than 20 units", {
   expect_identical(r$outcome_test$method, "sandwich")
   expect_true(is.na(r$outcome_test$p_value))
   expect_identical(r$verdict, "MCAR_NOT_REJECTED")
+})
+
+test_that("the sandwich test's floor is 30 units: NA at 29, a p-value at 30", {
+  build <- function(K) {
+    set.seed(24)
+    m <- 5
+    id <- rep(seq_len(K), each = m)
+    d <- data.frame(id = id, x = rnorm(K * m), y = rnorm(K * m), v = rnorm(K * m))
+    # v is missing on a different row pattern in different units, so the
+    # indicator varies within units and the sandwich route is taken.
+    first <- (seq_len(K) - 1L) * m
+    d$v[c(first[seq(1L, K, by = 2L)] + 1L, first[seq(1L, K, by = 3L)] + 3L,
+          first[seq(2L, K, by = 4L)] + 5L)] <- NA
+    d
+  }
+  for (K in c(29, 30)) {
+    r <- quiet(ilm_check_missing(build(K), y = "y", unit = "id", verbose = FALSE))
+    a <- r$associations
+    expect_identical(r$n_units, as.integer(K))
+    expect_true(all(a$method == "sandwich"))
+    expect_identical(r$outcome_test$method, "sandwich")
+    expect_false(any(is.na(a$effect)))
+    if (K == 29) {
+      expect_true(all(is.na(a$p_value)))
+      expect_true(is.na(r$outcome_test$p_value))
+      expect_false(any(a$flag))
+    } else {
+      expect_false(any(is.na(a$p_value)))
+      expect_false(is.na(r$outcome_test$p_value))
+    }
+  }
 })
 
 
