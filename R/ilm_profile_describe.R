@@ -88,7 +88,7 @@ ilm_vtest_mean <- function(x, m) {
 ## ilm_vtest_share(): the test-value of a category (level) within a cluster.
 ##
 ## Published definition (Lebart, Piron and Morineau 2006, section 6.3.2,
-## pp. 291-294; Husson, Le and Pages 2017, section 3.7.2.3, pp. 156-157):
+## pp. 291-294; Husson, Lê and Pagès 2017, section 3.7.2.3, pp. 156-157):
 ##
 ##   Let n be the number of rows, n_k the number in the cluster, n_j the
 ##   number with the level and x the number in the cluster with the level.

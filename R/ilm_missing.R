@@ -790,7 +790,7 @@ ilm_miss_screen <- function(data, incomplete, others, na_list, units, y,
   # rows a negligible association is significant.
   tab$flag <- !is.na(tab$p_adj) & tab$p_adj < alpha & tab$effect >= min_effect
   tab$method <- me
-  # [illumex's own choice] correlations and Cramer's V sorted together on one
+  # [illumex's own choice] correlations and Cramér's V sorted together on one
   # 0-1 scale; they are not the same quantity.
   tab <- tab[order(-tab$effect), , drop = FALSE]
   rownames(tab) <- NULL
@@ -843,9 +843,9 @@ ilm_miss_screen_pair <- function(miss_v, w, w_name, miss_w, units) {
     k <- nlevels(f)
     if (k < 2L) return(NULL)  # fewer than two levels present
     # Pearson's chi-squared test of independence on the 2 x k table, WITHOUT
-    # a continuity correction. [published: Cramer 1946, section 30.5, p. 443,
-    # the measure X^2 / (n (q - 1)); its square root is Cramer's V, Agresti
-    # 2013, p. 110, Exercise 3.32] Cramer's V^2 = X^2 / (n min(I - 1, J - 1));
+    # a continuity correction. [published: Cramér 1946, section 30.5, p. 443,
+    # the measure X^2 / (n (q - 1)); its square root is Cramér's V, Agresti
+    # 2013, p. 110, Exercise 3.32] Cramér's V^2 = X^2 / (n min(I - 1, J - 1));
     # here I = 2 (missing or not), so min(I - 1, J - 1) = 1.
     cs <- ilm_miss_chisq(z, as.integer(f), k)
     effect <- sqrt(cs$stat / (length(z) * min(2L - 1L, k - 1L)))
