@@ -13,8 +13,8 @@ ilm_check_frame(data, cor_cut = 0.999, v_cut = 0.95, ...)
 \item{cor_cut}{Absolute correlation at or above which a numeric pair is
 reported as collinear.}
 
-\item{v_cut}{\enc{Cramér}{Cramer}'s V at or above which a pair of categorical columns is
-reported as redundant.}
+\item{v_cut}{\enc{Cramér}{Cramer}'s V at or above which a pair of
+categorical columns is reported as redundant.}
 
 \item{...}{Unused.}
 }
