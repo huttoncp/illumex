@@ -60,7 +60,7 @@ Useful links:
 
 }
 \author{
-\strong{Maintainer}: Craig Hutton \email{craig.hutton@gmail.com} [copyright holder]
+\strong{Maintainer}: Craig P. Hutton \email{craig.hutton@gmail.com} [copyright holder]
 
 Other contributors:
 \itemize{
