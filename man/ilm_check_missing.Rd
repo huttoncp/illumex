@@ -2,8 +2,9 @@
 % Please edit documentation in R/ilm_missing.R, R/zzz-iml-aliases.R
 \name{ilm_check_missing}
 \alias{ilm_check_missing}
+\alias{print.ilm_missing}
 \alias{iml_check_missing}
-\title{What the missing values look like, and whether they matter}
+\title{Check missing values, and what they imply for complete cases}
 \usage{
 ilm_check_missing(
   data,
@@ -13,41 +14,50 @@ ilm_check_missing(
   alpha = 0.05,
   adjust = "holm",
   verbose = TRUE,
+  unit = NULL,
   covariates_negate = FALSE,
   covariates_fixed = FALSE,
   subset = NULL,
   subset_negate = FALSE,
   subset_fixed = FALSE
 )
+
+\method{print}{ilm_missing}(x, ...)
 }
 \arguments{
 \item{data}{A data frame.}
 
-\item{y}{Optional outcome column, named as a string. Naming it is what
-separates "complete cases are fine" from "complete cases are biased", so
-it is worth naming. A formula is also accepted and is usually the clearer
-way to write it: \code{outcome ~ x + z} sets the outcome and takes the
-right-hand side as \code{covariates}.}
+\item{y}{Optional outcome: a single string naming a column, or a formula
+\code{outcome ~ predictors}. With a formula, the response becomes \code{y} and the
+variables on the right-hand side become \code{covariates}, exactly as if they
+had been given by name; an explicit \code{covariates} takes precedence. A
+right-hand side of \code{.} means every other column.}
 
-\item{covariates}{Variables to hold fixed when asking whether missingness
-depends on the outcome. Default is every other column; pass the model's
-predictors when they are a subset. Names, a pattern or a predicate, as
-\code{cols} takes them (\link{ilm_selection}).}
+\item{covariates}{The columns held fixed in the outcome test, in any of the
+forms described in \link{ilm_selection}. \code{NULL} (the default) means every
+column except \code{y} and \code{unit}.}
 
-\item{min_effect}{Smallest association worth reporting, as a correlation or
-\enc{Cramér}{Cramer}'s V. With several thousand rows an association of 0.02 is
-significant and means nothing.}
+\item{min_effect}{The smallest effect that counts as a finding, in the
+screen and in the outcome test (default 0.1). An illumex choice.}
 
-\item{alpha}{Level for the adjusted p-values.}
+\item{alpha}{The level for the adjusted p-values (default 0.05).}
 
-\item{adjust}{Multiplicity adjustment across pairs, passed to
-\code{\link[stats:p.adjust]{stats::p.adjust()}}.}
+\item{adjust}{The multiplicity method: any method that \code{\link[stats:p.adjust]{stats::p.adjust()}}
+accepts (default \code{"holm"}). The screen's p-values are adjusted across all
+of its rows; the outcome test's across its rows.}
 
-\item{verbose}{Narrate the findings.}
+\item{verbose}{If \code{TRUE} (the default), narrate the findings as messages.}
 
-\item{covariates_negate, covariates_fixed}{As \code{cols_negate} and
-\code{cols_fixed}, for \code{covariates}: \code{covariates_negate = TRUE} holds fixed
-every column but those named (and \code{y}).}
+\item{unit}{Optional: a single string naming the column that identifies the
+unit (subject, household) when the data have several rows per unit. It
+may not be \code{y} or one of the named \code{covariates}, and it may not have
+missing values. See "Several rows per unit".}
+
+\item{covariates_negate, covariates_fixed}{How \code{covariates} is read, as
+described in \link{ilm_selection}. \code{covariates_negate = TRUE} keeps every
+column except those that \code{covariates} selects, and so needs \code{covariates}.
+\code{covariates_fixed = TRUE} matches a pattern in \code{covariates} literally
+rather than as a regular expression.}
 
 \item{subset}{Which rows to use, before anything else: a logical vector
 (one value per row; \code{NA} is left out), row positions, named patterns
@@ -60,51 +70,321 @@ where it is \code{NA} stay out either way.}
 
 \item{subset_fixed}{If \code{TRUE}, \code{subset}'s patterns are matched literally,
 as substrings. It changes nothing for a logical, positions or a sample.}
+
+\item{x}{An \code{ilm_missing} object.}
+
+\item{...}{Not used.}
 }
 \value{
-An object of class \code{"ilm_missing"}: \code{variables}, \code{patterns},
-\code{associations}, \code{outcome_test}, \code{monotone}, \code{n} (rows), \code{n_complete}
-(complete rows), \code{y}, \code{min_effect} and a \code{verdict}.
+An object of class \code{"ilm_missing"}: a list with these fields, in
+this order.
+\itemize{
+\item \code{variables}: a data frame with one row per column (after \code{subset}):
+\code{variable}, \code{n_missing} (an integer) and \code{p_missing} (the share
+missing), largest share first.
+\item \code{patterns}: \code{NULL} when nothing is missing; otherwise a data frame with
+\code{pattern} (a string of 0s and 1s, one character per column with missing
+values, in the data's order, 1 where that column is missing), \code{n} (the
+rows with that pattern) and \code{n_missing} (the number of 1s), most common
+first. Its attribute \code{"variables"} names those columns.
+\item \code{associations}: the association screen, or \code{NULL} when no pair
+qualifies (and when nothing is missing). Columns \code{missing_in},
+\code{related_to}, \code{effect}, \code{p_value}, \code{is_outcome} (\code{related_to} is \code{y}),
+\code{p_adj}, \code{flag} and \code{method}; largest effect first.
+\item \code{outcome_test}: \code{NULL} when \code{y} is not named or nothing is missing;
+otherwise one row per column with missing values, in the data's order:
+\code{missing_in}, \code{effect}, \code{p_value}, \code{p_adj}, \code{flag} and \code{method}.
+\item \code{monotone}: \code{TRUE} or \code{FALSE}; \code{NA} when nothing is missing.
+\item \code{n}: the number of rows after \code{subset} (an integer).
+\item \code{n_complete}: the number of rows with no missing value (an integer).
+\item \code{y}: the outcome's name, or \code{NULL}.
+\item \code{min_effect}: as given.
+\item \code{unit}: the unit column's name, or \code{NULL}.
+\item \code{n_units}: the number of distinct units after \code{subset} (an integer);
+\code{NA} without \code{unit}.
+\item \code{verdict}: \code{"NONE"}, \code{"RELATED_TO_OUTCOME"}, \code{"RELATED_TO_COVARIATES"}
+or \code{"MCAR_NOT_REJECTED"}.
+}
 }
 \description{
-Reports how much is missing, which variables go missing together, and what
-missingness is related to -- then says what that implies for the analysis.
+\code{ilm_check_missing()} reports how much of a data frame is missing, which
+variables go missing together, what missingness is associated with among
+the observed values, and, when an outcome \code{y} is named, whether missingness
+depends on the outcome once the covariates are held fixed. It then states
+what that implies for a complete-case analysis of a regression of \code{y} on
+the covariates.
+}
+\details{
+\strong{How much, and where.} \code{variables} gives each column's missing count and
+share. \code{patterns} tabulates the rows' patterns of missingness over the
+columns that have any missing value. \code{monotone} says whether those columns
+can be ordered so that each is missing wherever the one before it is
+missing (Little and Rubin 2019, p. 11). The check orders the columns by
+their missing counts, smallest first, and compares neighbours.
+
+\strong{The association screen.} For each column \code{v} with missing values and
+each other column \code{w}, the indicator "\code{v} is missing" is compared across the
+values of \code{w}, over the rows where \code{w} is observed.
+\itemize{
+\item A numeric \code{w} (integer or double) gives the absolute Pearson correlation
+between the indicator and \code{w}, with the usual two-sided t test on n - 2
+degrees of freedom.
+\item Any other \code{w} (logical, character, factor, Date, date-time or duration;
+one level per distinct value) is cross-tabulated against the indicator.
+The p-value is Pearson's chi-squared test of independence without a
+continuity correction, and the effect is \enc{Cramér}{Cramer}'s V
+(Agresti 2013, p. 110).
+\item A pair is skipped when fewer than 10 rows remain, when the indicator
+takes one value there, or when \code{w} has no spread (or fewer than two
+levels).
+\item The p-values are adjusted across all pairs by \code{adjust}. A pair is flagged
+when its adjusted p-value is below \code{alpha} AND its effect is at least
+\code{min_effect}: with many rows, a negligible association is significant.
+}
+
+A correlation and a \enc{Cramér}{Cramer}'s V are not the same quantity;
+they are sorted together on one 0-1 scale for convenience. The screen
+describes; a flag on the outcome column does not by itself mean that
+complete cases are biased (see "Why 'not MCAR' does not mean 'impute'").
+
+\strong{The outcome test} (only when \code{y} is named). For each column \code{v} with
+missing values, over the rows with \code{y} and the covariates observed, two
+logistic regressions of "\code{v} is missing" are fitted, each with an
+intercept: one on the covariates, one on the covariates plus \code{y}. Numeric
+covariates enter linearly, categorical ones (factor, character, logical)
+as treatment-coded indicators. A numeric \code{y} enters as one column; a
+categorical \code{y}, with k levels present, as k - 1 indicators.
+\itemize{
+\item A Date, date-time (POSIXct) or duration (difftime) covariate, or \code{y}, is
+judged as a numeric one is: it is left out only when it has no spread on
+the rows used. It enters both regressions, and the effect's least-squares
+step, as ONE numeric column, its numeric value (days for a Date, seconds
+for a date-time, the stored number for a duration) counted from its
+earliest value on those rows, whatever its number of distinct values: a
+daily date is kept, as a linear time term. For a linear term with an
+intercept, neither the unit nor the starting point changes the test or
+the effect. In the screen such columns stay categorical.
+\item The p-value is the likelihood-ratio test between the two fits.
+\item The effect is the multiple correlation between the Pearson residuals of
+the covariates-only fit and \code{y}'s model columns, each residualised on the
+covariates by least squares. For a numeric, date or two-level \code{y} this is
+the absolute partial correlation ("partial r"); for a \code{y} with more
+levels it is a multiple partial correlation ("partial R"). It does not
+depend on which level is the reference, or on the order of the levels.
+It measures the association given the covariates, because bias depends
+on that conditional association, not on the marginal one.
+\item Covariates with no spread, with fewer than two levels, or with more than
+20 levels are left out of the models.
+\item Fewer than 20 rows, an indicator that takes one value, or a failed fit
+give NA. Missingness in \code{y} itself gives NA (see below).
+\item The covariates are \code{covariates} without \code{v} and \code{y}; when \code{covariates} is
+not given, every column except \code{y}, \code{v} and \code{unit}.
+}
+
+\strong{The verdict}, in order of precedence: \code{"NONE"} (nothing is missing);
+\code{"RELATED_TO_OUTCOME"} (an outcome-test row is flagged);
+\code{"RELATED_TO_COVARIATES"} (a screen row is flagged); otherwise
+\code{"MCAR_NOT_REJECTED"}.
 }
 \section{What can and cannot be established}{
 
+Missingness completely at random (MCAR) can be REJECTED by the screen, never
+confirmed. A screen that flags nothing is consistent with MCAR, but such
+tests have limited power when few units are incomplete (Little and Rubin
+2019, section 3.2, p. 50). The verdict \code{"MCAR_NOT_REJECTED"} says that and
+no more.
 
-\strong{MCAR} -- missingness unrelated to anything -- is testable, and is tested
-here by asking whether each variable's missingness is associated with the
-observed values of the others.
+Whether missingness depends on the unseen values themselves (missing at
+random against missing not at random: MAR against MNAR) cannot be tested
+from the observed data. Such comparisons give "no direct evidence" on MAR
+(Little and Rubin 2019, p. 50), and there can be no evidence against MAR in
+the observed data (Little and Rubin 2019, Example 13.2, p. 306). Every
+verdict except \code{"NONE"} therefore ends with this caveat, and recommends a
+sensitivity analysis to assess departures from MAR.
 
-\strong{MAR versus MNAR is not testable.} The data that would separate them are
-precisely the data that are missing. No amount of pattern analysis settles
-it, and this function does not pretend otherwise: it reports what
-missingness is associated with among the things you \emph{can} see, and says
-plainly that a dependence on the unseen values themselves cannot be ruled
-out.
+The outcome test has a limit of its own. When a covariate goes missing
+because of its OWN unseen values (for example, a covariate missing more
+often when it is large), complete cases are still unbiased: Little and
+Rubin (2019, Example 3.3, p. 49) include such mechanisms among the unbiased
+ones, as do Hughes et al. (2019, Table 1, p. 1297, row "Exposure"). The
+outcome test cannot hold that covariate's unseen values fixed, so the
+outcome carries information about them, and the test can flag the outcome
+there although complete cases are unbiased. That is this package's own
+finding about its own test, shown by simulation. So \code{"RELATED_TO_OUTCOME"}
+means that complete-case estimates MAY be biased, never that they are.
 }
 
-\section{Why "not MCAR" does not mean "impute"}{
+\section{Why 'not MCAR' does not mean 'impute'}{
 
+Complete-case analysis of a regression of \code{y} on covariates X is unbiased
+when the chance of being a complete case is independent of \code{y} given X,
+even when it depends strongly on X (White and Carlin 2010, section 2.2,
+p. 2921; Hughes et al. 2019, p. 1296 and Table 1, p. 1297; Little and Rubin
+2019, Example 3.3, p. 49, citing Glynn and Laird 1986). That condition is
+weaker than MCAR, and it cuts across MCAR, MAR and MNAR. X includes the
+incomplete covariate's own values: the condition can hold when a
+covariate's missingness depends on its own missing values (White and
+Carlin 2010, section 2.2, p. 2921; Little and Rubin 2019, Example 3.3,
+p. 49, which includes such mechanisms).
 
-For a regression of \code{y} on covariates, dropping incomplete rows is unbiased
-whenever missingness is independent of \code{y} \strong{given} the covariates -- even
-when it depends on the covariates strongly. That is a far weaker condition
-than MCAR, and it is why naming \code{y} changes the advice:
+Each verdict's message gives the number of missing values and the number
+of columns that have them, so that the weight of the evidence can be
+judged.
+
+When nothing is flagged (\code{"MCAR_NOT_REJECTED"}), there is no evidence that
+missingness is related to any observed variable. Such checks are useful,
+but they have limited power when the incomplete units are few (Little and
+Rubin 2019, section 3.2, p. 50): "not rejected" is not evidence of absence.
+
+When missingness is related to the covariates, with no evidence of a
+relation to the outcome given them (\code{"RELATED_TO_COVARIATES"}), complete
+cases stay unbiased for the regression on those covariates, unless
+missingness depends on unseen values. That holds whenever being complete
+is independent of \code{y} given the covariates, the incomplete covariate's own
+values included (White and Carlin 2010, section 2.2, p. 2921; Little and
+Rubin 2019, Example 3.3, p. 49). Imputation is not needed for correctness,
+though it can recover precision. This function distinguishes that case and
+says so, rather than sending you to imputation.
+
+When missingness is related to the outcome given the covariates
+(\code{"RELATED_TO_OUTCOME"}), complete-case estimates MAY be biased.
 \itemize{
-\item missingness related to the covariates but not to \code{y}: complete cases are
-unbiased. Imputation can recover precision but is not needed for
-correctness, and it adds assumptions.
-\item missingness related to \code{y} itself: complete cases are biased, and
-\code{illume::ilm_impute()} is the remedy.
+\item Not when a covariate is missing because of its own value. Complete cases
+are unbiased when missingness depends on the covariate, including the
+missing-not-at-random mechanism p(C | X, Y) = f(X), where C is being
+complete (White and Carlin 2010, p. 2921). With one incomplete covariate,
+multiple imputation is valid if missingness depends on \code{y} only, complete
+cases if it depends on the covariate only, and both only under MCAR
+(White and Carlin 2010, p. 2922). When missingness is independent of the
+outcome given the covariates, as it is there, multiple imputation is
+biased away from the null (White and Carlin 2010, abstract, p. 2920):
+imputation assuming MAR is the biased choice. The outcome test can flag
+this case (see "What can and cannot be established").
+\item Nor in the cases of Hughes et al. (2019, Table 1, p. 1297, and p. 1298):
+a linear regression whose true coefficient is zero; and the exposure odds
+ratio of a logistic regression when completeness depends on the outcome
+alone, on the outcome and the confounders, or on the outcome and the
+exposure independently. That logistic exception does not apply when the
+binary outcome dichotomises a continuous one on which missingness depends
+(Hughes et al. 2019, p. 1298).
 }
+
+Multiple imputation (\code{illume::ilm_impute()}, then \code{illume::ilm_mi_pool()})
+is the analysis under MAR. It is often preferred when auxiliary variables
+make MAR more plausible (Hughes et al. 2019, p. 1302; White and Carlin
+2010, p. 2928). Run the complete-case analysis as well: "It is, however,
+valuable to perform both MI and CC analyses ... Any differences should be
+explained" (White and Carlin 2010, p. 2928). Choosing between the two by
+their standard errors is misleading (White and Carlin 2010, abstract,
+p. 2920, and p. 2928).
+
+When \code{y} itself has missing values, its own row of the outcome test is NA:
+rows missing \code{y} leave the analysis, so the indicator is constant there.
+With missing outcome only, complete cases are unbiased exactly when the
+outcome is MAR given the covariates (White and Carlin 2010, p. 2921), and
+whether the outcome's missingness depends on its own unseen values cannot be
+tested (Little and Rubin 2019, p. 50).
+}
+
+\section{Several rows per unit}{
+
+The sources assume independent rows (Little and Rubin 2019, p. 13). With
+several rows per unit (a subject seen at several visits, the members of a
+household), every p-value computed as if the rows were independent is too
+small. Name the column that identifies the unit in \code{unit}. Each test is
+then run in one of two ways.
+\itemize{
+\item \strong{One row per unit}, when, over the rows the test uses, every unit has a
+single value of the missingness indicator AND a single value of each
+variable the test uses (\code{w} for the screen; \code{y} and the covariates for
+the outcome test). Each unit's first such row is kept, and the test runs
+exactly as above with units in place of rows; the 10- and 20-row floors
+count units. The test's variables must be constant too, not only
+missingness, because a variable that varies within a unit has no single
+value to keep.
+\item \strong{Otherwise, a cluster-robust test.} The logistic regression is fitted
+by ordinary maximum likelihood on the rows, its covariance is estimated by
+the sandwich with the scores summed within units (Liang and Zeger 1986),
+and the tested coefficients (of \code{w}, or of \code{y}) get a Wald test. With
+fewer than 20 units among the rows the test uses, the p-value is NA. No
+small-sample correction is applied; with few units the sandwich standard
+errors tend to underestimate the true ones (Agresti 2013, p. 468).
+}
+
+On the cluster-robust route, effects are computed on the rows as described
+above; on the one-row-per-unit route, on the units. The \code{method} column of
+\code{associations} and \code{outcome_test} says how each test ran: \code{"rows"} (no
+\code{unit}), \code{"units"} (one row per unit) or \code{"sandwich"}. The \code{unit} column is
+left out of the screen, the covariates, the patterns and the monotone
+check; it still appears in \code{variables}.
+
+When \code{unit} is \code{NULL} and the data look like several rows per unit, a
+warning says that the p-values assume independent rows and suggests
+\code{unit}. It is given at most once per call, even with \code{verbose = FALSE}, and
+it never changes the result. The check behind it finds a grouping only in a
+categorical column, so a numeric identifier column is not detected: name
+\code{unit} whenever the data have several rows per unit.
+}
+
+\section{What is published and what is this package's own}{
+
+Published: the condition under which complete cases are unbiased (White and
+Carlin 2010, p. 2921; Hughes et al. 2019, pp. 1296-1298; Little and Rubin
+2019, p. 49); comparing the complete with the incomplete units to judge
+MCAR, and the limits of doing so (Little and Rubin 2019, p. 50); the
+definition of a monotone pattern (Little and Rubin 2019, p. 11);
+\enc{Cramér}{Cramer}'s V (Agresti 2013, p. 110, citing
+\enc{Cramér}{Cramer} 1946); and the sandwich variance of the independence
+working model (Liang and Zeger 1986, pp. 14-15; Agresti 2013, pp.
+467-469).
+
+illumex's own operationalisations, which no source prescribes: the
+association screen's per-variable form (it compares by each variable's own
+missingness indicator, a variant of Little and Rubin's comparison of
+complete with incomplete units); its effect measures, and sorting them on
+one scale; the thresholds (\code{min_effect}, the 10- and 20-row floors, the
+20-level cut-off) and the defaults of \code{alpha} and \code{adjust}; the multiplicity
+rule and the requirement of both significance and size for a flag; the way
+monotonicity is checked; the outcome test and its effect measure; the
+treatment of Date, date-time and duration columns (categorical in the
+screen; one numeric column in the outcome test, whatever their number of
+distinct values); the verdict labels, their precedence and the wording
+of their messages; the rule choosing between one row per unit and the
+sandwich; and the Wald test of several coefficients at once.
 }
 
 \examples{
 d <- ilm_sim()
 ilm_check_missing(d, y = "score", verbose = FALSE)
+
+# A formula names the outcome and the covariates at once
+ilm_check_missing(d, score ~ income + grp, verbose = FALSE)
+
+# `id` identifies the unit: several rows per unit
+ilm_check_missing(d, y = "score", unit = "id", verbose = FALSE)
+}
+\references{
+Agresti, A. (2013). \emph{Categorical Data Analysis}, 3rd ed. Wiley.
+
+\enc{Cramér}{Cramer}, H. (1946). \emph{Mathematical Methods of Statistics}.
+Princeton University Press.
+
+Hughes, R. A., Heron, J., Sterne, J. A. C. and Tilling, K. (2019).
+Accounting for missing data in statistical analyses: multiple imputation is
+not always the answer. \emph{International Journal of Epidemiology} 48(4),
+1294-1304.
+
+Liang, K.-Y. and Zeger, S. L. (1986). Longitudinal data analysis using
+generalized linear models. \emph{Biometrika} 73, 13-22.
+
+Little, R. J. A. and Rubin, D. B. (2019). \emph{Statistical Analysis with
+Missing Data}, 3rd ed. Wiley.
+
+White, I. R. and Carlin, J. B. (2010). Bias and efficiency of multiple
+imputation compared with complete-case analysis for missing covariate
+values. \emph{Statistics in Medicine} 29, 2920-2931.
 }
 \seealso{
-\code{illume::ilm_impute()}, \code{\link[=ilm_describe_na_all]{ilm_describe_na_all()}}, \code{\link[=ilm_plot_missing]{ilm_plot_missing()}}.
+\code{illume::ilm_impute()}, \code{\link[=ilm_describe_na_all]{ilm_describe_na_all()}},
+\code{\link[=ilm_plot_missing]{ilm_plot_missing()}}
 }

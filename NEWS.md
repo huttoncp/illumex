@@ -1,5 +1,49 @@
 # illumex 0.0.8.9005
 
+* `ilm_check_missing()` was rewritten from the published conditions it rests
+  on (White and Carlin 2010; Hughes et al. 2019; Little and Rubin 2019),
+  with the sources cited in its help. The help now says which parts are
+  published and which are illumex's own: the association screen's form and
+  thresholds, the outcome test and its effect measure, and the verdicts.
+  What changes:
+  * A new argument, `unit`, names the column that identifies the unit when
+    the data have several rows per unit (visits of a subject, members of a
+    household). The tests assumed independent rows, and their p-values were
+    too small on such data.
+    * A test whose missingness and variables are constant within each unit
+      runs on one row per unit.
+    * Any other test uses a cluster-robust (sandwich) variance (Liang and
+      Zeger 1986). With fewer than 20 units, the sandwich test gives no
+      p-value.
+    * The result gains `unit`, `n_units` and, in `associations` and
+      `outcome_test`, a `method` column saying which way each test ran.
+  * Without `unit`, data that look like several rows per unit (a numeric
+    column taking one value per level of a categorical one) now give a
+    warning that the p-values assume independent rows.
+  * For a two-level categorical column, the screen's chi-squared test and
+    Cramér's V no longer apply a continuity correction: Cramér's V is
+    defined from Pearson's uncorrected statistic (Agresti 2013, pp. 75 and
+    110). Their values change slightly; other columns' do not.
+  * The verdict messages claim no more than the sources support:
+    * `"RELATED_TO_OUTCOME"` now says complete-case estimates MAY be biased,
+      not that they are. It names the case where they are not: a covariate
+      missing because of its own value, where complete cases are unbiased
+      and imputation assuming MAR is the biased choice. It advises running
+      both analyses and explaining any difference (White and Carlin 2010, p.
+      2928).
+    * `"MCAR_NOT_REJECTED"` and `"RELATED_TO_COVARIATES"` now say "no
+      evidence of", not "no relation", and report how many values are
+      missing. Such checks have little power when few values are missing.
+  * For a categorical outcome with more than two levels, the outcome test's
+    effect is now a multiple partial correlation that does not depend on the
+    order of the levels. For a numeric or two-level outcome it is unchanged.
+  * Dates now enter the outcome test as elapsed time, whatever their number
+    of distinct values. A date with more than 20 values was left out before.
+    The screen still treats a date as categorical.
+  * A result with nothing missing now has every field, `outcome_test`
+    (`NULL`) and `min_effect` included.
+  * `min_effect`, `alpha`, `adjust` and `verbose` are checked, with an error
+    naming what they must be.
 * A category's test-value in `ilm_profile()` now follows its published
   definition (Lebart, Piron and Morineau 2006): the probability of a count
   at least as large as the cluster's, under random allocation, as a standard

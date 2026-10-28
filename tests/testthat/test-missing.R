@@ -47,7 +47,7 @@ test_that("check_missing separates missingness on a covariate from on the outcom
   expect_equal(out$verdict, "RELATED_TO_OUTCOME")
   expect_true(any(out$outcome_test$flag))
   expect_gt(out$outcome_test$effect[1], 0.2)
-  expect_output(print(out), "complete cases are biased")
+  expect_output(print(out), "complete-case estimates may be biased")
 
   ## and missingness unrelated to anything is not talked up
   expect_equal(ilm_check_missing(mar_data(on = "none"), y = "y",
@@ -101,4 +101,14 @@ test_that("a malformed formula is refused with the shape it wanted", {
   expect_error(ilm_check_missing(d, y + z ~ x, verbose = FALSE), "one outcome")
   expect_error(ilm_check_missing(d, y = 42, verbose = FALSE), "single string")
   expect_error(ilm_check_missing(d, y ~ nope, verbose = FALSE), "column not found in the data")
+})
+
+test_that("a date covariate enters the outcome test as elapsed time", {
+  ## ilm_sim()'s date takes 12 monthly values; as one numeric term it gives
+  ## the outcome test for lab_value this effect and p-value, as before the
+  ## rewrite. As 11 indicators it would give 0.0266 and 0.521 instead.
+  r <- suppressWarnings(ilm_check_missing(ilm_sim(), y = "score", verbose = FALSE))
+  ot <- r$outcome_test[r$outcome_test$missing_in == "lab_value", ]
+  expect_equal(ot$effect, 0.029281, tolerance = 1e-4)
+  expect_equal(ot$p_value, 0.443801, tolerance = 1e-4)
 })
