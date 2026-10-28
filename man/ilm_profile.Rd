@@ -162,14 +162,6 @@ cat(p$summary, sep = "\n")
 \dontshow{\}) # examplesIf}
 }
 \references{
-Lebart, L., Piron, M. and Morineau, A. (2006). Statistique exploratoire
-multidimensionnelle, 4th ed. Dunod, Paris. Section 6.3.2.
-
-Morineau, A. (1984). Note sur la caract\enc{é}{e}risation statistique d'une
-classe et les valeurs-tests. Bulletin technique du Centre de Statistique
-et d'Informatique Appliqu\enc{é}{e}es 2(1-2), 20-27.
-}
-\references{
 Husson, F., \enc{Lê}{Le}, S. and \enc{Pagès}{Pages}, J. (2017). Exploratory
 Multivariate Analysis by Example Using R, 2nd ed. Chapman & Hall/CRC.
 Section 3.7.2, pp. 154-157 (the v-test, and FactoMineR's \code{catdes()}).
@@ -177,6 +169,13 @@ Section 3.7.2, pp. 154-157 (the v-test, and FactoMineR's \code{catdes()}).
 Husson, F., Josse, J., \enc{Lê}{Le}, S. and Mazet, J. FactoMineR:
 Multivariate Exploratory Data Analysis and Data Mining. R package version
 2.11. The v-tests here are adapted from its \code{catdes()}.
+
+Lebart, L., Piron, M. and Morineau, A. (2006). Statistique exploratoire
+multidimensionnelle, 4th ed. Dunod, Paris. Section 6.3.2.
+
+Morineau, A. (1984). Note sur la caract\enc{é}{e}risation statistique d'une
+classe et les valeurs-tests. Bulletin technique du Centre de Statistique
+et d'Informatique Appliqu\enc{é}{e}es 2(1-2), 20-27.
 }
 \seealso{
 \code{\link[=ilm_reduce]{ilm_reduce()}}, \code{\link[=ilm_cluster]{ilm_cluster()}}, \code{\link[=ilm_plot_profile]{ilm_plot_profile()}},
