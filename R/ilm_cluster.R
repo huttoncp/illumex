@@ -205,8 +205,12 @@ ilm_cluster_na_note <- function(data, fn) {
 #' 0 means sitting on a boundary, negative means it is closer to another cluster
 #' than to its own. This is independent of cluster size: a point can be
 #' ambiguous inside a large and otherwise stable cluster, which a size-based
-#' flag alone would never show. Kaufman and Rousseeuw treat widths below 0.25 as
-#' no substantial structure; the default threshold here is stricter at 0.1.
+#' flag alone would never show. The default threshold, 0.1, is illumex's own
+#' choice, not taken from a published source. Kaufman and Rousseeuw (1990, p.
+#' 88, Table 4) give a scale for a whole clustering, not for a row: its
+#' silhouette coefficient, the largest average silhouette width over the entire
+#' data set, with 0.25 or below meaning that no substantial structure has been
+#' found. This function does not report that coefficient.
 #'
 #' @section Size:
 #' Every clustering computes each row's silhouette from a full distance
@@ -266,6 +270,9 @@ ilm_cluster_na_note <- function(data, fn) {
 #' @references
 #' Hennig, C. (2007). Cluster-wise assessment of cluster stability.
 #' Computational Statistics and Data Analysis 52(1), 258-271.
+#'
+#' Kaufman, L. and Rousseeuw, P. J. (1990). Finding Groups in Data: An
+#' Introduction to Cluster Analysis. Wiley (reprinted 2005).
 #'
 #' Tibshirani, R., Walther, G. and Hastie, T. (2001). Estimating the number of
 #' clusters in a data set via the gap statistic. Journal of the Royal

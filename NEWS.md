@@ -1,5 +1,10 @@
 # illumex 0.0.8.9005
 
+* `ilm_cluster()`'s help no longer attributes its threshold for an ambiguous
+  row to Kaufman and Rousseeuw (1990). Their scale (0.25 or below: no
+  substantial structure) grades a whole clustering by its silhouette
+  coefficient, not a single row; the default of 0.1 is illumex's own choice.
+  No result changes.
 * `ilm_check_missing()` was rewritten from the published conditions it rests
   on (White and Carlin 2010; Hughes et al. 2019; Little and Rubin 2019),
   with the sources cited in its help. The help now says which parts are
