@@ -175,6 +175,16 @@ would be poor form to pretend otherwise.
 GPL (>= 2): the GNU General Public License, version 2 or (at your option)
 any later version.
 
+**Licence history.** Versions of illumex before 18 October 2026 (commit
+31b6b1a) were labelled with the MIT licence. That label was wrong for part
+of the code: those versions included code adapted from FactoMineR, and
+possibly from PCAmixdata, both licensed under the GPL (>= 2). Code adapted
+from GPL-licensed packages can't be offered under the MIT licence, and those
+versions also didn't credit the authors of those packages. The adapted code
+was never available under MIT and remains under its original licences. From
+18 October 2026, illumex is licensed under the GPL (>= 2), and DESCRIPTION
+credits the authors of FactoMineR and PCAmixdata.
+
 ## Contributing
 
 See [CONTRIBUTING.md](CONTRIBUTING.md). Two things get asked of anything new:
