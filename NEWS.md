@@ -95,46 +95,6 @@
 
 # illumex 0.0.8.9004
 
-* A cleaning loop: checks that find messy data, remedies written out as
-  code, and a record of what was done and why. `ilm_check_data()` runs the
-  checks and says what each found; `ilm_remedies()` lists the remedies,
-  each with a key that names the change (`drop_cols/same`) and stays the
-  same from one version to the next; `ilm_apply_remedy()` makes one, runs
-  its check again, and logs it with the reason given; and
-  `ilm_cleaning_script()` writes the log as an R script that replays the
-  cleaning on the raw data. Nothing changes until a remedy is applied. The
-  first check is `ilm_check_frame()`, the whole-frame problems
-  `ilm_frame_issues()` finds, with `ilm_drop_cols()` as their remedy; the
-  others follow. A remedy table belongs to the data it was listed for,
-  identified by `ilm_data_id()`, which changes with any value or any
-  reordering of rows or columns, and a remedy listed for other data is
-  refused. A secret a remedy needs is given as `ilm_secret("VAR")` and is
-  never written into the table, the log or the script.
-* `ilm_remedies()`, `ilm_apply_remedy()` and `ilm_remedy_table()` are now
-  generics in illumex, with tables built by `ilm_remedy_assemble()`, so
-  illume's model remedies and illumex's data remedies are one system.
-
-# illumex 0.0.8.9003
-
-* illumex is now licensed under the GNU General Public License, version 2 or
-  later (GPL (>= 2)).
-* Versions of illumex before 18 October 2026 (commit 31b6b1a) were labelled
-  with the MIT licence. That label was wrong for part of the code: those
-  versions included code adapted from FactoMineR, and possibly from
-  PCAmixdata, both licensed under the GPL (>= 2). Code adapted from
-  GPL-licensed packages can't be offered under the MIT licence, and those
-  versions also didn't credit the authors of those packages. The adapted code
-  was never available under MIT and remains under its original licences. From
-  18 October 2026, illumex is licensed under the GPL (>= 2), and DESCRIPTION
-  credits the authors of FactoMineR and PCAmixdata.
-* `ilm_frame_issues()` now spells Cramér's V with its accent in the `detail`
-  of a `redundant_categories` row ("Cramér's V = ...; each largely predicts
-  the other"), so code that matches the old "Cramer's V" text needs
-  updating. The help, comments and this file spell Cramér's name throughout.
-* `ilm_reduce()`'s help and the validation article credit the factor
-  analysis of mixed data to Escofier (1979), who proposed it, and to Pagès
-  (2004), who named it, and cite Escofier (1979). They had credited the
-  mixed method to Chavent et al., or FAMD to Pagès alone.
 * Clusters are numbered by size, largest first; between two of one size,
   the one whose first row comes first in the data is numbered first.
   `ilm_cluster()` numbered them as k-means left them, so the same
@@ -192,6 +152,46 @@
   11.3 s, and `ilm_describe_all()` on three text columns 0.47 s, where it
   took 1.56 s. Copies of a value that is not valid UTF-8 now sort
   together; they could be parted before.
+* A cleaning loop: checks that find messy data, remedies written out as
+  code, and a record of what was done and why. `ilm_check_data()` runs the
+  checks and says what each found; `ilm_remedies()` lists the remedies,
+  each with a key that names the change (`drop_cols/same`) and stays the
+  same from one version to the next; `ilm_apply_remedy()` makes one, runs
+  its check again, and logs it with the reason given; and
+  `ilm_cleaning_script()` writes the log as an R script that replays the
+  cleaning on the raw data. Nothing changes until a remedy is applied. The
+  first check is `ilm_check_frame()`, the whole-frame problems
+  `ilm_frame_issues()` finds, with `ilm_drop_cols()` as their remedy; the
+  others follow. A remedy table belongs to the data it was listed for,
+  identified by `ilm_data_id()`, which changes with any value or any
+  reordering of rows or columns, and a remedy listed for other data is
+  refused. A secret a remedy needs is given as `ilm_secret("VAR")` and is
+  never written into the table, the log or the script.
+* `ilm_remedies()`, `ilm_apply_remedy()` and `ilm_remedy_table()` are now
+  generics in illumex, with tables built by `ilm_remedy_assemble()`, so
+  illume's model remedies and illumex's data remedies are one system.
+
+# illumex 0.0.8.9003
+
+* illumex is now licensed under the GNU General Public License, version 2 or
+  later (GPL (>= 2)).
+* Versions of illumex before 18 October 2026 (commit 31b6b1a) were labelled
+  with the MIT licence. That label was wrong for part of the code: those
+  versions included code adapted from FactoMineR, and possibly from
+  PCAmixdata, both licensed under the GPL (>= 2). Code adapted from
+  GPL-licensed packages can't be offered under the MIT licence, and those
+  versions also didn't credit the authors of those packages. The adapted code
+  was never available under MIT and remains under its original licences. From
+  18 October 2026, illumex is licensed under the GPL (>= 2), and DESCRIPTION
+  credits the authors of FactoMineR and PCAmixdata.
+* `ilm_frame_issues()` now spells Cramér's V with its accent in the `detail`
+  of a `redundant_categories` row ("Cramér's V = ...; each largely predicts
+  the other"), so code that matches the old "Cramer's V" text needs
+  updating. The help, comments and this file spell Cramér's name throughout.
+* `ilm_reduce()`'s help and the validation article credit the factor
+  analysis of mixed data to Escofier (1979), who proposed it, and to Pagès
+  (2004), who named it, and cite Escofier (1979). They had credited the
+  mixed method to Chavent et al., or FAMD to Pagès alone.
 * illumex needs tinyplot 0.7.0 or later, as `ilm_plot_var_pairs()` does: it
   draws with `tinyplot::tinypairs()`, which 0.7.0 brought. It used to ask for
   0.6.1 and stop on a pairs plot there. `ilm_plot()`'s `theme` is now always
@@ -379,8 +379,8 @@
   always said; they took names only.
 * Numbers are written in full with at most 15 figures before the point
   and, below 1, at most 6 decimals, after rounding, and in R's scientific
-  notation beyond, so sentences and reports match R's printed tables (item
-  290): "1.23e+300", "1.00e-05", "5.05e-08", with the exponent's sign and
+  notation beyond, so sentences and reports match R's printed tables:
+  "1.23e+300", "1.00e-05", "5.05e-08", with the exponent's sign and
   at least two digits. To 3 figures, 0.0001 is "0.000100" and 0.00001 is
   "1.00e-05"; the decimals are counted with the zeros at the end kept, so
   dropping them does not move the switch. A value shown to significant
