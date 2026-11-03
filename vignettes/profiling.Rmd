@@ -153,9 +153,11 @@ not test them, since the clusters were found from these same variables.
 
 ## What this is, and is not
 
-It reduces the columns, clusters the rows, and describes each cluster by
-test-values (Lebart, Piron and Morineau 2006), with each cluster's stability
-reported beside it. It is exploratory. The groups it finds are descriptions
+This is a lighter-weight reimplementation of the `FactoMineR::HCPC()` plus
+`catdes()` workflow, with the stability reporting that pipeline does not do, and
+without the dependency. It describes each cluster by test-values (Lebart, Piron
+and Morineau 2006): the one for a mean is adapted from `catdes()`, and the one
+for a share is written from that definition. It is exploratory. The groups it finds are descriptions
 of the sample rather than populations, and treating a cluster label as a
 variable in a subsequent model -- then testing whether the clusters differ on
 the variables that defined them -- is circular.

@@ -576,7 +576,7 @@ one, which a size-based check would never surface.
 p$cluster$clusters
 ```
 
-A cluster is characterised by test-values (Lebart, Piron and Morineau 2006). It is a threshold rather than a test, and is documented as one: the
+A cluster is characterised by test-values (Lebart, Piron and Morineau 2006), the same device `FactoMineR`'s `catdes()` uses. It is a threshold rather than a test, and is documented as one: the
 clusters were found from the very coordinates being tested, so the usual
 sampling argument does not apply. What speaks to whether a partition is real is
 the stability and silhouette figures above, not the characterisation.
