@@ -65,12 +65,14 @@ ilm_fmt_pct <- function(p, decimals = 0L) ilm_disp(p, "percent", decimals)$text
 
 ## The v-test of the rows in `m` against all rows, for a mean and for a share.
 ##
-## Copyright notice: ilm_vtest_mean() and ilm_vtest_share() are adapted from
-## catdes() in the FactoMineR package (version 2.11), Copyright (C) François
-## Husson, Julie Josse, Sébastien Lê and Jeremy Mazet, licensed under the GNU
-## General Public License, version 2 or later. See Husson, Lê and Pagès (2017),
-## Exploratory Multivariate Analysis by Example Using R, 2nd ed., section
-## 3.7.2, pp. 154-157.
+## Copyright notice: ilm_vtest_mean() is adapted from catdes() in the
+## FactoMineR package (version 2.11), Copyright (C) François Husson, Julie
+## Josse, Sébastien Lê and Jeremy Mazet, licensed under the GNU General Public
+## License, version 2 or later. See Husson, Lê and Pagès (2017), Exploratory
+## Multivariate Analysis by Example Using R, 2nd ed., section 3.7.2,
+## pp. 154-157. ilm_vtest_share(), below, is not adapted from catdes(): it is
+## written from its published definition (Lebart, Piron and Morineau 2006,
+## section 6.3.2).
 ##
 ## The test-value of the rows in `m` against all rows, for a mean: the
 ## difference of means over the standard deviation of a mean of n_k values

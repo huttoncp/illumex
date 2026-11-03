@@ -1,5 +1,11 @@
 # illumex 0.0.8.9005
 
+* The credits now say that only `ilm_vtest_mean()`, the v-test of a mean, is
+  adapted from FactoMineR's `catdes()`. `ilm_vtest_share()`, the v-test of a
+  share, was written from its published definition (Lebart, Piron and
+  Morineau 2006, section 6.3.2), and the README, its code and
+  `ilm_profile()`'s help now credit that source. FactoMineR's authors remain
+  copyright holders. No result changes.
 * `ilm_cluster()`'s help no longer attributes its threshold for an ambiguous
   row to Kaufman and Rousseeuw (1990). Their scale (0.25 or below: no
   substantial structure) grades a whole clustering by its silhouette

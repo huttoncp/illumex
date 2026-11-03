@@ -168,7 +168,8 @@ Section 3.7.2, pp. 154-157 (the v-test, and FactoMineR's \code{catdes()}).
 
 Husson, F., Josse, J., \enc{Lê}{Le}, S. and Mazet, J. FactoMineR:
 Multivariate Exploratory Data Analysis and Data Mining. R package version
-2.11. The v-tests here are adapted from its \code{catdes()}.
+2.11. The v-test for a mean here is adapted from its \code{catdes()}; the
+v-test for a share is written from Lebart, Piron and Morineau (2006).
 
 Lebart, L., Piron, M. and Morineau, A. (2006). Statistique exploratoire
 multidimensionnelle, 4th ed. Dunod, Paris. Section 6.3.2.
