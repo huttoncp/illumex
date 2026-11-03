@@ -14,15 +14,15 @@ Authors@R: c(person(given = "Craig P.", family = "Hutton",
     person("Jérémy", "Mazet", role = "cph",
            comment = "FactoMineR: ilm_vtest_mean() adapted from catdes()"),
     person("Marie", "Chavent", role = "cph",
-           comment = "PCAmixdata: ilm_famd() validated against, and possibly adapted from, PCAmix()"),
+           comment = "PCAmixdata: ilm_famd() and ilm_famd_z() validated against, and possibly adapted from, PCAmix()"),
     person("Vanessa", "Kuentz", role = "cph",
-           comment = "PCAmixdata: ilm_famd() validated against, and possibly adapted from, PCAmix()"),
+           comment = "PCAmixdata: ilm_famd() and ilm_famd_z() validated against, and possibly adapted from, PCAmix()"),
     person("Amaury", "Labenne", role = "cph",
-           comment = "PCAmixdata: ilm_famd() validated against, and possibly adapted from, PCAmix()"),
+           comment = "PCAmixdata: ilm_famd() and ilm_famd_z() validated against, and possibly adapted from, PCAmix()"),
     person("Benoit", "Liquet", role = "cph",
-           comment = "PCAmixdata: ilm_famd() validated against, and possibly adapted from, PCAmix()"),
+           comment = "PCAmixdata: ilm_famd() and ilm_famd_z() validated against, and possibly adapted from, PCAmix()"),
     person("Jérôme", "Saracco", role = "cph",
-           comment = "PCAmixdata: ilm_famd() validated against, and possibly adapted from, PCAmix()"))
+           comment = "PCAmixdata: ilm_famd() and ilm_famd_z() validated against, and possibly adapted from, PCAmix()"))
 Description: The exploratory half of the 'illume' workflow, usable on its
     own. It describes every column of a data frame in one call, with a
     Gaussian index in place of a normality test; counts values, finds

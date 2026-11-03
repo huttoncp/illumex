@@ -6,6 +6,10 @@
   Morineau 2006, section 6.3.2), and the README, its code and
   `ilm_profile()`'s help now credit that source. FactoMineR's authors remain
   copyright holders. No result changes.
+* The credits for PCAmixdata now name `ilm_famd_z()`, the internal function
+  that builds the matrix `ilm_famd()` reduces, alongside `ilm_famd()`: it is
+  part of the code validated against, and possibly adapted from,
+  PCAmixdata's `PCAmix()`. No result changes.
 * `ilm_cluster()`'s help no longer attributes its threshold for an ambiguous
   row to Kaufman and Rousseeuw (1990). Their scale (0.25 or below: no
   substantial structure) grades a whole clustering by its silhouette

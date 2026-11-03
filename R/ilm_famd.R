@@ -31,7 +31,8 @@
 ##     arXiv:1411.4911.
 ## ---------------------------------------------------------------------------
 
-## Copyright notice: ilm_famd() was validated against, and may be adapted from,
+## Copyright notice: ilm_famd() and ilm_famd_z(), below, which builds the
+## matrix ilm_famd() reduces, were validated against, and may be adapted from,
 ## PCAmix() in the PCAmixdata package (version 3.1), Copyright (C) Marie
 ## Chavent, Vanessa Kuentz, Amaury Labenne, Benoit Liquet and Jérôme Saracco,
 ## licensed under the GNU General Public License, version 2 or later.
@@ -84,6 +85,7 @@ ilm_famd <- function(quanti = NULL, quali = NULL, ndim = 5L) {
 ## The weighted matrix ilm_famd() takes the SVD of, before the 1/sqrt(n) row
 ## weight, and which original column each of its columns came from. Split out
 ## so that parallel analysis (R/ilm_pa.R) permutes exactly what is reduced.
+## The copyright notice above ilm_famd() covers it.
 #' @keywords internal
 #' @noRd
 ilm_famd_z <- function(quanti = NULL, quali = NULL) {
