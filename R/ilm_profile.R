@@ -38,7 +38,9 @@
 #' probability of the cluster's count, as a standard normal quantile (the
 #' test-value of Lebart, Piron and Morineau 2006, who define it for an
 #' over-represented value; an under-represented one takes the mirrored lower
-#' tail, and a count exactly at its expectation 0, illumex's own extension)
+#' tail, and a count exactly at its expectation, or one whose tail is above
+#' one half, 0, illumex's own extension, so the sign always says which way
+#' the share differs)
 #' -- and named, strongest first, up to
 #' `top_n_vars`, when the v-test clears `vtest_threshold` and the difference
 #' is big enough to matter: 0.2 standard deviations for a number, 10

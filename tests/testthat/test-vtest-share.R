@@ -139,3 +139,39 @@ test_that("a very extreme case returns a large finite value", {
   expect_lt(z_under, -100)
   expect_gte(z_under, -sqrt(2 * n * log(2)))
 })
+
+test_that("the sign always follows the direction, and a tail above one half gives 0", {
+  # n = 30, n_k = 7, n_j = 7, x = 2: over-represented (2 / 7 > 7 / 30), yet
+  # P(N >= 2) = 0.53, whose upper normal quantile is negative (-0.081).
+  hit <- rep(c(TRUE, FALSE), c(7, 23))
+  m <- c(rep(c(TRUE, FALSE), c(2, 5)), rep(c(TRUE, FALSE), c(5, 18)))
+  expect_gt(stats::phyper(1, 7, 23, 7, lower.tail = FALSE), 0.5)
+  expect_identical(ilm_vtest_share(hit, m), 0)
+
+  # A level on one row, in a cluster of 99 of 100 rows: P(N >= 1) = 0.99,
+  # which would give -2.33 without the guard.
+  expect_identical(ilm_vtest_share(rep(c(TRUE, FALSE), c(1, 99)),
+                                   rep(c(TRUE, FALSE), c(99, 1))), 0)
+  # The mirror: under-represented, since a cluster of 2 of 100 rows lacks
+  # the level (0 / 2 < 1 / 100), yet P(N <= 0) = 0.98.
+  expect_identical(ilm_vtest_share(rep(c(TRUE, FALSE), c(1, 99)),
+                                   rep(c(FALSE, TRUE, FALSE), c(1, 2, 97))), 0)
+
+  # Every count for n = 12: the value is never of the wrong sign, and it
+  # equals the tail's normal quantile whenever the tail is below one half.
+  n <- 12
+  for (n_k in 2:(n - 1)) for (n_j in 1:(n - 1)) {
+    for (x in max(0, n_k + n_j - n):min(n_k, n_j)) {
+      hit <- c(rep(TRUE, n_j), rep(FALSE, n - n_j))
+      m <- c(rep(TRUE, x), rep(FALSE, n_j - x), rep(TRUE, n_k - x),
+             rep(FALSE, n - n_j - (n_k - x)))
+      v <- ilm_vtest_share(hit, m)
+      d <- x * n - n_j * n_k
+      p <- if (d > 0) stats::phyper(x - 1, n_j, n - n_j, n_k, lower.tail = FALSE)
+           else stats::phyper(x, n_j, n - n_j, n_k)
+      expect_true(v * d >= 0)
+      if (d != 0 && p < 0.5) expect_equal(abs(v), stats::qnorm(p, lower.tail = FALSE))
+      if (d != 0 && p >= 0.5) expect_identical(v, 0)
+    }
+  }
+})

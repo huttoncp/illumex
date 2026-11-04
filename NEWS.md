@@ -1,5 +1,12 @@
 # illumex 0.0.8.9005
 
+* A category's v-test in `ilm_profile()` no longer has the wrong sign. When
+  a count was on one side of its expectation but not beyond the middle of
+  its distribution, its tail was above one half, and the normal quantile of
+  that tail had the opposite sign: a level over-represented in a cluster
+  could get a negative v-test, and an under-represented one a positive v-test.
+  Such a count now gets 0, as a count exactly at its expectation does.
+  Values whose tail is below one half are unchanged.
 * The credits now say that only `ilm_vtest_mean()`, the v-test of a mean, is
   adapted from FactoMineR's `catdes()`. `ilm_vtest_share()`, the v-test of a
   share, was written from its published definition (Lebart, Piron and

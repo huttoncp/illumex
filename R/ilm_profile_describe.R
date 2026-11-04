@@ -105,7 +105,7 @@ ilm_vtest_mean <- function(x, m) {
 ##     the z > 0 with P(Z >= z) = p. This is the published definition
 ##     (Lebart et al., p. 293 and its footnote 2).
 ##
-##   Two cases the sources do not define, decided here as this package's own
+##   Three cases the sources do not define, decided here as this package's own
 ##   extension, not Lebart's:
 ##   - under-representation, x / n_k < n_j / n: by symmetry, p = P(N <= x),
 ##     the full lower tail including the observed count, and the test-value
@@ -113,6 +113,12 @@ ilm_vtest_mean <- function(x, m) {
 ##     value. (Husson et al., p. 157, say only that the sign indicates
 ##     over- or under-representation.)
 ##   - x / n_k = n_j / n exactly: the test-value is 0.
+##   - a tail above one half: the full tail, including the observed count, can
+##     exceed 0.5 when the count lies on one side of its expectation but not
+##     beyond the distribution's middle (n = 30, n_k = 7, n_j = 7, x = 2:
+##     x / n_k > n_j / n, yet P(N >= 2) = 0.53). No z of the right sign has
+##     that tail, and its normal quantile would have the wrong one, so the
+##     test-value is 0, as at the expectation.
 ##
 ##   So a positive value means the level is over-represented in the cluster
 ##   and a negative value means it is under-represented. The normal
@@ -182,14 +188,15 @@ ilm_vtest_share <- function(hit, m) {
     # Over-represented: log P(N >= x) = log P(N > x - 1), upper tail.
     log_p <- stats::phyper(x - 1, n_j, n - n_j, n_k,
                            lower.tail = FALSE, log.p = TRUE)
-    # The z with P(Z >= z) = p; positive.
-    z <- stats::qnorm(log_p, lower.tail = FALSE, log.p = TRUE)
+    # The z with P(Z >= z) = p; positive when p < 0.5, and never below 0:
+    # a tail above one half gives 0, as at the expectation.
+    z <- max(stats::qnorm(log_p, lower.tail = FALSE, log.p = TRUE), 0)
   } else {
     # Under-represented: log P(N <= x), lower tail.
     log_p <- stats::phyper(x, n_j, n - n_j, n_k,
                            lower.tail = TRUE, log.p = TRUE)
-    # The z with P(Z <= z) = p; negative.
-    z <- stats::qnorm(log_p, lower.tail = TRUE, log.p = TRUE)
+    # The z with P(Z <= z) = p; negative when p < 0.5, and never above 0.
+    z <- min(stats::qnorm(log_p, lower.tail = TRUE, log.p = TRUE), 0)
   }
 
   z
