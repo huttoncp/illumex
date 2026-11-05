@@ -56,5 +56,5 @@ Applies \code{\link[=ilm_counts_tb]{ilm_counts_tb()}} to each column and stacks 
 \code{variable} column.
 }
 \examples{
-ilm_counts_tb_all(ilm_sim()[, c("grp", "site")], n = 2)
+ilm_counts_tb_all(ilm_example_data()[, c("grp", "site")], n = 2)
 }

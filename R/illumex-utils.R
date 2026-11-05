@@ -12,7 +12,7 @@
 #'
 #' @name ilm_progress_arg
 #' @examples
-#' d <- ilm_sim()
+#' d <- ilm_example_data()
 #' ilm_boot_ci(d, "score", R = 200, progress = FALSE)
 NULL
 

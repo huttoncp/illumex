@@ -46,21 +46,21 @@ test_that("each dimension's sign is fixed: the largest loading is positive", {
     expect_true(all(big > 0))
   }
   ## so the same data give the same coordinates whatever the column order
-  d <- ilm_sim()[c("score", "income", "visits", "claims", "grp")]
+  d <- ilm_example_data()[c("score", "income", "visits", "claims", "grp")]
   a <- suppressMessages(ilm_reduce(d))
   b <- suppressMessages(ilm_reduce(d[c(5, 4, 3, 2, 1)]))
   expect_equal(a$ind_coord, b$ind_coord, tolerance = 1e-10)
 })
 
 test_that("ilm_reduce() needs nothing installed for mixed data", {
-  d <- ilm_sim()[c("score", "grp", "site")]
+  d <- ilm_example_data()[c("score", "grp", "site")]
   r <- suppressMessages(ilm_reduce(d))
   expect_identical(r$method, "famd")
   expect_equal(sum(r$eig$pct_var), 100, tolerance = 1e-10)
 })
 
 test_that("method = \"pcamix\", the former name, still means \"famd\"", {
-  d <- ilm_sim()[c("score", "income", "grp", "site")]
+  d <- ilm_example_data()[c("score", "income", "grp", "site")]
   f <- suppressMessages(ilm_reduce(d, method = "famd"))
   expect_identical(suppressMessages(ilm_reduce(d)), f)
   expect_identical(suppressMessages(ilm_reduce(d, method = "pcamix")), f)

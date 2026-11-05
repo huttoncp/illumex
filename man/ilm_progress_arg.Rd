@@ -13,6 +13,6 @@ The bar costs nothing worth measuring: on 2000 bootstrap replicates over
 20,000 rows the loop took no longer with a bar than without one.
 }
 \examples{
-d <- ilm_sim()
+d <- ilm_example_data()
 ilm_boot_ci(d, "score", R = 200, progress = FALSE)
 }

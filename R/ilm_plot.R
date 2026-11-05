@@ -39,7 +39,7 @@ ILM_GEOMS <- c("auto", "histogram", "density", "bar", "box", "violin",
 #' @param n_max Above this many points a scatter becomes a binned density.
 #' @return A list with `geom`, `reason` and `n`.
 #' @examples
-#' d <- ilm_sim()
+#' d <- ilm_example_data()
 #' ilm_pick_geom(d$score)
 #' ilm_pick_geom(d$score, d$income)
 #' @export
@@ -244,7 +244,7 @@ ilm_geom_spec <- function(geom = NULL) {
 #' @seealso [ilm_geom_spec()], [ilm_pick_geom()], [ilm_plot_all()],
 #'   `illume::ilm_plot_model()`.
 #' @examples
-#' d <- ilm_sim()
+#' d <- ilm_example_data()
 #' ilm_plot(d, "score")
 #' ilm_plot(d, "grp", "score", geom = "violin", fill = "lightblue")
 #' ilm_plot(d, "score", "income", by = "grp", alpha = 0.6)
@@ -448,7 +448,7 @@ ilm_bin2d <- function(x, y, bins = 60L, xlab = "", ylab = "", main = "", sub = "
 #' @param max_panels Stop after this many variables.
 #' @return Invisibly, a list of the per-panel results.
 #' @examples
-#' ilm_plot_all(ilm_sim(), class = "numeric", max_panels = 4)
+#' ilm_plot_all(ilm_example_data(), class = "numeric", max_panels = 4)
 #' @export
 ilm_plot_all <- function(data, by = NULL, cols = NULL, class = "all", max_panels = 12L,
                          n_max = 5000L, verdict = FALSE, ..., cols_negate = FALSE,
@@ -500,7 +500,7 @@ ilm_plot_all <- function(data, by = NULL, cols = NULL, class = "all", max_panels
 #' @return Invisibly, the named vector of proportions.
 #' @seealso [ilm_describe_na_all()] for the same information as a table.
 #' @examples
-#' ilm_plot_missing(ilm_sim())
+#' ilm_plot_missing(ilm_example_data())
 #' @inheritParams ilm_reduce
 #' @export
 ilm_plot_missing <- function(data, ...,

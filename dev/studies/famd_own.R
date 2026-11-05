@@ -9,8 +9,8 @@
 ## Design, fixed before any full run.
 ##   Agreement, against PCAmix (eigenvalues, individual coordinates up to
 ##   sign, squared loadings) and FactoMineR::FAMD() (eigenvalues and
-##   coordinates), on four kinds of data from ilm_sim(): mixed (four numeric
-##   columns, grp and site), numeric only, categorical only (grp, site,
+##   coordinates), on four kinds of data from ilm_example_data(): mixed (four
+##   numeric columns, grp and site), numeric only, categorical only (grp, site,
 ##   flag), and mixed with gaps (3 missing numbers, 2 missing categories;
 ##   FactoMineR is not compared there, since it imputes differently).
 ##   Reported as the largest absolute difference.
@@ -53,7 +53,7 @@ agree <- function(a, b, k, sq = TRUE) {
 }
 
 ## ---- agreement --------------------------------------------------------------
-d <- ilm_sim()
+d <- ilm_example_data()
 q <- d[c("score", "income", "visits", "claims")]
 ql <- data.frame(grp = d$grp, site = factor(d$site))
 qn <- q; qn$income[c(3, 50, 99)] <- NA

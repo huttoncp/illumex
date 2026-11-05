@@ -31,13 +31,13 @@ was split from and which attaches it, so exploring and fitting feel like one
 workflow rather than two packages bolted together.
 
 ```{r}
-d <- ilm_sim()
+d <- ilm_example_data()
 dim(d)
 ```
 
-`ilm_sim()` generates a synthetic dataset for examples and tests. Every column
-is there because some check should have something to say about it — a fixture
-where nothing is wrong tests nothing.
+`ilm_example_data()` generates a synthetic dataset for examples and tests.
+Every column is there because some check should have something to say about
+it — a fixture where nothing is wrong tests nothing.
 
 ## Describing everything at once
 

@@ -299,7 +299,7 @@ ilm_plot_var_pairs <- function(data, cols = NULL, by = NULL, ..., cols_negate = 
 #' @return `NULL`, invisibly.
 #' @seealso [ilm_boot_diff()].
 #' @examples
-#' d <- ilm_sim()
+#' d <- ilm_example_data()
 #' b <- ilm_boot_diff(d, "score", "grp", R = 300, seed = 1)
 #' ilm_plot_boot_diff(b, row = 1)
 #' @export

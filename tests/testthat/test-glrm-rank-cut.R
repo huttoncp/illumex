@@ -6,7 +6,7 @@
 
 test_that("a dimension with no variation is not kept, printed or recorded", {
   q <- function(e) suppressMessages(suppressWarnings(e))
-  d <- ilm_sim(n_id = 20, n_period = 6)
+  d <- ilm_example_data(n_id = 20, n_period = 6)
   dd <- d[c("score", "income", "visits", "claims", "grp")]
   r <- q(ilm_reduce(dd, method = "glrm", progress = FALSE))
   ## this case, the one the print test holds: 5 fitted, 4 with variation

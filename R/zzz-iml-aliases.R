@@ -396,10 +396,10 @@ iml_sample <- ilm_sample
 #' @export
 iml_secret <- ilm_secret
 
-#' @rdname ilm_sim
+#' @rdname ilm_example_data
 #' @usage NULL
 #' @export
-iml_sim <- ilm_sim
+iml_example_data <- ilm_example_data
 
 #' @rdname ilm_subset
 #' @usage NULL

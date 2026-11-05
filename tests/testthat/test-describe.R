@@ -2,7 +2,7 @@
 # places they pin bugs that were found by testing rather than by inspection.
 
 test_that("numeric output carries the documented columns", {
-  d <- ilm_sim(n_id = 20)
+  d <- ilm_example_data(n_id = 20)
   r <- ilm_describe(d, "score")
   expect_true(all(c("obs", "n", "na", "mean", "sd", "se", "p0", "p50", "p100",
                     "gauss", "gauss_note") %in% names(r)))
@@ -17,7 +17,7 @@ test_that("digits reaches the quantile columns when printed, and the values stay
   # it did not: every other numeric column honoured digits and the percentiles
   # printed unrounded, which is only visible on a large-scale variable. The
   # values are now kept whole and `digits` is how they print.
-  d <- ilm_sim(n_id = 20)
+  d <- ilm_example_data(n_id = 20)
   r <- ilm_describe(d, "income", digits = 1)
   shown <- ilm_describe_rounded(r)
   q <- unname(stats::quantile(d$income, c(0, 0.5, 1), na.rm = TRUE))
@@ -29,7 +29,7 @@ test_that("digits reaches the quantile columns when printed, and the values stay
 })
 
 test_that("probs drives both the quantiles and the column names", {
-  d <- ilm_sim(n_id = 20)
+  d <- ilm_example_data(n_id = 20)
   r <- ilm_describe(d, "score", probs = c(0.025, 0.25, 0.5, 0.975))
   expect_true(all(c("p2.5", "p25", "p50", "p97.5") %in% names(r)))
   expect_false("p0" %in% names(r))
@@ -37,13 +37,13 @@ test_that("probs drives both the quantiles and the column names", {
 })
 
 test_that("skew and kurt appear only when asked for", {
-  d <- ilm_sim(n_id = 20)
+  d <- ilm_example_data(n_id = 20)
   r <- ilm_describe(d, "score", skew = TRUE, kurt = TRUE)
   expect_true(all(c("skew", "kurt") %in% names(r)))
 })
 
 test_that("dispersion separates Poisson from negative binomial", {
-  d <- ilm_sim()
+  d <- ilm_example_data()
   r <- ilm_describe_all(d, class = "numeric")
   disp <- setNames(r$dispersion, r$variable)
   expect_lt(abs(disp[["visits"]] - 1), 0.6)   # Poisson: variance ~ mean
@@ -65,7 +65,7 @@ test_that("a variable that is not a count gets no dispersion", {
 })
 
 test_that("constant columns are split into their own section", {
-  d <- ilm_sim(n_id = 20)
+  d <- ilm_example_data(n_id = 20)
   r <- ilm_describe_all(d)
   expect_true("constant" %in% names(r))
   expect_true("cohort" %in% r$constant$variable)
@@ -76,7 +76,7 @@ test_that("constant columns are split into their own section", {
 })
 
 test_that("categorical checks fire on the things that break models", {
-  d <- ilm_sim()
+  d <- ilm_example_data()
   r <- ilm_describe_all(d, class = "categorical")
   g <- r[r$variable == "grp", ]
   s <- r[r$variable == "site", ]
@@ -88,14 +88,14 @@ test_that("categorical checks fire on the things that break models", {
 })
 
 test_that("a near-constant logical is flagged as a separation risk", {
-  d <- ilm_sim()
+  d <- ilm_example_data()
   r <- ilm_describe_all(d, class = "logical")
   expect_match(r$note[r$variable == "consented"], "separation risk")
   expect_equal(r$note[r$variable == "flag"], "")
 })
 
 test_that("date summaries report spacing, gaps and duplicates", {
-  d <- ilm_sim()
+  d <- ilm_example_data()
   r <- ilm_describe_all(d, class = "time")
   expect_equal(r$spacing, "monthly")
   expect_true(r$regular)
@@ -122,7 +122,7 @@ test_that("real gaps are still caught", {
 })
 
 test_that("by works on describe and on describe_all", {
-  d <- ilm_sim(n_id = 30)
+  d <- ilm_example_data(n_id = 30)
   r1 <- ilm_describe(d, "score", by = "grp")
   expect_gt(nrow(r1), 1L)
   expect_true("grp" %in% names(r1))
@@ -132,7 +132,7 @@ test_that("by works on describe and on describe_all", {
 })
 
 test_that("misspecified arguments name the valid options", {
-  d <- ilm_sim(n_id = 20)
+  d <- ilm_example_data(n_id = 20)
   expect_error(ilm_describe_all(d, class = "numerical"), "Options are")
   expect_error(ilm_describe_all(d, class = "numerical"), "'numeric'")
   expect_error(ilm_describe_all(d, by = "nope"), "`by` takes column names; nope is not one", fixed = TRUE)
@@ -230,7 +230,7 @@ test_that("nesting is not claimed from levels seen once", {
 test_that("ilm_frame_issues stays quiet on ordinary data and says when it cannot judge", {
   expect_equal(nrow(ilm_frame_issues(mtcars)), 0L)
   expect_equal(nrow(ilm_frame_issues(iris)), 0L)
-  expect_identical(ilm_frame_issues(ilm_sim())$issue, "constant")
+  expect_identical(ilm_frame_issues(ilm_example_data())$issue, "constant")
   r <- ilm_frame_issues(frame_fixture()[1:5, c("a", "b", "c", "clinic", "sex")])
   expect_true("rank_unchecked" %in% r$issue)
   z <- ilm_frame_issues(data.frame(x = rnorm(20), y = rnorm(20)))

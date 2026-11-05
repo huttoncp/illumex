@@ -105,7 +105,7 @@ a kept row has both, are still in one piece. A level left with fewer than
 the levels' values.
 }
 \examples{
-d <- ilm_sim()
+d <- ilm_example_data()
 ilm_describe(d, "score", subset = ilm_sample(prop = 0.5, seed = 1))
 ## a grouped holdout: the ids not drawn
 ilm_describe(d, "score", subset = ilm_sample(5, by = "id", seed = 1),

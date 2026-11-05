@@ -60,7 +60,7 @@ that, and the cluster takes its value from the rows that have it. Rows
 without a cluster are left out, and counted.
 }
 \examples{
-d <- ilm_sim(n_id = 30, n_period = 6)
+d <- ilm_example_data(n_id = 30, n_period = 6)
 ilm_describe_clusters(d, "id")
 }
 \seealso{

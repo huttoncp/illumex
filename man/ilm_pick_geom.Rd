@@ -22,7 +22,7 @@ Returns the choice without drawing anything, so the dispatch can be checked
 before committing to a plot of many million rows.
 }
 \examples{
-d <- ilm_sim()
+d <- ilm_example_data()
 ilm_pick_geom(d$score)
 ilm_pick_geom(d$score, d$income)
 }

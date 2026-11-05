@@ -216,7 +216,7 @@ ilm_stat_fun <- function(stat) {
 #' Chapman and Hall.
 #' @seealso [ilm_boot_diff()] for a difference between two groups.
 #' @examples
-#' d <- ilm_sim()
+#' d <- ilm_example_data()
 #' ilm_boot_ci(d, "score", R = 200, seed = 1)
 #' ilm_boot_ci(d, "score", by = "grp", R = 200, seed = 1)
 #' ilm_boot_ci(d, c("score", "income"), stat = "median", R = 200, seed = 1)
@@ -475,7 +475,7 @@ ilm_boot_pairs <- function(lv, ref = NULL) {
 #' Wiley.
 #' @seealso [ilm_boot_ci()] for a single group.
 #' @examples
-#' d <- ilm_sim()
+#' d <- ilm_example_data()
 #' ## all pairs, simultaneous by default
 #' ilm_boot_diff(d, "score", "grp", R = 300, seed = 1)
 #' ## the same thing through a formula
@@ -712,7 +712,7 @@ ilm_boot_diff_infer <- function(D, dh, conf, ci_type, adjust) {
 #' @return A data frame with `obs`, `n`, `na` and `p_na`.
 #' @seealso [ilm_describe_na_all()], [ilm_plot_missing()].
 #' @examples
-#' ilm_describe_na(ilm_sim(), "lab_value")
+#' ilm_describe_na(ilm_example_data(), "lab_value")
 #' @inheritParams ilm_reduce
 #' @export
 ilm_describe_na <- function(data, y = NULL, by = NULL, digits = 4, subset = NULL,
@@ -760,7 +760,7 @@ ilm_describe_na <- function(data, y = NULL, by = NULL, digits = 4, subset = NULL
 #' @param sort Sort by proportion missing, descending.
 #' @return A data frame with `variable`, `obs`, `n`, `na` and `p_na`.
 #' @examples
-#' ilm_describe_na_all(ilm_sim())
+#' ilm_describe_na_all(ilm_example_data())
 #' @export
 ilm_describe_na_all <- function(data, by = NULL, cols = NULL, digits = 4, sort = TRUE,
                                 cols_negate = FALSE, cols_fixed = FALSE, subset = NULL,

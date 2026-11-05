@@ -6,7 +6,7 @@
 # sets its own seed, so the text is the same wherever it runs.
 print_cases <- function() {
   q <- function(e) suppressMessages(suppressWarnings(e))
-  d <- ilm_sim(n_id = 20, n_period = 6)
+  d <- ilm_example_data(n_id = 20, n_period = 6)
   dd <- d[c("score", "income", "visits", "claims", "grp")]
   mt <- mtcars
   mt$wt_copy <- mt$wt

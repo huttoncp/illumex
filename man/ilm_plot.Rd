@@ -117,7 +117,7 @@ spine \tab categorical \tab required categorical \tab border width
 }
 
 \examples{
-d <- ilm_sim()
+d <- ilm_example_data()
 ilm_plot(d, "score")
 ilm_plot(d, "grp", "score", geom = "violin", fill = "lightblue")
 ilm_plot(d, "score", "income", by = "grp", alpha = 0.6)

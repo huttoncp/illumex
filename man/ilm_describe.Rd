@@ -110,7 +110,7 @@ A minimum or maximum outside what the column can hold, such as an age of
 replaces it with \code{NA}.
 }
 \examples{
-d <- ilm_sim()
+d <- ilm_example_data()
 ilm_describe(d, "score")
 ilm_describe(d, "income", probs = c(0.1, 0.5, 0.9))
 ilm_describe(d, "score", by = "grp")

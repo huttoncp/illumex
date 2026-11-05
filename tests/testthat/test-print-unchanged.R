@@ -15,7 +15,7 @@ test_that("every recorded print is unchanged, line for line", {
 })
 
 test_that("the results carry their class, in front of what they were", {
-  d <- ilm_sim(n_id = 10, n_period = 4)
+  d <- ilm_example_data(n_id = 10, n_period = 4)
   q <- function(e) suppressMessages(suppressWarnings(e))
   expect_identical(class(q(ilm_describe(d, "score"))), c("ilm_describe", "data.frame"))
   expect_s3_class(q(ilm_describe_all(d)), "ilm_describe_all")
@@ -41,7 +41,7 @@ test_that("the results carry their class, in front of what they were", {
 
 test_that("the cluster and reduction tables keep full precision", {
   skip_if_not_installed("cluster")
-  d <- ilm_sim(n_id = 20, n_period = 6)[c("score", "income", "visits", "claims", "grp")]
+  d <- ilm_example_data(n_id = 20, n_period = 6)[c("score", "income", "visits", "claims", "grp")]
   r <- suppressMessages(ilm_reduce(d))
   expect_equal(r$eig$pct_var, unname(r$fit$eig[, 2]), tolerance = 0)
   cl <- suppressMessages(ilm_cluster(r, k = 3, B = 10, seed = 1))

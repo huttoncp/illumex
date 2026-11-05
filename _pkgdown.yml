@@ -145,7 +145,7 @@ reference:
   desc: >
     A grouped data set with a known structure, used throughout the examples.
   contents:
-  - ilm_sim
+  - ilm_example_data
 - title: "Shared parameters and print methods"
   desc: >
     Documentation shared across functions, and methods you call by printing rather than by name.

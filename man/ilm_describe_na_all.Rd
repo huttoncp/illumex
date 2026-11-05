@@ -58,5 +58,5 @@ Sorted with the most missing first, since those are the variables worth
 looking at.
 }
 \examples{
-ilm_describe_na_all(ilm_sim())
+ilm_describe_na_all(ilm_example_data())
 }

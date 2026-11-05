@@ -72,7 +72,7 @@ grp <- list(
 
   list("Example data",
        "A grouped data set with a known structure, used throughout the examples.",
-       function(x) x == "ilm_sim")
+       function(x) x == "ilm_example_data")
 )
 
 assigned <- character(0)

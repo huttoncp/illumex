@@ -34,7 +34,7 @@ test_that("k-means allows 100 iterations, and a start that stops is counted, not
   expect_no_warning(fk2(x, 6))
   expect_identical(tally2$not_converged, 0L)
   ## the result records its starts, and prints a line only when some stopped
-  cl <- suppressMessages(ilm_cluster(ilm_reduce(ilm_sim()[c("score", "income", "visits")]),
+  cl <- suppressMessages(ilm_cluster(ilm_reduce(ilm_example_data()[c("score", "income", "visits")]),
                                      k = 3, B = 5, seed = 1, progress = FALSE))
   expect_gt(cl$kmeans_starts, 0L)
   expect_identical(cl$kmeans_not_converged, 0L)

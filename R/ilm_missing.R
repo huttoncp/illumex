@@ -358,7 +358,7 @@
 #'   [ilm_plot_missing()]
 #'
 #' @examples
-#' d <- ilm_sim()
+#' d <- ilm_example_data()
 #' ilm_check_missing(d, y = "score", verbose = FALSE)
 #'
 #' # A formula names the outcome and the covariates at once

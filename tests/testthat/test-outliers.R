@@ -141,7 +141,7 @@ test_that("plot_var picks the geometry from the column types", {
 })
 
 test_that("boot_diff keeps its draws so the distribution can be drawn", {
-  d <- ilm_sim()
+  d <- ilm_example_data()
   b <- ilm_boot_diff(d, "score", "grp", R = 200, seed = 1)
   dr <- attr(b, "draws")
   expect_false(is.null(dr))

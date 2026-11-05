@@ -59,9 +59,9 @@
 ##                     set to 0: 11 values, so called discrete and never
 ##                     tested under any rule. Shown to say what the gates
 ##                     leave unseen.
-##     claims_like     ilm_sim()'s claims (negative binomial, size 1.2, mean
-##                     varying by row): its zero is the distribution's own
-##                     mode, about 1.5 times the share at 1. Whether a
+##     claims_like     ilm_example_data()'s claims (negative binomial, size 1.2,
+##                     mean varying by row): its zero is the distribution's
+##                     own mode, about 1.5 times the share at 1. Whether a
 ##                     count's own zero mode should be called a floor is the
 ##                     question to be decided, so it is shown under every rule,
 ##                     not scored.
@@ -144,7 +144,7 @@ KINDS <- c(
   lapply(c(0.05, 0.10, 0.20), function(s) list(kind = "zi_count", par = s, bound = "min", score = TRUE,
     make = function(n) ifelse(stats::runif(n) < s, 0, stats::rnbinom(n, size = 3, mu = 15) + 0))),
   list(list(kind = "claims_like", par = NA, bound = NA, score = FALSE,
-            make = function(n) illumex::ilm_sim(n_id = ceiling(n / 6), n_period = 6)$claims[seq_len(n)] + 0)))
+            make = function(n) illumex::ilm_example_data(n_id = ceiling(n / 6), n_period = 6)$claims[seq_len(n)] + 0)))
 PANEL <- expand.grid(k = c(30, 100), m = c(3, 6, 10))
 
 ## one data set through the package's gates and every rule, at both bounds

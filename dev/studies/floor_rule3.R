@@ -125,7 +125,7 @@ KINDS <- c(
   list(list(kind = "bb_rating", par = 0.10, bound = "min", score = TRUE,
             make = function(n) pile(stats::rbinom(n, 10, stats::rbeta(n, 4, 4)) + 0, 0.10, 0)),
        list(kind = "claims_like", par = NA, bound = NA, score = FALSE,
-            make = function(n) illumex::ilm_sim(n_id = ceiling(n / 6), n_period = 6)$claims[seq_len(n)] + 0),
+            make = function(n) illumex::ilm_example_data(n_id = ceiling(n / 6), n_period = 6)$claims[seq_len(n)] + 0),
        list(kind = "likert_top", par = NA, bound = NA, score = FALSE,
             make = likert(c(0.02, 0.03, 0.10, 0.25, 0.60)))))
 PANEL <- expand.grid(k = c(30, 100), m = c(3, 6, 10))

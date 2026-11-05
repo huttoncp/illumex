@@ -22,5 +22,5 @@ The two ends of a frequency distribution are where the problems live: a
 level that dominates, and levels too thin to estimate.
 }
 \examples{
-ilm_counts_tb(ilm_sim()$grp, n = 2)
+ilm_counts_tb(ilm_example_data()$grp, n = 2)
 }

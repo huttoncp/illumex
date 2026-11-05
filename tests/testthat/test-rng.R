@@ -47,7 +47,7 @@ test_that("every seeded function starts by arranging to restore the stream", {
 
 test_that("the user's stream is untouched and the results reproducible", {
   d <- rng_data()
-  expect_true(untouched(function() ilm_sim(n_id = 5, n_period = 2)))
+  expect_true(untouched(function() ilm_example_data(n_id = 5, n_period = 2)))
   expect_true(untouched(function() ilm_boot_ci(d, "a", R = 50, seed = 1)))
   expect_true(untouched(function() ilm_boot_diff(d, "a", "g", R = 50, seed = 1)))
   expect_true(untouched(function() ilm_anomaly(d[1:4], progress = FALSE)))
@@ -77,8 +77,8 @@ test_that("an absent stream stays absent, and seed = NULL draws from it", {
   ## and from the user's stream rather than a fresh one: set.seed(NULL) would
   ## re-seed from the clock, and the user's own set.seed() would then fix
   ## nothing
-  set.seed(7); a <- ilm_sim(n_id = 3, n_period = 2, seed = NULL)
-  set.seed(7); b <- ilm_sim(n_id = 3, n_period = 2, seed = NULL)
+  set.seed(7); a <- ilm_example_data(n_id = 3, n_period = 2, seed = NULL)
+  set.seed(7); b <- ilm_example_data(n_id = 3, n_period = 2, seed = NULL)
   expect_identical(a, b)
 })
 

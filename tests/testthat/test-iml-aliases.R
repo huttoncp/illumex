@@ -35,6 +35,6 @@ test_that("an alias IS the function it names, not a wrapper around it", {
   ## would not be
   expect_identical(formals(iml_describe_all), formals(ilm_describe_all))
   ## and it gives the same answer
-  d <- ilm_sim()
+  d <- ilm_example_data()
   expect_identical(iml_describe_all(d), ilm_describe_all(d))
 })
