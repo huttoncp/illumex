@@ -95,9 +95,10 @@ ilm_boot_ci(
 
 ## Value
 
-A one-row data frame per group, with `observed`, `lower`, `upper` and
-the settings used. For several columns, or none named, one long table
-led by a `variable` column, as
+A data frame with one row per group (one row in all without `by`): the
+group, `stat`, `observed`, `lower`, `upper`, and the settings used –
+`conf`, `R`, `ci_type` – and `n`, the rows behind it. For several
+columns, or none named, one long table led by a `variable` column, as
 [`ilm_counts_tb_all()`](https://huttoncp.github.io/illumex/reference/ilm_counts_tb_all.md)
 gives. Each column starts from `seed`, so its rows are the ones it would
 get on its own.

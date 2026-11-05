@@ -157,15 +157,20 @@ elucidate’s and it would be poor form to pretend otherwise.
 
 ## Acknowledgements
 
-- `ilm_vtest_mean()` and `ilm_vtest_share()`, the v-tests behind
+- `ilm_vtest_mean()`, the v-test of a mean behind
   [`ilm_profile()`](https://huttoncp.github.io/illumex/reference/ilm_profile.md),
-  are adapted from `catdes()` in
+  is adapted from `catdes()` in
   [`FactoMineR`](https://CRAN.R-project.org/package=FactoMineR), by
   François Husson, Julie Josse, Sébastien Lê and Jérémy Mazet (GPL (\>=
   2)). They are listed as copyright holders.
+- `ilm_vtest_share()`, the v-test of a share, is written from its
+  published definition in Lebart, Piron and Morineau (2006),
+  *Statistique exploratoire multidimensionnelle*, 4th ed., section
+  6.3.2.
 - The factor analysis of mixed data in
-  [`ilm_reduce()`](https://huttoncp.github.io/illumex/reference/ilm_reduce.md)
-  was validated against, and may be adapted from, `PCAmix()` in
+  [`ilm_reduce()`](https://huttoncp.github.io/illumex/reference/ilm_reduce.md),
+  computed by `ilm_famd()` and `ilm_famd_z()`, was validated against,
+  and may be adapted from, `PCAmix()` in
   [`PCAmixdata`](https://CRAN.R-project.org/package=PCAmixdata), by
   Marie Chavent, Vanessa Kuentz, Amaury Labenne, Benoit Liquet and
   Jérôme Saracco (GPL (\>= 2)). They are listed as copyright holders.

@@ -41,14 +41,23 @@ ilm_reduce(
 
 - ndim:
 
-  Number of dimensions to keep.
+  Number of dimensions to keep. Five suits most data, but not all: on
+  mixed data with few columns, the dimensions past the first few can
+  carry a categorical column's own levels, and a clustering on them
+  splits the groups along those levels. Look at the scree plot
+  ([`ilm_plot_reduce_scree()`](https://huttoncp.github.io/illumex/reference/ilm_plot_reduce_scree.md))
+  and keep the dimensions before it flattens; the profiling vignette
+  shows a case. Choosing `ndim` by parallel analysis instead was
+  measured and is not the default: it helped there, and did worse on
+  numeric data with well-separated clusters
+  ([`dev/studies/ndim_choice.R`](https://github.com/huttoncp/illumex/blob/main/dev/studies/ndim_choice.R)).
 
 - method:
 
   `"famd"` (the default) for PCA, MCA or FAMD depending on the column
   types, in closed form; `"pcamix"`, its name from when PCAmixdata
   computed it, is still accepted and means the same. `"glrm"` fits a
-  generalized low rank model instead, which uses a loss appropriate to
+  generalised low rank model instead, which uses a loss appropriate to
   each column's type rather than squared error on one-hot indicators,
   and reconstructs a category as a category. It costs an iterative fit,
   and on all-numeric data the two are the same model – see
@@ -62,8 +71,8 @@ ilm_reduce(
   spacing, in one column – and adds the time of day, the day of the
   week, the day of the month and the time of year, each as a sine and
   cosine so that the ends of the cycle meet, but only the cycles some
-  other column varies with, and only where the data cover two of the
-  cycle. A cycle nothing else follows is noise to a clustering: on two
+  other column varies with, and only where the data cover two full
+  cycles. A cycle nothing else follows is noise to a clustering: on two
   known clusters, every cycle given unasked took recovery from 0.38 to
   0.10 where the date meant nothing, while the tested ones left it at
   0.36 there and, where a rhythm was real, raised it from 0.36 to
@@ -86,7 +95,7 @@ ilm_reduce(
   If `TRUE`, `cols` names the columns to leave out, and every other
   eligible column is used; see
   [ilm_selection](https://huttoncp.github.io/illumex/reference/ilm_selection.md).
-  It needs `cols`. A `by` argument is never negated.
+  It needs `cols`.
 
 - cols_fixed:
 
@@ -124,11 +133,12 @@ dimension – this is what
 [`ilm_cluster()`](https://huttoncp.github.io/illumex/reference/ilm_cluster.md)
 takes), `var_contrib` (`variable`, `dim`, `sqload`: how strongly each
 original variable relates to each dimension, on a 0 to 1 scale, for
-numeric and categorical variables alike), `n`, and `fit`: the
-eigenvalues, coordinates and squared loadings as computed, for anyone
-who wants to go past this wrapper. Each dimension's sign is fixed by a
-rule, so the same data give the same coordinates everywhere: the column
-that loads most on a dimension loads positively.
+numeric and categorical variables alike), `n`, `cols` (the columns
+used), `time` (how each date or date-time column was used), and `fit`:
+the eigenvalues, coordinates and squared loadings as computed, for
+anyone who wants to go past this wrapper. Each dimension's sign is fixed
+by a rule, so the same data give the same coordinates everywhere: the
+column that loads most on a dimension loads positively.
 
 With `method = "glrm"`, `method` is `"glrm"` and `fit` is the
 [`ilm_glrm()`](https://huttoncp.github.io/illumex/reference/ilm_glrm.md)
@@ -150,11 +160,12 @@ in this package and agrees with PCAmixdata's `PCAmix()` and FactoMineR's
 ## Size
 
 The default method is closed-form: on one core of a 16 GB Windows
-machine (`dev/studies/scale_check.R` in the source) it took under a
-second at 250,000 rows. `method = "glrm"` fits iteratively and first
-chooses its penalty from 18 held-out fits: 30 seconds at 1,000 rows, 5
-minutes at 10,000 and over 15 minutes at 50,000. Giving `lambda` (passed
-to
+machine
+([`dev/studies/scale_check.R`](https://github.com/huttoncp/illumex/blob/main/dev/studies/scale_check.R))
+it took under a second at 250,000 rows. `method = "glrm"` fits
+iteratively and first chooses its penalty from 18 held-out fits: 30
+seconds at 1,000 rows, 5 minutes at 10,000 and over 15 minutes at
+50,000. Giving `lambda` (passed to
 [`ilm_glrm()`](https://huttoncp.github.io/illumex/reference/ilm_glrm.md))
 saves the search.
 

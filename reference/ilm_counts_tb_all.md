@@ -1,6 +1,8 @@
 # Most and least frequent values for every column
 
-Most and least frequent values for every column
+Applies
+[`ilm_counts_tb()`](https://huttoncp.github.io/illumex/reference/ilm_counts_tb.md)
+to each column and stacks the results, led by a `variable` column.
 
 ## Usage
 
@@ -44,7 +46,7 @@ ilm_counts_tb_all(
   If `TRUE`, `cols` names the columns to leave out, and every other
   eligible column is used; see
   [ilm_selection](https://huttoncp.github.io/illumex/reference/ilm_selection.md).
-  It needs `cols`. A `by` argument is never negated.
+  It needs `cols`.
 
 - cols_fixed:
 
@@ -75,7 +77,8 @@ ilm_counts_tb_all(
 
 ## Value
 
-A data frame with `variable` and the top/bottom columns.
+A data frame with `variable`, `top_value`, `top_n`, `bot_value` and
+`bot_n`.
 
 ## Examples
 

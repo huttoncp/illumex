@@ -52,7 +52,7 @@ ilm_frame_issues(
   If `TRUE`, `cols` names the columns to leave out, and every other
   eligible column is used; see
   [ilm_selection](https://huttoncp.github.io/illumex/reference/ilm_selection.md).
-  It needs `cols`. A `by` argument is never negated.
+  It needs `cols`.
 
 - cols_fixed:
 
@@ -102,15 +102,23 @@ reaches `v_cut`: nearly every level of one predicts a level of the
 other.
 
 Pairs are not the whole story: a column can be an exact combination of
-several others (a total and its parts, a numeric code fixed by a
-factor's levels) with no pair looking alike. So the numeric and
-categorical columns are also put into one model matrix, with an
-intercept and treatment contrasts, on the rows complete across them, and
-each column the matrix cannot separate from the rest is reported as
-`rank_deficient` with what it is a combination of. So that each problem
-is reported once, columns already reported as constant, identifier-like,
-duplicated or aliased are left out of that matrix, and a nested pair is
-not reported again from it.
+several others (a total and its parts) with no pair looking alike. So
+the numeric and categorical columns are also put into one model matrix,
+with an intercept and treatment contrasts, on the rows complete across
+them, and each column the matrix cannot separate from the rest is
+reported as `rank_deficient` with what it is a combination of. So that
+each problem is reported once, columns already reported as constant,
+identifier-like, duplicated or aliased are left out of that matrix, and
+a nested pair is not reported again from it.
+
+A number that is a combination of one categorical column alone takes one
+value per level of it – a subject's age, repeated over the subject's
+visits – and is reported as `unit_level`, not `rank_deficient`. That is
+the shape of every unit-level covariate in repeated measures: estimable
+with the categorical column as a grouping (a random effect), confounded
+with it only as fixed effects. A numeric code for a factor's levels has
+the same shape and is reported the same way; the words say to keep one
+of the two.
 
 ## References
 
@@ -126,6 +134,7 @@ ilm_frame_issues(ilm_sim())
 #>                                                           remedy
 #> 1 Leave it out: a column with one value cannot explain anything.
 
+set.seed(1)
 d <- data.frame(a = rnorm(50), b = rnorm(50),
                 clinic = rep(c("x", "y"), each = 25),
                 ward = rep(c("x1", "x2", "y1", "y2"), c(12, 13, 12, 13)))

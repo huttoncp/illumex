@@ -15,7 +15,7 @@ squared error, which is where this reduces to ordinary PCA."><meta property="og:
 
     <a class="navbar-brand me-2" href="../index.html">illumex</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.0.8.9003</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.0.8.9005</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -146,7 +146,7 @@ default, uses each as the time since its earliest value – its order and
 spacing, in one column – and adds the time of day, the day of the week,
 the day of the month and the time of year, each as a sine and cosine so
 that the ends of the cycle meet, but only the cycles some other column
-varies with, and only where the data cover two of the cycle. A cycle
+varies with, and only where the data cover two full cycles. A cycle
 nothing else follows is noise to a clustering: on two known clusters,
 every cycle given unasked took recovery from 0.38 to 0.10 where the date
 meant nothing, while the tested ones left it at 0.36 there and, where a
@@ -161,8 +161,7 @@ duration (<code>difftime</code>) is used as its number of days.</p></dd>
 
 <dt id="arg-cols-negate">cols_negate<a class="anchor" aria-label="anchor" href="#arg-cols-negate"></a></dt>
 <dd><p>If <code>TRUE</code>, <code>cols</code> names the columns to leave out, and every
-other eligible column is used; see <a href="ilm_selection.html">ilm_selection</a>. It needs <code>cols</code>. A
-<code>by</code> argument is never negated.</p></dd>
+other eligible column is used; see <a href="ilm_selection.html">ilm_selection</a>. It needs <code>cols</code>.</p></dd>
 
 
 <dt id="arg-cols-fixed">cols_fixed<a class="anchor" aria-label="anchor" href="#arg-cols-fixed"></a></dt>
@@ -249,7 +248,7 @@ low rank models. <em>Foundations and Trends in Machine Learning</em> 9, 1-118.</
 
 
     <footer><div class="pkgdown-footer-left">
-  <p>Developed by Craig Hutton.</p>
+  <p>Developed by Craig P. Hutton.</p>
 </div>
 
 <div class="pkgdown-footer-right">

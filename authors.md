@@ -2,43 +2,39 @@
 
 ## Authors
 
-- **Craig Hutton**. Author, maintainer.
+- **Craig P. Hutton**. Author, maintainer, copyright holder.
 
 - **François Husson**. Copyright holder.  
-  FactoMineR: ilm_vtest_share() and ilm_vtest_mean() adapted from
-  catdes()
+  FactoMineR: ilm_vtest_mean() adapted from catdes()
 
 - **Julie Josse**. Copyright holder.  
-  FactoMineR: ilm_vtest_share() and ilm_vtest_mean() adapted from
-  catdes()
+  FactoMineR: ilm_vtest_mean() adapted from catdes()
 
 - **Sébastien Lê**. Copyright holder.  
-  FactoMineR: ilm_vtest_share() and ilm_vtest_mean() adapted from
-  catdes()
+  FactoMineR: ilm_vtest_mean() adapted from catdes()
 
 - **Jérémy Mazet**. Copyright holder.  
-  FactoMineR: ilm_vtest_share() and ilm_vtest_mean() adapted from
-  catdes()
+  FactoMineR: ilm_vtest_mean() adapted from catdes()
 
 - **Marie Chavent**. Copyright holder.  
-  PCAmixdata: ilm_famd() validated against, and possibly adapted from,
-  PCAmix()
+  PCAmixdata: ilm_famd() and ilm_famd_z() validated against, and
+  possibly adapted from, PCAmix()
 
 - **Vanessa Kuentz**. Copyright holder.  
-  PCAmixdata: ilm_famd() validated against, and possibly adapted from,
-  PCAmix()
+  PCAmixdata: ilm_famd() and ilm_famd_z() validated against, and
+  possibly adapted from, PCAmix()
 
 - **Amaury Labenne**. Copyright holder.  
-  PCAmixdata: ilm_famd() validated against, and possibly adapted from,
-  PCAmix()
+  PCAmixdata: ilm_famd() and ilm_famd_z() validated against, and
+  possibly adapted from, PCAmix()
 
 - **Benoit Liquet**. Copyright holder.  
-  PCAmixdata: ilm_famd() validated against, and possibly adapted from,
-  PCAmix()
+  PCAmixdata: ilm_famd() and ilm_famd_z() validated against, and
+  possibly adapted from, PCAmix()
 
 - **Jérôme Saracco**. Copyright holder.  
-  PCAmixdata: ilm_famd() validated against, and possibly adapted from,
-  PCAmix()
+  PCAmixdata: ilm_famd() and ilm_famd_z() validated against, and
+  possibly adapted from, PCAmix()
 
 ## Citation
 
@@ -46,13 +42,13 @@ Source:
 [`DESCRIPTION`](https://github.com/huttoncp/illumex/blob/main/DESCRIPTION)
 
 Hutton C (2026). *illumex: A Data Interrogation Engine for Enabling
-Inference*. R package version 0.0.8.9003,
+Inference*. R package version 0.0.8.9005,
 <https://github.com/huttoncp/illumex>.
 
     @Manual{,
       title = {illumex: A Data Interrogation Engine for Enabling Inference},
-      author = {Craig Hutton},
+      author = {Craig P. Hutton},
       year = {2026},
-      note = {R package version 0.0.8.9003},
+      note = {R package version 0.0.8.9005},
       url = {https://github.com/huttoncp/illumex},
     }

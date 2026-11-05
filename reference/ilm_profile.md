@@ -1,4 +1,4 @@
-# Profile a data set: reduce, cluster, and describe the clusters
+# Profile a dataset: reduce, cluster, and describe the clusters
 
 Runs
 [`ilm_reduce()`](https://huttoncp.github.io/illumex/reference/ilm_reduce.md),
@@ -48,14 +48,23 @@ ilm_profile(
 
 - ndim:
 
-  Number of dimensions to keep.
+  Number of dimensions to keep. Five suits most data, but not all: on
+  mixed data with few columns, the dimensions past the first few can
+  carry a categorical column's own levels, and a clustering on them
+  splits the groups along those levels. Look at the scree plot
+  ([`ilm_plot_reduce_scree()`](https://huttoncp.github.io/illumex/reference/ilm_plot_reduce_scree.md))
+  and keep the dimensions before it flattens; the profiling vignette
+  shows a case. Choosing `ndim` by parallel analysis instead was
+  measured and is not the default: it helped there, and did worse on
+  numeric data with well-separated clusters
+  ([`dev/studies/ndim_choice.R`](https://github.com/huttoncp/illumex/blob/main/dev/studies/ndim_choice.R)).
 
 - method:
 
   `"famd"` (the default) for PCA, MCA or FAMD depending on the column
   types, in closed form; `"pcamix"`, its name from when PCAmixdata
   computed it, is still accepted and means the same. `"glrm"` fits a
-  generalized low rank model instead, which uses a loss appropriate to
+  generalised low rank model instead, which uses a loss appropriate to
   each column's type rather than squared error on one-hot indicators,
   and reconstructs a category as a category. It costs an iterative fit,
   and on all-numeric data the two are the same model – see
@@ -106,7 +115,7 @@ ilm_profile(
   If `TRUE`, `cols` names the columns to leave out, and every other
   eligible column is used; see
   [ilm_selection](https://huttoncp.github.io/illumex/reference/ilm_selection.md).
-  It needs `cols`. A `by` argument is never negated.
+  It needs `cols`.
 
 - cols_fixed:
 
@@ -161,9 +170,13 @@ any cycle the reduction used (see `time`) where the cluster stands out –
 The variables are ranked by a v-test – how far the cluster's mean or
 share sits from everyone's, on the scale of a standard normal: for a
 mean, in standard errors of a subset that size; for a share, from the
-hypergeometric probability of the cluster's count (Lebart's, computed as
-FactoMineR's `catdes()` computes it) – and named, strongest first, up to
-`top_n_vars`, when the v-test clears `vtest_threshold` and the
+hypergeometric probability of the cluster's count, as a standard normal
+quantile (the test-value of Lebart, Piron and Morineau 2006, who define
+it for an over-represented value; an under-represented one takes the
+mirrored lower tail, and a count exactly at its expectation, or one
+whose tail is above one half, 0, illumex's own extension, so the sign
+always says which way the share differs) – and named, strongest first,
+up to `top_n_vars`, when the v-test clears `vtest_threshold` and the
 difference is big enough to matter: 0.2 standard deviations for a
 number, 10 percentage points for a share. With many rows a chance
 difference clears 1.96 on its own: on 1,200 rows, a variable that was
@@ -185,11 +198,12 @@ are what speak to that.
 A profile runs
 [`ilm_cluster()`](https://huttoncp.github.io/illumex/reference/ilm_cluster.md),
 and at its defaults shares that function's limits (see Size there): on
-one core of a 16 GB Windows machine (`dev/studies/scale_check.R` in the
-source) it took about a minute at 1,000 rows and over 15 minutes at
-10,000, nearly all of it the gap statistic choosing `k`; giving `k`
-saves that search. Above about 40,000 rows the silhouettes' distance
-matrix does not fit in 16 GB.
+one core of a 16 GB Windows machine
+([`dev/studies/scale_check.R`](https://github.com/huttoncp/illumex/blob/main/dev/studies/scale_check.R))
+it took about a minute at 1,000 rows and over 15 minutes at 10,000,
+nearly all of it the gap statistic choosing `k`; giving `k` saves that
+search. Above about 40,000 rows the silhouettes' distance matrix does
+not fit in 16 GB.
 
 ## References
 
@@ -199,7 +213,15 @@ pp. 154-157 (the v-test, and FactoMineR's `catdes()`).
 
 Husson, F., Josse, J., Lê, S. and Mazet, J. FactoMineR: Multivariate
 Exploratory Data Analysis and Data Mining. R package version 2.11. The
-v-tests here are adapted from its `catdes()`.
+v-test for a mean here is adapted from its `catdes()`; the v-test for a
+share is written from Lebart, Piron and Morineau (2006).
+
+Lebart, L., Piron, M. and Morineau, A. (2006). Statistique exploratoire
+multidimensionnelle, 4th ed. Dunod, Paris. Section 6.3.2.
+
+Morineau, A. (1984). Note sur la caractérisation statistique d'une
+classe et les valeurs-tests. Bulletin technique du Centre de Statistique
+et d'Informatique Appliquées 2(1-2), 20-27.
 
 ## See also
 
@@ -213,8 +235,8 @@ v-tests here are adapted from its `catdes()`.
 ``` r
 p <- ilm_profile(mtcars, k_max = 5, B = 25, seed = 1)
 cat(p$summary, sep = "\n")
-#> Cluster 1 holds 5 rows, 15.6% of the data (stable). What sets it apart: carb is higher: the middle 50% of its values lie between 4 and 6, against 2 to 4 across all rows; qsec is lower: the middle 50% of its values lie between 14.6 and 16.5, against 16.9 to 18.9 across all rows; gear is higher: the middle 50% of its values lie between 4 and 5, against 3 to 4 across all rows; and am is higher: the middle 50% of its values lie between 1 and 1, against 0 to 1 across all rows. Less strongly, 1 more variable sets it apart as well.
-#> Cluster 2 holds 7 rows, 21.9% of the data (stable). What sets it apart: qsec is higher: the middle 50% of its values lie between 18.9 and 20.2, against 16.9 to 18.9 across all rows; vs is higher: the middle 50% of its values lie between 1 and 1, against 0 to 1 across all rows; and am is lower: the middle 50% of its values lie between 0 and 0, against 0 to 1 across all rows.
-#> Cluster 3 holds 12 rows, 37.5% of the data (stable). What sets it apart: disp is higher: the middle 50% of its values lie between 276 and 400, against 120 to 318 across all rows; cyl is higher: the middle 50% of its values lie between 8 and 8, against 4 to 8 across all rows; gear is lower: the middle 50% of its values lie between 3 and 3, against 3 to 4 across all rows; and wt is higher: the middle 50% of its values lie between 3.52 and 4.07, against 2.47 to 3.57 across all rows. Less strongly, 5 more variables set it apart as well.
-#> Cluster 4 holds 8 rows, 25.0% of the data (stable). What sets it apart: mpg is higher: the middle 50% of its values lie between 22.8 and 30.4, against 15.2 to 22.8 across all rows; cyl is lower: the middle 50% of its values lie between 4 and 4, against 4 to 8 across all rows; wt is lower: the middle 50% of its values lie between 1.62 and 2.20, against 2.47 to 3.57 across all rows; and am is higher: the middle 50% of its values lie between 1 and 1, against 0 to 1 across all rows. Less strongly, 6 more variables set it apart as well.
+#> Cluster 1 holds 12 rows, 37.5% of the data (stable). What sets it apart: disp is higher: the middle 50% of its values lie between 276 and 400, against 120 to 318 across all rows; cyl is higher: the middle 50% of its values lie between 8 and 8, against 4 to 8 across all rows; gear is lower: the middle 50% of its values lie between 3 and 3, against 3 to 4 across all rows; and wt is higher: the middle 50% of its values lie between 3.52 and 4.07, against 2.47 to 3.57 across all rows. Less strongly, 5 more variables set it apart as well.
+#> Cluster 2 holds 8 rows, 25.0% of the data (stable). What sets it apart: mpg is higher: the middle 50% of its values lie between 22.8 and 30.4, against 15.2 to 22.8 across all rows; cyl is lower: the middle 50% of its values lie between 4 and 4, against 4 to 8 across all rows; wt is lower: the middle 50% of its values lie between 1.62 and 2.20, against 2.47 to 3.57 across all rows; and am is higher: the middle 50% of its values lie between 1 and 1, against 0 to 1 across all rows. Less strongly, 6 more variables set it apart as well.
+#> Cluster 3 holds 7 rows, 21.9% of the data (stable). What sets it apart: qsec is higher: the middle 50% of its values lie between 18.9 and 20.2, against 16.9 to 18.9 across all rows; vs is higher: the middle 50% of its values lie between 1 and 1, against 0 to 1 across all rows; and am is lower: the middle 50% of its values lie between 0 and 0, against 0 to 1 across all rows.
+#> Cluster 4 holds 5 rows, 15.6% of the data (stable). What sets it apart: carb is higher: the middle 50% of its values lie between 4 and 6, against 2 to 4 across all rows; qsec is lower: the middle 50% of its values lie between 14.6 and 16.5, against 16.9 to 18.9 across all rows; gear is higher: the middle 50% of its values lie between 4 and 5, against 3 to 4 across all rows; and am is higher: the middle 50% of its values lie between 1 and 1, against 0 to 1 across all rows. Less strongly, 1 more variable sets it apart as well.
 ```

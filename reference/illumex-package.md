@@ -10,7 +10,7 @@ everything here is available as it always was.
 - Describing:
 
   [`ilm_describe_all()`](https://huttoncp.github.io/illumex/reference/ilm_describe_all.md)
-  summarises every column of a data frame at once, with a gaussian index
+  summarises every column of a data frame at once, with a Gaussian index
   in place of a normality test;
   [`ilm_counts()`](https://huttoncp.github.io/illumex/reference/ilm_counts.md),
   [`ilm_dupes()`](https://huttoncp.github.io/illumex/reference/ilm_dupes.md),
@@ -69,7 +69,7 @@ everything here is available as it always was.
 - Example data:
 
   [`ilm_sim()`](https://huttoncp.github.io/illumex/reference/ilm_sim.md),
-  a grouped data set with a known structure.
+  a grouped dataset with a known structure.
 
 ## Two spellings
 
@@ -98,33 +98,34 @@ Useful links:
 
 ## Author
 
-**Maintainer**: Craig Hutton <craig.hutton@gmail.com>
+**Maintainer**: Craig P. Hutton <craig.hutton@gmail.com> \[copyright
+holder\]
 
 Other contributors:
 
-- François Husson (FactoMineR: ilm_vtest_share() and ilm_vtest_mean()
-  adapted from catdes()) \[copyright holder\]
+- François Husson (FactoMineR: ilm_vtest_mean() adapted from catdes())
+  \[copyright holder\]
 
-- Julie Josse (FactoMineR: ilm_vtest_share() and ilm_vtest_mean()
-  adapted from catdes()) \[copyright holder\]
+- Julie Josse (FactoMineR: ilm_vtest_mean() adapted from catdes())
+  \[copyright holder\]
 
-- Sébastien Lê (FactoMineR: ilm_vtest_share() and ilm_vtest_mean()
-  adapted from catdes()) \[copyright holder\]
+- Sébastien Lê (FactoMineR: ilm_vtest_mean() adapted from catdes())
+  \[copyright holder\]
 
-- Jérémy Mazet (FactoMineR: ilm_vtest_share() and ilm_vtest_mean()
-  adapted from catdes()) \[copyright holder\]
+- Jérémy Mazet (FactoMineR: ilm_vtest_mean() adapted from catdes())
+  \[copyright holder\]
 
-- Marie Chavent (PCAmixdata: ilm_famd() validated against, and possibly
-  adapted from, PCAmix()) \[copyright holder\]
+- Marie Chavent (PCAmixdata: ilm_famd() and ilm_famd_z() validated
+  against, and possibly adapted from, PCAmix()) \[copyright holder\]
 
-- Vanessa Kuentz (PCAmixdata: ilm_famd() validated against, and possibly
-  adapted from, PCAmix()) \[copyright holder\]
+- Vanessa Kuentz (PCAmixdata: ilm_famd() and ilm_famd_z() validated
+  against, and possibly adapted from, PCAmix()) \[copyright holder\]
 
-- Amaury Labenne (PCAmixdata: ilm_famd() validated against, and possibly
-  adapted from, PCAmix()) \[copyright holder\]
+- Amaury Labenne (PCAmixdata: ilm_famd() and ilm_famd_z() validated
+  against, and possibly adapted from, PCAmix()) \[copyright holder\]
 
-- Benoit Liquet (PCAmixdata: ilm_famd() validated against, and possibly
-  adapted from, PCAmix()) \[copyright holder\]
+- Benoit Liquet (PCAmixdata: ilm_famd() and ilm_famd_z() validated
+  against, and possibly adapted from, PCAmix()) \[copyright holder\]
 
-- Jérôme Saracco (PCAmixdata: ilm_famd() validated against, and possibly
-  adapted from, PCAmix()) \[copyright holder\]
+- Jérôme Saracco (PCAmixdata: ilm_famd() and ilm_famd_z() validated
+  against, and possibly adapted from, PCAmix()) \[copyright holder\]

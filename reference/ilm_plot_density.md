@@ -1,6 +1,7 @@
 # Density plot
 
-Density plot
+Draws the distribution of one numeric column as a smoothed density
+curve, optionally one curve per group, or drawn in panels.
 
 ## Usage
 
@@ -30,7 +31,7 @@ ilm_plot_density(
 
 - by:
 
-  Optional grouping column, overlaying one histogram per level.
+  Optional grouping column, overlaying one density per level.
 
 - ...:
 

@@ -9,7 +9,7 @@ converts text columns that are really numeric or logical."><meta property="og:im
 
     <a class="navbar-brand me-2" href="../index.html">illumex</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.0.8.9003</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.0.8.9005</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -126,8 +126,8 @@ encoding is ever guessed. A value that does not convert, or does not
 convert back to the same bytes, is left as it is and reported as above.</p>
 <p>Names follow the rules of janitor's <code>make_clean_names()</code>, without needing
 janitor, and no letter is dropped: <code>"%"</code> becomes <code>percent</code> and <code>"#"</code>
-<code>number</code>; camelCase is split; accented Latin letters become plain ones (an
-e with an accent becomes e, a sharp s ss, the oe ligature oe); letters of
+<code>number</code>; camelCase is split; accented Latin letters become plain ones
+(<code>"é"</code> becomes <code>e</code>, <code>"ß"</code> becomes <code>ss</code>, <code>"œ"</code> becomes <code>oe</code>); letters of
 other scripts are kept as they are; a name starting with a digit gains an
 <code>x</code>; and a repeated name gains <code>_2</code>, <code>_3</code> and so on, as janitor numbers it.</p>
 <p>It washes the whole data frame, and takes no <code>subset</code> or <code>cols</code>: a column
@@ -150,7 +150,7 @@ a data frame, choose it with <code><a href="ilm_subset.html">ilm_subset()</a></c
 
 
     <footer><div class="pkgdown-footer-left">
-  <p>Developed by Craig Hutton.</p>
+  <p>Developed by Craig P. Hutton.</p>
 </div>
 
 <div class="pkgdown-footer-right">

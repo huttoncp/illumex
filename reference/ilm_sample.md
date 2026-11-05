@@ -45,8 +45,8 @@ ilm_sample(
 
 - within:
 
-  One column, or nested columns, whose clusters are each sampled inside
-  and all kept. A missing value is a cluster of its own.
+  One column, or nested columns, whose sampling clusters are each
+  sampled inside and all kept. A missing value is a cluster of its own.
 
 - min:
 
@@ -80,18 +80,19 @@ as `subset`.
   `"all"`) to keep it whole, which is how a factor with few levels is
   kept. `n` and `prop` are left out, since each factor carries its own.
 
-- **Inside every cluster**, with `within`: rows are drawn inside each
-  cluster and every cluster is kept – the remedy when data are too large
-  to fit but each cluster must stay in the model. The draw is
-  proportional: a share `prop` of each cluster's rows, or `n` rows in
-  all shared out in proportion to the clusters' sizes. Every cluster
-  keeps at least `min` rows, or all of them when it has fewer than
-  `min`. That floor makes a small cluster's share larger than a large
-  one's: a row's chance of being kept is its cluster's rows kept over
-  its cluster's rows, and the result keeps the rule, the smallest,
-  median and largest of those shares, and what derives each row's
-  (`within`, `min` and `n` or `prop`), so a weighted analysis can be
-  checked against an unweighted one.
+- **Inside every sampling cluster**, with `within` – a site, a school, a
+  participant measured repeatedly: rows are drawn inside each cluster
+  and every cluster is kept – the remedy when data are too large to fit
+  but each cluster must stay in the model. The draw is proportional: a
+  share `prop` of each cluster's rows, or `n` rows in all shared out in
+  proportion to the clusters' sizes. Every cluster keeps at least `min`
+  rows, or all of them when it has fewer than `min`. That floor makes a
+  small cluster's share larger than a large one's: a row's chance of
+  being kept is its cluster's rows kept over its cluster's rows, and the
+  result keeps the rule, the smallest, median and largest of those
+  shares, and what derives each row's share (`within`, `min` and `n` or
+  `prop`), so a weighted analysis can be checked against an unweighted
+  one.
 
 `within` may name nested levels, coarsest first or in any order:
 `within = c("school", "classroom")` draws inside each classroom, so

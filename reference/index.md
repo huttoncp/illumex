@@ -12,7 +12,7 @@ data frame before any model sees it.
 - [`ilm_frame_issues()`](https://huttoncp.github.io/illumex/reference/ilm_frame_issues.md)
   : Problems that belong to the data frame as a whole
 - [`ilm_gauss_check()`](https://huttoncp.github.io/illumex/reference/ilm_gauss_check.md)
-  : How far a variable is from gaussian, and why
+  : How far a variable is from Gaussian, and why
 - [`ilm_copies()`](https://huttoncp.github.io/illumex/reference/ilm_copies.md)
   : Find copied or duplicated rows
 - [`ilm_counts()`](https://huttoncp.github.io/illumex/reference/ilm_counts.md)
@@ -24,9 +24,46 @@ data frame before any model sees it.
 - [`ilm_counts_tb_all()`](https://huttoncp.github.io/illumex/reference/ilm_counts_tb_all.md)
   : Most and least frequent values for every column
 - [`ilm_describe_clusters()`](https://huttoncp.github.io/illumex/reference/ilm_describe_clusters.md)
-  : Describe data whose rows sit in clusters
+  : Describe data whose rows sit in sampling clusters
 - [`ilm_dupes()`](https://huttoncp.github.io/illumex/reference/ilm_dupes.md)
   : Duplicated rows only
+
+## The cleaning loop
+
+Checks that find messy data and say what they saw, remedies written out
+as code, and a log of every remedy applied and why, which writes out as
+a script that replays the cleaning.
+
+- [`ilm_check_data()`](https://huttoncp.github.io/illumex/reference/ilm_check_data.md)
+  : Check a data frame for problems, all at once
+- [`ilm_remedies()`](https://huttoncp.github.io/illumex/reference/ilm_remedies.md)
+  [`print(`*`<ilm_remedies>`*`)`](https://huttoncp.github.io/illumex/reference/ilm_remedies.md)
+  : Remedies for what a check found
+- [`ilm_apply_remedy()`](https://huttoncp.github.io/illumex/reference/ilm_apply_remedy.md)
+  : Make one remedy
+- [`ilm_cleaning_script()`](https://huttoncp.github.io/illumex/reference/ilm_cleaning_script.md)
+  : Write the cleaning as an R script
+- [`ilm_cleaning_log()`](https://huttoncp.github.io/illumex/reference/ilm_cleaning_log.md)
+  : The cleaning log
+- [`ilm_check_frame()`](https://huttoncp.github.io/illumex/reference/ilm_check_frame.md)
+  : Check the data frame as a whole
+- [`ilm_data_id()`](https://huttoncp.github.io/illumex/reference/ilm_data_id.md)
+  : A data frame's fingerprint
+- [`ilm_drop_cols()`](https://huttoncp.github.io/illumex/reference/ilm_drop_cols.md)
+  : Leave columns out
+- [`ilm_remedy_assemble()`](https://huttoncp.github.io/illumex/reference/ilm_remedy_assemble.md)
+  : Assemble a remedies table
+- [`ilm_remedy_find()`](https://huttoncp.github.io/illumex/reference/ilm_remedy_find.md)
+  : Find a remedy in a table by id or key
+- [`ilm_remedy_key()`](https://huttoncp.github.io/illumex/reference/ilm_remedy_key.md)
+  : Build a remedy key
+- [`ilm_remedy_table()`](https://huttoncp.github.io/illumex/reference/ilm_remedy_table.md)
+  [`c(`*`<ilm_remedies>`*`)`](https://huttoncp.github.io/illumex/reference/ilm_remedy_table.md)
+  : A table of remedies of one's own
+- [`ilm_remedy_tiers()`](https://huttoncp.github.io/illumex/reference/ilm_remedy_tiers.md)
+  : The tiers a target's remedies are ranked by
+- [`ilm_secret()`](https://huttoncp.github.io/illumex/reference/ilm_secret.md)
+  : Keep a secret out of the record
 
 ## Cleaning
 
@@ -76,7 +113,7 @@ same pipeline taken a step at a time, for when you want the coordinates
 or the partition on their own.
 
 - [`ilm_profile()`](https://huttoncp.github.io/illumex/reference/ilm_profile.md)
-  : Profile a data set: reduce, cluster, and describe the clusters
+  : Profile a dataset: reduce, cluster, and describe the clusters
 - [`ilm_var_contrib()`](https://huttoncp.github.io/illumex/reference/ilm_var_contrib.md)
   : What each variable contributes to a clustering
 - [`ilm_cluster()`](https://huttoncp.github.io/illumex/reference/ilm_cluster.md)
@@ -117,7 +154,8 @@ together. Filling them in and pooling across the imputations is
 illume’s.
 
 - [`ilm_check_missing()`](https://huttoncp.github.io/illumex/reference/ilm_check_missing.md)
-  : What the missing values look like, and whether they matter
+  [`print(`*`<ilm_missing>`*`)`](https://huttoncp.github.io/illumex/reference/ilm_check_missing.md)
+  : Check missing values, and what they imply for complete cases
 - [`ilm_describe_na_all()`](https://huttoncp.github.io/illumex/reference/ilm_describe_na_all.md)
   : Missingness in every variable
 - [`ilm_describe_na()`](https://huttoncp.github.io/illumex/reference/ilm_describe_na.md)

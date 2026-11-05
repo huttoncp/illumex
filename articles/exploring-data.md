@@ -9,7 +9,7 @@ That is a different emphasis, and it shows up everywhere in the output.
 A factor summary reports how many levels are too thin to estimate,
 because that is the usual reason a model fails to fit. A date summary
 reports whether the spacing is regular, because an AR(1) term requires
-it. A numeric summary reports how far the variable is from gaussian *and
+it. A numeric summary reports how far the variable is from Gaussian *and
 why*, because the reason determines what you do next.
 
 The functions share one prefix with `illume`, the modelling package this
@@ -82,7 +82,7 @@ r$constant
 #> 1   cohort categorical 900 900  0  2024
 ```
 
-## The gaussian index, and why it is not a p-value
+## The Gaussian index, and why it is not a p-value
 
 `gauss` runs from 0 to 1. A value of 1 means the departure from
 normality is no larger than sampling noise produces 95% of the time at
@@ -277,7 +277,7 @@ ilm_plot(d, "income")
 ![](exploring-data_files/figure-html/unnamed-chunk-15-1.png)
 
 The subtitle is not decoration. A histogram of a skewed variable looks
-like a histogram; the annotation says how far from gaussian it is and in
+like a histogram; the annotation says how far from Gaussian it is and in
 which direction.
 
 You can ask what would be drawn without drawing it:
@@ -796,7 +796,7 @@ which the two endpoints cannot show.
 
 ## Same numbers, different data
 
-Base R’s `anscombe` holds four small data sets, stacked here into one:
+Base R’s `anscombe` holds four small datasets, stacked here into one:
 
 ``` r
 
@@ -869,13 +869,13 @@ cars$am  <- factor(cars$am)
 
 p <- ilm_profile(cars, k_max = 5, B = 25, seed = 1)
 cat(p$summary, sep = "\n\n")
-#> Cluster 1 holds 5 rows, 15.6% of the data (stable). What sets it apart: carb is higher: the middle 50% of its values lie between 4 and 6, against 2 to 4 across all rows; qsec is lower: the middle 50% of its values lie between 14.6 and 16.5, against 16.9 to 18.9 across all rows; gear is higher: the middle 50% of its values lie between 4 and 5, against 3 to 4 across all rows; and am is '0' for none of them, against 59% across all rows. Less strongly, 1 more variable sets it apart as well.
+#> Cluster 1 holds 12 rows, 37.5% of the data (stable). What sets it apart: cyl is '8' for 100% of them, against 44% across all rows; disp is higher: the middle 50% of its values lie between 276 and 400, against 120 to 318 across all rows; gear is lower: the middle 50% of its values lie between 3 and 3, against 3 to 4 across all rows; and wt is higher: the middle 50% of its values lie between 3.52 and 4.07, against 2.47 to 3.57 across all rows. Less strongly, 5 more variables set it apart as well.
 #> 
-#> Cluster 2 holds 7 rows, 21.9% of the data (moderate). What sets it apart: qsec is higher: the middle 50% of its values lie between 18.9 and 20.2, against 16.9 to 18.9 across all rows; vs is higher: the middle 50% of its values lie between 1 and 1, against 0 to 1 across all rows; cyl is '8' for none of them, against 44% across all rows; and am is '0' for 100% of them, against 59% across all rows. 1 of its members sits close enough to another cluster to be uncertain.
+#> Cluster 2 holds 8 rows, 25.0% of the data (stable). What sets it apart: mpg is higher: the middle 50% of its values lie between 22.8 and 30.4, against 15.2 to 22.8 across all rows; cyl is '4' for 100% of them, against 34% across all rows; wt is lower: the middle 50% of its values lie between 1.62 and 2.20, against 2.47 to 3.57 across all rows; and am is '0' for none of them, against 59% across all rows. Less strongly, 6 more variables set it apart as well.
 #> 
-#> Cluster 3 holds 12 rows, 37.5% of the data (stable). What sets it apart: cyl is '8' for 100% of them, against 44% across all rows; disp is higher: the middle 50% of its values lie between 276 and 400, against 120 to 318 across all rows; gear is lower: the middle 50% of its values lie between 3 and 3, against 3 to 4 across all rows; and wt is higher: the middle 50% of its values lie between 3.52 and 4.07, against 2.47 to 3.57 across all rows. Less strongly, 5 more variables set it apart as well.
+#> Cluster 3 holds 7 rows, 21.9% of the data (moderate). What sets it apart: qsec is higher: the middle 50% of its values lie between 18.9 and 20.2, against 16.9 to 18.9 across all rows; vs is higher: the middle 50% of its values lie between 1 and 1, against 0 to 1 across all rows; cyl is '8' for none of them, against 44% across all rows; and am is '0' for 100% of them, against 59% across all rows. 1 of its members sits close enough to another cluster to be uncertain.
 #> 
-#> Cluster 4 holds 8 rows, 25.0% of the data (stable). What sets it apart: mpg is higher: the middle 50% of its values lie between 22.8 and 30.4, against 15.2 to 22.8 across all rows; cyl is '4' for 100% of them, against 34% across all rows; wt is lower: the middle 50% of its values lie between 1.62 and 2.20, against 2.47 to 3.57 across all rows; and am is '0' for none of them, against 59% across all rows. Less strongly, 6 more variables set it apart as well.
+#> Cluster 4 holds 5 rows, 15.6% of the data (stable). What sets it apart: carb is higher: the middle 50% of its values lie between 4 and 6, against 2 to 4 across all rows; qsec is lower: the middle 50% of its values lie between 14.6 and 16.5, against 16.9 to 18.9 across all rows; gear is higher: the middle 50% of its values lie between 4 and 5, against 3 to 4 across all rows; and am is '0' for none of them, against 59% across all rows. Less strongly, 1 more variable sets it apart as well.
 ```
 
 The reduction picks its own method from the column types: PCA when they
@@ -894,18 +894,18 @@ never surface.
 
 p$cluster$clusters
 #>   cluster size    pct   jaccard stability mean_silhouette anomalous
-#> 1       1    5 15.625 0.7656190    stable       0.2860767     FALSE
-#> 2       2    7 21.875 0.6975873  moderate       0.2524941     FALSE
-#> 3       3   12 37.500 0.9950000    stable       0.6753886     FALSE
-#> 4       4    8 25.000 0.8216667    stable       0.5484379     FALSE
+#> 1       1   12 37.500 0.9950000    stable       0.6753886     FALSE
+#> 2       2    8 25.000 0.8216667    stable       0.5484379     FALSE
+#> 3       3    7 21.875 0.6975873  moderate       0.2524941     FALSE
+#> 4       4    5 15.625 0.7656190    stable       0.2860767     FALSE
 ```
 
-A cluster is characterised by v-test, the same device `FactoMineR`’s
-`catdes()` uses. It is a threshold rather than a test, and is documented
-as one: the clusters were found from the very coordinates being tested,
-so the usual sampling argument does not apply. What speaks to whether a
-partition is real is the stability and silhouette figures above, not the
-characterisation.
+A cluster is characterised by test-values (Lebart, Piron and Morineau
+2006), the same device `FactoMineR`’s `catdes()` uses. It is a threshold
+rather than a test, and is documented as one: the clusters were found
+from the very coordinates being tested, so the usual sampling argument
+does not apply. What speaks to whether a partition is real is the
+stability and silhouette figures above, not the characterisation.
 
 ## Missing values
 
@@ -925,22 +925,17 @@ d2$x[plogis(1.2 * z - 0.4) > runif(n)] <- NA   # missingness follows z
 
 ilm_check_missing(d2, y = "y", verbose = FALSE)
 #> <ilm_missing> 309 of 500 rows complete (61.8%)
-#> 
-#>   missing by variable
-#>     x                       191   38.2%
-#> 
-#>   pattern: monotone (2 distinct)
-#>   verdict: RELATED_TO_COVARIATES 
-#>     related to covariates, not to the outcome: complete cases stay unbiased 
-#> 
-#>   does missingness depend on `y` once the others are held fixed?
-#>     x                partial r = 0.044, p = 0.4
-#> 
-#>   strongest associations with missingness
-#>     x                <- z                0.490
-#>     x                <- y                0.216  (outcome)
-#> 
-#>   MNAR cannot be ruled out by any test; that needs a sensitivity analysis.
+#>   missing values:
+#>     x: 191 (38.2%)
+#>   pattern: monotone, 2 distinct patterns
+#>   verdict: RELATED_TO_COVARIATES
+#>     related to covariates, with no evidence of a relation to the outcome given them (191 missing values in 1 column): complete cases stay unbiased for the regression on those covariates, unless missingness depends on unseen values
+#>   outcome test (missingness against `y`, given the covariates):
+#>     x: partial r = 0.044, adjusted p = 0.4
+#>   flagged associations (effect; adjusted p):
+#>     missing in x ~ z: 0.490; p = <1e-04
+#>     missing in x ~ y: 0.216; p = <1e-04  [the outcome]
+#>   not testable: whether missingness depends on the unseen values themselves (MNAR); no test of the observed data can rule it out, so assess it with a sensitivity analysis
 ```
 
 Note the verdict. Missingness here depends on `z` — so this is
@@ -982,13 +977,13 @@ ilm_mi_pool(imp, y ~ x + z, family = "gaussian")
 ```
 
 Each missing value is **drawn** from the predictive distribution rather
-than set to a fitted mean, and the `m` completed data sets are pooled by
+than set to a fitted mean, and the `m` completed datasets are pooled by
 Rubin’s rules, where the spread of the estimates *across* imputations
 becomes part of the reported uncertainty. `fmi` is the fraction of
 information lost to missingness.
 
-`single = TRUE` gives one completed data set and warns. Filling values
-in once and analysing as though they had been observed gets the point
+`single = TRUE` gives one completed dataset and warns. Filling values in
+once and analysing as though they had been observed gets the point
 estimate about right and the standard errors badly wrong: in that same
 simulation, single imputation covered 79% to 89% where the nominal rate
 was 95%, because nothing in its standard errors knows part of the data
@@ -1006,7 +1001,7 @@ pn <- ilm_profile_na(airquality, k_max = 4, B = 25, seed = 1)
 #> selector can also lock onto the number of category combinations rather than the
 #> number of clusters; plot(x) shows the gap curve.
 cat(pn$summary[1:2], sep = "\n\n")
-#> Cluster 1 is too small to describe reliably: 5 rows, 3.3% of the data (stable). What sets it apart: Solar.R is missing for 100% of them, against 5% across all rows. It could be a real minority pattern or a data problem, and is worth looking at either way.
+#> Cluster 1 holds 111 rows, 72.5% of the data (stable). What sets it apart: Ozone is missing for none of them, against 24% across all rows.
 #> 
 #> Cluster 2 holds 35 rows, 22.9% of the data (stable). What sets it apart: Ozone is missing for 100% of them, against 24% across all rows.
 ```

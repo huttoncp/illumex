@@ -117,7 +117,7 @@ ilm_cluster(
   If `TRUE`, `cols` names the columns to leave out, and every other
   eligible column is used; see
   [ilm_selection](https://huttoncp.github.io/illumex/reference/ilm_selection.md).
-  It needs `cols`. A `by` argument is never negated.
+  It needs `cols`.
 
 - cols_fixed:
 
@@ -156,6 +156,12 @@ plus `mean_silhouette` and `anomalous`), `ind_cluster` (one row per
 observation, with `silhouette`, `is_small_cluster`, `is_ambiguous` and
 `is_anomalous`), and `coords`.
 
+Clusters are numbered by size, largest first, and between two of one
+size the one whose first row comes first in the data is numbered first.
+The numbers depend only on the partition, so the same partition found
+from other random starts, or from the rows in another order, is numbered
+the same; cluster 1 is the largest, and small clusters come last.
+
 ## Two different things called anomalous
 
 A **small cluster** is a property of the cluster: a handful of rows that
@@ -168,15 +174,20 @@ average distance to the nearest other one. Near 1 means clearly placed,
 near 0 means sitting on a boundary, negative means it is closer to
 another cluster than to its own. This is independent of cluster size: a
 point can be ambiguous inside a large and otherwise stable cluster,
-which a size-based flag alone would never show. Kaufman and Rousseeuw
-treat widths below 0.25 as no substantial structure; the default
-threshold here is stricter at 0.1.
+which a size-based flag alone would never show. The default threshold,
+0.1, is illumex's own choice, not taken from a published source. Kaufman
+and Rousseeuw (1990, p. 88, Table 4) give a scale for a whole
+clustering, not for a row: its silhouette coefficient, the largest
+average silhouette width over the entire data set, with 0.25 or below
+meaning that no substantial structure has been found. This function does
+not report that coefficient.
 
 ## Size
 
 Every clustering computes each row's silhouette from a full distance
 matrix of n^2 / 2 numbers, so memory is the first limit. On one core of
-a 16 GB Windows machine (`dev/studies/scale_check.R` in the source),
+a 16 GB Windows machine
+([`dev/studies/scale_check.R`](https://github.com/huttoncp/illumex/blob/main/dev/studies/scale_check.R)),
 with `k` given, k-means took 35 seconds and 1.2 GB at 10,000 rows and
 failed at 50,000 rows for want of 9.3 GB; `method = "hclust"` took 13
 minutes at 10,000. Choosing `k` by the gap statistic, the default, took
@@ -186,10 +197,14 @@ data, give `k`, or cluster a sample of the rows.
 ## References
 
 Hennig, C. (2007). Cluster-wise assessment of cluster stability.
-Computational Statistics and Data Analysis 52(1).
+Computational Statistics and Data Analysis 52(1), 258-271.
+
+Kaufman, L. and Rousseeuw, P. J. (1990). Finding Groups in Data: An
+Introduction to Cluster Analysis. Wiley (reprinted 2005).
 
 Tibshirani, R., Walther, G. and Hastie, T. (2001). Estimating the number
-of clusters in a data set via the gap statistic. JRSS B 63(2).
+of clusters in a data set via the gap statistic. Journal of the Royal
+Statistical Society, Series B 63(2), 411-423.
 
 ## See also
 
@@ -205,8 +220,8 @@ cl
 #> <ilm_cluster> method = kmeans, k = 4 (chosen by gap statistic)
 #> 
 #>   cluster   size    pct  jaccard  stability     sil
-#>         1      5   15.6    0.834     stable   0.281
-#>         2      7   21.9    0.944     stable   0.363
-#>         3     12   37.5    1.000     stable   0.625
-#>         4      8   25.0    0.881     stable   0.487
+#>         1     12   37.5    1.000     stable   0.625
+#>         2      8   25.0    0.881     stable   0.487
+#>         3      7   21.9    0.944     stable   0.363
+#>         4      5   15.6    0.834     stable   0.281
 ```

@@ -15,7 +15,7 @@ clusters holding less than small_cluster_frac of the data are flagged."><meta pr
 
     <a class="navbar-brand me-2" href="../index.html">illumex</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.0.8.9003</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.0.8.9005</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -161,8 +161,7 @@ on an <code><a href="ilm_reduce.html">ilm_reduce()</a></code> result is an error
 
 <dt id="arg-cols-negate">cols_negate<a class="anchor" aria-label="anchor" href="#arg-cols-negate"></a></dt>
 <dd><p>If <code>TRUE</code>, <code>cols</code> names the columns to leave out, and every
-other eligible column is used; see <a href="ilm_selection.html">ilm_selection</a>. It needs <code>cols</code>. A
-<code>by</code> argument is never negated.</p></dd>
+other eligible column is used; see <a href="ilm_selection.html">ilm_selection</a>. It needs <code>cols</code>.</p></dd>
 
 
 <dt id="arg-cols-fixed">cols_fixed<a class="anchor" aria-label="anchor" href="#arg-cols-fixed"></a></dt>
@@ -198,6 +197,11 @@ with <code>size</code>, <code>pct</code>, <code>jaccard</code>, <code>stability<
 plus <code>mean_silhouette</code> and <code>anomalous</code>), <code>ind_cluster</code> (one row per
 observation, with <code>silhouette</code>, <code>is_small_cluster</code>, <code>is_ambiguous</code> and
 <code>is_anomalous</code>), and <code>coords</code>.</p>
+<p>Clusters are numbered by size, largest first, and between two of one
+size the one whose first row comes first in the data is numbered first.
+The numbers depend only on the partition, so the same partition found
+from other random starts, or from the rows in another order, is numbered
+the same; cluster 1 is the largest, and small clusters come last.</p>
     </div>
     <div class="section level2">
     <h2 id="two-different-things-called-anomalous">Two different things called anomalous<a class="anchor" aria-label="anchor" href="#two-different-things-called-anomalous"></a></h2>
@@ -213,8 +217,12 @@ average distance to the nearest other one. Near 1 means clearly placed, near
 0 means sitting on a boundary, negative means it is closer to another cluster
 than to its own. This is independent of cluster size: a point can be
 ambiguous inside a large and otherwise stable cluster, which a size-based
-flag alone would never show. Kaufman and Rousseeuw treat widths below 0.25 as
-no substantial structure; the default threshold here is stricter at 0.1.</p>
+flag alone would never show. The default threshold, 0.1, is illumex's own
+choice, not taken from a published source. Kaufman and Rousseeuw (1990, p.
+88, Table 4) give a scale for a whole clustering, not for a row: its
+silhouette coefficient, the largest average silhouette width over the entire
+data set, with 0.25 or below meaning that no substantial structure has been
+found. This function does not report that coefficient.</p>
     </div>
     <div class="section level2">
     <h2 id="size">Size<a class="anchor" aria-label="anchor" href="#size"></a></h2>
@@ -222,7 +230,7 @@ no substantial structure; the default threshold here is stricter at 0.1.</p>
 
 <p>Every clustering computes each row's silhouette from a full distance
 matrix of n^2 / 2 numbers, so memory is the first limit. On one core of a
-16 GB Windows machine (<code>dev/studies/scale_check.R</code> in the source), with
+16 GB Windows machine (<a href="https://github.com/huttoncp/illumex/blob/main/dev/studies/scale_check.R" class="external-link"><code>dev/studies/scale_check.R</code></a>), with
 <code>k</code> given, k-means took 35 seconds and 1.2 GB at 10,000 rows and failed at
 50,000 rows for want of 9.3 GB; <code>method = "hclust"</code> took 13 minutes at 10,000.
 Choosing <code>k</code> by the gap statistic, the default, took about a minute at
@@ -232,9 +240,12 @@ cluster a sample of the rows.</p>
     <div class="section level2">
     <h2 id="references">References<a class="anchor" aria-label="anchor" href="#references"></a></h2>
     <p>Hennig, C. (2007). Cluster-wise assessment of cluster stability.
-Computational Statistics and Data Analysis 52(1).</p>
+Computational Statistics and Data Analysis 52(1), 258-271.</p>
+<p>Kaufman, L. and Rousseeuw, P. J. (1990). Finding Groups in Data: An
+Introduction to Cluster Analysis. Wiley (reprinted 2005).</p>
 <p>Tibshirani, R., Walther, G. and Hastie, T. (2001). Estimating the number of
-clusters in a data set via the gap statistic. JRSS B 63(2).</p>
+clusters in a data set via the gap statistic. Journal of the Royal
+Statistical Society, Series B 63(2), 411-423.</p>
     </div>
     <div class="section level2">
     <h2 id="see-also">See also<a class="anchor" aria-label="anchor" href="#see-also"></a></h2>
@@ -248,10 +259,10 @@ clusters in a data set via the gap statistic. JRSS B 63(2).</p>
 <span class="r-out co"><span class="r-pr">#&gt;</span> &lt;ilm_cluster&gt; method = kmeans, k = 4 (chosen by gap statistic)</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>   cluster   size    pct  jaccard  stability     sil</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>         1      5   15.6    0.834     stable   0.281</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>         2      7   21.9    0.944     stable   0.363</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>         3     12   37.5    1.000     stable   0.625</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>         4      8   25.0    0.881     stable   0.487</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>         1     12   37.5    1.000     stable   0.625</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>         2      8   25.0    0.881     stable   0.487</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>         3      7   21.9    0.944     stable   0.363</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>         4      5   15.6    0.834     stable   0.281</span>
 </code></pre></div>
     </div>
   </main><aside class="col-md-3"><nav id="toc" aria-label="Table of contents"><h2>On this page</h2>
@@ -259,7 +270,7 @@ clusters in a data set via the gap statistic. JRSS B 63(2).</p>
 
 
     <footer><div class="pkgdown-footer-left">
-  <p>Developed by Craig Hutton.</p>
+  <p>Developed by Craig P. Hutton.</p>
 </div>
 
 <div class="pkgdown-footer-right">

@@ -1,5 +1,236 @@
 # Changelog
 
+## illumex 0.0.8.9005
+
+- A category’s v-test in
+  [`ilm_profile()`](https://huttoncp.github.io/illumex/reference/ilm_profile.md)
+  no longer has the wrong sign. When a count was on one side of its
+  expectation but not beyond the middle of its distribution, its tail
+  was above one half, and the normal quantile of that tail had the
+  opposite sign: a level over-represented in a cluster could get a
+  negative v-test, and an under-represented one a positive v-test. Such
+  a count now gets 0, as a count exactly at its expectation does. Values
+  whose tail is below one half are unchanged.
+- The credits now say that only `ilm_vtest_mean()`, the v-test of a
+  mean, is adapted from FactoMineR’s `catdes()`. `ilm_vtest_share()`,
+  the v-test of a share, was written from its published definition
+  (Lebart, Piron and Morineau 2006, section 6.3.2), and the README, its
+  code and
+  [`ilm_profile()`](https://huttoncp.github.io/illumex/reference/ilm_profile.md)’s
+  help now credit that source. FactoMineR’s authors remain copyright
+  holders. No result changes.
+- The credits for PCAmixdata now name `ilm_famd_z()`, the internal
+  function that builds the matrix `ilm_famd()` reduces, alongside
+  `ilm_famd()`: it is part of the code validated against, and possibly
+  adapted from, PCAmixdata’s `PCAmix()`. No result changes.
+- [`ilm_cluster()`](https://huttoncp.github.io/illumex/reference/ilm_cluster.md)’s
+  help no longer attributes its threshold for an ambiguous row to
+  Kaufman and Rousseeuw (1990). Their scale (0.25 or below: no
+  substantial structure) grades a whole clustering by its silhouette
+  coefficient, not a single row; the default of 0.1 is illumex’s own
+  choice. No result changes.
+- [`ilm_check_missing()`](https://huttoncp.github.io/illumex/reference/ilm_check_missing.md)
+  was rewritten from the published conditions it rests on (White and
+  Carlin 2010; Hughes et al. 2019; Little and Rubin 2019), with the
+  sources cited in its help. The help now says which parts are published
+  and which are illumex’s own: the association screen’s form and
+  thresholds, the outcome test and its effect measure, and the verdicts.
+  What changes:
+  - A new argument, `unit`, names the column that identifies the unit
+    when the data have several rows per unit (visits of a subject,
+    members of a household). The tests assumed independent rows, and
+    their p-values were too small on such data.
+    - A test whose missingness and variables are constant within each
+      unit runs on one row per unit.
+    - Any other test uses a cluster-robust (sandwich) variance (Liang
+      and Zeger 1986). With fewer than 30 units, the sandwich test gives
+      no p-value.
+      - The floor of 30 units comes from a simulation of the test’s
+        size: below 30 units, or when units have different numbers of
+        rows, it rejected too often.
+    - The result gains `unit`, `n_units` and, in `associations` and
+      `outcome_test`, a `method` column saying which way each test ran.
+  - Without `unit`, data that look like several rows per unit (a numeric
+    column taking one value per level of a categorical one) now give a
+    warning that the p-values assume independent rows.
+  - For a two-level categorical column, the screen’s chi-squared test
+    and Cramér’s V no longer apply a continuity correction: Cramér’s V
+    is defined from Pearson’s uncorrected statistic (Agresti 2013,
+    pp. 75 and 110). Their values change slightly; other columns’ do
+    not.
+  - The verdict messages claim no more than the sources support:
+    - `"RELATED_TO_OUTCOME"` now says complete-case estimates MAY be
+      biased, not that they are. It names the case where they are not: a
+      covariate missing because of its own value, where complete cases
+      are unbiased and imputation assuming MAR is the biased choice. It
+      advises running both analyses and explaining any difference (White
+      and Carlin 2010, p. 2928).
+    - `"MCAR_NOT_REJECTED"` and `"RELATED_TO_COVARIATES"` now say “no
+      evidence of”, not “no relation”, and report how many values are
+      missing. Such checks have little power when few values are
+      missing.
+  - For a categorical outcome with more than two levels, the outcome
+    test’s effect is now a multiple partial correlation that does not
+    depend on the order of the levels. For a numeric or two-level
+    outcome it is unchanged.
+  - Dates now enter the outcome test as elapsed time, whatever their
+    number of distinct values. A date with more than 20 values was left
+    out before. The screen still treats a date as categorical.
+  - A result with nothing missing now has every field, `outcome_test`
+    (`NULL`) and `min_effect` included.
+  - `min_effect`, `alpha`, `adjust` and `verbose` are checked, with an
+    error naming what they must be.
+- A category’s test-value in
+  [`ilm_profile()`](https://huttoncp.github.io/illumex/reference/ilm_profile.md)
+  now follows its published definition (Lebart, Piron and Morineau
+  2006): the probability of a count at least as large as the cluster’s,
+  under random allocation, as a standard normal quantile. The sources
+  define it for an over-represented value; an under-represented one
+  takes the mirrored lower tail, and a count exactly at its expectation
+  0, as illumex’s own extension. It used a mid-p probability, which
+  counts only half of the observed count’s own probability; the
+  published definition counts all of it, and reproduces the worked
+  example of Husson, Lê and Pagès (2017, p. 157) exactly (6.64).
+  Test-values for categories are therefore smaller in size than before,
+  most on thin levels (by 0.51 on a level of 3 rows in 900), and a count
+  exactly at its expectation now gets
+  0.  On the package’s examples every profile sentence is unchanged. The
+      function was rewritten from the published definition.
+- [`ilm_frame_issues()`](https://huttoncp.github.io/illumex/reference/ilm_frame_issues.md)
+  and
+  [`ilm_check_frame()`](https://huttoncp.github.io/illumex/reference/ilm_check_frame.md)
+  no longer call a unit-level covariate rank deficient. In repeated
+  measures a subject’s age, repeated over the subject’s visits, is a
+  combination of the subject’s levels by construction; it was reported
+  as `rank_deficient`, a FAIL in
+  [`ilm_check_frame()`](https://huttoncp.github.io/illumex/reference/ilm_check_frame.md)
+  with a remedy to drop it, though with the subject as a grouping it is
+  estimable and wanted. A number built from one categorical column alone
+  is now reported as `unit_level` (“age per subject”), OK in the check,
+  with words saying it is confounded with the grouping only if that
+  enters a model as fixed effects. A combination of several columns is
+  still `rank_deficient`.
+- [`ilm_remedy_tiers()`](https://huttoncp.github.io/illumex/reference/ilm_remedy_tiers.md)
+  gives the ordered tiers a target’s remedies are ranked by:
+  `representation`, `values` and `rows` for a data frame, and
+  `numerical`, `structural` and `estimand` for a fitted model unless its
+  class has a method of its own, as a Bayesian fit’s may, with a `prior`
+  tier. A package building a remedies table asks it rather than assuming
+  a set, and [`c()`](https://rdrr.io/r/base/c.html) refuses to combine
+  tables ranked by different sets, which would rank one table’s remedies
+  by the other’s order.
+
+## illumex 0.0.8.9004
+
+- Clusters are numbered by size, largest first; between two of one size,
+  the one whose first row comes first in the data is numbered first.
+  [`ilm_cluster()`](https://huttoncp.github.io/illumex/reference/ilm_cluster.md)
+  numbered them as k-means left them, so the same partition could be
+  “Cluster 1” in one run and “Cluster 3” in the next. The numbers now
+  depend only on the partition: cluster 1 is the largest, small clusters
+  come last, and a cluster keeps its colour in the plots. The cluster
+  tables, a profile’s paragraphs and the `_na` versions follow the same
+  numbers; the figures are unchanged.
+- `ilm_plot_anomaly(type = "row")` draws on a narrow device. On one 3
+  inches wide or less – a small plot pane, or a vignette’s default
+  figure – it stopped with “invalid graphics state”, since its legend
+  left the bars no room. The legend is now dropped when the plot would
+  have less than an inch beside it, with a message saying which colour
+  is which, and in this view and `"drivers"` long column names are
+  shortened to fit, where they stopped with “figure margins too large”.
+- When the data, not `k_max`, set the most clusters there can be – as
+  many as distinct points, such as four patterns of missing values –
+  [`ilm_cluster()`](https://huttoncp.github.io/illumex/reference/ilm_cluster.md)
+  says so in a message (“k = 4 is the most these data allow: they have 4
+  distinct patterns of missing values … Raising `k_max` would change
+  nothing”). It used to warn that the search had run out of room and to
+  raise `k_max`, which changed nothing. The warning stays for a `k` at
+  `k_max` when `k_max` was the limit.
+- The help for `ndim` in
+  [`ilm_reduce()`](https://huttoncp.github.io/illumex/reference/ilm_reduce.md)
+  and
+  [`ilm_profile()`](https://huttoncp.github.io/illumex/reference/ilm_profile.md)
+  says how to choose it: on mixed data with few columns, dimensions past
+  the first few can carry one categorical column’s levels, and
+  clustering then splits the groups along them. A study measured
+  choosing `ndim` by parallel analysis instead
+  (`dev/studies/ndim_choice.R`): it recovered the groups where five
+  dimensions split them, but did worse on numeric data with
+  well-separated clusters, so the default stays five.
+- The help is corrected and made consistent:
+  - [`ilm_outliers_all()`](https://huttoncp.github.io/illumex/reference/ilm_outliers_all.md)
+    documents its own `method` (`"iqr"`, `"mad"` or `"zscore"`), `na.rm`
+    and `by`, where it showed
+    [`ilm_reduce()`](https://huttoncp.github.io/illumex/reference/ilm_reduce.md)’s;
+  - the results of
+    [`ilm_boot_ci()`](https://huttoncp.github.io/illumex/reference/ilm_boot_ci.md),
+    [`ilm_boot_diff()`](https://huttoncp.github.io/illumex/reference/ilm_boot_diff.md),
+    [`ilm_reduce()`](https://huttoncp.github.io/illumex/reference/ilm_reduce.md),
+    [`ilm_check_missing()`](https://huttoncp.github.io/illumex/reference/ilm_check_missing.md)
+    and
+    [`ilm_counts_tb_all()`](https://huttoncp.github.io/illumex/reference/ilm_counts_tb_all.md)
+    name every column and element they hold;
+  - pages with no `by` no longer say it is never negated, and the
+    progress bar’s page no longer describes several cores;
+  - the plot pages say what each plot draws;
+  - studies the help cites are linked on GitHub;
+  - the examples that cluster run only when the cluster package is
+    installed, and the examples that draw random numbers set a seed;
+  - British spelling throughout, as DESCRIPTION declares (“generalised”,
+    “studentised”), “Gaussian” in prose, “dataset”, and authors’ names
+    as they write them (Cramér, Pagès).
+- The profiling and anomaly-detection vignettes now run their code, on
+  simulated data shown on the page, where before their output was typed
+  by hand.
+- Prints lose their trailing spaces; `ilm_reduce(method = "glrm")`’s
+  header is split to stay under 80 characters, and a profile’s warning
+  about a re-labelling clustering is wrapped as its paragraphs are.
+- [`ilm_copies()`](https://huttoncp.github.io/illumex/reference/ilm_copies.md)
+  and
+  [`ilm_dupes()`](https://huttoncp.github.io/illumex/reference/ilm_dupes.md)
+  sort by text columns far faster, and
+  [`ilm_describe()`](https://huttoncp.github.io/illumex/reference/ilm_describe.md)
+  counts a text column’s empty strings without trimming every value; the
+  results are identical. On a million rows,
+  [`ilm_dupes()`](https://huttoncp.github.io/illumex/reference/ilm_dupes.md)
+  keyed on two text columns took 0.45 s, where it took 11.3 s, and
+  [`ilm_describe_all()`](https://huttoncp.github.io/illumex/reference/ilm_describe_all.md)
+  on three text columns 0.47 s, where it took 1.56 s. Copies of a value
+  that is not valid UTF-8 now sort together; they could be parted
+  before.
+- A cleaning loop: checks that find messy data, remedies written out as
+  code, and a record of what was done and why.
+  [`ilm_check_data()`](https://huttoncp.github.io/illumex/reference/ilm_check_data.md)
+  runs the checks and says what each found;
+  [`ilm_remedies()`](https://huttoncp.github.io/illumex/reference/ilm_remedies.md)
+  lists the remedies, each with a key that names the change
+  (`drop_cols/same`) and stays the same from one version to the next;
+  [`ilm_apply_remedy()`](https://huttoncp.github.io/illumex/reference/ilm_apply_remedy.md)
+  makes one, runs its check again, and logs it with the reason given;
+  and
+  [`ilm_cleaning_script()`](https://huttoncp.github.io/illumex/reference/ilm_cleaning_script.md)
+  writes the log as an R script that replays the cleaning on the raw
+  data. Nothing changes until a remedy is applied. The first check is
+  [`ilm_check_frame()`](https://huttoncp.github.io/illumex/reference/ilm_check_frame.md),
+  the whole-frame problems
+  [`ilm_frame_issues()`](https://huttoncp.github.io/illumex/reference/ilm_frame_issues.md)
+  finds, with
+  [`ilm_drop_cols()`](https://huttoncp.github.io/illumex/reference/ilm_drop_cols.md)
+  as their remedy; the others follow. A remedy table belongs to the data
+  it was listed for, identified by
+  [`ilm_data_id()`](https://huttoncp.github.io/illumex/reference/ilm_data_id.md),
+  which changes with any value or any reordering of rows or columns, and
+  a remedy listed for other data is refused. A secret a remedy needs is
+  given as `ilm_secret("VAR")` and is never written into the table, the
+  log or the script.
+- [`ilm_remedies()`](https://huttoncp.github.io/illumex/reference/ilm_remedies.md),
+  [`ilm_apply_remedy()`](https://huttoncp.github.io/illumex/reference/ilm_apply_remedy.md)
+  and
+  [`ilm_remedy_table()`](https://huttoncp.github.io/illumex/reference/ilm_remedy_table.md)
+  are now generics in illumex, with tables built by
+  [`ilm_remedy_assemble()`](https://huttoncp.github.io/illumex/reference/ilm_remedy_assemble.md),
+  so illume’s model remedies and illumex’s data remedies are one system.
+
 ## illumex 0.0.8.9003
 
 - illumex is now licensed under the GNU General Public License, version
@@ -41,48 +272,48 @@
 - A cluster that
   [`ilm_cluster()`](https://huttoncp.github.io/illumex/reference/ilm_cluster.md)
   marks small opens its paragraph in a profile by saying it is too small
-  to describe reliably (item 291): “Cluster 3 is too small to describe
-  reliably: 2 rows, 1.3% of the data (stable).” Its figures are all
-  still given; the closing sentence keeps that it could be a real
-  minority pattern or a data problem.
+  to describe reliably: “Cluster 3 is too small to describe reliably: 2
+  rows, 1.3% of the data (stable).” Its figures are all still given; the
+  closing sentence keeps that it could be a real minority pattern or a
+  data problem.
 - [`ilm_boot_diff()`](https://huttoncp.github.io/illumex/reference/ilm_boot_diff.md)’s
   `p_superiority` and
   [`ilm_outliers()`](https://huttoncp.github.io/illumex/reference/ilm_outliers.md)’s
   `score` (and
   [`ilm_outliers_all()`](https://huttoncp.github.io/illumex/reference/ilm_outliers_all.md)’s)
-  are no longer rounded in the result (item 289): they keep their full
-  value, and their prints round them, to 4 and 3 decimals, by the shared
-  rule. What prints is unchanged.
+  are no longer rounded in the result: they keep their full value, and
+  their prints round them, to 4 and 3 decimals, by the shared rule. What
+  prints is unchanged.
 - At k = 1,
   [`ilm_cluster()`](https://huttoncp.github.io/illumex/reference/ilm_cluster.md)
-  prints “No distinct clusters” (item 259): the one-row table and its
-  stability, which said nothing, give way to what the rows are – a
-  continuum, when the gap statistic finds no grouping better than one
-  group, to describe with
+  prints “No distinct clusters”: the one-row table and its stability,
+  which said nothing, give way to what the rows are – a continuum, when
+  the gap statistic finds no grouping better than one group, to describe
+  with
   [`ilm_describe_all()`](https://huttoncp.github.io/illumex/reference/ilm_describe_all.md)
   or follow with
   [`ilm_reduce()`](https://huttoncp.github.io/illumex/reference/ilm_reduce.md).
   [`ilm_profile()`](https://huttoncp.github.io/illumex/reference/ilm_profile.md)
   then has no cluster to describe, and says no more.
 - [`ilm_anomaly()`](https://huttoncp.github.io/illumex/reference/ilm_anomaly.md)
-  keeps its default scoring and checks its own residuals (item 282):
-  when their tails are heavier than all but 2 of 40 reference datasets’
-  (p \<= 0.05), it warns that on such data the scan flags rows that are
-  not anomalous. The scores, p-values and flags are unchanged; the
-  check’s p is kept as `attr(x, "tail_p")`. The help gains a section on
-  when the scan over-flags – heavy tails, clustered rows, few columns –
-  and says the warning covers heavy tails but not clustering.
+  keeps its default scoring and checks its own residuals: when their
+  tails are heavier than all but 2 of 40 reference datasets’ (p \<=
+  0.05), it warns that on such data the scan flags rows that are not
+  anomalous. The scores, p-values and flags are unchanged; the check’s p
+  is kept as `attr(x, "tail_p")`. The help gains a section on when the
+  scan over-flags – heavy tails, clustered rows, few columns – and says
+  the warning covers heavy tails but not clustering.
 - A floor or a ceiling is named first in `gauss_note`, whatever the
   index, on every numeric variable with at least 5 distinct values, or 4
-  on a short scale (items 274, 275 and 292): when the count at the bound
-  is at least 5 and 2% of the values, at least twice the next value’s
-  count, and significantly above it (one-sided exact test at 0.001). The
-  rule is the one the floor-rule studies confirmed, at the stricter
-  ratio of 2 (`dev/studies/floor_rule3.R`). It was checked only on
-  continuous variables with more than 20 distinct values before. A short
-  scale is whole numbers spanning at most 10 points, read as below, or
-  an ordered factor; a 3-point scale or a 0/1 variable is not read. The
-  advice follows the variable’s kind:
+  on a short scale: when the count at the bound is at least 5 and 2% of
+  the values, at least twice the next value’s count, and significantly
+  above it (one-sided exact test at 0.001). The rule is the one the
+  floor-rule studies confirmed, at the stricter ratio of 2
+  (`dev/studies/floor_rule3.R`). It was checked only on continuous
+  variables with more than 20 distinct values before. A short scale is
+  whole numbers spanning at most 10 points, read as below, or an ordered
+  factor; a 3-point scale or a 0/1 variable is not read. The advice
+  follows the variable’s kind:
   - a continuous floor or ceiling: “12% of values sit exactly at the
     minimum (0.5): a floor, see ilm_censor()”, as before;
   - a count’s excess zeros: “68% are 0, far above the next value: excess
@@ -111,10 +342,10 @@
 - [`ilm_describe()`](https://huttoncp.github.io/illumex/reference/ilm_describe.md)’s
   `dispersion` is left blank for a variable read as a rating – whole
   numbers from 1 spanning at most 10 points – as it was already for one
-  centred on 0 (item 297): a variance-to-mean ratio means nothing there.
-  Counts keep it, and so do whole numbers from 0 to at most 10, which
-  may be counts.
-- A description prints the same numbers on every computer (item 272).
+  centred on 0: a variance-to-mean ratio means nothing there. Counts
+  keep it, and so do whole numbers from 0 to at most 10, which may be
+  counts.
+- A description prints the same numbers on every computer.
   [`ilm_describe()`](https://huttoncp.github.io/illumex/reference/ilm_describe.md),
   [`ilm_describe_all()`](https://huttoncp.github.io/illumex/reference/ilm_describe_all.md),
   [`ilm_describe_na()`](https://huttoncp.github.io/illumex/reference/ilm_describe_na.md)
@@ -149,10 +380,10 @@
   controls split by exposure – and names a level of the second as the
   reference: exposed against unexposed controls, never cases against
   controls. Only `smd` changes; every other print is as before.
-- Choosing rows (items 277, 279 and 280). Every function that acts on a
-  data frame takes `subset`, applied first, before `cols`, `by` and
-  everything else: a logical vector (`NA` left out), row positions,
-  named patterns (`subset = c(site = "^north")`), or
+- Choosing rows. Every function that acts on a data frame takes
+  `subset`, applied first, before `cols`, `by` and everything else: a
+  logical vector (`NA` left out), row positions, named patterns
+  (`subset = c(site = "^north")`), or
   [`ilm_sample()`](https://huttoncp.github.io/illumex/reference/ilm_sample.md).
   `subset_negate = TRUE` takes the other rows – a holdout – and
   `subset_fixed = TRUE` matches the patterns literally. Results name
@@ -165,17 +396,17 @@
   [`?ilm_selection`](https://huttoncp.github.io/illumex/reference/ilm_selection.md).
 - [`ilm_describe_clusters()`](https://huttoncp.github.io/illumex/reference/ilm_describe_clusters.md),
   new, for data whose rows sit in clusters – patients within sites,
-  visits within people (item 121). It counts the clusters and the rows
-  in each, and describes each variable that is the same on every row of
-  a cluster once per cluster, where described over the rows a large
-  cluster would count many times over. The variables that vary within
-  clusters are named, for
+  visits within people. It counts the clusters and the rows in each, and
+  describes each variable that is the same on every row of a cluster
+  once per cluster, where described over the rows a large cluster would
+  count many times over. The variables that vary within clusters are
+  named, for
   [`ilm_describe_all()`](https://huttoncp.github.io/illumex/reference/ilm_describe_all.md).
   It takes `cols` and `subset` as every function does.
-- A model is a fifth form of `subset`, for the rows it analysed (items
-  146 and 150): `ilm_describe_all(d, subset = fit)` describes the rows a
-  fit from illume’s `ilm_model()` used, without the ones it dropped, and
-  an `ilm_dag_model()` the rows every adjustment set used.
+- A model is a fifth form of `subset`, for the rows it analysed:
+  `ilm_describe_all(d, subset = fit)` describes the rows a fit from
+  illume’s `ilm_model()` used, without the ones it dropped, and an
+  `ilm_dag_model()` the rows every adjustment set used.
   `subset_negate = TRUE` gives the rows the model dropped, to check
   whether they differ. The result prints
   `297 of 300 rows (analysed by the model)` and keeps copies of what
@@ -185,19 +416,19 @@
 - `ilm_sample(n, prop, by, seed, within, min)`, new, draws rows for
   `subset`: `n` of them, or a share `prop`; with `by`, whole groups, so
   a holdout never splits one; with `within`, rows inside every cluster,
-  every cluster kept – the remedy for data too large to fit (item 283).
-  The draw inside clusters is proportional, at least `min` rows from
-  each (all of a smaller one), and nested levels
+  every cluster kept – the remedy for data too large to fit. The draw
+  inside clusters is proportional, at least `min` rows from each (all of
+  a smaller one), and nested levels
   (`within = c("school", "classroom")`) draw inside the finest; an id
   repeated across a coarser level, or crossed groupings, are refused for
   now. The result keeps the shares kept (the smallest, median and
   largest) and what derives each row’s chance of being kept, which
   [`ilm_subset()`](https://huttoncp.github.io/illumex/reference/ilm_subset.md)
   carries as `attr(, "ilm_inclusion")`. Crossed factors are drawn by
-  factor (item 284): `by = c(rater = 0.3, item = 0.2)` draws a share (or
-  a count) of each factor’s levels on its own and keeps the rows whose
-  levels were all drawn; 1 or `"all"` keeps a factor whole. `within` is
-  for nested levels only, and points a crossed pair to `by`.
+  factor: `by = c(rater = 0.3, item = 0.2)` draws a share (or a count)
+  of each factor’s levels on its own and keeps the rows whose levels
+  were all drawn; 1 or `"all"` keeps a factor whole. `within` is for
+  nested levels only, and points a crossed pair to `by`.
   `report_by = c("rater", "item")` reports what a sample left of those
   columns – levels and rows kept, and whether each pair is still
   connected – on the result, with a warning (counts only) when a level
@@ -262,8 +493,8 @@
   [`ilm_plot_na_all()`](https://huttoncp.github.io/illumex/reference/ilm_plot_na_all.md)
   take `cols` and `cols_negate`, as
   [`ilm_outliers_all()`](https://huttoncp.github.io/illumex/reference/ilm_outliers_all.md)
-  does (item 278). Where `class` already narrows the columns, `cols`
-  chooses among those. `cols` comes right after `by` (after `data` in
+  does. Where `class` already narrows the columns, `cols` chooses among
+  those. `cols` comes right after `by` (after `data` in
   [`ilm_counts_tb_all()`](https://huttoncp.github.io/illumex/reference/ilm_counts_tb_all.md),
   which has no `by`), so a call that passed the next argument by
   position now needs its name: `ilm_describe_all(d, "grp", 2)` becomes
@@ -271,8 +502,8 @@
 - Every function that takes `cols` takes `cols_negate`: with
   `cols_negate = TRUE`, `cols` names the columns to leave out –
   `cols = c("id", "site")`, `cols = "^score_"` or `cols = is.numeric` –
-  and every other column the function can use is used (item 276). `by`
-  is never negated. See
+  and every other column the function can use is used. `by` is never
+  negated. See
   [`?ilm_selection`](https://huttoncp.github.io/illumex/reference/ilm_selection.md).
 - A `by` argument takes column names, as the help now says; only
   [`ilm_outliers_all()`](https://huttoncp.github.io/illumex/reference/ilm_outliers_all.md)’s
@@ -289,30 +520,30 @@
 - Numbers are written in full with at most 15 figures before the point
   and, below 1, at most 6 decimals, after rounding, and in R’s
   scientific notation beyond, so sentences and reports match R’s printed
-  tables (item 290): “1.23e+300”, “1.00e-05”, “5.05e-08”, with the
-  exponent’s sign and at least two digits. To 3 figures, 0.0001 is
-  “0.000100” and 0.00001 is “1.00e-05”; the decimals are counted with
-  the zeros at the end kept, so dropping them does not move the switch.
-  A value shown to significant figures keeps them in the mantissa
-  (“1.00e+15”). One shown to fixed decimals keeps its declared decimals
-  however small (0.0000001 to 8 decimals is “0.00000010”), and goes
-  scientific only from 1e15, at 7 figures, as R prints it
-  (“1.234568e+20”). p-values, clock times and ordinals are unchanged.
+  tables: “1.23e+300”, “1.00e-05”, “5.05e-08”, with the exponent’s sign
+  and at least two digits. To 3 figures, 0.0001 is “0.000100” and
+  0.00001 is “1.00e-05”; the decimals are counted with the zeros at the
+  end kept, so dropping them does not move the switch. A value shown to
+  significant figures keeps them in the mantissa (“1.00e+15”). One shown
+  to fixed decimals keeps its declared decimals however small (0.0000001
+  to 8 decimals is “0.00000010”), and goes scientific only from 1e15, at
+  7 figures, as R prints it (“1.234568e+20”). p-values, clock times and
+  ordinals are unchanged.
 - A value just below a power of ten whose 15 figures are all nines keeps
   them: 999,999,999,999,999 was shown as 1,000,000,000,000,000 when
   asked for 15 figures, because
   [`log10()`](https://rdrr.io/r/base/Log.html) of it is 15.
 - The shared display rules take a group of numbers read together – an
   estimate with its interval, a list of predicted values – and write
-  every value at the group’s decimals (item 306): none when every value
-  is whole; otherwise enough for 3 figures at the group’s median size,
-  and for its smallest value to show a figure, at most 6. A value that
-  needs more than 6 decimals to show a figure, or is 1e15 or more, is
-  written in scientific notation at 3 figures and sets nothing, so it
-  does not drag the others to 6 decimals: 1.25, 0.00000004 and 3.5 read
-  “1.25”, “4.00e-08” and “3.50”. So 12.3456, 0.5 and 250.75 read “12.3”,
-  “0.5” and “250.8”, and -0.034, 0.0125 and -0.5 read “-0.0340”,
-  “0.0125” and “-0.5000”.
+  every value at the group’s decimals: none when every value is whole;
+  otherwise enough for 3 figures at the group’s median size, and for its
+  smallest value to show a figure, at most 6. A value that needs more
+  than 6 decimals to show a figure, or is 1e15 or more, is written in
+  scientific notation at 3 figures and sets nothing, so it does not drag
+  the others to 6 decimals: 1.25, 0.00000004 and 3.5 read “1.25”,
+  “4.00e-08” and “3.50”. So 12.3456, 0.5 and 250.75 read “12.3”, “0.5”
+  and “250.8”, and -0.034, 0.0125 and -0.5 read “-0.0340”, “0.0125” and
+  “-0.5000”.
 - The development version moves to 0.0.8.9003, so that a package needing
   the scientific notation and the group decimals of the shared display
   rules can require them.
@@ -330,12 +561,12 @@
   27.2%, now 27.3%. A duration’s quartiles are printed by the same rule
   as a number’s (“1,230 days”, not “1230 days”).
 - Numbers shown at three significant figures keep their trailing zeros
-  (10.0, 2.50, 51.0; Craig’s item 256), and an estimate that happens to
-  be whole still shows its figures: 42 is “42.0” and 19234 “19,200”. A
-  count, or a data value that is a whole number (a profile’s quartile of
-  whole-number data), is shown whole. The prints the tests hold are
-  unchanged; profile sentences quoting a quartile that is not whole show
-  its figures (“2.50”).
+  (10.0, 2.50, 51.0), and an estimate that happens to be whole still
+  shows its figures: 42 is “42.0” and 19234 “19,200”. A count, or a data
+  value that is a whole number (a profile’s quartile of whole-number
+  data), is shown whole. The prints the tests hold are unchanged;
+  profile sentences quoting a quartile that is not whole show its
+  figures (“2.50”).
 - [`ilm_describe()`](https://huttoncp.github.io/illumex/reference/ilm_describe.md)
   describes values too large for a finite spread (near 1e300) without
   assessing their shape, and says so in the note: “values too large to
@@ -364,13 +595,13 @@
     name that is not valid UTF-8 is cleaned with its stray byte spelled
     out (`caf_e9`).
   - `ilm_wash_df(encoding = )` converts such text, given the file’s
-    encoding (item 298): `encoding = "windows-1252"` converts the
-    values, factor levels and column names that are not valid UTF-8 from
-    it, and a message says how many values were converted in each column
-    (also `attr(x, "converted")`). Valid text is never touched and no
-    encoding is guessed. A value that does not convert, or does not
-    convert back to the same bytes, is left as it is and reported.
-    Without the argument, the warning suggests it by name.
+    encoding: `encoding = "windows-1252"` converts the values, factor
+    levels and column names that are not valid UTF-8 from it, and a
+    message says how many values were converted in each column (also
+    `attr(x, "converted")`). Valid text is never touched and no encoding
+    is guessed. A value that does not convert, or does not convert back
+    to the same bytes, is left as it is and reported. Without the
+    argument, the warning suggests it by name.
   - [`ilm_describe()`](https://huttoncp.github.io/illumex/reference/ilm_describe.md)
     and
     [`ilm_describe_all()`](https://huttoncp.github.io/illumex/reference/ilm_describe_all.md)
@@ -393,15 +624,14 @@
   is now passed only when there is one.
 
 - `ilm_reduce(method = "glrm")` keeps only the dimensions that carry
-  variation (Craig’s item 265): a singular value of the centred low-rank
-  product at or below `sqrt(.Machine$double.eps)` times the first, the
-  numerical-rank cut
-  [`MASS::ginv()`](https://rdrr.io/pkg/MASS/man/ginv.html) uses, is zero
-  to rounding. Heavy shrinkage can leave fewer such dimensions than were
-  fitted, and a zero singular value’s direction is arbitrary, so its
-  loadings differed from one platform to the next (0.964 on one, 0.930
-  on another, for the same fit). The print says so (“4 dimensions carry
-  variation (5 fitted; after shrinkage the 5th has none)”), the
+  variation: a singular value of the centred low-rank product at or
+  below `sqrt(.Machine$double.eps)` times the first, the numerical-rank
+  cut [`MASS::ginv()`](https://rdrr.io/pkg/MASS/man/ginv.html) uses, is
+  zero to rounding. Heavy shrinkage can leave fewer such dimensions than
+  were fitted, and a zero singular value’s direction is arbitrary, so
+  its loadings differed from one platform to the next (0.964 on one,
+  0.930 on another, for the same fit). The print says so (“4 dimensions
+  carry variation (5 fitted; after shrinkage the 5th has none)”), the
   coordinates and loadings cover the dimensions kept, and
   [`ilm_glrm()`](https://huttoncp.github.io/illumex/reference/ilm_glrm.md)
   reports its own (`rank_kept`).

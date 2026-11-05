@@ -1,6 +1,6 @@
 # Missing values by column
 
-A bar per column. The first question to ask of an unfamiliar data set,
+A bar per column. The first question to ask of an unfamiliar dataset,
 and the one
 [`ilm_check_missing()`](https://huttoncp.github.io/illumex/reference/ilm_check_missing.md)
 then turns into advice.
@@ -57,7 +57,7 @@ ilm_plot_na_all(
   If `TRUE`, `cols` names the columns to leave out, and every other
   eligible column is used; see
   [ilm_selection](https://huttoncp.github.io/illumex/reference/ilm_selection.md).
-  It needs `cols`. A `by` argument is never negated.
+  It needs `cols`.
 
 - cols_fixed:
 

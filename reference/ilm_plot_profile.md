@@ -24,7 +24,7 @@ ilm_plot_profile_na(x, dims = c(1, 2), ...)
 
 - dims:
 
-  Which two coordinates, by number.
+  Which two dimensions, by number.
 
 - ...:
 

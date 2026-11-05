@@ -86,7 +86,7 @@ convert back to the same bytes, is left as it is and reported as above.
 Names follow the rules of janitor's `make_clean_names()`, without
 needing janitor, and no letter is dropped: `"%"` becomes `percent` and
 `"#"` `number`; camelCase is split; accented Latin letters become plain
-ones (an e with an accent becomes e, a sharp s ss, the oe ligature oe);
+ones (`"é"` becomes `e`, `"ß"` becomes `ss`, `"œ"` becomes `oe`);
 letters of other scripts are kept as they are; a name starting with a
 digit gains an `x`; and a repeated name gains `_2`, `_3` and so on, as
 janitor numbers it.

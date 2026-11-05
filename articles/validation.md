@@ -27,10 +27,10 @@ retained dimension, and every squared loading:
 
 | data             | rows | eigenvalues | coordinates | loadings |
 |:-----------------|-----:|------------:|------------:|---------:|
-| mixed            |  900 |     4.7e-15 |     2.6e-13 |  1.1e-14 |
+| mixed            |  900 |     5.1e-15 |     3.5e-13 |  1.3e-14 |
 | numeric_only     |  900 |     1.6e-15 |     1.3e-13 |  9.2e-15 |
-| categorical_only |  900 |     3.6e-15 |     3.5e-12 |  5.2e-14 |
-| mixed_with_gaps  |  900 |     2.7e-15 |     2.1e-13 |  6.4e-15 |
+| categorical_only |  900 |     2.9e-15 |     3.4e-12 |  4.4e-14 |
+| mixed_with_gaps  |  900 |     1.3e-15 |     1.9e-13 |  7.8e-15 |
 
 A coordinate’s sign is arbitrary in any implementation – the same
 dimension read from the other end – so coordinates are compared after
@@ -50,20 +50,28 @@ eigenvalues, and every row’s coordinates on the first three dimensions.
 
 | quantity                       | largest_difference |
 |:-------------------------------|-------------------:|
-| eigenvalues 1 to 5             |            4.0e-15 |
-| coordinates, dimensions 1 to 3 |            1.7e-13 |
+| eigenvalues 1 to 5             |            4.4e-15 |
+| coordinates, dimensions 1 to 3 |            1.8e-13 |
 
 [`ilm_profile()`](https://huttoncp.github.io/illumex/reference/ilm_profile.md)
-describes each cluster by v-tests, as `FactoMineR::catdes()` does: for a
-number, how far the cluster’s mean sits from the overall mean in
-standard errors; for a category, the hypergeometric probability of the
-cluster’s count on the normal scale. Against `catdes()` on a fixed
-partition of the same data:
+describes each cluster by test-values (Lebart, Piron and Morineau 2006,
+section 6.3.2): for a number, how far the cluster’s mean sits from the
+overall mean in standard errors; for a category, the probability of a
+count at least as extreme as the cluster’s, under random allocation, as
+a standard normal quantile. That definition reproduces the worked
+example of Husson, Lê and Pagès (2017, p. 157) exactly. Against
+`FactoMineR::catdes()` on a fixed partition of the same data, as an
+outside comparison: the numbers agree. The categories are smaller in
+size, because `catdes()` counts only half of the observed count’s own
+probability (a mid-p), where the published definition counts all of it:
+most on a thin level (0.51 on a level of 3 rows), and a count exactly at
+its expectation is 0 here where `catdes()` gives it a small sign.
+Elsewhere their signs agree:
 
 | v_test            | compared | largest_difference |
 |:------------------|---------:|-------------------:|
 | numeric variables |        9 |            6.6e-15 |
-| categories        |       12 |            3.8e-15 |
+| categories        |       12 |            5.1e-01 |
 
 ## Speed
 

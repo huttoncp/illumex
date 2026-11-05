@@ -1,6 +1,7 @@
 # Missingness in one variable
 
-Missingness in one variable
+Counts the missing values in one column, overall or within groups, as a
+count and a share.
 
 ## Usage
 

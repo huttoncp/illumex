@@ -32,8 +32,11 @@ ilm_outliers_all(
 
 - by:
 
-  Grouping column(s), as a character vector. Reference statistics, and
-  so the flags, are computed separately within each group.
+  Grouping column(s): names, a pattern or a predicate, as `cols` takes
+  them (see
+  [ilm_selection](https://huttoncp.github.io/illumex/reference/ilm_selection.md)).
+  Reference statistics, and so the flags, are computed separately within
+  each group.
 
 - cols:
 
@@ -44,15 +47,7 @@ ilm_outliers_all(
 
 - method:
 
-  `"famd"` (the default) for PCA, MCA or FAMD depending on the column
-  types, in closed form; `"pcamix"`, its name from when PCAmixdata
-  computed it, is still accepted and means the same. `"glrm"` fits a
-  generalized low rank model instead, which uses a loss appropriate to
-  each column's type rather than squared error on one-hot indicators,
-  and reconstructs a category as a category. It costs an iterative fit,
-  and on all-numeric data the two are the same model – see
-  [`ilm_glrm()`](https://huttoncp.github.io/illumex/reference/ilm_glrm.md)
-  for when it is worth that.
+  `"iqr"`, `"mad"` or `"zscore"`, applied to each column.
 
 - threshold:
 
@@ -65,16 +60,15 @@ ilm_outliers_all(
 
 - na.rm:
 
-  Compute the reference statistics with missing values removed. The
-  result always has one row per element of `y`, with `NA` for `score`
-  and `is_outlier` wherever `y` is `NA`.
+  Compute each column's reference statistics with missing values
+  removed; a missing value is never flagged.
 
 - cols_negate:
 
   If `TRUE`, `cols` names the columns to leave out, and every other
   eligible column is used; see
   [ilm_selection](https://huttoncp.github.io/illumex/reference/ilm_selection.md).
-  It needs `cols`. A `by` argument is never negated.
+  It needs `cols`.
 
 - cols_fixed:
 

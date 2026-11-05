@@ -126,9 +126,14 @@ ilm_boot_diff(
 
 ## Value
 
-One row per comparison, with `from`, `to`, `observed`, `lower`, `upper`,
-`p_value`, `p_adj`, `excludes_zero` and the settings used. Differences
-are `to` minus `from`.
+One row per comparison: `stat`, `group` (the grouping column), `from`,
+`to`, `observed`, `lower`, `upper`, the settings used (`conf`, `R`,
+`ci_type`, `adjust`), `n_comparisons`, `n_from` and `n_to` (the rows in
+each group), `p_value`, `p_adj`, `p_superiority` and `excludes_zero`.
+Differences are `to` minus `from`. The replicate differences are kept as
+the attribute `"draws"`, which
+[`ilm_plot_boot_diff()`](https://huttoncp.github.io/illumex/reference/ilm_plot_boot_diff.md)
+draws.
 
 ## Details
 
@@ -142,7 +147,7 @@ handled:
   comparison by its own bootstrap standard error, and takes the `conf`
   quantile of the largest absolute standardised value across comparisons
   as one critical value for all of them. This is the single-step
-  studentized maximum. It assumes neither normality nor a common
+  studentised maximum. It assumes neither normality nor a common
   variance, which is what separates it from Tukey's range test. Its
   intervals are symmetric about the observed difference, so `ci_type`
   does not apply to them.
@@ -161,7 +166,7 @@ column of the result reads `"none"` whatever was asked for.
 
 `p_value` and `p_adj` are built the same way the interval is, so the two
 cannot contradict each other: under `"max_t"` both come off the
-studentized maximum, and otherwise both come off the bootstrap
+studentised maximum, and otherwise both come off the bootstrap
 distribution directly. They are read off the same `R` replicates from
 opposite directions – a quantile and a tail proportion – so a comparison
 sitting within one replicate of the critical value can still land either
@@ -180,7 +185,7 @@ to 0.068 on normal data with a common variance and 0.072 with variances
 differing fourfold, against a nominal 0.05.
 
 Heavy skew at small n is the case to know about. On lognormal data with
-a spread parameter up to 1.2 and those same group sizes, a SINGLE
+a spread parameter up to 1.2 and those same group sizes, a single
 unadjusted comparison already erred 0.090 of the time, and no `ci_type`
 moved it (percentile 0.090, BCa 0.089, basic 0.093, normal 0.084). That
 is the bootstrapped mean of a heavily skewed small sample, not the

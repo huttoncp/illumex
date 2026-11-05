@@ -23,7 +23,7 @@ ilm_plot_cluster_na(x, dims = c(1, 2), ...)
 
 - dims:
 
-  Which two coordinates, by number.
+  Which two dimensions, by number.
 
 - ...:
 

@@ -1,6 +1,7 @@
 # Bar plot
 
-Bar plot
+Draws the count of each level of one categorical column, optionally
+split by a grouping column or drawn in panels.
 
 ## Usage
 

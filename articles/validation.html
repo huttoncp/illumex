@@ -24,7 +24,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">illumex</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.0.8.9003</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.0.8.9005</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -105,9 +105,9 @@ dimension, and every squared loading:</p>
 <tr class="odd">
 <td align="left">mixed</td>
 <td align="right">900</td>
-<td align="right">4.7e-15</td>
-<td align="right">2.6e-13</td>
-<td align="right">1.1e-14</td>
+<td align="right">5.1e-15</td>
+<td align="right">3.5e-13</td>
+<td align="right">1.3e-14</td>
 </tr>
 <tr class="even">
 <td align="left">numeric_only</td>
@@ -119,16 +119,16 @@ dimension, and every squared loading:</p>
 <tr class="odd">
 <td align="left">categorical_only</td>
 <td align="right">900</td>
-<td align="right">3.6e-15</td>
-<td align="right">3.5e-12</td>
-<td align="right">5.2e-14</td>
+<td align="right">2.9e-15</td>
+<td align="right">3.4e-12</td>
+<td align="right">4.4e-14</td>
 </tr>
 <tr class="even">
 <td align="left">mixed_with_gaps</td>
 <td align="right">900</td>
-<td align="right">2.7e-15</td>
-<td align="right">2.1e-13</td>
-<td align="right">6.4e-15</td>
+<td align="right">1.3e-15</td>
+<td align="right">1.9e-13</td>
+<td align="right">7.8e-15</td>
 </tr>
 </tbody>
 </table>
@@ -154,20 +154,28 @@ every row’s coordinates on the first three dimensions.</p>
 <tbody>
 <tr class="odd">
 <td align="left">eigenvalues 1 to 5</td>
-<td align="right">4.0e-15</td>
+<td align="right">4.4e-15</td>
 </tr>
 <tr class="even">
 <td align="left">coordinates, dimensions 1 to 3</td>
-<td align="right">1.7e-13</td>
+<td align="right">1.8e-13</td>
 </tr>
 </tbody>
 </table>
-<p><code><a href="../reference/ilm_profile.html">ilm_profile()</a></code> describes each cluster by v-tests, as
-<code>FactoMineR::catdes()</code> does: for a number, how far the
-cluster’s mean sits from the overall mean in standard errors; for a
-category, the hypergeometric probability of the cluster’s count on the
-normal scale. Against <code>catdes()</code> on a fixed partition of the
-same data:</p>
+<p><code><a href="../reference/ilm_profile.html">ilm_profile()</a></code> describes each cluster by test-values
+(Lebart, Piron and Morineau 2006, section 6.3.2): for a number, how far
+the cluster’s mean sits from the overall mean in standard errors; for a
+category, the probability of a count at least as extreme as the
+cluster’s, under random allocation, as a standard normal quantile. That
+definition reproduces the worked example of Husson, Lê and Pagès (2017,
+p. 157) exactly. Against <code>FactoMineR::catdes()</code> on a fixed
+partition of the same data, as an outside comparison: the numbers agree.
+The categories are smaller in size, because <code>catdes()</code> counts
+only half of the observed count’s own probability (a mid-p), where the
+published definition counts all of it: most on a thin level (0.51 on a
+level of 3 rows), and a count exactly at its expectation is 0 here where
+<code>catdes()</code> gives it a small sign. Elsewhere their signs
+agree:</p>
 <table class="table">
 <thead><tr class="header">
 <th align="left">v_test</th>
@@ -183,7 +191,7 @@ same data:</p>
 <tr class="even">
 <td align="left">categories</td>
 <td align="right">12</td>
-<td align="right">3.8e-15</td>
+<td align="right">5.1e-01</td>
 </tr>
 </tbody>
 </table>
@@ -273,7 +281,7 @@ multivariate analysis. <em>Journal of Statistical Software</em> 25(1),
 
 
     <footer><div class="pkgdown-footer-left">
-  <p>Developed by Craig Hutton.</p>
+  <p>Developed by Craig P. Hutton.</p>
 </div>
 
 <div class="pkgdown-footer-right">

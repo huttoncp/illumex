@@ -15,8 +15,8 @@
 <script src="deps/bootstrap-5.3.8/bootstrap.bundle.min.js"></script><link href="deps/font-awesome-6.5.2/css/all.min.css" rel="stylesheet">
 <link href="deps/font-awesome-6.5.2/css/v4-shims.min.css" rel="stylesheet">
 <script src="deps/headroom-0.11.0/headroom.min.js"></script><script src="deps/headroom-0.11.0/jQuery.headroom.min.js"></script><script src="deps/bootstrap-toc-1.0.1/bootstrap-toc.min.js"></script><script src="deps/clipboard.js-2.0.11/clipboard.min.js"></script><script src="deps/search-1.0.0/autocomplete.jquery.min.js"></script><script src="deps/search-1.0.0/fuse.min.js"></script><script src="deps/search-1.0.0/mark.min.js"></script><!-- pkgdown --><script src="pkgdown.js"></script><meta property="og:title" content="A Data Interrogation Engine for Enabling Inference">
-<meta name="description" content="The exploratory half of the illume workflow, usable on its own. It describes every column of a data frame in one call, with a gaussian index in place of a normality test; counts values, finds duplicated and copied rows, and reports problems that belong to pairs of columns; cleans and recodes; gives bootstrap intervals for a statistic or a difference between groups without a model; flags values extreme for their own column and rows implausible as a combination, by low-rank reconstruction with a simulated null or by isolation forest; describes missing values and plots their pattern; and profiles a data set by dimension reduction, generalized low rank models and clustering, for numeric and mixed columns alike. Plots are built on tinyplot and named for what they show, and the grouped arithmetic runs on collapse. Every function is prefixed ilm_, as in illume, which attaches this package.">
-<meta property="og:description" content="The exploratory half of the illume workflow, usable on its own. It describes every column of a data frame in one call, with a gaussian index in place of a normality test; counts values, finds duplicated and copied rows, and reports problems that belong to pairs of columns; cleans and recodes; gives bootstrap intervals for a statistic or a difference between groups without a model; flags values extreme for their own column and rows implausible as a combination, by low-rank reconstruction with a simulated null or by isolation forest; describes missing values and plots their pattern; and profiles a data set by dimension reduction, generalized low rank models and clustering, for numeric and mixed columns alike. Plots are built on tinyplot and named for what they show, and the grouped arithmetic runs on collapse. Every function is prefixed ilm_, as in illume, which attaches this package.">
+<meta name="description" content="The exploratory half of the illume workflow, usable on its own. It describes every column of a data frame in one call, with a Gaussian index in place of a normality test; counts values, finds duplicated and copied rows, and reports problems that belong to pairs of columns; cleans and recodes; gives bootstrap intervals for a statistic or a difference between groups without a model; flags values extreme for their own column and rows implausible as a combination, by low-rank reconstruction with a simulated null or by isolation forest; describes missing values and plots their pattern; and profiles a dataset by dimension reduction, generalised low rank models and clustering, for numeric and mixed columns alike. Plots are built on tinyplot and named for what they show, and the grouped arithmetic runs on collapse. Every function is prefixed ilm_, as in illume, which attaches this package.">
+<meta property="og:description" content="The exploratory half of the illume workflow, usable on its own. It describes every column of a data frame in one call, with a Gaussian index in place of a normality test; counts values, finds duplicated and copied rows, and reports problems that belong to pairs of columns; cleans and recodes; gives bootstrap intervals for a statistic or a difference between groups without a model; flags values extreme for their own column and rows implausible as a combination, by low-rank reconstruction with a simulated null or by isolation forest; describes missing values and plots their pattern; and profiles a dataset by dimension reduction, generalised low rank models and clustering, for numeric and mixed columns alike. Plots are built on tinyplot and named for what they show, and the grouped arithmetic runs on collapse. Every function is prefixed ilm_, as in illume, which attaches this package.">
 <meta property="og:image" content="https://huttoncp.github.io/illumex/logo.png">
 </head>
 <body>
@@ -27,7 +27,7 @@
 
     <a class="navbar-brand me-2" href="index.html">illumex</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.0.8.9003</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.0.8.9005</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -223,8 +223,10 @@
 </h2>
 <ul>
 <li>
-<code>ilm_vtest_mean()</code> and <code>ilm_vtest_share()</code>, the v-tests behind <code><a href="reference/ilm_profile.html">ilm_profile()</a></code>, are adapted from <code>catdes()</code> in <a href="https://CRAN.R-project.org/package=FactoMineR" class="external-link"><code>FactoMineR</code></a>, by François Husson, Julie Josse, Sébastien Lê and Jérémy Mazet (GPL (&gt;= 2)). They are listed as copyright holders.</li>
-<li>The factor analysis of mixed data in <code><a href="reference/ilm_reduce.html">ilm_reduce()</a></code> was validated against, and may be adapted from, <code>PCAmix()</code> in <a href="https://CRAN.R-project.org/package=PCAmixdata" class="external-link"><code>PCAmixdata</code></a>, by Marie Chavent, Vanessa Kuentz, Amaury Labenne, Benoit Liquet and Jérôme Saracco (GPL (&gt;= 2)). They are listed as copyright holders.</li>
+<code>ilm_vtest_mean()</code>, the v-test of a mean behind <code><a href="reference/ilm_profile.html">ilm_profile()</a></code>, is adapted from <code>catdes()</code> in <a href="https://CRAN.R-project.org/package=FactoMineR" class="external-link"><code>FactoMineR</code></a>, by François Husson, Julie Josse, Sébastien Lê and Jérémy Mazet (GPL (&gt;= 2)). They are listed as copyright holders.</li>
+<li>
+<code>ilm_vtest_share()</code>, the v-test of a share, is written from its published definition in Lebart, Piron and Morineau (2006), <em>Statistique exploratoire multidimensionnelle</em>, 4th ed., section 6.3.2.</li>
+<li>The factor analysis of mixed data in <code><a href="reference/ilm_reduce.html">ilm_reduce()</a></code>, computed by <code>ilm_famd()</code> and <code>ilm_famd_z()</code>, was validated against, and may be adapted from, <code>PCAmix()</code> in <a href="https://CRAN.R-project.org/package=PCAmixdata" class="external-link"><code>PCAmixdata</code></a>, by Marie Chavent, Vanessa Kuentz, Amaury Labenne, Benoit Liquet and Jérôme Saracco (GPL (&gt;= 2)). They are listed as copyright holders.</li>
 <li>
 <code>ilm_snake()</code> follows the naming behaviour of <a href="https://CRAN.R-project.org/package=janitor" class="external-link"><code>janitor</code></a>’s <code>make_clean_names()</code>, by Sam Firke and contributors.</li>
 <li>
@@ -280,7 +282,7 @@
 <div class="developers">
 <h2 data-toc-skip>Developers</h2>
 <ul class="list-unstyled">
-<li>Craig Hutton <br><small class="roles"> Author, maintainer </small>   </li>
+<li>Craig P. Hutton <br><small class="roles"> Author, maintainer, copyright holder </small>   </li>
 <li><a href="authors.html">More about authors...</a></li>
 </ul>
 </div>
@@ -292,7 +294,7 @@
 
 
     <footer><div class="pkgdown-footer-left">
-  <p>Developed by Craig Hutton.</p>
+  <p>Developed by Craig P. Hutton.</p>
 </div>
 
 <div class="pkgdown-footer-right">
