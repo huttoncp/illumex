@@ -24,8 +24,10 @@ With the chosen \code{k} marked. Only available when \code{k} was searched for r
 than given.
 }
 \examples{
+\dontshow{if (requireNamespace("cluster", quietly = TRUE)) (if (getRversion() >= "3.4") withAutoprint else force)(\{ # examplesIf}
 ilm_plot_cluster_gap(ilm_cluster(ilm_reduce(mtcars), k_max = 5, B = 25,
                                  seed = 1))
+\dontshow{\}) # examplesIf}
 }
 \seealso{
 \code{\link[=ilm_cluster]{ilm_cluster()}}.

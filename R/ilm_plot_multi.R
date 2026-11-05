@@ -32,7 +32,7 @@ ilm_na_summary <- function(data, cols, g = character()) {
 
 #' Missing values by column
 #'
-#' A bar per column. The first question to ask of an unfamiliar data set, and
+#' A bar per column. The first question to ask of an unfamiliar dataset, and
 #' the one [ilm_check_missing()] then turns into advice.
 #'
 #' @param data A data frame.

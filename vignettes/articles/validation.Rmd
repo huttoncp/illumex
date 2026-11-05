@@ -82,11 +82,18 @@ knitr::kable(data.frame(
                              max(co)))), align = "lr")
 ```
 
-`ilm_profile()` describes each cluster by v-tests, as `FactoMineR::catdes()`
-does: for a number, how far the cluster's mean sits from the overall mean in
-standard errors; for a category, the hypergeometric probability of the
-cluster's count on the normal scale. Against `catdes()` on a fixed partition
-of the same data:
+`ilm_profile()` describes each cluster by test-values (Lebart, Piron and
+Morineau 2006, section 6.3.2): for a number, how far the cluster's mean sits
+from the overall mean in standard errors; for a category, the probability of a
+count at least as extreme as the cluster's, under random allocation, as a
+standard normal quantile. That definition reproduces the worked example of
+Husson, Lê and Pagès (2017, p. 157) exactly. Against `FactoMineR::catdes()` on
+a fixed partition of the same data, as an outside comparison: the numbers
+agree. The categories are smaller in size, because `catdes()` counts only half
+of the observed count's own probability (a mid-p), where the published
+definition counts all of it: most on a thin level (0.51 on a level of 3 rows),
+and a count exactly at its expectation is 0 here where `catdes()` gives it a
+small sign. Elsewhere their signs agree:
 
 ```{r catdes, echo = FALSE}
 cd <- utils::read.csv(file.path(fixtures, "catdes_ilm_sim.csv"), stringsAsFactors = FALSE)

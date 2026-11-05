@@ -32,7 +32,7 @@ with its band; see Trend bands.}
 
 \item{...}{Passed to \code{\link[tinyplot:tinyplot]{tinyplot::tinyplot()}}.}
 
-\item{pch}{Plotting character. Takes a NAME as well as a number:
+\item{pch}{Plotting character. Takes a name as well as a number:
 \code{"filled circle"} is 16, and every code from 0 to 25 has one. Case,
 spaces, underscores and hyphens are ignored. A single character is
 drawn literally, so \code{pch = "x"} is still the letter x.}
@@ -60,7 +60,9 @@ as substrings. It changes nothing for a logical, positions or a sample.}
 \code{NULL}, invisibly.
 }
 \description{
-Scatter plot
+Draws two numeric columns against each other, optionally with a fitted
+trend and its band (see Trend bands below); above \code{n_max} points the
+scatter becomes a binned density.
 }
 \section{Trend bands}{
 

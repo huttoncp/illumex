@@ -70,7 +70,7 @@ ilm_n_modes <- function(x, rel = 0.10, drop = 0.5) {
 ## the middle of the scale, as if half normal. At 0.06 (Craig's ruling,
 ## 2026-09-28) every one of them scores 0.07 or less, and normal data 1. It
 ## is exposed as an argument.
-#' How far a variable is from gaussian, and why
+#' How far a variable is from Gaussian, and why
 #'
 #' Reports an agreement index on 0-1 and, when it is low, the reason.
 #'
@@ -444,8 +444,11 @@ ilm_describe_cat <- function(x, digits = 3, sep = "_", top = 3L, rare_n = 5L) {
 
   out <- data.frame(
     obs = obs, n = nn, na = na,
-    ## "" is not NA to R but is almost always missing to the analyst
-    n_empty = sum(ilm_trimws(vals) == ""),
+    ## "" is not NA to R but is almost always missing to the analyst; counted
+    ## on the distinct values, weighted by their counts, the same number as
+    ## trimming every value (0.39 s on a million strings, now under 0.001)
+    ## (an empty table has no names: NULL, made character(0))
+    n_empty = sum(tb[ilm_trimws(as.character(names(tb))) == ""]),
     n_unique = nu,
     ordered = is.ordered(x),
     p_max = ilm_rd(if (nu) max(tb) / sum(tb) else NA_real_, digits),
@@ -574,7 +577,7 @@ ILM_CLASSES <- c("numeric", "categorical", "logical", "time")
 #' Class-aware description of one variable
 #'
 #' Summarises a vector, or one column of a data frame, with statistics chosen
-#' for its class. Numeric variables also get a gaussian agreement index and,
+#' for its class. Numeric variables also get a Gaussian agreement index and,
 #' where that is low, a plain-language reason. A pile of values at a bound
 #' is named first; an ordered factor's note names one at its lowest or
 #' highest level (see [ilm_gauss_check()]).
@@ -841,6 +844,7 @@ ilm_constant_tbl <- function(data, cols) {
 #' padding every other table with rows of `NA`: a variable with one value tells
 #' you nothing a statistic can show, and it will break a model matrix.
 #'
+#' @param data A data frame.
 #' @inheritParams ilm_describe
 #' @inheritParams ilm_reduce
 #' @param cols Columns to describe. A character vector of names, a regular
@@ -967,14 +971,23 @@ ilm_describe_all <- function(data, by = NULL, cols = NULL, digits = 3,
 #' reaches `v_cut`: nearly every level of one predicts a level of the other.
 #'
 #' Pairs are not the whole story: a column can be an exact combination of
-#' several others (a total and its parts, a numeric code fixed by a factor's
-#' levels) with no pair looking alike. So the numeric and categorical columns
-#' are also put into one model matrix, with an intercept and treatment
-#' contrasts, on the rows complete across them, and each column the matrix
-#' cannot separate from the rest is reported as `rank_deficient` with what it
-#' is a combination of. So that each problem is reported once, columns already
-#' reported as constant, identifier-like, duplicated or aliased are left out of
-#' that matrix, and a nested pair is not reported again from it.
+#' several others (a total and its parts) with no pair looking alike. So the
+#' numeric and categorical columns are also put into one model matrix, with an
+#' intercept and treatment contrasts, on the rows complete across them, and
+#' each column the matrix cannot separate from the rest is reported as
+#' `rank_deficient` with what it is a combination of. So that each problem is
+#' reported once, columns already reported as constant, identifier-like,
+#' duplicated or aliased are left out of that matrix, and a nested pair is not
+#' reported again from it.
+#'
+#' A number that is a combination of one categorical column alone takes one
+#' value per level of it -- a subject's age, repeated over the subject's
+#' visits -- and is reported as `unit_level`, not `rank_deficient`. That is
+#' the shape of every unit-level covariate in repeated measures: estimable
+#' with the categorical column as a grouping (a random effect), confounded
+#' with it only as fixed effects. A numeric code for a factor's levels has
+#' the same shape and is reported the same way; the words say to keep one of
+#' the two.
 #'
 #' @param data A data frame.
 #' @param cor_cut Absolute correlation at or above which a numeric pair is
@@ -989,6 +1002,7 @@ ilm_describe_all <- function(data, by = NULL, cols = NULL, digits = 3,
 #' @examples
 #' ilm_frame_issues(ilm_sim())
 #'
+#' set.seed(1)
 #' d <- data.frame(a = rnorm(50), b = rnorm(50),
 #'                 clinic = rep(c("x", "y"), each = 25),
 #'                 ward = rep(c("x1", "x2", "y1", "y2"), c(12, 13, 12, 13)))
@@ -1012,12 +1026,22 @@ ilm_frame_issues <- function(data, cor_cut = 0.999, v_cut = 0.95, cols = NULL,
     if (!is.numeric(v) || length(v) != 1L || !is.finite(v) || v <= 0 || v > 1)
       stop("`", a, "` must be a single number in (0, 1]", call. = FALSE)
   }
-  out <- list()
-  ## each row's words for a person
-  add <- function(issue, cols, detail, remedy) {
+  fin(ilm_as_result(ilm_frame_find(data, cor_cut, v_cut)$table, "ilm_frame_issues"))
+}
+
+## What ilm_frame_issues() finds, as its table and, for each row, the columns
+## it is about as names rather than the words that print them ("a = b"), for
+## ilm_check_frame() to build remedies on.
+#' @keywords internal
+#' @noRd
+ilm_frame_find <- function(data, cor_cut = 0.999, v_cut = 0.95) {
+  out <- list(); vars <- list()
+  ## each row's words for a person, and the columns it names
+  add <- function(issue, cols, detail, remedy, cols_vec = cols) {
     out[[length(out) + 1L]] <<- data.frame(issue = issue, columns = cols,
                                            detail = detail, remedy = remedy,
                                            stringsAsFactors = FALSE)
+    vars[[length(vars) + 1L]] <<- cols_vec
   }
   n <- nrow(data)
   ## columns the model-matrix check below leaves out, because a problem
@@ -1044,7 +1068,7 @@ ilm_frame_issues <- function(data, cor_cut = 0.999, v_cut = 0.95, cols = NULL,
   if (length(nm) > 1L) for (i in seq_len(length(nm) - 1L)) for (j in (i + 1L):length(nm))
     if (identical(unname(data[[i]]), unname(data[[j]]))) {
       add("duplicate_columns", paste(nm[i], nm[j], sep = " = "), "identical values",
-          "Keep one of the two.")
+          "Keep one of the two.", c(nm[i], nm[j]))
       set_aside <- c(set_aside, nm[j])
       dups <- c(dups, paste(nm[i], nm[j]))
     }
@@ -1060,17 +1084,17 @@ ilm_frame_issues <- function(data, cor_cut = 0.999, v_cut = 0.95, cols = NULL,
             sprintf("r = %s; coefficients will be unstable", ilm_fx(r, 4)),
             paste0("Keep one, or combine them into one column (their average, ",
                    "or a score from ilm_reduce()); their separate effects ",
-                   "cannot be estimated reliably."))
+                   "cannot be estimated reliably."), c(num[i], num[j]))
     }
   }
   cat_res <- ilm_frame_categories(data, set_aside, v_cut, add)
   ilm_frame_rank(data, setdiff(names(data), c(set_aside, cat_res$aliased)), add,
                  cat_res$nested)
   if (!length(out))
-    return(fin(ilm_as_result(data.frame(issue = character(0), columns = character(0),
-                                        detail = character(0), remedy = character(0),
-                                        stringsAsFactors = FALSE), "ilm_frame_issues")))
-  fin(ilm_as_result(do.call(rbind, out), "ilm_frame_issues"))
+    return(list(table = data.frame(issue = character(0), columns = character(0),
+                                   detail = character(0), remedy = character(0),
+                                   stringsAsFactors = FALSE), vars = list()))
+  list(table = do.call(rbind, out), vars = vars)
 }
 
 ## Pairs of categorical columns: the same grouping relabelled, one grouping
@@ -1100,7 +1124,7 @@ ilm_frame_categories <- function(data, skip, v_cut, add) {
       add("aliased_factors", paste(A, B, sep = " = "),
           sprintf("the same %d groups under different labels", la),
           paste0("Keep one of the two; a model cannot tell their effects ",
-                 "apart."))
+                 "apart."), c(A, B))
       aliased <- c(aliased, B)
       next
     }
@@ -1118,7 +1142,7 @@ ilm_frame_categories <- function(data, skip, v_cut, add) {
             sprintf(paste0("Expected for grouping factors: as random effects, ",
                            "write (1 | %s/%s). As fixed effects keep one of ",
                            "them, since %s absorbs every difference between ",
-                           "levels of %s."), outer, inner, inner, outer))
+                           "levels of %s."), outer, inner, inner, outer), c(inner, outer))
         nested[[length(nested) + 1L]] <- c(inner, outer)
       }
       next
@@ -1128,7 +1152,7 @@ ilm_frame_categories <- function(data, skip, v_cut, add) {
       add("redundant_categories", paste(A, B, sep = " ~ "),
           sprintf("Cram\u00e9r's V = %s; each largely predicts the other", ilm_fx(V, 3)),
           paste0("Keep one, or cross them into one factor with interaction(); ",
-                 "their separate effects are barely distinguishable."))
+                 "their separate effects are barely distinguishable."), c(A, B))
   }
   res()
 }
@@ -1176,7 +1200,7 @@ ilm_frame_rank <- function(data, use, add, nested = list()) {
     add("rank_unchecked", paste(use, collapse = ", "),
         sprintf("%d complete rows for %d model-matrix columns", sum(cc), ncol(X)),
         paste0("Too few complete rows to judge; check a subset of columns, ",
-               "as in ilm_frame_issues(data[c(\"x\", \"y\")])."))
+               "as in ilm_frame_issues(data[c(\"x\", \"y\")])."), use)
     return(invisible(NULL))
   }
   ## scaled so the tolerance means the same thing for every column
@@ -1208,12 +1232,30 @@ ilm_frame_rank <- function(data, use, add, nested = list()) {
           "Leave it out, or check why it only varies where other columns are missing.")
       next
     }
+    ## A number built from ONE categorical column alone takes one value per
+    ## level of it: a subject's age repeated over the subject's visits. That
+    ## is the shape of every unit-level covariate in repeated measures, and it
+    ## matters only if the grouping enters a model as fixed effects; as a
+    ## grouping (a random effect) the covariate is estimable and wanted. So
+    ## it is reported as what it is, a property of the grouping's units, and
+    ## not as a deficiency to remove.
+    if (length(from) == 1L && from %in% cats && !v %in% cats) {
+      add("unit_level", paste(v, "per", from),
+          sprintf("%s takes one value for each level of %s: it describes %s, not single rows",
+                  v, from, from),
+          sprintf(paste0("Expected of a variable measured once per %s. With %s as a grouping ",
+                         "(a random effect) it is estimable; with %s as fixed effects the two ",
+                         "are confounded, so leave one out then. If %s is only a numeric ",
+                         "code for %s, keep one of them."), from, from, from, v, from),
+          c(v, from))
+      next
+    }
     lab <- function(x) ifelse(x %in% cats, paste0("the levels of ", x), x)
     add("rank_deficient", paste(v, "~", paste(from, collapse = " + ")),
         sprintf("%s %s an exact linear combination of %s", lab(v),
                 if (v %in% cats) "are" else "is", ilm_and(lab(from))),
         sprintf(paste0("Leave out %s or one of the columns it is built from; ",
-                       "with all of them a model has no unique solution."), v))
+                       "with all of them a model has no unique solution."), v), c(v, from))
   }
   invisible(NULL)
 }

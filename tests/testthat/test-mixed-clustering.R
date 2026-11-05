@@ -72,6 +72,20 @@ test_that("a k chosen at the edge of the search is reported as such", {
   expect_identical(cl$k, 6L)
 })
 
+test_that("a k at the most the data allow says so, and does not ask for more k_max", {
+  ## four distinct points, each repeated: four clusters is all there can be
+  set.seed(3)
+  m <- cbind(rep(c(0, 5, 10, 15), each = 30), rep(c(0, 3, 0, 3), each = 30))
+  expect_no_warning(expect_message(
+    cl <- ilm_cluster(m, k_max = 8L, B = 15, seed = 1),
+    "k = 4 is the most these data allow: they have 4 distinct points"))
+  expect_identical(cl$k, 4L)
+  ## the same for a missingness profile, in its own words
+  expect_no_warning(expect_message(
+    ilm_cluster_na(suppressMessages(ilm_reduce_na(airquality)), k_max = 8L, B = 15, seed = 1),
+    "4 distinct patterns of missing values.*would change nothing"))
+})
+
 test_that("ilm_anomaly(method = 'iforest') uses the categorical columns", {
   skip_if_not_installed("isotree")
   ## the anomaly is a category PAIRING that never otherwise occurs; no numeric

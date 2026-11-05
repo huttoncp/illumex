@@ -1,0 +1,25 @@
+largest between-group share of any LEFT-OUT dimension, per replicate:
+          cond between_share.0% between_share.50% between_share.100%
+1 numeric_many            0.000             0.001              0.006
+2  overlapping            0.000             0.038              0.144
+3    separated            0.000             0.016              0.126
+
+that dimension's BC and dip p (median over replicates), and how often each would keep it:
+          cond between_share        bc    dip_p
+1 numeric_many      0.002798 0.3373570 0.991159
+2  overlapping      0.104322 0.3421540 0.991020
+3    separated      0.109415 0.5329225 0.562326
+          cond bc_keeps dip_keeps
+1 numeric_many     0.00         0
+2  overlapping     0.00         0
+3    separated     0.05         0
+
+mixed designs: share of left-out dimensions BC keeps, and their between-group share when kept:
+             cond      kept
+1    mixed_counts 0.2666667
+2 mixed_few_noise 0.6125000
+3      mixed_many 0.1013514
+             cond between_share
+1    mixed_counts        0.0093
+2 mixed_few_noise        0.0003
+3      mixed_many        0.0002

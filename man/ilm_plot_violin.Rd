@@ -30,7 +30,7 @@ ilm_plot_violin(
 
 \item{...}{Passed to \code{\link[tinyplot:tinyplot]{tinyplot::tinyplot()}}.}
 
-\item{pch}{Plotting character. Takes a NAME as well as a number:
+\item{pch}{Plotting character. Takes a name as well as a number:
 \code{"filled circle"} is 16, and every code from 0 to 25 has one. Case,
 spaces, underscores and hyphens are ignored. A single character is
 drawn literally, so \code{pch = "x"} is still the letter x.}
@@ -58,7 +58,9 @@ as substrings. It changes nothing for a logical, positions or a sample.}
 \code{NULL}, invisibly.
 }
 \description{
-Violin plot
+Draws the distribution of a numeric column within each group as a violin,
+which shows the shape of each group's distribution where a box plot shows
+its quartiles.
 }
 \examples{
 ilm_plot_violin(mtcars, "mpg", x = "cyl")

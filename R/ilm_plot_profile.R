@@ -110,11 +110,11 @@ ilm_plot_reduce_contrib <- function(x, dim = 1, top_n = 10, ...) {
 #' The observations on two dimensions, coloured by which cluster they landed in.
 #'
 #' @param x An [ilm_cluster()] or [ilm_profile()] result.
-#' @param dims Which two coordinates, by number.
+#' @param dims Which two dimensions, by number.
 #' @param ... Passed to [tinyplot::tinyplot()].
 #' @return `NULL`, invisibly.
 #' @seealso [ilm_cluster()], [ilm_plot_cluster_gap()].
-#' @examples
+#' @examplesIf requireNamespace("cluster", quietly = TRUE)
 #' ilm_plot_cluster(ilm_cluster(ilm_reduce(mtcars), k_max = 5, B = 25, seed = 1))
 #' @export
 ilm_plot_cluster <- function(x, dims = c(1, 2), ...) {
@@ -142,7 +142,7 @@ ilm_plot_cluster <- function(x, dims = c(1, 2), ...) {
 #' @param ... Passed to [tinyplot::tinyplot()].
 #' @return `NULL`, invisibly.
 #' @seealso [ilm_cluster()].
-#' @examples
+#' @examplesIf requireNamespace("cluster", quietly = TRUE)
 #' ilm_plot_cluster_gap(ilm_cluster(ilm_reduce(mtcars), k_max = 5, B = 25,
 #'                                  seed = 1))
 #' @export
@@ -173,7 +173,7 @@ ilm_plot_cluster_gap <- function(x, ...) {
 #' @param x An [ilm_profile()] result.
 #' @return `NULL`, invisibly.
 #' @seealso [ilm_profile()].
-#' @examples
+#' @examplesIf requireNamespace("cluster", quietly = TRUE)
 #' ilm_plot_profile(ilm_profile(mtcars, k_max = 5, B = 25, seed = 1))
 #' @export
 ilm_plot_profile <- function(x, dims = c(1, 2), ...) {

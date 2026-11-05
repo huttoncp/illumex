@@ -1,0 +1,301 @@
+ndim_pa_variants full: 220 replicates to <work>/ndim_pa_variants_full; diptest 0.77.2 from <work>/libs/lib_studyB; started 2026-10-11 13:46:14
+.libPaths(): <work>/libs/lib_studyB | C:/Program Files/R/R-4.4.3/library 
+R version 4.4.3 (2025-02-28 ucrt)
+Platform: x86_64-w64-mingw32/x64
+Running under: Windows 11 x64 (build 26300)
+
+Matrix products: default
+
+
+locale:
+[1] LC_COLLATE=English_Canada.utf8  LC_CTYPE=English_Canada.utf8   
+[3] LC_MONETARY=English_Canada.utf8 LC_NUMERIC=C                   
+[5] LC_TIME=English_Canada.utf8    
+
+time zone: America/Toronto
+tzcode source: internal
+
+attached base packages:
+[1] stats     graphics  grDevices utils     datasets  methods   base     
+
+other attached packages:
+[1] illumex_0.0.8.9005
+
+loaded via a namespace (and not attached):
+ [1] compiler_4.4.3  R6_2.5.1        rprojroot_2.0.4 cli_3.6.2      
+ [5] tools_4.4.3     parallel_4.4.3  withr_3.0.0     Rcpp_1.0.12    
+ [9] desc_1.4.3      pkgload_1.3.4   diptest_0.77-2  tinyplot_0.7.0 
+[13] pkgbuild_1.4.4  collapse_2.1.8  rlang_1.1.3     cluster_2.1.6  
+13:46:28 mixed_few        rep   1  pa 2 bc 2 dip 2 oracle 2
+13:46:41 mixed_few        rep   2  pa 2 bc 2 dip 2 oracle 2
+13:46:53 mixed_few        rep   3  pa 2 bc 2 dip 2 oracle 2
+13:47:08 mixed_few        rep   4  pa 2 bc 2 dip 2 oracle 2
+13:47:22 mixed_few        rep   5  pa 2 bc 2 dip 2 oracle 2
+13:47:37 mixed_few        rep   6  pa 2 bc 2 dip 2 oracle 2
+13:47:51 mixed_few        rep   7  pa 2 bc 2 dip 2 oracle 2
+13:48:05 mixed_few        rep   8  pa 2 bc 2 dip 2 oracle 2
+13:48:19 mixed_few        rep   9  pa 2 bc 2 dip 2 oracle 2
+13:48:33 mixed_few        rep  10  pa 2 bc 2 dip 2 oracle 2
+13:48:47 mixed_few        rep  11  pa 2 bc 2 dip 2 oracle 2
+13:49:00 mixed_few        rep  12  pa 2 bc 2 dip 2 oracle 2
+13:49:14 mixed_few        rep  13  pa 2 bc 2 dip 2 oracle 2
+13:49:26 mixed_few        rep  14  pa 2 bc 2 dip 2 oracle 2
+13:49:40 mixed_few        rep  15  pa 2 bc 2 dip 2 oracle 2
+13:49:52 mixed_few        rep  16  pa 2 bc 2 dip 2 oracle 2
+13:50:05 mixed_few        rep  17  pa 2 bc 2 dip 2 oracle 2
+13:50:19 mixed_few        rep  18  pa 2 bc 2 dip 2 oracle 2
+13:50:32 mixed_few        rep  19  pa 2 bc 2 dip 2 oracle 2
+13:50:46 mixed_few        rep  20  pa 2 bc 2 dip 2 oracle 2
+13:51:02 mixed_few_noise  rep   1  pa 2 bc 4 dip 5 oracle 2
+13:51:17 mixed_few_noise  rep   2  pa 2 bc 5 dip 5 oracle 2
+13:51:33 mixed_few_noise  rep   3  pa 2 bc 5 dip 5 oracle 2
+13:51:50 mixed_few_noise  rep   4  pa 2 bc 4 dip 5 oracle 2
+13:52:06 mixed_few_noise  rep   5  pa 2 bc 5 dip 5 oracle 2
+13:52:23 mixed_few_noise  rep   6  pa 2 bc 5 dip 5 oracle 2
+13:52:39 mixed_few_noise  rep   7  pa 2 bc 5 dip 5 oracle 2
+13:52:55 mixed_few_noise  rep   8  pa 2 bc 5 dip 5 oracle 2
+13:53:13 mixed_few_noise  rep   9  pa 2 bc 5 dip 5 oracle 2
+13:53:31 mixed_few_noise  rep  10  pa 2 bc 5 dip 5 oracle 2
+13:53:46 mixed_few_noise  rep  11  pa 2 bc 4 dip 5 oracle 2
+13:54:04 mixed_few_noise  rep  12  pa 2 bc 5 dip 5 oracle 2
+13:54:20 mixed_few_noise  rep  13  pa 2 bc 5 dip 5 oracle 2
+13:54:36 mixed_few_noise  rep  14  pa 2 bc 4 dip 5 oracle 2
+13:54:53 mixed_few_noise  rep  15  pa 2 bc 5 dip 5 oracle 2
+13:55:10 mixed_few_noise  rep  16  pa 2 bc 4 dip 5 oracle 2
+13:55:26 mixed_few_noise  rep  17  pa 2 bc 5 dip 5 oracle 2
+13:55:43 mixed_few_noise  rep  18  pa 2 bc 5 dip 5 oracle 2
+13:56:01 mixed_few_noise  rep  19  pa 2 bc 5 dip 5 oracle 2
+13:56:17 mixed_few_noise  rep  20  pa 2 bc 4 dip 4 oracle 2
+13:56:33 mixed_counts     rep   1  pa 2 bc 3 dip 2 oracle 4
+13:56:48 mixed_counts     rep   2  pa 2 bc 2 dip 2 oracle 4
+13:57:04 mixed_counts     rep   3  pa 2 bc 3 dip 3 oracle 4
+13:57:18 mixed_counts     rep   4  pa 2 bc 3 dip 2 oracle 4
+13:57:34 mixed_counts     rep   5  pa 2 bc 3 dip 3 oracle 4
+13:57:49 mixed_counts     rep   6  pa 2 bc 3 dip 2 oracle 5
+13:58:04 mixed_counts     rep   7  pa 2 bc 3 dip 2 oracle 5
+13:58:18 mixed_counts     rep   8  pa 2 bc 3 dip 3 oracle 4
+13:58:32 mixed_counts     rep   9  pa 2 bc 3 dip 2 oracle 5
+13:58:47 mixed_counts     rep  10  pa 2 bc 3 dip 3 oracle 4
+13:59:02 mixed_counts     rep  11  pa 2 bc 2 dip 2 oracle 4
+13:59:17 mixed_counts     rep  12  pa 2 bc 3 dip 3 oracle 5
+13:59:32 mixed_counts     rep  13  pa 2 bc 3 dip 2 oracle 5
+13:59:48 mixed_counts     rep  14  pa 2 bc 3 dip 3 oracle 5
+14:00:03 mixed_counts     rep  15  pa 2 bc 3 dip 2 oracle 4
+14:00:17 mixed_counts     rep  16  pa 2 bc 2 dip 2 oracle 4
+14:00:31 mixed_counts     rep  17  pa 2 bc 3 dip 2 oracle 4
+14:00:45 mixed_counts     rep  18  pa 2 bc 2 dip 2 oracle 4
+14:00:59 mixed_counts     rep  19  pa 2 bc 3 dip 2 oracle 4
+14:01:14 mixed_counts     rep  20  pa 2 bc 3 dip 3 oracle 4
+14:02:28 mixed_many       rep   1  pa 2 bc 5 dip 8 oracle 2
+14:03:43 mixed_many       rep   2  pa 4 bc 4 dip 6 oracle 2
+14:04:46 mixed_many       rep   3  pa 3 bc 5 dip 8 oracle 2
+14:05:45 mixed_many       rep   4  pa 2 bc 2 dip 7 oracle 2
+14:06:43 mixed_many       rep   5  pa 2 bc 2 dip 6 oracle 2
+14:07:43 mixed_many       rep   6  pa 2 bc 4 dip 7 oracle 2
+14:08:44 mixed_many       rep   7  pa 2 bc 5 dip 6 oracle 2
+14:09:47 mixed_many       rep   8  pa 2 bc 7 dip 8 oracle 2
+14:10:49 mixed_many       rep   9  pa 4 bc 4 dip 6 oracle 2
+14:12:07 mixed_many       rep  10  pa 4 bc 4 dip 6 oracle 2
+14:13:20 mixed_many       rep  11  pa 2 bc 2 dip 5 oracle 2
+14:14:38 mixed_many       rep  12  pa 3 bc 3 dip 9 oracle 2
+14:15:54 mixed_many       rep  13  pa 3 bc 5 dip 6 oracle 2
+14:16:59 mixed_many       rep  14  pa 3 bc 3 dip 7 oracle 2
+14:18:00 mixed_many       rep  15  pa 2 bc 5 dip 7 oracle 2
+14:19:02 mixed_many       rep  16  pa 2 bc 5 dip 8 oracle 2
+14:20:07 mixed_many       rep  17  pa 4 bc 4 dip 5 oracle 2
+14:21:24 mixed_many       rep  18  pa 2 bc 5 dip 7 oracle 2
+14:22:27 mixed_many       rep  19  pa 2 bc 5 dip 6 oracle 2
+14:23:37 mixed_many       rep  20  pa 2 bc 2 dip 7 oracle 2
+14:23:50 numeric_few      rep   1  pa 2 bc 2 dip 2 oracle 2
+14:24:03 numeric_few      rep   2  pa 2 bc 2 dip 2 oracle 2
+14:24:16 numeric_few      rep   3  pa 2 bc 2 dip 2 oracle 2
+14:24:29 numeric_few      rep   4  pa 2 bc 2 dip 2 oracle 2
+14:24:41 numeric_few      rep   5  pa 2 bc 2 dip 2 oracle 2
+14:24:53 numeric_few      rep   6  pa 2 bc 2 dip 2 oracle 2
+14:25:06 numeric_few      rep   7  pa 2 bc 2 dip 2 oracle 2
+14:25:18 numeric_few      rep   8  pa 2 bc 2 dip 2 oracle 2
+14:25:30 numeric_few      rep   9  pa 2 bc 2 dip 2 oracle 2
+14:25:41 numeric_few      rep  10  pa 2 bc 2 dip 2 oracle 2
+14:25:52 numeric_few      rep  11  pa 2 bc 2 dip 2 oracle 2
+14:26:03 numeric_few      rep  12  pa 2 bc 2 dip 2 oracle 2
+14:26:14 numeric_few      rep  13  pa 2 bc 2 dip 2 oracle 2
+14:26:25 numeric_few      rep  14  pa 2 bc 2 dip 2 oracle 2
+14:26:36 numeric_few      rep  15  pa 2 bc 2 dip 2 oracle 2
+14:26:50 numeric_few      rep  16  pa 2 bc 2 dip 2 oracle 2
+14:27:05 numeric_few      rep  17  pa 2 bc 2 dip 2 oracle 2
+14:27:18 numeric_few      rep  18  pa 2 bc 2 dip 2 oracle 2
+14:27:31 numeric_few      rep  19  pa 2 bc 2 dip 2 oracle 2
+14:27:44 numeric_few      rep  20  pa 2 bc 2 dip 2 oracle 2
+14:28:59 numeric_many     rep   1  pa 3 bc 3 dip 3 oracle 3
+14:30:11 numeric_many     rep   2  pa 3 bc 3 dip 3 oracle 3
+14:31:23 numeric_many     rep   3  pa 3 bc 3 dip 3 oracle 3
+14:32:41 numeric_many     rep   4  pa 4 bc 4 dip 4 oracle 3
+14:33:57 numeric_many     rep   5  pa 3 bc 3 dip 3 oracle 3
+14:35:09 numeric_many     rep   6  pa 3 bc 3 dip 3 oracle 3
+14:36:22 numeric_many     rep   7  pa 3 bc 3 dip 3 oracle 3
+14:37:42 numeric_many     rep   8  pa 4 bc 4 dip 4 oracle 3
+14:38:48 numeric_many     rep   9  pa 3 bc 3 dip 3 oracle 3
+14:40:02 numeric_many     rep  10  pa 3 bc 3 dip 3 oracle 3
+14:41:14 numeric_many     rep  11  pa 3 bc 3 dip 3 oracle 5
+14:42:32 numeric_many     rep  12  pa 4 bc 4 dip 4 oracle 3
+14:43:42 numeric_many     rep  13  pa 3 bc 3 dip 3 oracle 3
+14:44:51 numeric_many     rep  14  pa 3 bc 3 dip 3 oracle 3
+14:46:05 numeric_many     rep  15  pa 3 bc 3 dip 3 oracle 4
+14:47:19 numeric_many     rep  16  pa 3 bc 3 dip 3 oracle 3
+14:48:29 numeric_many     rep  17  pa 3 bc 3 dip 3 oracle 3
+14:49:38 numeric_many     rep  18  pa 3 bc 3 dip 3 oracle 3
+14:50:40 numeric_many     rep  19  pa 3 bc 3 dip 3 oracle 3
+14:51:42 numeric_many     rep  20  pa 3 bc 3 dip 3 oracle 3
+14:52:46 separated        rep   1  pa 3 bc 3 dip 3 oracle 5
+14:53:50 separated        rep   2  pa 3 bc 3 dip 3 oracle 5
+14:54:53 separated        rep   3  pa 3 bc 3 dip 3 oracle 5
+14:55:56 separated        rep   4  pa 2 bc 2 dip 2 oracle 5
+14:57:00 separated        rep   5  pa 2 bc 2 dip 2 oracle 5
+14:58:11 separated        rep   6  pa 2 bc 2 dip 2 oracle 5
+14:59:28 separated        rep   7  pa 3 bc 3 dip 3 oracle 5
+15:00:37 separated        rep   8  pa 3 bc 3 dip 3 oracle 5
+15:01:41 separated        rep   9  pa 3 bc 3 dip 3 oracle 5
+15:02:42 separated        rep  10  pa 2 bc 5 dip 2 oracle 5
+15:03:46 separated        rep  11  pa 3 bc 3 dip 3 oracle 5
+15:04:52 separated        rep  12  pa 2 bc 2 dip 2 oracle 5
+15:06:08 separated        rep  13  pa 3 bc 3 dip 3 oracle 5
+15:07:13 separated        rep  14  pa 2 bc 2 dip 2 oracle 5
+15:08:23 separated        rep  15  pa 3 bc 3 dip 3 oracle 5
+15:09:38 separated        rep  16  pa 3 bc 3 dip 3 oracle 5
+15:10:51 separated        rep  17  pa 3 bc 3 dip 3 oracle 5
+15:12:03 separated        rep  18  pa 3 bc 3 dip 3 oracle 5
+15:13:08 separated        rep  19  pa 2 bc 2 dip 2 oracle 5
+15:14:10 separated        rep  20  pa 2 bc 2 dip 2 oracle 5
+15:15:15 overlapping      rep   1  pa 2 bc 2 dip 2 oracle 5
+15:16:26 overlapping      rep   2  pa 3 bc 3 dip 3 oracle 5
+15:17:32 overlapping      rep   3  pa 2 bc 2 dip 2 oracle 5
+15:18:44 overlapping      rep   4  pa 3 bc 3 dip 3 oracle 5
+15:19:45 overlapping      rep   5  pa 2 bc 2 dip 2 oracle 5
+15:20:53 overlapping      rep   6  pa 3 bc 3 dip 3 oracle 5
+15:22:01 overlapping      rep   7  pa 2 bc 2 dip 2 oracle 5
+15:23:03 overlapping      rep   8  pa 2 bc 2 dip 2 oracle 5
+15:23:59 overlapping      rep   9  pa 2 bc 2 dip 2 oracle 5
+15:25:13 overlapping      rep  10  pa 3 bc 3 dip 3 oracle 5
+15:26:14 overlapping      rep  11  pa 2 bc 2 dip 2 oracle 5
+15:27:16 overlapping      rep  12  pa 2 bc 2 dip 2 oracle 5
+15:28:30 overlapping      rep  13  pa 3 bc 3 dip 3 oracle 5
+15:29:35 overlapping      rep  14  pa 3 bc 3 dip 3 oracle 5
+15:30:46 overlapping      rep  15  pa 3 bc 3 dip 3 oracle 5
+15:31:45 overlapping      rep  16  pa 2 bc 2 dip 2 oracle 5
+15:32:51 overlapping      rep  17  pa 3 bc 3 dip 3 oracle 5
+15:33:58 overlapping      rep  18  pa 3 bc 3 dip 3 oracle 5
+15:35:04 overlapping      rep  19  pa 3 bc 3 dip 3 oracle 5
+15:36:10 overlapping      rep  20  pa 3 bc 3 dip 3 oracle 5
+15:36:54 continuum        rep   1  pa 2 bc 2 dip 2 oracle NA
+15:37:38 continuum        rep   2  pa 2 bc 2 dip 2 oracle NA
+15:38:23 continuum        rep   3  pa 1 bc 1 dip 1 oracle NA
+15:39:07 continuum        rep   4  pa 2 bc 2 dip 2 oracle NA
+15:39:50 continuum        rep   5  pa 2 bc 2 dip 2 oracle NA
+15:40:35 continuum        rep   6  pa 2 bc 2 dip 2 oracle NA
+15:41:18 continuum        rep   7  pa 2 bc 2 dip 2 oracle NA
+15:42:03 continuum        rep   8  pa 2 bc 2 dip 2 oracle NA
+15:42:50 continuum        rep   9  pa 2 bc 2 dip 2 oracle NA
+15:43:35 continuum        rep  10  pa 2 bc 2 dip 2 oracle NA
+15:44:19 continuum        rep  11  pa 2 bc 2 dip 2 oracle NA
+15:45:04 continuum        rep  12  pa 2 bc 2 dip 2 oracle NA
+15:45:49 continuum        rep  13  pa 2 bc 2 dip 2 oracle NA
+15:46:33 continuum        rep  14  pa 2 bc 2 dip 2 oracle NA
+15:47:17 continuum        rep  15  pa 2 bc 2 dip 2 oracle NA
+15:48:01 continuum        rep  16  pa 2 bc 2 dip 2 oracle NA
+15:48:45 continuum        rep  17  pa 2 bc 2 dip 2 oracle NA
+15:49:28 continuum        rep  18  pa 2 bc 2 dip 2 oracle NA
+15:50:13 continuum        rep  19  pa 2 bc 2 dip 2 oracle NA
+15:50:57 continuum        rep  20  pa 2 bc 2 dip 2 oracle NA
+15:52:08 bimodal_null     rep   1  pa 4 bc 4 dip 4 oracle 7
+15:53:20 bimodal_null     rep   2  pa 3 bc 3 dip 3 oracle 7
+15:54:35 bimodal_null     rep   3  pa 3 bc 7 dip 3 oracle 7
+15:55:55 bimodal_null     rep   4  pa 4 bc 4 dip 4 oracle 7
+15:57:11 bimodal_null     rep   5  pa 4 bc 4 dip 4 oracle 7
+15:58:12 bimodal_null     rep   6  pa 2 bc 2 dip 2 oracle 7
+15:59:34 bimodal_null     rep   7  pa 4 bc 7 dip 4 oracle 7
+16:00:42 bimodal_null     rep   8  pa 3 bc 3 dip 3 oracle 7
+16:01:52 bimodal_null     rep   9  pa 3 bc 3 dip 4 oracle 7
+16:02:56 bimodal_null     rep  10  pa 3 bc 3 dip 3 oracle 7
+16:03:55 bimodal_null     rep  11  pa 2 bc 2 dip 2 oracle 7
+16:04:54 bimodal_null     rep  12  pa 2 bc 2 dip 2 oracle 7
+16:05:57 bimodal_null     rep  13  pa 3 bc 3 dip 3 oracle 7
+16:07:03 bimodal_null     rep  14  pa 3 bc 3 dip 3 oracle 7
+16:08:10 bimodal_null     rep  15  pa 3 bc 3 dip 3 oracle 7
+16:09:25 bimodal_null     rep  16  pa 4 bc 4 dip 4 oracle 7
+16:10:23 bimodal_null     rep  17  pa 2 bc 2 dip 2 oracle 7
+16:11:22 bimodal_null     rep  18  pa 2 bc 2 dip 2 oracle 7
+16:12:29 bimodal_null     rep  19  pa 3 bc 3 dip 4 oracle 7
+16:13:27 bimodal_null     rep  20  pa 2 bc 2 dip 2 oracle 7
+16:14:09 unimodal_heavy   rep   1  pa 2 bc 2 dip 2 oracle NA
+16:14:52 unimodal_heavy   rep   2  pa 2 bc 2 dip 2 oracle NA
+16:15:33 unimodal_heavy   rep   3  pa 2 bc 2 dip 2 oracle NA
+16:16:14 unimodal_heavy   rep   4  pa 2 bc 2 dip 2 oracle NA
+16:16:56 unimodal_heavy   rep   5  pa 2 bc 2 dip 2 oracle NA
+16:17:38 unimodal_heavy   rep   6  pa 2 bc 2 dip 2 oracle NA
+16:18:19 unimodal_heavy   rep   7  pa 2 bc 2 dip 2 oracle NA
+16:19:01 unimodal_heavy   rep   8  pa 2 bc 2 dip 2 oracle NA
+16:19:43 unimodal_heavy   rep   9  pa 2 bc 2 dip 2 oracle NA
+16:20:25 unimodal_heavy   rep  10  pa 2 bc 2 dip 2 oracle NA
+16:21:07 unimodal_heavy   rep  11  pa 2 bc 2 dip 2 oracle NA
+16:21:50 unimodal_heavy   rep  12  pa 2 bc 2 dip 2 oracle NA
+16:22:31 unimodal_heavy   rep  13  pa 2 bc 2 dip 2 oracle NA
+16:23:13 unimodal_heavy   rep  14  pa 2 bc 2 dip 2 oracle NA
+16:23:55 unimodal_heavy   rep  15  pa 2 bc 2 dip 2 oracle NA
+16:24:37 unimodal_heavy   rep  16  pa 2 bc 2 dip 2 oracle NA
+16:25:19 unimodal_heavy   rep  17  pa 2 bc 2 dip 2 oracle NA
+16:26:02 unimodal_heavy   rep  18  pa 1 bc 1 dip 1 oracle NA
+16:26:43 unimodal_heavy   rep  19  pa 2 bc 2 dip 2 oracle NA
+16:27:25 unimodal_heavy   rep  20  pa 1 bc 1 dip 1 oracle NA
+
+packages loaded by the end of the run:
+   package    version
+      base      4.4.3
+       cli      3.6.2
+   cluster      2.1.6
+  collapse      2.1.8
+  compiler      4.4.3
+  datasets      4.4.3
+      desc      1.4.3
+   diptest     0.77.2
+  graphics      4.4.3
+ grDevices      4.4.3
+   illumex 0.0.8.9005
+   methods      4.4.3
+  parallel      4.4.3
+  pkgbuild      1.4.4
+   pkgload      1.3.4
+        R6      2.5.1
+      Rcpp     1.0.12
+     rlang      1.1.3
+ rprojroot      2.0.4
+     stats      4.4.3
+  tinyplot      0.7.0
+     tools      4.4.3
+     utils      4.4.3
+     withr      3.0.0
+                                                                      library
+                                               C:/PROGRA~1/R/R-44~1.3/library
+ <work>/libs/lib_studyB
+ <work>/libs/lib_studyB
+ <work>/libs/lib_studyB
+                                               C:/PROGRA~1/R/R-44~1.3/library
+                                               C:/PROGRA~1/R/R-44~1.3/library
+ <work>/libs/lib_studyB
+ <work>/libs/lib_studyB
+                                               C:/PROGRA~1/R/R-44~1.3/library
+                                               C:/PROGRA~1/R/R-44~1.3/library
+            <work>/runs
+                                               C:/PROGRA~1/R/R-44~1.3/library
+                                               C:/PROGRA~1/R/R-44~1.3/library
+ <work>/libs/lib_studyB
+ <work>/libs/lib_studyB
+ <work>/libs/lib_studyB
+ <work>/libs/lib_studyB
+ <work>/libs/lib_studyB
+ <work>/libs/lib_studyB
+                                               C:/PROGRA~1/R/R-44~1.3/library
+ <work>/libs/lib_studyB
+                                               C:/PROGRA~1/R/R-44~1.3/library
+                                               C:/PROGRA~1/R/R-44~1.3/library
+ <work>/libs/lib_studyB
+finished 2026-10-11 16:27:25 

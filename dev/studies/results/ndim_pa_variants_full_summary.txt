@@ -1,0 +1,42 @@
+R3: detection (keeps a left-out dimension with >= 25% of the between-group SS), pooled over separated, overlapping, numeric_many
+  BC 0.000, dip 0.000; dip - BC 0.000 (SE 0.000, n 60)
+         cond bc dip
+ numeric_many  0   0
+  overlapping  0   0
+    separated  0   0
+R3: false alarms (keeps a dimension with < 5%), pooled over continuum, unimodal_heavy, bimodal_null
+  BC 0.000, dip 0.033; dip - BC 0.033 (SE 0.023, n 60)
+           cond bc dip
+   bimodal_null  0 0.1
+      continuum  0 0.0
+ unimodal_heavy  0 0.0
+R3 verdict: the dip test is NOT clearly better; the screen uses Sarle's BC (no dependency)
+
+            cond ari_fixed5 ari_perm95 ari_screen ari_oracle   diff    se
+       mixed_few      0.960      0.999      0.999      0.999  0.000 0.000
+ mixed_few_noise      0.361      0.997      0.370      0.997 -0.626 0.007
+    mixed_counts      0.444      0.830      0.636      0.493 -0.194 0.030
+      mixed_many      0.700      0.844      0.706      0.970 -0.138 0.065
+     numeric_few      1.000      1.000      1.000      1.000  0.000 0.000
+    numeric_many      0.977      0.978      0.978      0.978  0.000 0.000
+       separated      0.646      0.405      0.357      0.646 -0.048 0.048
+     overlapping      0.023      0.000      0.000      0.023  0.000 0.000
+       continuum         NA         NA         NA         NA     NA    NA
+    bimodal_null      0.380      0.467      0.536      0.728  0.069 0.052
+  unimodal_heavy         NA         NA         NA         NA     NA    NA
+ kok_perm95 kok_screen ndim_perm95 ndim_screen
+       1.00       1.00        2.00        2.00
+       1.00       0.00        2.00        4.70
+       1.00       0.20        2.00        2.80
+       0.75       0.55        2.60        4.05
+       1.00       1.00        2.00        2.00
+       1.00       1.00        3.15        3.15
+       0.40       0.35        2.60        2.75
+       0.00       0.00        2.55        2.55
+       1.00       1.00        1.95        1.95
+       0.30       0.40        2.95        3.30
+       1.00       1.00        1.90        1.90
+
+R2: separated, screen_bc - perm95 ARI -0.048 (SE 0.048): NOT met; behind by > 0.02 in: mixed_few_noise, mixed_counts, mixed_many, separated
+R2 verdict: the screen does NOT join the display
+(continuum and unimodal_heavy have one group, so ARI is undefined there; k_ok is the truth k = 1)

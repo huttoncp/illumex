@@ -79,6 +79,9 @@ ilm_by_legend <- function(expr, env, by) {
 
 #' Histogram
 #'
+#' Draws the distribution of one numeric column as a histogram, optionally
+#' one per group, overlaid, or drawn in panels.
+#'
 #' @param data A data frame.
 #' @param x Name of the numeric column to plot.
 #' @param by Optional grouping column, overlaying one histogram per level.
@@ -116,6 +119,10 @@ ilm_plot_histogram <- function(data, x, by = NULL, breaks = "Sturges", ...,
 
 #' Density plot
 #'
+#' Draws the distribution of one numeric column as a smoothed density curve,
+#' optionally one curve per group, or drawn in panels.
+#'
+#' @param by Optional grouping column, overlaying one density per level.
 #' @inheritParams ilm_plot_histogram
 #' @return `NULL`, invisibly.
 #' @seealso [ilm_plot_histogram()].
@@ -154,7 +161,7 @@ ilm_plot_density <- function(data, x, by = NULL, ..., facet = NULL, legend = NUL
 #'   `by`, the legend is titled with the `by` column's name unless you
 #'   give a title.
 #' @param ... Passed to [tinyplot::tinyplot()].
-#' @param pch Plotting character. Takes a NAME as well as a number:
+#' @param pch Plotting character. Takes a name as well as a number:
 #'   `"filled circle"` is 16, and every code from 0 to 25 has one. Case,
 #'   spaces, underscores and hyphens are ignored. A single character is
 #'   drawn literally, so `pch = "x"` is still the letter x.
@@ -185,6 +192,10 @@ ilm_plot_box <- function(data, y, x = NULL, by = NULL, ..., pch = NULL,
 
 #' Violin plot
 #'
+#' Draws the distribution of a numeric column within each group as a violin,
+#' which shows the shape of each group's distribution where a box plot shows
+#' its quartiles.
+#'
 #' @inheritParams ilm_plot_box
 #' @return `NULL`, invisibly.
 #' @seealso [ilm_plot_box()], which shows the quartiles rather than the shape.
@@ -212,6 +223,10 @@ ilm_plot_violin <- function(data, y, x = NULL, by = NULL, ..., pch = NULL,
 }
 
 #' Scatter plot
+#'
+#' Draws two numeric columns against each other, optionally with a fitted
+#' trend and its band (see Trend bands below); above `n_max` points the
+#' scatter becomes a binned density.
 #'
 #' @section Trend bands:
 #' Each trend is fitted separately in every group and panel and drawn over
@@ -247,7 +262,7 @@ ilm_plot_violin <- function(data, y, x = NULL, by = NULL, ..., pch = NULL,
 #' @param trend `"none"`, `"lm"`, `"loess"` or `"gam"`, drawn over the points
 #'   with its band; see Trend bands.
 #' @param ... Passed to [tinyplot::tinyplot()].
-#' @param pch Plotting character. Takes a NAME as well as a number:
+#' @param pch Plotting character. Takes a name as well as a number:
 #'   `"filled circle"` is 16, and every code from 0 to 25 has one. Case,
 #'   spaces, underscores and hyphens are ignored. A single character is
 #'   drawn literally, so `pch = "x"` is still the letter x.
@@ -366,6 +381,9 @@ ilm_trend_band <- function(x, y, by = NULL, facet = NULL,
 
 #' Bar plot
 #'
+#' Draws the count of each level of one categorical column, optionally split
+#' by a grouping column or drawn in panels.
+#'
 #' @param data A data frame.
 #' @param x Name of the categorical column.
 #' @param by Optional grouping column.
@@ -398,6 +416,9 @@ ilm_plot_bar <- function(data, x, by = NULL, ..., facet = NULL, legend = NULL,
 
 #' Line plot
 #'
+#' Draws one column against another, usually a date or a sequence, as a line,
+#' optionally one line per group, or drawn in panels.
+#'
 #' @param data A data frame.
 #' @param y,x Column names; `x` is usually a date or a sequence.
 #' @param by Optional grouping column.
@@ -407,13 +428,14 @@ ilm_plot_bar <- function(data, x, by = NULL, ..., facet = NULL, legend = NULL,
 #'   `by`, the legend is titled with the `by` column's name unless you
 #'   give a title.
 #' @param ... Passed to [tinyplot::tinyplot()].
-#' @param pch Plotting character. Takes a NAME as well as a number:
+#' @param pch Plotting character. Takes a name as well as a number:
 #'   `"filled circle"` is 16, and every code from 0 to 25 has one. Case,
 #'   spaces, underscores and hyphens are ignored. A single character is
 #'   drawn literally, so `pch = "x"` is still the letter x.
 #' @return `NULL`, invisibly.
 #' @seealso `illume::ilm_plot_acf()` for what a line plot of residuals cannot show.
 #' @examples
+#' set.seed(1)
 #' d <- data.frame(t = 1:40, v = cumsum(rnorm(40)))
 #' ilm_plot_line(d, "v", "t")
 #' @inheritParams ilm_reduce
@@ -460,7 +482,7 @@ ilm_plot_line <- function(data, y, x, by = NULL, ..., pch = NULL,
 #' @param stat `"mean"` with its standard error, or `"median"` with the
 #'   quartiles.
 #' @param ... Passed to [tinyplot::tinyplot()].
-#' @param pch Plotting character. Takes a NAME as well as a number:
+#' @param pch Plotting character. Takes a name as well as a number:
 #'   `"filled circle"` is 16, and every code from 0 to 25 has one. Case,
 #'   spaces, underscores and hyphens are ignored. A single character is
 #'   drawn literally, so `pch = "x"` is still the letter x.

@@ -1,0 +1,77 @@
+ndim_choice: how many dimensions to keep before clustering
+520 rows, 180 replicates
+
+mean (Monte Carlo SE) over replicates, per condition and arm
+            cond    arm  n           ari          k_ok         ndim
+       mixed_few fixed5 20 0.993 (0.005) 0.900 (0.069)         5x20
+       mixed_few     pa 20 0.999 (0.001) 1.000 (0.000)         2x20
+       mixed_few oracle 20 0.999 (0.001) 1.000 (0.000)         2x20
+ mixed_few_noise fixed5 20 0.358 (0.005) 0.000 (0.000)         5x20
+ mixed_few_noise     pa 20 0.998 (0.001) 1.000 (0.000)         2x20
+ mixed_few_noise oracle 20 0.998 (0.001) 1.000 (0.000)         2x20
+    mixed_counts fixed5 20 0.434 (0.010) 0.000 (0.000)         5x20
+    mixed_counts     pa 20 0.833 (0.010) 1.000 (0.000)     1x2 2x18
+    mixed_counts oracle 20 0.833 (0.010) 1.000 (0.000)         2x20
+      mixed_many fixed5 20 0.806 (0.069) 0.750 (0.099)         5x20
+      mixed_many     pa 20 0.827 (0.054) 0.700 (0.105)  2x9 3x9 4x2
+      mixed_many oracle 20 0.976 (0.002) 1.000 (0.000)         2x20
+     numeric_few fixed5 20 1.000 (0.000) 1.000 (0.000)         5x20
+     numeric_few     pa 20 0.999 (0.001) 1.000 (0.000)         2x20
+     numeric_few oracle 20 0.999 (0.001) 1.000 (0.000)         2x20
+    numeric_many fixed5 20 0.977 (0.002) 1.000 (0.000)         5x20
+    numeric_many     pa 20 0.976 (0.002) 1.000 (0.000) 3x15 4x4 5x1
+    numeric_many oracle 20 0.976 (0.002) 1.000 (0.000)         3x20
+       separated fixed5 20 0.724 (0.091) 0.650 (0.109)         5x20
+       separated     pa 20 0.470 (0.102) 0.400 (0.112)     2x7 3x13
+       separated oracle 20 0.242 (0.079) 0.100 (0.069)         3x20
+     overlapping fixed5 20 0.000 (0.000) 0.000 (0.000)         5x20
+     overlapping     pa 20 0.000 (0.000) 0.000 (0.000)    2x10 3x10
+     overlapping oracle 20 0.000 (0.000) 0.000 (0.000)         3x20
+       continuum fixed5 20               0.950 (0.050)         5x20
+       continuum     pa 20               1.000 (0.000)     1x1 2x19
+                         k seconds
+              3x18 4x1 5x1     5.0
+                      3x20     4.2
+                      3x20     3.9
+                     10x20     5.1
+                      3x20     3.8
+                      3x20     3.6
+         7x4 8x2 9x10 10x4     4.9
+                      3x20     3.4
+                      3x20     3.3
+             1x1 3x15 10x4    17.4
+ 3x14 5x1 6x1 7x1 9x2 10x1    14.9
+                      3x20    13.2
+                      3x20     4.0
+                      3x20     3.4
+                      3x20     3.2
+                      4x20    21.4
+                      4x20    16.8
+                      4x20    15.6
+         1x4 4x13 9x2 10x1    19.0
+      1x9 4x8 5x1 8x1 10x1    14.1
+     1x13 4x2 5x1 8x3 10x1    14.3
+                      1x20    21.3
+                      1x20    14.1
+                      1x20    15.2
+                  1x19 2x1    16.7
+                      1x20    12.3
+
+pa against fixed5, paired by replicate
+            cond  n ari_diff ari_diff_se k_ok_diff
+       mixed_few 20    0.006       0.004     0.100
+ mixed_few_noise 20    0.640       0.005     1.000
+    mixed_counts 20    0.399       0.012     1.000
+      mixed_many 20    0.021       0.069    -0.050
+     numeric_few 20   -0.001       0.001     0.000
+    numeric_many 20   -0.001       0.001     0.000
+       separated 20   -0.254       0.123    -0.250
+     overlapping 20    0.000       0.000     0.000
+       continuum 20       NA          NA     0.050
+
+The registered rule
+  (i)   mean ARI ahead by >= 0.05 and > 2 paired SE in >= 2 of the 4 mixed conditions: TRUE (mixed_few_noise, mixed_counts)
+  (ii)  mean ARI behind by more than 0.02 in no condition: FALSE (separated)
+  (iii) continuum share of k = 1, pa 1.000 against fixed5 0.950, not lower by more than 0.05: TRUE
+
+Under the rule: ndim = 5 stays the default; the help and the profiling vignette say how to choose it

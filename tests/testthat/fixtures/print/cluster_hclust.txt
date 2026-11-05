@@ -2,7 +2,7 @@
 
   cluster   size    pct  jaccard  stability     sil
         1     97   80.8    0.717   moderate   0.271
-        2      3    2.5    0.344   unstable   0.628  small
-        3     20   16.7    0.991     stable   0.439
+        2     20   16.7    0.991     stable   0.439
+        3      3    2.5    0.344   unstable   0.628  small
 
   3 observation(s) in a cluster holding less than 5% of the data

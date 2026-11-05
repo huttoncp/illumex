@@ -45,7 +45,7 @@ behind it, so \code{p} and \code{p_adj} are \code{NA} and \code{alpha} becomes t
 rows you are calling anomalous rather than an error rate being controlled.
 Needs the isotree package.}
 
-\item{rank}{Number of directions; \code{NULL} uses parallel analysis.}
+\item{rank}{Number of dimensions; \code{NULL} uses parallel analysis.}
 
 \item{trim}{Share of the worst-fitting rows held out of the fit. \code{0} fits
 every row, which lets the anomalies define the structure they are scored
@@ -71,8 +71,7 @@ large and you only want the scores.}
 \item{progress}{Show a progress bar; see \link{ilm_progress_arg}.}
 
 \item{cols_negate}{If \code{TRUE}, \code{cols} names the columns to leave out, and every
-other eligible column is used; see \link{ilm_selection}. It needs \code{cols}. A
-\code{by} argument is never negated.}
+other eligible column is used; see \link{ilm_selection}. It needs \code{cols}.}
 
 \item{cols_fixed}{If \code{TRUE}, a \code{cols} string read as a pattern is matched
 literally, as a substring (as \code{grepl(fixed = TRUE)} does); a column name
@@ -104,11 +103,10 @@ replacement lowers it most. Against planted anomalies the forest's
 driver named the changed column for 0.85 to 0.99 of rows pushed out of a
 column's range and 0.90 to 0.95 of rows pairing categories that never
 otherwise occur, but for only 0.34 to 0.38 of rows whose category
-contradicts their numbers (\code{dev/studies/driver_redesign.R} in the
-source). Above 2,000 rows a category's nearest rows are searched among
+contradicts their numbers (\href{https://github.com/huttoncp/illumex/blob/main/dev/studies/driver_redesign.R}{\code{dev/studies/driver_redesign.R}}). Above 2,000 rows a category's nearest rows are searched among
 2,000 drawn under \code{seed}, which gave the same driver as searching every
 row for 0.998 to 1.000 of flagged rows at 10,000 rows
-(\code{dev/studies/driver_pool.R}). Under either method, read \code{driver} as
+(\href{https://github.com/huttoncp/illumex/blob/main/dev/studies/driver_pool.R}{\code{dev/studies/driver_pool.R}}). Under either method, read \code{driver} as
 where to look first, not as the cause.
 }
 \description{
@@ -201,7 +199,7 @@ rows fall into clusters, and with few columns. On clean data with no
 anomalies, the share of datasets with at least one flagged row was 0.84
 to 1.00 with lognormal noise, 0.01 to 0.17 with clustered rows, and up to
 0.125 with normal noise and 5 columns (150 to 1,000 rows, 5 to 15
-columns; \code{dev/studies/anomaly_calibration3.R}).
+columns; \href{https://github.com/huttoncp/illumex/blob/main/dev/studies/anomaly_calibration3.R}{\code{dev/studies/anomaly_calibration3.R}}).
 
 The scan therefore checks its own residuals, and warns when their tails
 are heavier than all but 2 of 40 reference datasets' (p <= 0.05, with the
@@ -214,7 +212,7 @@ heavier: there it fired about as often as on clean normal data (0.05 to
 
 \section{Size}{
 
-On one core of a 16 GB Windows machine (\code{dev/studies/scale_check.R} in the source) the
+On one core of a 16 GB Windows machine (\href{https://github.com/huttoncp/illumex/blob/main/dev/studies/scale_check.R}{\code{dev/studies/scale_check.R}}) the
 default method took 32 seconds at 10,000 rows and 13 minutes at 50,000 --
 the time grows about as the square of the rows -- and over 15 minutes at
 100,000. \code{method = "iforest"} took 3.5 minutes at 10,000 rows and over 15

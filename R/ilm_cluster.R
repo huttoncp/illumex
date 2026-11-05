@@ -74,6 +74,22 @@ ilm_cluster_funcluster <- function(method, dist_method, hclust_method, nstart,
   }
 }
 
+## Clusters numbered by size, largest first; between clusters of one size, the
+## one whose first row comes first in the data. k-means numbers its clusters
+## in whatever order its random starts left them, so "Cluster 1" and
+## "Cluster 3" could swap between runs that found the same partition; this
+## numbering depends on the partition alone, puts small clusters last, and
+## keeps a cluster's colour in the plots. Stability below matches each
+## cluster to its best bootstrap counterpart, so it does not depend on the
+## numbering.
+#' @keywords internal
+#' @noRd
+ilm_cluster_by_size <- function(assign) {
+  lv <- unique(assign)                      # in order of first row
+  size <- tabulate(match(assign, lv), length(lv))
+  match(assign, lv[order(-size, seq_along(lv))])
+}
+
 #' @keywords internal
 #' @noRd
 ilm_cluster_stability <- function(coords, FUNcluster, k, orig_cluster, B,
@@ -189,13 +205,17 @@ ilm_cluster_na_note <- function(data, fn) {
 #' 0 means sitting on a boundary, negative means it is closer to another cluster
 #' than to its own. This is independent of cluster size: a point can be
 #' ambiguous inside a large and otherwise stable cluster, which a size-based
-#' flag alone would never show. Kaufman and Rousseeuw treat widths below 0.25 as
-#' no substantial structure; the default threshold here is stricter at 0.1.
+#' flag alone would never show. The default threshold, 0.1, is illumex's own
+#' choice, not taken from a published source. Kaufman and Rousseeuw (1990, p.
+#' 88, Table 4) give a scale for a whole clustering, not for a row: its
+#' silhouette coefficient, the largest average silhouette width over the entire
+#' data set, with 0.25 or below meaning that no substantial structure has been
+#' found. This function does not report that coefficient.
 #'
 #' @section Size:
 #' Every clustering computes each row's silhouette from a full distance
 #' matrix of n^2 / 2 numbers, so memory is the first limit. On one core of a
-#' 16 GB Windows machine (`dev/studies/scale_check.R` in the source), with
+#' 16 GB Windows machine ([`dev/studies/scale_check.R`](https://github.com/huttoncp/illumex/blob/main/dev/studies/scale_check.R)), with
 #' `k` given, k-means took 35 seconds and 1.2 GB at 10,000 rows and failed at
 #' 50,000 rows for want of 9.3 GB; `method = "hclust"` took 13 minutes at 10,000.
 #' Choosing `k` by the gap statistic, the default, took about a minute at
@@ -241,14 +261,24 @@ ilm_cluster_na_note <- function(data, fn) {
 #'   plus `mean_silhouette` and `anomalous`), `ind_cluster` (one row per
 #'   observation, with `silhouette`, `is_small_cluster`, `is_ambiguous` and
 #'   `is_anomalous`), and `coords`.
+#'
+#'   Clusters are numbered by size, largest first, and between two of one
+#'   size the one whose first row comes first in the data is numbered first.
+#'   The numbers depend only on the partition, so the same partition found
+#'   from other random starts, or from the rows in another order, is numbered
+#'   the same; cluster 1 is the largest, and small clusters come last.
 #' @references
 #' Hennig, C. (2007). Cluster-wise assessment of cluster stability.
-#' Computational Statistics and Data Analysis 52(1).
+#' Computational Statistics and Data Analysis 52(1), 258-271.
+#'
+#' Kaufman, L. and Rousseeuw, P. J. (1990). Finding Groups in Data: An
+#' Introduction to Cluster Analysis. Wiley (reprinted 2005).
 #'
 #' Tibshirani, R., Walther, G. and Hastie, T. (2001). Estimating the number of
-#' clusters in a data set via the gap statistic. JRSS B 63(2).
+#' clusters in a data set via the gap statistic. Journal of the Royal
+#' Statistical Society, Series B 63(2), 411-423.
 #' @seealso [ilm_reduce()], [ilm_profile()], [ilm_plot_cluster()].
-#' @examples
+#' @examplesIf requireNamespace("cluster", quietly = TRUE)
 #' cl <- ilm_cluster(ilm_reduce(mtcars), k_max = 5, B = 25, seed = 1)
 #' cl
 #' @export
@@ -344,7 +374,9 @@ ilm_cluster <- function(x, k = NULL, k_max = 10, method = c("kmeans", "hclust"),
     ## clusters than there are distinct positions is always degenerate, and
     ## low-cardinality input such as missingness indicators can have far fewer
     ## distinct rows than observations
-    k_max <- max(1L, min(k_max, n - 1L, nrow(unique(coords))))
+    n_distinct <- nrow(unique(coords))
+    k_asked <- k_max
+    k_max <- max(1L, min(k_max, n - 1L, n_distinct))
     gap <- cluster::clusGap(coords, FUNcluster = FUNcluster, K.max = k_max, B = B)
     k <- cluster::maxSE(gap$Tab[, "gap"], gap$Tab[, "SE.sim"], method = gap_method)
     ## A chosen k sitting on the edge of the search is not a choice, it is a
@@ -352,17 +384,27 @@ ilm_cluster <- function(x, k = NULL, k_max = 10, method = c("kmeans", "hclust"),
     ## mixed data this is not hypothetical: every k-selector tried over-shot,
     ## and an average-silhouette search on the same data peaked at exactly the
     ## number of level combinations rather than at the number of clusters.
-    if (k >= k_max && k_max > 1L)
-      warning("k was chosen as ", k, ", which is the largest value searched. ",
-              "The curve had not turned, so this is where the search stopped ",
-              "rather than where the evidence pointed. Raise `k_max`, or set ",
-              "`k` from what the design says. On mixed data a selector can ",
-              "also lock onto the number of category combinations rather ",
-              "than the number of clusters; plot(x) shows the gap curve.",
-              call. = FALSE)
+    ## When the data set the edge -- as many clusters as distinct points, as
+    ## with a few patterns of missing values -- there was no further to go,
+    ## and raising `k_max` would change nothing: that is said instead.
+    if (k >= k_max && k_max > 1L) {
+      if (k_max < k_asked)
+        message(ilm_cluster_data_cap(k, n_distinct, n,
+                                     inherits(x, "ilm_reduce_na")))
+      else
+        warning("k was chosen as ", k, ", which is the largest value searched. ",
+                "The curve had not turned, so this is where the search stopped ",
+                "rather than where the evidence pointed. Raise `k_max`, or set ",
+                "`k` from what the design says. On mixed data a selector can ",
+                "also lock onto the number of category combinations rather ",
+                "than the number of clusters; plot(x) shows the gap curve.",
+                call. = FALSE)
+    }
   }
 
-  cluster_assign <- FUNcluster(coords, k)$cluster
+  ## numbered by size, largest first, before anything is computed from the
+  ## labels, so every table, paragraph and colour downstream shares them
+  cluster_assign <- ilm_cluster_by_size(FUNcluster(coords, k)$cluster)
   stability <- ilm_cluster_stability(coords, FUNcluster, k, cluster_assign, B,
                                      progress)
 
@@ -430,7 +472,7 @@ ilm_cluster <- function(x, k = NULL, k_max = 10, method = c("kmeans", "hclust"),
 #' @return An object of class `"ilm_cluster_na"`, which is also an
 #'   `"ilm_cluster"`.
 #' @seealso [ilm_profile_na()].
-#' @examples
+#' @examplesIf requireNamespace("cluster", quietly = TRUE)
 #' cl <- ilm_cluster_na(ilm_reduce_na(airquality), k_max = 4, B = 25, seed = 1)
 #' cl
 #' @export
@@ -455,6 +497,23 @@ ILM_NO_CLUSTERS_GAP <- paste(
 ILM_NO_CLUSTERS_GIVEN <- paste(
   "No distinct clusters: with k = 1, as given, the %s rows are one group.",
   "Describe them with ilm_describe_all().")
+
+## k at the most the data allow: as many clusters as distinct points (for a
+## missingness profile, distinct patterns of missing values), or one fewer
+## than the rows
+#' @keywords internal
+#' @noRd
+ilm_cluster_data_cap <- function(k, n_distinct, n, missingness = FALSE) {
+  if (k >= n_distinct)
+    sprintf(paste0("k = %d is the most these data allow: they have %s distinct %s, ",
+                   "and each is its own cluster. Raising `k_max` would change nothing."),
+            k, ilm_fmt_count(n_distinct),
+            if (missingness) "patterns of missing values" else "points")
+  else
+    sprintf(paste0("k = %d is the most these data allow, one fewer than their %s ",
+                   "rows. Raising `k_max` would change nothing."),
+            k, ilm_fmt_count(n))
+}
 
 #' @export
 print.ilm_cluster <- function(x, ...) {

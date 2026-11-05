@@ -68,8 +68,8 @@ convert back to the same bytes, is left as it is and reported as above.
 
 Names follow the rules of janitor's \code{make_clean_names()}, without needing
 janitor, and no letter is dropped: \code{"\%"} becomes \code{percent} and \code{"#"}
-\code{number}; camelCase is split; accented Latin letters become plain ones (an
-e with an accent becomes e, a sharp s ss, the oe ligature oe); letters of
+\code{number}; camelCase is split; accented Latin letters become plain ones
+(\code{"é"} becomes \code{e}, \code{"ß"} becomes \code{ss}, \code{"œ"} becomes \code{oe}); letters of
 other scripts are kept as they are; a name starting with a digit gains an
 \code{x}; and a repeated name gains \verb{_2}, \verb{_3} and so on, as janitor numbers it.
 

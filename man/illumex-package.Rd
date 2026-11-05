@@ -15,7 +15,7 @@ everything here is available as it always was.
 
 \describe{
 \item{Describing}{\code{\link[=ilm_describe_all]{ilm_describe_all()}} summarises every column of a data
-frame at once, with a gaussian index in place of a normality test;
+frame at once, with a Gaussian index in place of a normality test;
 \code{\link[=ilm_counts]{ilm_counts()}}, \code{\link[=ilm_dupes]{ilm_dupes()}}, \code{\link[=ilm_copies]{ilm_copies()}} and \code{\link[=ilm_frame_issues]{ilm_frame_issues()}}
 find what is wrong with a data frame before any model sees it.}
 \item{Cleaning}{\code{\link[=ilm_wash_df]{ilm_wash_df()}}, \code{\link[=ilm_recode_errors]{ilm_recode_errors()}}, \code{\link[=ilm_translate]{ilm_translate()}}.}
@@ -31,7 +31,7 @@ clusters in one call, for numeric and mixed columns alike;
 \code{illume}'s: see \code{illume::ilm_impute()}.}
 \item{Plots}{\code{\link[=ilm_plot]{ilm_plot()}} and the \verb{ilm_plot_*()} family, built on
 \code{tinyplot} and named for what they show.}
-\item{Example data}{\code{\link[=ilm_sim]{ilm_sim()}}, a grouped data set with a known
+\item{Example data}{\code{\link[=ilm_sim]{ilm_sim()}}, a grouped dataset with a known
 structure.}
 }
 }
@@ -60,19 +60,19 @@ Useful links:
 
 }
 \author{
-\strong{Maintainer}: Craig Hutton \email{craig.hutton@gmail.com}
+\strong{Maintainer}: Craig P. Hutton \email{craig.hutton@gmail.com} [copyright holder]
 
 Other contributors:
 \itemize{
-  \item François Husson (FactoMineR: ilm_vtest_share() and ilm_vtest_mean() adapted from catdes()) [copyright holder]
-  \item Julie Josse (FactoMineR: ilm_vtest_share() and ilm_vtest_mean() adapted from catdes()) [copyright holder]
-  \item Sébastien Lê (FactoMineR: ilm_vtest_share() and ilm_vtest_mean() adapted from catdes()) [copyright holder]
-  \item Jérémy Mazet (FactoMineR: ilm_vtest_share() and ilm_vtest_mean() adapted from catdes()) [copyright holder]
-  \item Marie Chavent (PCAmixdata: ilm_famd() validated against, and possibly adapted from, PCAmix()) [copyright holder]
-  \item Vanessa Kuentz (PCAmixdata: ilm_famd() validated against, and possibly adapted from, PCAmix()) [copyright holder]
-  \item Amaury Labenne (PCAmixdata: ilm_famd() validated against, and possibly adapted from, PCAmix()) [copyright holder]
-  \item Benoit Liquet (PCAmixdata: ilm_famd() validated against, and possibly adapted from, PCAmix()) [copyright holder]
-  \item Jérôme Saracco (PCAmixdata: ilm_famd() validated against, and possibly adapted from, PCAmix()) [copyright holder]
+  \item François Husson (FactoMineR: ilm_vtest_mean() adapted from catdes()) [copyright holder]
+  \item Julie Josse (FactoMineR: ilm_vtest_mean() adapted from catdes()) [copyright holder]
+  \item Sébastien Lê (FactoMineR: ilm_vtest_mean() adapted from catdes()) [copyright holder]
+  \item Jérémy Mazet (FactoMineR: ilm_vtest_mean() adapted from catdes()) [copyright holder]
+  \item Marie Chavent (PCAmixdata: ilm_famd() and ilm_famd_z() validated against, and possibly adapted from, PCAmix()) [copyright holder]
+  \item Vanessa Kuentz (PCAmixdata: ilm_famd() and ilm_famd_z() validated against, and possibly adapted from, PCAmix()) [copyright holder]
+  \item Amaury Labenne (PCAmixdata: ilm_famd() and ilm_famd_z() validated against, and possibly adapted from, PCAmix()) [copyright holder]
+  \item Benoit Liquet (PCAmixdata: ilm_famd() and ilm_famd_z() validated against, and possibly adapted from, PCAmix()) [copyright holder]
+  \item Jérôme Saracco (PCAmixdata: ilm_famd() and ilm_famd_z() validated against, and possibly adapted from, PCAmix()) [copyright holder]
 }
 
 }

@@ -50,13 +50,13 @@ test_that("the shared rounding agrees with half away on the 15-figure string", {
   d <- c(d, pmax(0, 14 - floor(log10(abs(x4))) - sample(1:14, 200, TRUE)))
   ref <- mapply(ref_fixed, x, d)
   ## the rounding core's text, in full at every size (ilm_disp() itself
-  ## writes 1e15 and up in scientific notation, item 290)
+  ## writes 1e15 and up in scientific notation)
   got <- vapply(seq_along(x), function(i)
     ilm_disp_text(ilm_disp_digits(x[i], d[i]), d[i], big_mark = ""), "")
   expect_identical(got, ref)
 })
 
-test_that("numbers are written in full up to 15 figures before the point and 6 decimals below 1, and in R's scientific form beyond (item 290)", {
+test_that("numbers are written in full up to 15 figures before the point and 6 decimals below 1, and in R's scientific form beyond", {
   sci <- function(x, ...) ilm_disp(x, ...)$text
   expect_identical(sci(999999999999999, "signif", 15), "999,999,999,999,999")
   expect_identical(sci(1e15, "signif", 3), "1.00e+15")

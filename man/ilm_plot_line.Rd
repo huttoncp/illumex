@@ -28,7 +28,7 @@ ilm_plot_line(
 
 \item{...}{Passed to \code{\link[tinyplot:tinyplot]{tinyplot::tinyplot()}}.}
 
-\item{pch}{Plotting character. Takes a NAME as well as a number:
+\item{pch}{Plotting character. Takes a name as well as a number:
 \code{"filled circle"} is 16, and every code from 0 to 25 has one. Case,
 spaces, underscores and hyphens are ignored. A single character is
 drawn literally, so \code{pch = "x"} is still the letter x.}
@@ -56,9 +56,11 @@ as substrings. It changes nothing for a logical, positions or a sample.}
 \code{NULL}, invisibly.
 }
 \description{
-Line plot
+Draws one column against another, usually a date or a sequence, as a line,
+optionally one line per group, or drawn in panels.
 }
 \examples{
+set.seed(1)
 d <- data.frame(t = 1:40, v = cumsum(rnorm(40)))
 ilm_plot_line(d, "v", "t")
 }

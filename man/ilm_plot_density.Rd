@@ -22,7 +22,7 @@ ilm_plot_density(
 
 \item{x}{Name of the numeric column to plot.}
 
-\item{by}{Optional grouping column, overlaying one histogram per level.}
+\item{by}{Optional grouping column, overlaying one density per level.}
 
 \item{...}{Passed to \code{\link[tinyplot:tinyplot]{tinyplot::tinyplot()}}.}
 
@@ -49,7 +49,8 @@ as substrings. It changes nothing for a logical, positions or a sample.}
 \code{NULL}, invisibly.
 }
 \description{
-Density plot
+Draws the distribution of one numeric column as a smoothed density curve,
+optionally one curve per group, or drawn in panels.
 }
 \examples{
 ilm_plot_density(mtcars, "mpg", by = "cyl")

@@ -74,8 +74,7 @@ dimensions are chosen after it, with \code{ndim} in \code{\link[=ilm_reduce]{ilm
 on an \code{\link[=ilm_reduce]{ilm_reduce()}} result is an error. See \link{ilm_selection}.}
 
 \item{cols_negate}{If \code{TRUE}, \code{cols} names the columns to leave out, and every
-other eligible column is used; see \link{ilm_selection}. It needs \code{cols}. A
-\code{by} argument is never negated.}
+other eligible column is used; see \link{ilm_selection}. It needs \code{cols}.}
 
 \item{cols_fixed}{If \code{TRUE}, a \code{cols} string read as a pattern is matched
 literally, as a substring (as \code{grepl(fixed = TRUE)} does); a column name
@@ -101,6 +100,12 @@ with \code{size}, \code{pct}, \code{jaccard}, \code{stability} labelled \code{"s
 plus \code{mean_silhouette} and \code{anomalous}), \code{ind_cluster} (one row per
 observation, with \code{silhouette}, \code{is_small_cluster}, \code{is_ambiguous} and
 \code{is_anomalous}), and \code{coords}.
+
+Clusters are numbered by size, largest first, and between two of one
+size the one whose first row comes first in the data is numbered first.
+The numbers depend only on the partition, so the same partition found
+from other random starts, or from the rows in another order, is numbered
+the same; cluster 1 is the largest, and small clusters come last.
 }
 \description{
 Groups the rows of an \code{\link[=ilm_reduce]{ilm_reduce()}} result, or any numeric coordinates, by
@@ -122,15 +127,19 @@ average distance to the nearest other one. Near 1 means clearly placed, near
 0 means sitting on a boundary, negative means it is closer to another cluster
 than to its own. This is independent of cluster size: a point can be
 ambiguous inside a large and otherwise stable cluster, which a size-based
-flag alone would never show. Kaufman and Rousseeuw treat widths below 0.25 as
-no substantial structure; the default threshold here is stricter at 0.1.
+flag alone would never show. The default threshold, 0.1, is illumex's own
+choice, not taken from a published source. Kaufman and Rousseeuw (1990, p.
+88, Table 4) give a scale for a whole clustering, not for a row: its
+silhouette coefficient, the largest average silhouette width over the entire
+data set, with 0.25 or below meaning that no substantial structure has been
+found. This function does not report that coefficient.
 }
 
 \section{Size}{
 
 Every clustering computes each row's silhouette from a full distance
 matrix of n^2 / 2 numbers, so memory is the first limit. On one core of a
-16 GB Windows machine (\code{dev/studies/scale_check.R} in the source), with
+16 GB Windows machine (\href{https://github.com/huttoncp/illumex/blob/main/dev/studies/scale_check.R}{\code{dev/studies/scale_check.R}}), with
 \code{k} given, k-means took 35 seconds and 1.2 GB at 10,000 rows and failed at
 50,000 rows for want of 9.3 GB; \code{method = "hclust"} took 13 minutes at 10,000.
 Choosing \code{k} by the gap statistic, the default, took about a minute at
@@ -139,15 +148,21 @@ cluster a sample of the rows.
 }
 
 \examples{
+\dontshow{if (requireNamespace("cluster", quietly = TRUE)) (if (getRversion() >= "3.4") withAutoprint else force)(\{ # examplesIf}
 cl <- ilm_cluster(ilm_reduce(mtcars), k_max = 5, B = 25, seed = 1)
 cl
+\dontshow{\}) # examplesIf}
 }
 \references{
 Hennig, C. (2007). Cluster-wise assessment of cluster stability.
-Computational Statistics and Data Analysis 52(1).
+Computational Statistics and Data Analysis 52(1), 258-271.
+
+Kaufman, L. and Rousseeuw, P. J. (1990). Finding Groups in Data: An
+Introduction to Cluster Analysis. Wiley (reprinted 2005).
 
 Tibshirani, R., Walther, G. and Hastie, T. (2001). Estimating the number of
-clusters in a data set via the gap statistic. JRSS B 63(2).
+clusters in a data set via the gap statistic. Journal of the Royal
+Statistical Society, Series B 63(2), 411-423.
 }
 \seealso{
 \code{\link[=ilm_reduce]{ilm_reduce()}}, \code{\link[=ilm_profile]{ilm_profile()}}, \code{\link[=ilm_plot_cluster]{ilm_plot_cluster()}}.

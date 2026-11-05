@@ -34,7 +34,7 @@ as substrings. It changes nothing for a logical, positions or a sample.}
 Invisibly, the named vector of proportions.
 }
 \description{
-Proportion missing, by variable
+Draws the share of values missing in each column of a data frame, as bars.
 }
 \examples{
 ilm_plot_missing(ilm_sim())

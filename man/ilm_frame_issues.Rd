@@ -31,8 +31,7 @@ regular expression, a predicate function such as \code{is.numeric}, or
 \code{NULL} for all of them -- see \link{ilm_selection}.}
 
 \item{cols_negate}{If \code{TRUE}, \code{cols} names the columns to leave out, and every
-other eligible column is used; see \link{ilm_selection}. It needs \code{cols}. A
-\code{by} argument is never negated.}
+other eligible column is used; see \link{ilm_selection}. It needs \code{cols}.}
 
 \item{cols_fixed}{If \code{TRUE}, a \code{cols} string read as a pattern is matched
 literally, as a substring (as \code{grepl(fixed = TRUE)} does); a column name
@@ -76,18 +75,28 @@ Otherwise a pair is \code{redundant_categories} when \enc{Cramér}{Cramer}'s V
 reaches \code{v_cut}: nearly every level of one predicts a level of the other.
 
 Pairs are not the whole story: a column can be an exact combination of
-several others (a total and its parts, a numeric code fixed by a factor's
-levels) with no pair looking alike. So the numeric and categorical columns
-are also put into one model matrix, with an intercept and treatment
-contrasts, on the rows complete across them, and each column the matrix
-cannot separate from the rest is reported as \code{rank_deficient} with what it
-is a combination of. So that each problem is reported once, columns already
-reported as constant, identifier-like, duplicated or aliased are left out of
-that matrix, and a nested pair is not reported again from it.
+several others (a total and its parts) with no pair looking alike. So the
+numeric and categorical columns are also put into one model matrix, with an
+intercept and treatment contrasts, on the rows complete across them, and
+each column the matrix cannot separate from the rest is reported as
+\code{rank_deficient} with what it is a combination of. So that each problem is
+reported once, columns already reported as constant, identifier-like,
+duplicated or aliased are left out of that matrix, and a nested pair is not
+reported again from it.
+
+A number that is a combination of one categorical column alone takes one
+value per level of it -- a subject's age, repeated over the subject's
+visits -- and is reported as \code{unit_level}, not \code{rank_deficient}. That is
+the shape of every unit-level covariate in repeated measures: estimable
+with the categorical column as a grouping (a random effect), confounded
+with it only as fixed effects. A numeric code for a factor's levels has
+the same shape and is reported the same way; the words say to keep one of
+the two.
 }
 \examples{
 ilm_frame_issues(ilm_sim())
 
+set.seed(1)
 d <- data.frame(a = rnorm(50), b = rnorm(50),
                 clinic = rep(c("x", "y"), each = 25),
                 ward = rep(c("x1", "x2", "y1", "y2"), c(12, 13, 12, 13)))
