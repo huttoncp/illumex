@@ -93,7 +93,7 @@ A data frame with `variable`, `value` and `n`.
 ## Examples
 
 ``` r
-ilm_counts_all(ilm_sim()[, c("grp", "site")], n = 2)
+ilm_counts_all(ilm_example_data()[, c("grp", "site")], n = 2)
 #>   variable value   n
 #> 1      grp alpha 404
 #> 2      grp  beta 329

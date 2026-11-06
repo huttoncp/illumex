@@ -108,6 +108,6 @@ Invisibly, a list of the per-panel results.
 ## Examples
 
 ``` r
-ilm_plot_all(ilm_sim(), class = "numeric", max_panels = 4)
+ilm_plot_all(ilm_example_data(), class = "numeric", max_panels = 4)
 #> ilm_plot_all: showing the first 4 of 7 variables; raise `max_panels` to see more
 ```

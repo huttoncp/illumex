@@ -30,7 +30,7 @@ A list with `geom`, `reason` and `n`.
 ## Examples
 
 ``` r
-d <- ilm_sim()
+d <- ilm_example_data()
 ilm_pick_geom(d$score)
 #> $geom
 #> [1] "histogram"

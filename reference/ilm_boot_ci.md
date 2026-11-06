@@ -116,7 +116,7 @@ for a difference between two groups.
 ## Examples
 
 ``` r
-d <- ilm_sim()
+d <- ilm_example_data()
 ilm_boot_ci(d, "score", R = 200, seed = 1)
 #>   stat observed    lower    upper conf   R    ci_type   n
 #> 1 mean 49.67677 49.26271 50.05195 0.95 200 percentile 900

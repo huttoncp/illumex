@@ -19,7 +19,7 @@ built.
 ## Against PCAmixdata
 
 Four kinds of data from
-[`ilm_sim()`](https://huttoncp.github.io/illumex/reference/ilm_sim.md):
+[`ilm_example_data()`](https://huttoncp.github.io/illumex/reference/ilm_example_data.md):
 mixed (four numbers, two categories), numbers only, categories only, and
 mixed with missing values. The largest difference from what `PCAmix()`
 gave, on every eigenvalue, every coordinate of every row on every
@@ -27,10 +27,10 @@ retained dimension, and every squared loading:
 
 | data             | rows | eigenvalues | coordinates | loadings |
 |:-----------------|-----:|------------:|------------:|---------:|
-| mixed            |  900 |     5.1e-15 |     3.5e-13 |  1.3e-14 |
+| mixed            |  900 |     4.7e-15 |     2.6e-13 |  1.1e-14 |
 | numeric_only     |  900 |     1.6e-15 |     1.3e-13 |  9.2e-15 |
-| categorical_only |  900 |     2.9e-15 |     3.4e-12 |  4.4e-14 |
-| mixed_with_gaps  |  900 |     1.3e-15 |     1.9e-13 |  7.8e-15 |
+| categorical_only |  900 |     3.6e-15 |     3.5e-12 |  5.2e-14 |
+| mixed_with_gaps  |  900 |     2.7e-15 |     2.1e-13 |  6.4e-15 |
 
 A coordinate’s sign is arbitrary in any implementation – the same
 dimension read from the other end – so coordinates are compared after
@@ -42,7 +42,7 @@ positively.
 ## Against FactoMineR
 
 Five columns of
-[`ilm_sim()`](https://huttoncp.github.io/illumex/reference/ilm_sim.md),
+[`ilm_example_data()`](https://huttoncp.github.io/illumex/reference/ilm_example_data.md),
 through
 [`ilm_reduce()`](https://huttoncp.github.io/illumex/reference/ilm_reduce.md)
 itself, against what `FactoMineR::FAMD()` gave: its first five
@@ -50,8 +50,8 @@ eigenvalues, and every row’s coordinates on the first three dimensions.
 
 | quantity                       | largest_difference |
 |:-------------------------------|-------------------:|
-| eigenvalues 1 to 5             |            4.4e-15 |
-| coordinates, dimensions 1 to 3 |            1.8e-13 |
+| eigenvalues 1 to 5             |            4.0e-15 |
+| coordinates, dimensions 1 to 3 |            1.7e-13 |
 
 [`ilm_profile()`](https://huttoncp.github.io/illumex/reference/ilm_profile.md)
 describes each cluster by test-values (Lebart, Piron and Morineau 2006,

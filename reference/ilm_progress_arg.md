@@ -13,7 +13,7 @@ The bar costs nothing worth measuring: on 2000 bootstrap replicates over
 ## Examples
 
 ``` r
-d <- ilm_sim()
+d <- ilm_example_data()
 ilm_boot_ci(d, "score", R = 200, progress = FALSE)
 #>   stat observed    lower    upper conf   R    ci_type   n
 #> 1 mean 49.67677 49.26611 50.06166 0.95 200 percentile 900

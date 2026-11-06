@@ -91,7 +91,7 @@ for the rows.
 ## Examples
 
 ``` r
-d <- ilm_sim(n_id = 30, n_period = 6)
+d <- ilm_example_data(n_id = 30, n_period = 6)
 ilm_describe_clusters(d, "id")
 #> Clusters: 30 by `id`, 180 rows
 #> Rows per cluster: 6 in every cluster

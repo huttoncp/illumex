@@ -173,7 +173,7 @@ aliased, nested and collinear columns.
 ## Examples
 
 ``` r
-d <- ilm_sim()
+d <- ilm_example_data()
 ilm_describe_all(d)
 #> $numeric
 #>    variable obs   n  na         sum      mean        sd      se      p0

@@ -224,7 +224,7 @@ options, a random sample of rows, and the data a call would use.
 
 A grouped data set with a known structure, used throughout the examples.
 
-- [`ilm_sim()`](https://huttoncp.github.io/illumex/reference/ilm_sim.md)
+- [`ilm_example_data()`](https://huttoncp.github.io/illumex/reference/ilm_example_data.md)
   : A simulated mixed-type dataset for testing and examples
 
 ## Shared parameters and print methods

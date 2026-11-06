@@ -172,7 +172,7 @@ for missingness.
 ## Examples
 
 ``` r
-d <- ilm_sim()
+d <- ilm_example_data()
 ilm_describe(d, "score")
 #>   obs   n na      sum   mean   sd    se    p0    p50  p100 p_zero dispersion
 #> 1 900 900  0 44709.09 49.677 5.88 0.196 29.99 49.835 65.34      0         NA

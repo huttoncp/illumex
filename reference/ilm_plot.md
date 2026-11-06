@@ -175,7 +175,7 @@ read, so it cannot drift from the behaviour:
 ## Examples
 
 ``` r
-d <- ilm_sim()
+d <- ilm_example_data()
 ilm_plot(d, "score")
 #> ilm_plot: gauss 1.00
 

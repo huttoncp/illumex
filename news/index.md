@@ -1,5 +1,16 @@
 # Changelog
 
+## illumex 0.0.8.9006
+
+- `ilm_sim()`, the example data, is renamed
+  [`ilm_example_data()`](https://huttoncp.github.io/illumex/reference/ilm_example_data.md),
+  and its alias `iml_sim()` is now
+  [`iml_example_data()`](https://huttoncp.github.io/illumex/reference/ilm_example_data.md).
+  The arguments, the data and the results are unchanged. The old names
+  are gone, with no deprecated copy, because illume uses `ilm_sim()` for
+  its own function, which simulates whole datasets from a model. Code
+  that called `ilm_sim()` for illumex’s example data needs the new name.
+
 ## illumex 0.0.8.9005
 
 - A category’s v-test in
@@ -920,15 +931,13 @@
   [`ilm_boot_diff()`](https://huttoncp.github.io/illumex/reference/ilm_boot_diff.md),
   [`ilm_cluster()`](https://huttoncp.github.io/illumex/reference/ilm_cluster.md),
   [`ilm_glrm()`](https://huttoncp.github.io/illumex/reference/ilm_glrm.md),
-  [`ilm_sim()`](https://huttoncp.github.io/illumex/reference/ilm_sim.md)
-  and
+  `ilm_sim()` and
   [`ilm_var_contrib()`](https://huttoncp.github.io/illumex/reference/ilm_var_contrib.md);
   a test fails if a new seeded function does not do the same. With
   `seed = NULL`,
   [`ilm_anomaly()`](https://huttoncp.github.io/illumex/reference/ilm_anomaly.md),
   [`ilm_glrm()`](https://huttoncp.github.io/illumex/reference/ilm_glrm.md),
-  [`ilm_sim()`](https://huttoncp.github.io/illumex/reference/ilm_sim.md)
-  and
+  `ilm_sim()` and
   [`ilm_var_contrib()`](https://huttoncp.github.io/illumex/reference/ilm_var_contrib.md)
   now draw from the user’s stream, as the other three already did; they
   called `set.seed(NULL)`, which re-seeds from the clock, so a
@@ -1081,8 +1090,7 @@
   included; describing missing values
   ([`ilm_check_missing()`](https://huttoncp.github.io/illumex/reference/ilm_check_missing.md)
   and the `*_na()` functions); the plots of data rather than of a model;
-  and the example data,
-  [`ilm_sim()`](https://huttoncp.github.io/illumex/reference/ilm_sim.md).
+  and the example data, `ilm_sim()`.
 - What stayed in `illume`: everything that fits or reads a model,
   including imputation and pooling (`ilm_impute()`, `ilm_mi_pool()`),
   which need one.

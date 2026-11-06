@@ -214,7 +214,7 @@ for a single group.
 ## Examples
 
 ``` r
-d <- ilm_sim()
+d <- ilm_example_data()
 ## all pairs, simultaneous by default
 ilm_boot_diff(d, "score", "grp", R = 300, seed = 1)
 #>   stat group  from    to   observed      lower     upper conf   R ci_type

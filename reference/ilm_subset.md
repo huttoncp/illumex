@@ -47,7 +47,7 @@ A data frame.
 ## Examples
 
 ``` r
-d <- ilm_sim()
+d <- ilm_example_data()
 ilm_subset(d, subset = c(grp = "^a"), cols = "^score|^income")
 #>     score    income
 #> 3   43.30  43453.60

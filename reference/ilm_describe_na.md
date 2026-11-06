@@ -68,7 +68,7 @@ A data frame with `obs`, `n`, `na` and `p_na`.
 ## Examples
 
 ``` r
-ilm_describe_na(ilm_sim(), "lab_value")
+ilm_describe_na(ilm_example_data(), "lab_value")
 #>   obs   n  na p_na
 #> 1 900 792 108 0.12
 ```

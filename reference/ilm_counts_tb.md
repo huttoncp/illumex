@@ -30,7 +30,7 @@ A data frame with `top_value`, `top_n`, `bot_value` and `bot_n`.
 ## Examples
 
 ``` r
-ilm_counts_tb(ilm_sim()$grp, n = 2)
+ilm_counts_tb(ilm_example_data()$grp, n = 2)
 #>   top_value top_n bot_value bot_n
 #> 1     alpha   404     delta     3
 #> 2      beta   329     gamma   164

@@ -59,5 +59,5 @@ for the same information as a table.
 ## Examples
 
 ``` r
-ilm_plot_missing(ilm_sim())
+ilm_plot_missing(ilm_example_data())
 ```

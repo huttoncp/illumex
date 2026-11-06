@@ -58,7 +58,7 @@ ilm_plot_boot_diff(
 ## Examples
 
 ``` r
-d <- ilm_sim()
+d <- ilm_example_data()
 b <- ilm_boot_diff(d, "score", "grp", R = 300, seed = 1)
 ilm_plot_boot_diff(b, row = 1)
 ```

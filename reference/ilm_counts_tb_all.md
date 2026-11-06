@@ -83,7 +83,7 @@ A data frame with `variable`, `top_value`, `top_n`, `bot_value` and
 ## Examples
 
 ``` r
-ilm_counts_tb_all(ilm_sim()[, c("grp", "site")], n = 2)
+ilm_counts_tb_all(ilm_example_data()[, c("grp", "site")], n = 2)
 #>   variable top_value top_n bot_value bot_n
 #> 1      grp     alpha   404     delta     3
 #> 2      grp      beta   329     gamma   164

@@ -18,12 +18,12 @@ like one workflow rather than two packages bolted together.
 
 ``` r
 
-d <- ilm_sim()
+d <- ilm_example_data()
 dim(d)
 #> [1] 900  13
 ```
 
-[`ilm_sim()`](https://huttoncp.github.io/illumex/reference/ilm_sim.md)
+[`ilm_example_data()`](https://huttoncp.github.io/illumex/reference/ilm_example_data.md)
 generates a synthetic dataset for examples and tests. Every column is
 there because some check should have something to say about it — a
 fixture where nothing is wrong tests nothing.

@@ -87,7 +87,7 @@ A data frame with `variable`, `obs`, `n`, `na` and `p_na`.
 ## Examples
 
 ``` r
-ilm_describe_na_all(ilm_sim())
+ilm_describe_na_all(ilm_example_data())
 #>     variable obs   n  na p_na
 #> 1  lab_value 900 792 108 0.12
 #> 2     claims 900 900   0 0.00

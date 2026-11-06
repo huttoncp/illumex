@@ -457,7 +457,7 @@ values. *Statistics in Medicine* 29, 2920-2931.
 ## Examples
 
 ``` r
-d <- ilm_sim()
+d <- ilm_example_data()
 ilm_check_missing(d, y = "score", verbose = FALSE)
 #> <ilm_missing> 792 of 900 rows complete (88.0%)
 #>   missing values:

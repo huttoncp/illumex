@@ -68,7 +68,7 @@ everything here is available as it always was.
 
 - Example data:
 
-  [`ilm_sim()`](https://huttoncp.github.io/illumex/reference/ilm_sim.md),
+  [`ilm_example_data()`](https://huttoncp.github.io/illumex/reference/ilm_example_data.md),
   a grouped dataset with a known structure.
 
 ## Two spellings

@@ -34,7 +34,7 @@ and the plots on `tinyplot`.
 
 library(illumex)
 
-d <- ilm_sim()                       # a grouped dataset with a known structure
+d <- ilm_example_data()              # a grouped dataset with a known structure
 
 ## what is in it, and what will break a model
 ilm_describe_all(d)
@@ -66,7 +66,7 @@ ilm_profile(d, ndim = 5)
 | **Structure** | [`ilm_profile()`](https://huttoncp.github.io/illumex/reference/ilm_profile.md), [`ilm_reduce()`](https://huttoncp.github.io/illumex/reference/ilm_reduce.md), [`ilm_cluster()`](https://huttoncp.github.io/illumex/reference/ilm_cluster.md), [`ilm_glrm()`](https://huttoncp.github.io/illumex/reference/ilm_glrm.md), [`ilm_var_contrib()`](https://huttoncp.github.io/illumex/reference/ilm_var_contrib.md) |
 | **Missing values** | [`ilm_check_missing()`](https://huttoncp.github.io/illumex/reference/ilm_check_missing.md), [`ilm_describe_na_all()`](https://huttoncp.github.io/illumex/reference/ilm_describe_na_all.md), [`ilm_plot_missing()`](https://huttoncp.github.io/illumex/reference/ilm_plot_missing.md), [`ilm_profile_na()`](https://huttoncp.github.io/illumex/reference/ilm_profile_na.md) |
 | **Plots** | [`ilm_plot()`](https://huttoncp.github.io/illumex/reference/ilm_plot.md), [`ilm_plot_all()`](https://huttoncp.github.io/illumex/reference/ilm_plot_all.md) and around thirty `ilm_plot_*()` functions, named for what they show |
-| **Example data** | [`ilm_sim()`](https://huttoncp.github.io/illumex/reference/ilm_sim.md) |
+| **Example data** | [`ilm_example_data()`](https://huttoncp.github.io/illumex/reference/ilm_example_data.md) |
 
 Imputing missing values and pooling across the imputations need a model,
 so they are `illume`’s: `ilm_impute()` and `ilm_mi_pool()`.

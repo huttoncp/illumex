@@ -128,7 +128,7 @@ University Press.
 ## Examples
 
 ``` r
-ilm_frame_issues(ilm_sim())
+ilm_frame_issues(ilm_example_data())
 #>      issue columns                                 detail
 #> 1 constant  cohort zero variance; breaks the model matrix
 #>                                                           remedy

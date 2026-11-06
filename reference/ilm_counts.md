@@ -44,7 +44,7 @@ for a whole data frame.
 ## Examples
 
 ``` r
-d <- ilm_sim()
+d <- ilm_example_data()
 ilm_counts(d$grp)
 #>   value   n
 #> 1 alpha 404

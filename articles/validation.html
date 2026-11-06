@@ -24,7 +24,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">illumex</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.0.8.9005</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.0.8.9006</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -88,11 +88,11 @@ built.</p>
 <div class="section level2">
 <h2 id="against-pcamixdata">Against PCAmixdata<a class="anchor" aria-label="anchor" href="#against-pcamixdata"></a>
 </h2>
-<p>Four kinds of data from <code><a href="../reference/ilm_sim.html">ilm_sim()</a></code>: mixed (four numbers,
-two categories), numbers only, categories only, and mixed with missing
-values. The largest difference from what <code>PCAmix()</code> gave, on
-every eigenvalue, every coordinate of every row on every retained
-dimension, and every squared loading:</p>
+<p>Four kinds of data from <code><a href="../reference/ilm_example_data.html">ilm_example_data()</a></code>: mixed (four
+numbers, two categories), numbers only, categories only, and mixed with
+missing values. The largest difference from what <code>PCAmix()</code>
+gave, on every eigenvalue, every coordinate of every row on every
+retained dimension, and every squared loading:</p>
 <table class="table">
 <thead><tr class="header">
 <th align="left">data</th>
@@ -105,9 +105,9 @@ dimension, and every squared loading:</p>
 <tr class="odd">
 <td align="left">mixed</td>
 <td align="right">900</td>
-<td align="right">5.1e-15</td>
-<td align="right">3.5e-13</td>
-<td align="right">1.3e-14</td>
+<td align="right">4.7e-15</td>
+<td align="right">2.6e-13</td>
+<td align="right">1.1e-14</td>
 </tr>
 <tr class="even">
 <td align="left">numeric_only</td>
@@ -119,16 +119,16 @@ dimension, and every squared loading:</p>
 <tr class="odd">
 <td align="left">categorical_only</td>
 <td align="right">900</td>
-<td align="right">2.9e-15</td>
-<td align="right">3.4e-12</td>
-<td align="right">4.4e-14</td>
+<td align="right">3.6e-15</td>
+<td align="right">3.5e-12</td>
+<td align="right">5.2e-14</td>
 </tr>
 <tr class="even">
 <td align="left">mixed_with_gaps</td>
 <td align="right">900</td>
-<td align="right">1.3e-15</td>
-<td align="right">1.9e-13</td>
-<td align="right">7.8e-15</td>
+<td align="right">2.7e-15</td>
+<td align="right">2.1e-13</td>
+<td align="right">6.4e-15</td>
 </tr>
 </tbody>
 </table>
@@ -142,7 +142,7 @@ positively.</p>
 <div class="section level2">
 <h2 id="against-factominer">Against FactoMineR<a class="anchor" aria-label="anchor" href="#against-factominer"></a>
 </h2>
-<p>Five columns of <code><a href="../reference/ilm_sim.html">ilm_sim()</a></code>, through
+<p>Five columns of <code><a href="../reference/ilm_example_data.html">ilm_example_data()</a></code>, through
 <code><a href="../reference/ilm_reduce.html">ilm_reduce()</a></code> itself, against what
 <code>FactoMineR::FAMD()</code> gave: its first five eigenvalues, and
 every row’s coordinates on the first three dimensions.</p>
@@ -154,11 +154,11 @@ every row’s coordinates on the first three dimensions.</p>
 <tbody>
 <tr class="odd">
 <td align="left">eigenvalues 1 to 5</td>
-<td align="right">4.4e-15</td>
+<td align="right">4.0e-15</td>
 </tr>
 <tr class="even">
 <td align="left">coordinates, dimensions 1 to 3</td>
-<td align="right">1.8e-13</td>
+<td align="right">1.7e-13</td>
 </tr>
 </tbody>
 </table>

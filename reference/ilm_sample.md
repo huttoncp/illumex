@@ -134,7 +134,7 @@ of being kept as the attribute `"ilm_inclusion"`.
 ## Examples
 
 ``` r
-d <- ilm_sim()
+d <- ilm_example_data()
 ilm_describe(d, "score", subset = ilm_sample(prop = 0.5, seed = 1))
 #> 450 of 900 rows (subset)
 #>   obs   n na      sum   mean    sd    se    p0    p50  p100 p_zero dispersion
