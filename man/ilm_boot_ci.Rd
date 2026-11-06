@@ -73,7 +73,7 @@ describes the method, not one interval: in repeated samples, about 95\% of
 intervals built this way contain the true value.
 }
 \examples{
-d <- ilm_sim()
+d <- ilm_example_data()
 ilm_boot_ci(d, "score", R = 200, seed = 1)
 ilm_boot_ci(d, "score", by = "grp", R = 200, seed = 1)
 ilm_boot_ci(d, c("score", "income"), stat = "median", R = 200, seed = 1)

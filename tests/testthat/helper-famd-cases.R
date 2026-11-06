@@ -3,7 +3,7 @@
 # PCAmixdata::PCAmix() gives for them) and by test-famd.R (which holds
 # ilm_famd() to that record).
 famd_cases <- function() {
-  d <- ilm_sim()
+  d <- ilm_example_data()
   q <- d[c("score", "income", "visits", "claims")]
   ql <- data.frame(grp = d$grp, site = factor(d$site))
   qn <- q; qn$income[c(3, 50, 99)] <- NA

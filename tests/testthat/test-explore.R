@@ -31,7 +31,7 @@ test_that("counts_tb shows both ends", {
 })
 
 test_that("counts_all stacks variables and respects by", {
-  d <- ilm_sim(n_id = 20)
+  d <- ilm_example_data(n_id = 20)
   r <- ilm_counts_all(d[, c("grp", "site")])
   expect_true(all(c("variable", "value", "n") %in% names(r)))
   expect_setequal(unique(r$variable), c("grp", "site"))

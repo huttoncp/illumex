@@ -32,7 +32,7 @@ original names, if the data had them), and the attribute \code{"ilm_select"}
 says what was chosen.
 }
 \examples{
-d <- ilm_sim()
+d <- ilm_example_data()
 ilm_subset(d, subset = c(grp = "^a"), cols = "^score|^income")
 ilm_subset(d, subset = ilm_sample(10, seed = 1), cols = c("id", "date"),
            cols_negate = TRUE)

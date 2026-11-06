@@ -94,7 +94,7 @@
 #'   data itself, which with `within` also carries each row's chance of being
 #'   kept as the attribute `"ilm_inclusion"`.
 #' @examples
-#' d <- ilm_sim()
+#' d <- ilm_example_data()
 #' ilm_describe(d, "score", subset = ilm_sample(prop = 0.5, seed = 1))
 #' ## a grouped holdout: the ids not drawn
 #' ilm_describe(d, "score", subset = ilm_sample(5, by = "id", seed = 1),
@@ -585,7 +585,7 @@ ilm_orig_rows <- function(data, pos) {
 #' @return A data frame.
 #' @seealso [ilm_selection], [ilm_sample()].
 #' @examples
-#' d <- ilm_sim()
+#' d <- ilm_example_data()
 #' ilm_subset(d, subset = c(grp = "^a"), cols = "^score|^income")
 #' ilm_subset(d, subset = ilm_sample(10, seed = 1), cols = c("id", "date"),
 #'            cols_negate = TRUE)

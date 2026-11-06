@@ -31,7 +31,7 @@ clusters in one call, for numeric and mixed columns alike;
 \code{illume}'s: see \code{illume::ilm_impute()}.}
 \item{Plots}{\code{\link[=ilm_plot]{ilm_plot()}} and the \verb{ilm_plot_*()} family, built on
 \code{tinyplot} and named for what they show.}
-\item{Example data}{\code{\link[=ilm_sim]{ilm_sim()}}, a grouped dataset with a known
+\item{Example data}{\code{\link[=ilm_example_data]{ilm_example_data()}}, a grouped dataset with a known
 structure.}
 }
 }

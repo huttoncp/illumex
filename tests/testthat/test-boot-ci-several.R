@@ -4,7 +4,7 @@
 # against boot::boot.ci to within Monte Carlo error.
 
 test_that("each column's rows are the ones it gets on its own", {
-  d <- ilm_sim()
+  d <- ilm_example_data()
   several <- ilm_boot_ci(d, c("score", "income"), stat = "median", R = 300, seed = 4)
   expect_identical(names(several)[1], "variable")
   expect_identical(several$variable, c("score", "income"))
@@ -23,7 +23,7 @@ test_that("each column's rows are the ones it gets on its own", {
 })
 
 test_that("with no y, every numeric column except by", {
-  d <- ilm_sim()
+  d <- ilm_example_data()
   all_ <- suppressWarnings(ilm_boot_ci(d, by = "grp", R = 50, seed = 1))
   num <- setdiff(names(d)[vapply(d, is.numeric, TRUE)], "grp")
   expect_identical(unique(all_$variable), num)
@@ -47,14 +47,14 @@ test_that("each column agrees with boot::boot.ci", {
 })
 
 test_that("a column that is not numeric is named", {
-  d <- ilm_sim()
+  d <- ilm_example_data()
   expect_error(ilm_boot_ci(d, c("score", "grp")), "grp is factor")
   expect_error(ilm_boot_ci(d["grp"]), "no numeric columns")
   expect_error(ilm_boot_ci(d, c("score", "nope")), "not found")
 })
 
 test_that("the BCa warning names column and group together", {
-  d <- ilm_sim()
+  d <- ilm_example_data()
   expect_warning(ilm_boot_ci(d, c("score", "income"), by = "grp", ci_type = "bca",
                              R = 100, seed = 1),
                  "group delta \\(score and income\\) have 3 each")

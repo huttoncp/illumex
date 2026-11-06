@@ -27,10 +27,11 @@ built.
 
 ## Against PCAmixdata
 
-Four kinds of data from `ilm_sim()`: mixed (four numbers, two categories),
-numbers only, categories only, and mixed with missing values. The largest
-difference from what `PCAmix()` gave, on every eigenvalue, every coordinate
-of every row on every retained dimension, and every squared loading:
+Four kinds of data from `ilm_example_data()`: mixed (four numbers, two
+categories), numbers only, categories only, and mixed with missing values.
+The largest difference from what `PCAmix()` gave, on every eigenvalue, every
+coordinate of every row on every retained dimension, and every squared
+loading:
 
 ```{r pcamix, echo = FALSE}
 ref <- utils::read.csv(file.path(fixtures, "pcamix_cases.csv"), comment.char = "#",
@@ -63,13 +64,13 @@ positively.
 
 ## Against FactoMineR
 
-Five columns of `ilm_sim()`, through `ilm_reduce()` itself, against what
-`FactoMineR::FAMD()` gave: its first five eigenvalues, and every row's
+Five columns of `ilm_example_data()`, through `ilm_reduce()` itself, against
+what `FactoMineR::FAMD()` gave: its first five eigenvalues, and every row's
 coordinates on the first three dimensions.
 
 ```{r factominer, echo = FALSE}
-fa <- utils::read.csv(file.path(fixtures, "famd_ilm_sim.csv"))
-d <- ilm_sim()[c("score", "income", "visits", "claims", "grp")]
+fa <- utils::read.csv(file.path(fixtures, "famd_example_data.csv"))
+d <- ilm_example_data()[c("score", "income", "visits", "claims", "grp")]
 r <- suppressMessages(ilm_reduce(d, ndim = 5))
 co <- vapply(1:3, function(k) {
   theirs <- fa$value[fa$what == "coord" & fa$dim == k]
@@ -96,8 +97,8 @@ and a count exactly at its expectation is 0 here where `catdes()` gives it a
 small sign. Elsewhere their signs agree:
 
 ```{r catdes, echo = FALSE}
-cd <- utils::read.csv(file.path(fixtures, "catdes_ilm_sim.csv"), stringsAsFactors = FALSE)
-dd <- ilm_sim()
+cd <- utils::read.csv(file.path(fixtures, "catdes_example_data.csv"), stringsAsFactors = FALSE)
+dd <- ilm_example_data()
 cl <- cut(dd$score, stats::quantile(dd$score, 0:3 / 3), include.lowest = TRUE, labels = FALSE)
 num <- cd[is.na(cd$level), ]; cat_ <- cd[!is.na(cd$level), ]
 v_num <- mapply(function(k, v) illumex:::ilm_vtest_mean(dd[[v]], cl == k), num$cluster, num$variable)

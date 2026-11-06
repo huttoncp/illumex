@@ -21,7 +21,7 @@
 #' @seealso [ilm_counts_tb()] for both ends at once, [ilm_counts_all()] for a
 #'   whole data frame.
 #' @examples
-#' d <- ilm_sim()
+#' d <- ilm_example_data()
 #' ilm_counts(d$grp)
 #' ilm_counts(d$site, n = 3)
 #' @export
@@ -64,7 +64,7 @@ ilm_counts <- function(y, n = "all", order = c("d", "a", "i"), na.rm = TRUE) {
 #' @param n How many values from each end.
 #' @return A data frame with `top_value`, `top_n`, `bot_value` and `bot_n`.
 #' @examples
-#' ilm_counts_tb(ilm_sim()$grp, n = 2)
+#' ilm_counts_tb(ilm_example_data()$grp, n = 2)
 #' @export
 ilm_counts_tb <- function(y, n = 10L, na.rm = TRUE) {
   full <- ilm_counts(y, n = "all", order = "d", na.rm = na.rm)
@@ -94,7 +94,7 @@ ilm_counts_tb <- function(y, n = 10L, na.rm = TRUE) {
 #'   of them -- see [ilm_selection]. `by` columns are never among them.
 #' @return A data frame with `variable`, `value` and `n`.
 #' @examples
-#' ilm_counts_all(ilm_sim()[, c("grp", "site")], n = 2)
+#' ilm_counts_all(ilm_example_data()[, c("grp", "site")], n = 2)
 #' @export
 ilm_counts_all <- function(data, by = NULL, cols = NULL, n = "all",
                            order = c("d", "a", "i"), na.rm = TRUE, cols_negate = FALSE,
@@ -138,7 +138,7 @@ ilm_counts_all <- function(data, by = NULL, cols = NULL, n = "all",
 #' @return A data frame with `variable`, `top_value`, `top_n`, `bot_value`
 #'   and `bot_n`.
 #' @examples
-#' ilm_counts_tb_all(ilm_sim()[, c("grp", "site")], n = 2)
+#' ilm_counts_tb_all(ilm_example_data()[, c("grp", "site")], n = 2)
 #' @export
 ilm_counts_tb_all <- function(data, cols = NULL, n = 10L, na.rm = TRUE,
                               cols_negate = FALSE, cols_fixed = FALSE, subset = NULL, subset_negate = FALSE, subset_fixed = FALSE) {

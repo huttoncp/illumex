@@ -70,5 +70,5 @@ altering the device layout, which blanks a multi-panel figure. Plot a single
 variable with \code{\link[=ilm_plot]{ilm_plot()}} when you need one.
 }
 \examples{
-ilm_plot_all(ilm_sim(), class = "numeric", max_panels = 4)
+ilm_plot_all(ilm_example_data(), class = "numeric", max_panels = 4)
 }

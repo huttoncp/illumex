@@ -94,7 +94,7 @@ the same shape and is reported the same way; the words say to keep one of
 the two.
 }
 \examples{
-ilm_frame_issues(ilm_sim())
+ilm_frame_issues(ilm_example_data())
 
 set.seed(1)
 d <- data.frame(a = rnorm(50), b = rnorm(50),

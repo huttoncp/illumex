@@ -62,5 +62,5 @@ Values are stacked across columns of different classes, so they are rendered
 as character; the counts stay integer.
 }
 \examples{
-ilm_counts_all(ilm_sim()[, c("grp", "site")], n = 2)
+ilm_counts_all(ilm_example_data()[, c("grp", "site")], n = 2)
 }

@@ -24,7 +24,7 @@
 #'     `illume`'s: see `illume::ilm_impute()`.}
 #'   \item{Plots}{[ilm_plot()] and the `ilm_plot_*()` family, built on
 #'     `tinyplot` and named for what they show.}
-#'   \item{Example data}{[ilm_sim()], a grouped dataset with a known
+#'   \item{Example data}{[ilm_example_data()], a grouped dataset with a known
 #'     structure.}
 #' }
 #'

@@ -44,7 +44,7 @@ Counts the missing values in one column, overall or within groups, as a
 count and a share.
 }
 \examples{
-ilm_describe_na(ilm_sim(), "lab_value")
+ilm_describe_na(ilm_example_data(), "lab_value")
 }
 \seealso{
 \code{\link[=ilm_describe_na_all]{ilm_describe_na_all()}}, \code{\link[=ilm_plot_missing]{ilm_plot_missing()}}.

@@ -153,7 +153,7 @@ together, it gave 0.043 per comparison and 0.050 family-wise.
 }
 
 \examples{
-d <- ilm_sim()
+d <- ilm_example_data()
 ## all pairs, simultaneous by default
 ilm_boot_diff(d, "score", "grp", R = 300, seed = 1)
 ## the same thing through a formula

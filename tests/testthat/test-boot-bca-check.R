@@ -3,7 +3,7 @@
 # naming the groups and the remedy.
 
 test_that("a group below 8 rows is named, with its rows and the remedy", {
-  d <- ilm_sim()
+  d <- ilm_example_data()
   expect_warning(ilm_boot_ci(d, "income", by = "grp", stat = "median",
                              ci_type = "bca", R = 200, seed = 1),
                  "BCa is not reliable below 8 rows, and group delta has 3.*ci_type = \"percentile\"")

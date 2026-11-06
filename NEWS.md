@@ -1,3 +1,12 @@
+# illumex 0.0.8.9006
+
+* `ilm_sim()`, the example data, is renamed `ilm_example_data()`, and its
+  alias `iml_sim()` is now `iml_example_data()`. The arguments, the data and
+  the results are unchanged. The old names are gone, with no deprecated
+  copy, because illume uses `ilm_sim()` for its own function, which
+  simulates whole datasets from a model. Code that called `ilm_sim()` for
+  illumex's example data needs the new name.
+
 # illumex 0.0.8.9005
 
 * A category's v-test in `ilm_profile()` no longer has the wrong sign. When

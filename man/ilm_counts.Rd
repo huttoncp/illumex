@@ -26,7 +26,7 @@ value, a default or missing-value code as a very common one.
 \code{\link[=ilm_counts_tb]{ilm_counts_tb()}} shows both ends side by side.
 }
 \examples{
-d <- ilm_sim()
+d <- ilm_example_data()
 ilm_counts(d$grp)
 ilm_counts(d$site, n = 3)
 }

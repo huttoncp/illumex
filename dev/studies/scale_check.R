@@ -6,10 +6,10 @@
 ## scale beyond it is decided separately (item 188).
 ##
 ## Design, fixed before any run (approved 2026-09-28):
-##   Data: ilm_sim(n_id = n / 10, n_period = 10) -- 13 mixed columns (numbers,
-##   categories, a date, logicals, missing values) -- at n = 10,000, 50,000,
-##   100,000 and 250,000 rows, seed 1. The profile columns are score, income,
-##   visits, claims and grp.
+##   Data: ilm_example_data(n_id = n / 10, n_period = 10) -- 13 mixed columns
+##   (numbers, categories, a date, logicals, missing values) -- at n = 10,000,
+##   50,000, 100,000 and 250,000 rows, seed 1. The profile columns are score,
+##   income, visits, claims and grp.
 ##   Functions, each at its defaults but for what the call needs (a column,
 ##   progress = FALSE); the arguments are in CELLS below. Where a function
 ##   needs another's result (a reduction, a clustering), that is made before
@@ -66,8 +66,8 @@ CELLS <- list(
   cluster_hclust   = function(d, x) ilm_cluster(x$r, k = 3, method = "hclust", progress = FALSE),
   var_contrib      = function(d, x) ilm_var_contrib(x$km, x$dd),
   profile          = function(d, x) ilm_profile(x$dd, progress = FALSE),
-  ## ilm_sim() has one column with missing values, and a pattern needs two:
-  ## income is missing on every seventh row
+  ## ilm_example_data() has one column with missing values, and a pattern needs
+  ## two: income is missing on every seventh row
   profile_na       = function(d, x) { d$income[seq(1L, nrow(d), by = 7L)] <- NA
                                       ilm_profile_na(d, progress = FALSE) },
   plot_all         = function(d, x) { grDevices::pdf(NULL); on.exit(grDevices::dev.off()); ilm_plot_all(x$dd) })
@@ -94,7 +94,7 @@ if (length(args) && args[1] == "summarise") {
 
 cell <- args[1]; n <- as.integer(args[2]); out <- args[3]
 suppressPackageStartupMessages(library(illumex))
-d <- ilm_sim(n_id = n %/% 10L, n_period = 10L, seed = 1L)
+d <- ilm_example_data(n_id = n %/% 10L, n_period = 10L, seed = 1L)
 x <- list()
 need <- NEEDS[[cell]] %||% character(0)
 if (length(need)) {

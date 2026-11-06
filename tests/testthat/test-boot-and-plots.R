@@ -42,7 +42,7 @@ test_that("BCa agrees with boot::boot.ci", {
 })
 
 test_that("bootstrap grouping and argument checks behave", {
-  d <- ilm_sim(n_id = 20)
+  d <- ilm_example_data(n_id = 20)
   r <- ilm_boot_ci(d, "score", by = "grp", R = 100, seed = 1)
   expect_true("grp" %in% names(r))
   expect_gt(nrow(r), 1L)
@@ -53,7 +53,7 @@ test_that("bootstrap grouping and argument checks behave", {
 })
 
 test_that("boot_diff reports the difference and whether it excludes zero", {
-  d <- ilm_sim()
+  d <- ilm_example_data()
   d2 <- d[d$grp %in% c("alpha", "beta"), ]
   d2$grp <- factor(d2$grp)
   r <- ilm_boot_diff(d2, "score", "grp", R = 300, seed = 1)
@@ -69,7 +69,7 @@ test_that("boot_diff reports the difference and whether it excludes zero", {
 })
 
 test_that("boot_diff compares every pair past two groups", {
-  d <- ilm_sim()
+  d <- ilm_example_data()
   lv <- levels(droplevels(factor(d$grp)))
   r <- ilm_boot_diff(d, "score", "grp", R = 300, seed = 1)
   expect_equal(nrow(r), length(lv) * (length(lv) - 1L) / 2L)
@@ -85,7 +85,7 @@ test_that("boot_diff compares every pair past two groups", {
 })
 
 test_that("the formula and column interfaces agree", {
-  d <- ilm_sim()
+  d <- ilm_example_data()
   a <- ilm_boot_diff(d, "score", "grp", R = 300, seed = 3)
   b <- ilm_boot_diff(score ~ grp, data = d, R = 300, seed = 3)
   expect_equal(a, b)
@@ -137,7 +137,7 @@ test_that("max_t reproduces TukeyHSD where Tukey is exact", {
 })
 
 test_that("ref compares every level against one, and p_adj tracks the interval", {
-  d <- ilm_sim()
+  d <- ilm_example_data()
   lv <- levels(droplevels(factor(d$grp)))
   r <- ilm_boot_diff(score ~ grp, data = d, ref = "alpha", R = 400, seed = 1)
   expect_equal(nrow(r), length(lv) - 1L)
@@ -150,7 +150,7 @@ test_that("ref compares every level against one, and p_adj tracks the interval",
 })
 
 test_that("boot_diff rejects bad input", {
-  d <- ilm_sim()
+  d <- ilm_example_data()
   expect_error(ilm_boot_diff(d, "score", "nope"), "not found")
   expect_error(ilm_boot_diff(d, "score", "site", adjust = "holm"),
                "unknown `adjust`")
@@ -171,7 +171,7 @@ test_that("boot_diff rejects bad input", {
 })
 
 test_that("describe_na counts missing values and sorts by them", {
-  d <- ilm_sim(n_id = 20)
+  d <- ilm_example_data(n_id = 20)
   r <- ilm_describe_na(d, "lab_value")
   expect_equal(r$na, sum(is.na(d$lab_value)))
   expect_equal(r$obs, nrow(d))
@@ -187,13 +187,13 @@ test_that("the geom table and the argument checks agree", {
   expect_setequal(sp$geom, c("histogram", "density", "bar", "box", "violin",
                              "point", "bin2d", "line", "spine"))
   need <- sp$geom[sp$needs_y]
-  d <- ilm_sim(n_id = 20)
+  d <- ilm_example_data(n_id = 20)
   for (g in need)
     expect_error(ilm_plot(d, "score", geom = g), "needs both", info = g)
 })
 
 test_that("geom auto-selection follows the data types", {
-  d <- ilm_sim(n_id = 20)
+  d <- ilm_example_data(n_id = 20)
   expect_equal(ilm_pick_geom(d$score)$geom, "histogram")
   expect_equal(ilm_pick_geom(d$grp)$geom, "bar")
   expect_equal(ilm_pick_geom(d$date)$geom, "line")
@@ -212,7 +212,7 @@ test_that("a scatter becomes a binned density above n_max", {
 })
 
 test_that("every geom actually draws something", {
-  d <- ilm_sim(n_id = 25)
+  d <- ilm_example_data(n_id = 25)
   big <- data.frame(a = stats::rnorm(20000), b = stats::rnorm(20000))
   expect_gt(png_bytes(ilm_plot(d, "score")), BLANK)
   expect_gt(png_bytes(ilm_plot(d, "grp")), BLANK)
@@ -228,14 +228,14 @@ test_that("every geom actually draws something", {
 test_that("a legend does not blank the plot", {
   # passing vectors through do.call() rendered nothing, silently; the formula
   # interface does not
-  d <- ilm_sim(n_id = 25)
+  d <- ilm_example_data(n_id = 25)
   expect_gt(png_bytes(ilm_plot(d, "score", "income", by = "grp")), BLANK)
   expect_gt(png_bytes(ilm_plot(d, "score", geom = "density", by = "grp")), BLANK)
 })
 
 test_that("a legend inside a multi-panel layout does not blank the figure", {
   # tinyplot reserves legend space by altering the device layout
-  d <- ilm_sim(n_id = 25)
+  d <- ilm_example_data(n_id = 25)
   sz <- png_bytes({
     op <- graphics::par(mfrow = c(1, 2))
     on.exit(graphics::par(op), add = TRUE)
@@ -246,7 +246,7 @@ test_that("a legend inside a multi-panel layout does not blank the figure", {
 })
 
 test_that("aesthetics and themes draw", {
-  d <- ilm_sim(n_id = 25)
+  d <- ilm_example_data(n_id = 25)
   expect_gt(png_bytes(ilm_plot(d, "score", fill = "steelblue", alpha = 0.5)), BLANK)
   expect_gt(png_bytes(ilm_plot(d, "score", "income", size = 1.4, colour = "darkred")), BLANK)
   expect_gt(png_bytes(ilm_plot(d, "grp", "score", theme = "clean")), BLANK)
@@ -254,7 +254,7 @@ test_that("aesthetics and themes draw", {
 })
 
 test_that("plot arguments are validated with the options named", {
-  d <- ilm_sim(n_id = 20)
+  d <- ilm_example_data(n_id = 20)
   expect_error(ilm_plot(d, "score", geom = "scatter"), "Options are")
   expect_error(ilm_plot(d, "score", geom = "scatter"), "would use")
   expect_error(ilm_plot(d, "nope"), "not found")
@@ -274,7 +274,7 @@ test_that("plot arguments are validated with the options named", {
 })
 
 test_that("plot_all and plot_missing draw", {
-  d <- ilm_sim(n_id = 25)
+  d <- ilm_example_data(n_id = 25)
   expect_gt(png_bytes(ilm_plot_all(d, class = "numeric", max_panels = 4)), BLANK)
   expect_gt(png_bytes(ilm_plot_missing(d)), BLANK)
   expect_error(ilm_plot_all(d, class = "numerical"), "Options are")

@@ -47,10 +47,10 @@
 #' @param seed Random seed, so the fixture is reproducible.
 #' @return A data frame with `n_id * n_period` rows and 13 columns.
 #' @examples
-#' d <- ilm_sim()
+#' d <- ilm_example_data()
 #' str(d)
 #' @export
-ilm_sim <- function(n_id = 75L, n_period = 12L, seed = 2026L) {
+ilm_example_data <- function(n_id = 75L, n_period = 12L, seed = 2026L) {
   ilm_rng_restore(seed)                  # the user's random stream, put back on exit
   stopifnot(n_id >= 2L, n_period >= 1L)
   if (!is.null(seed)) set.seed(seed)

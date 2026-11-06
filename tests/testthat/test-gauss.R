@@ -78,7 +78,7 @@ test_that("ks_d is the measured quantity and does not move with cap", {
 })
 
 test_that("the gauss argument selects which columns appear", {
-  d <- ilm_sim(n_id = 20)
+  d <- ilm_example_data(n_id = 20)
   expect_true("gauss" %in% names(ilm_describe(d, "score", gauss = "index")))
   expect_true("ks_d" %in% names(ilm_describe(d, "score", gauss = "ks_d")))
   both <- names(ilm_describe(d, "score", gauss = "both"))

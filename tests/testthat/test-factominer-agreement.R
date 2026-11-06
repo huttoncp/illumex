@@ -6,9 +6,9 @@ fixture <- function(f) utils::read.csv(test_path("fixtures", f),
                                        stringsAsFactors = FALSE)
 
 test_that("ilm_reduce() on mixed data agrees with FactoMineR::FAMD()", {
-  d <- ilm_sim()[c("score", "income", "visits", "claims", "grp")]
+  d <- ilm_example_data()[c("score", "income", "visits", "claims", "grp")]
   r <- suppressMessages(ilm_reduce(d, ndim = 5))
-  fa <- fixture("famd_ilm_sim.csv")
+  fa <- fixture("famd_example_data.csv")
   ## to 1e-10 now that the eigenvalues are kept whole; they were stored
   ## rounded to four places, which is why this once read 1e-4
   expect_equal(r$eig$eigenvalue[1:5], fa$value[fa$what == "eigenvalue"],
@@ -23,10 +23,10 @@ test_that("ilm_reduce() on mixed data agrees with FactoMineR::FAMD()", {
 })
 
 test_that("the v-test for a numeric variable is FactoMineR::catdes()'s", {
-  d <- ilm_sim()
+  d <- ilm_example_data()
   cl <- cut(d$score, stats::quantile(d$score, 0:3 / 3), include.lowest = TRUE,
             labels = FALSE)
-  cd <- fixture("catdes_ilm_sim.csv")
+  cd <- fixture("catdes_example_data.csv")
   cd <- cd[is.na(cd$level), ]
   mine <- mapply(function(k, v) ilm_vtest_mean(d[[v]], cl == k),
                  cd$cluster, cd$variable)
@@ -39,10 +39,10 @@ test_that("the v-test for a numeric variable is FactoMineR::catdes()'s", {
 ## published value agrees in sign and is never the larger in size; catdes()
 ## is an outside comparison here, not a target.
 test_that("the category test-value agrees with FactoMineR::catdes() in sign, and is the more cautious", {
-  d <- ilm_sim()
+  d <- ilm_example_data()
   cl <- cut(d$score, stats::quantile(d$score, 0:3 / 3), include.lowest = TRUE,
             labels = FALSE)
-  cd <- fixture("catdes_ilm_sim.csv")
+  cd <- fixture("catdes_example_data.csv")
   cd <- cd[!is.na(cd$level), ]
   expect_gt(nrow(cd), 0L)
   mine <- unname(mapply(function(k, v, l) ilm_vtest_share(d[[v]] == l, cl == k),

@@ -118,7 +118,7 @@ padding every other table with rows of \code{NA}: a variable with one value tell
 you nothing a statistic can show, and it will break a model matrix.
 }
 \examples{
-d <- ilm_sim()
+d <- ilm_example_data()
 ilm_describe_all(d)
 ilm_describe_all(d, class = "numeric", skew = TRUE)
 }

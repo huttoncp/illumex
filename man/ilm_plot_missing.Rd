@@ -37,7 +37,7 @@ Invisibly, the named vector of proportions.
 Draws the share of values missing in each column of a data frame, as bars.
 }
 \examples{
-ilm_plot_missing(ilm_sim())
+ilm_plot_missing(ilm_example_data())
 }
 \seealso{
 \code{\link[=ilm_describe_na_all]{ilm_describe_na_all()}} for the same information as a table.

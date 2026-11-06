@@ -50,7 +50,7 @@ ILM_CLUSTERS_VARY <- "Vary within clusters, so described over rows by ilm_descri
 #'   variables that vary within a cluster (`row_vars`).
 #' @seealso [ilm_describe_all()] for the rows.
 #' @examples
-#' d <- ilm_sim(n_id = 30, n_period = 6)
+#' d <- ilm_example_data(n_id = 30, n_period = 6)
 #' ilm_describe_clusters(d, "id")
 #' @export
 ilm_describe_clusters <- function(data, cluster, cols = NULL, digits = 3, ...,

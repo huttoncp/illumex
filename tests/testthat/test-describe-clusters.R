@@ -61,7 +61,7 @@ test_that("the summary prints the counts, then the clusters' table, then the res
   expect_true(any(out == "Described once per cluster (the same on every row of a cluster):"))
   expect_true(any(grepl("^Vary within clusters, so described over rows by ilm_describe_all\\(\\): ", out)))
   ## clusters all of one size say so plainly
-  same <- utils::capture.output(print(ilm_describe_clusters(ilm_sim(n_id = 30, n_period = 6), "id")))
+  same <- utils::capture.output(print(ilm_describe_clusters(ilm_example_data(n_id = 30, n_period = 6), "id")))
   expect_identical(same[1:2], c("Clusters: 30 by `id`, 180 rows", "Rows per cluster: 6 in every cluster"))
 })
 

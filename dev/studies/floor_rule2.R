@@ -52,7 +52,7 @@
 ##     rating_0_10   round(N(5, 2)) held to 0-10, a share s set to 0
 ##     rating_1_10   round(N(5, 2)) held to 1-10, a share s set to 1
 ##   Reported, not scored:
-##     claims_like   ilm_sim()'s claims, as before
+##     claims_like   ilm_example_data()'s claims, as before
 ##     likert_top    a 1-5 item, probabilities 0.02, 0.03, 0.10, 0.25, 0.60:
 ##                   60% at the top is a ceiling effect by the usual
 ##                   psychometric reading (more than 15% at the maximum),
@@ -139,7 +139,7 @@ KINDS <- c(
   lapply(c(0.05, 0.10, 0.20), function(s) list(kind = "zi_count", par = s, bound = "min", score = TRUE,
     make = function(n) ifelse(stats::runif(n) < s, 0, stats::rnbinom(n, size = 3, mu = 15) + 0))),
   list(list(kind = "claims_like", par = NA, bound = NA, score = FALSE,
-            make = function(n) illumex::ilm_sim(n_id = ceiling(n / 6), n_period = 6)$claims[seq_len(n)] + 0),
+            make = function(n) illumex::ilm_example_data(n_id = ceiling(n / 6), n_period = 6)$claims[seq_len(n)] + 0),
        list(kind = "likert_top", par = NA, bound = NA, score = FALSE,
             make = likert(c(0.02, 0.03, 0.10, 0.25, 0.60)))))
 PANEL <- expand.grid(k = c(30, 100), m = c(3, 6, 10))

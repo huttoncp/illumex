@@ -28,7 +28,7 @@ plots on `tinyplot`.
 ```r
 library(illumex)
 
-d <- ilm_sim()                       # a grouped dataset with a known structure
+d <- ilm_example_data()              # a grouped dataset with a known structure
 
 ## what is in it, and what will break a model
 ilm_describe_all(d)
@@ -60,7 +60,7 @@ ilm_profile(d, ndim = 5)
 | **Structure** | `ilm_profile()`, `ilm_reduce()`, `ilm_cluster()`, `ilm_glrm()`, `ilm_var_contrib()` |
 | **Missing values** | `ilm_check_missing()`, `ilm_describe_na_all()`, `ilm_plot_missing()`, `ilm_profile_na()` |
 | **Plots** | `ilm_plot()`, `ilm_plot_all()` and around thirty `ilm_plot_*()` functions, named for what they show |
-| **Example data** | `ilm_sim()` |
+| **Example data** | `ilm_example_data()` |
 
 Imputing missing values and pooling across the imputations need a model, so
 they are `illume`'s: `ilm_impute()` and `ilm_mi_pool()`.

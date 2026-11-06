@@ -648,7 +648,7 @@ ILM_CLASSES <- c("numeric", "categorical", "logical", "time")
 #' @seealso [ilm_describe_all()] for every column, [ilm_gauss_check()] for the
 #'   index, [ilm_describe_na()] for missingness.
 #' @examples
-#' d <- ilm_sim()
+#' d <- ilm_example_data()
 #' ilm_describe(d, "score")
 #' ilm_describe(d, "income", probs = c(0.1, 0.5, 0.9))
 #' ilm_describe(d, "score", by = "grp")
@@ -859,7 +859,7 @@ ilm_constant_tbl <- function(data, cols) {
 #' @seealso [ilm_frame_issues()] for problems belonging to the data frame as a
 #'   whole: duplicated, aliased, nested and collinear columns.
 #' @examples
-#' d <- ilm_sim()
+#' d <- ilm_example_data()
 #' ilm_describe_all(d)
 #' ilm_describe_all(d, class = "numeric", skew = TRUE)
 #' @export
@@ -1000,7 +1000,7 @@ ilm_describe_all <- function(data, by = NULL, cols = NULL, digits = 3,
 #' \enc{Cramér}{Cramer}, H. (1946). Mathematical Methods of Statistics.
 #' Princeton University Press.
 #' @examples
-#' ilm_frame_issues(ilm_sim())
+#' ilm_frame_issues(ilm_example_data())
 #'
 #' set.seed(1)
 #' d <- data.frame(a = rnorm(50), b = rnorm(50),
