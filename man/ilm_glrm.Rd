@@ -36,17 +36,26 @@ per column: \code{"quadratic"}, \code{"logistic"}, \code{"multinomial"} or \code
 An \strong{ordered} factor defaults to \code{"multinomial"}, which ignores the
 ordering but never invents a spacing; \code{"quadratic"} on its integer codes
 uses the ordering and does invent one, and is available if that is the
-trade you want.}
+trade you want. Each column's loss is divided by its loss at the best
+constant (Udell et al. 2016), so every column counts about equally
+whatever its type: unscaled, a factor with many levels outweighed the
+numbers, and a factor of pure noise could take a dimension to itself.}
 
 \item{lambda}{Ridge penalty on the factors, or \code{NULL} (the default) to
 choose it by holding out observed cells. It is not a detail: a row with
 few observed cells has as many scores as observations and fits them
 exactly, so without enough penalty the reconstruction of everything else
 in that row goes wherever the algebra sends it. On a 400 by 4 matrix with
-20\% missing, held-out error ran 0.82 at \code{lambda = 0.1}, 0.68 at 2, and
-1.16 at 25 -- against 0.78 for an iterative SVD and 1.18 for column means.
-The best value depends on the size, the width and the missingness, which
-is why it is chosen rather than fixed.}
+20\% of cells missing, the error at the missing cells averaged 1.05 at
+\code{lambda = 0.1}, 0.61 at 2, 0.52 at 10 and 1.01 at 100, and 0.51 at the
+value chosen -- against 1.47 for an iterative SVD with no penalty, 0.51
+for missMDA's regularised iterative PCA, and 1.01 for column means (50
+replicates, \code{dev/studies/glrm_lambda.R}). The best value depends on the
+size, the width and the missingness, which is why it is chosen rather
+than fixed: from 0.1 to 100, on ten folds of the observed cells with
+three held out in turn, walking down from 100 with each fold's fit
+started from its fit at the value before, and starting again cold when
+that fit has collapsed.}
 
 \item{weights}{Optional non-negative row weights. A row counted twice
 contributes twice to the loss, which is how \code{illume::ilm_impute()} draws a
