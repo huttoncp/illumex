@@ -43,7 +43,7 @@ d2 <- ilm_apply_remedy(d, rem, "drop_cols/same", reason = "one value only")
 #>   constant: FAIL before, not found now
 #>   frame check now: OK
 ilm_cleaning_script(d2)
-#> ## Cleaning script, written by illumex 0.0.8.9006 on 2026-11-06.
+#> ## Cleaning script, written by illumex 0.0.8.9007 on 2026-11-08.
 #> ## It replays 1 remedy, in order, on the data they were made for,
 #> ## whose ilm_data_id() is 10x2:44d8314a2b. Read those data into `data` first.
 #> library(illumex)

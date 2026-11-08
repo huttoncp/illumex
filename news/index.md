@@ -1,5 +1,44 @@
 # Changelog
 
+## illumex 0.0.8.9007
+
+The two changes below were decided and built in September 2026, and the
+GLRM studies in `dev/studies` describe them as the default, but they
+never reached this repository’s code. They’re here now. Coordinates,
+loadings, fitted values and the penalty chosen by
+[`ilm_glrm()`](https://huttoncp.github.io/illumex/reference/ilm_glrm.md),
+and so by `ilm_reduce(method = "glrm")`, change.
+
+- [`ilm_glrm()`](https://huttoncp.github.io/illumex/reference/ilm_glrm.md)
+  divides each column’s loss by its loss at the best constant (Udell et
+  al. 2016), so every column counts about equally whatever its type.
+  Unscaled, a factor with many levels outweighed the numbers, and a
+  factor of pure noise could take a dimension of its own (a squared
+  loading of 0.82 on two-latent data). Measured over 50 replicates
+  (`dev/studies/glrm_scaling.R`): the noise factors’ share of the
+  dimensions fell 2 to 7 times, and where every factor was noise,
+  recovery of the structure, cluster recovery and imputation all
+  improved. With an informative factor of six levels, clusters on the
+  other latent were recovered far better (adjusted Rand 0.36 to 0.69)
+  while that factor’s own reconstruction and imputation came out a
+  little worse.
+- [`ilm_glrm()`](https://huttoncp.github.io/illumex/reference/ilm_glrm.md)
+  chooses its penalty from 0.1 to 100, where it stopped at 10. The
+  observed cells are split into ten folds and three are held out in
+  turn. The grid is walked down from 100, each fold’s fit starting from
+  its fit at the value before, and starting again cold when that fit has
+  collapsed. Against the old choice, over 50 replicates
+  (`dev/studies/glrm_penalty.R`, added here), the error at the missing
+  cells fell by up to 9.8% (0.415 to 0.374 on mixed data of 1,000 rows)
+  and was no worse anywhere, in 0.26 to 0.95 of the time. Where the data
+  hold little shared structure, the penalty chosen can now be larger
+  than 10, and the fit shrinks further toward the column means. The
+  numbers in
+  [`ilm_glrm()`](https://huttoncp.github.io/illumex/reference/ilm_glrm.md)’s
+  help for `lambda`, and the timings in
+  [`ilm_reduce()`](https://huttoncp.github.io/illumex/reference/ilm_reduce.md)’s,
+  are measured on this code.
+
 ## illumex 0.0.8.9006
 
 - `ilm_sim()`, the example data, is renamed

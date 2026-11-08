@@ -52,7 +52,11 @@ ilm_glrm(
   An **ordered** factor defaults to `"multinomial"`, which ignores the
   ordering but never invents a spacing; `"quadratic"` on its integer
   codes uses the ordering and does invent one, and is available if that
-  is the trade you want.
+  is the trade you want. Each column's loss is divided by its loss at
+  the best constant (Udell et al. 2016), so every column counts about
+  equally whatever its type: unscaled, a factor with many levels
+  outweighed the numbers, and a factor of pure noise could take a
+  dimension to itself.
 
 - lambda:
 
@@ -61,10 +65,16 @@ ilm_glrm(
   observed cells has as many scores as observations and fits them
   exactly, so without enough penalty the reconstruction of everything
   else in that row goes wherever the algebra sends it. On a 400 by 4
-  matrix with 20% missing, held-out error ran 0.82 at `lambda = 0.1`,
-  0.68 at 2, and 1.16 at 25 – against 0.78 for an iterative SVD and 1.18
-  for column means. The best value depends on the size, the width and
-  the missingness, which is why it is chosen rather than fixed.
+  matrix with 20% of cells missing, the error at the missing cells
+  averaged 1.05 at `lambda = 0.1`, 0.61 at 2, 0.52 at 10 and 1.01 at
+  100, and 0.51 at the value chosen – against 1.47 for an iterative SVD
+  with no penalty, 0.51 for missMDA's regularised iterative PCA, and
+  1.01 for column means (50 replicates, `dev/studies/glrm_lambda.R`).
+  The best value depends on the size, the width and the missingness,
+  which is why it is chosen rather than fixed: from 0.1 to 100, on ten
+  folds of the observed cells with three held out in turn, walking down
+  from 100 with each fold's fit started from its fit at the value
+  before, and starting again cold when that fit has collapsed.
 
 - weights:
 
@@ -188,10 +198,10 @@ d <- data.frame(a = f + rnorm(n, 0, .4), b = -f + rnorm(n, 0, .4),
 g <- ilm_glrm(d, rank = 1)
 head(g$scores)
 #>         dim1
-#> 1 -0.3688959
-#> 2  0.1534611
-#> 3 -0.2614024
-#> 4  0.5985325
-#> 5  0.1067899
-#> 6 -0.2188636
+#> 1 -0.7320449
+#> 2  0.2589377
+#> 3 -0.4346019
+#> 4  1.3940688
+#> 5  0.2103037
+#> 6 -0.3442151
 ```

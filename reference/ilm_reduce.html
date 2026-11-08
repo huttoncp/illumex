@@ -17,7 +17,7 @@ order, and by the rhythms in it that the other columns follow; see time."><meta 
 
     <a class="navbar-brand me-2" href="../index.html">illumex</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.0.8.9006</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.0.8.9007</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -202,10 +202,11 @@ FactoMineR's <code>FAMD()</code> on eigenvalues and on individual coordinates.</
 
 <p>The default method is closed-form: on one core of a 16 GB Windows machine
 (<a href="https://github.com/huttoncp/illumex/blob/main/dev/studies/scale_check.R" class="external-link"><code>dev/studies/scale_check.R</code></a>) it took under a second at 250,000 rows.
-<code>method = "glrm"</code> fits iteratively and first chooses its penalty from 18
-held-out fits: 30 seconds at 1,000 rows, 5 minutes at 10,000 and over 15
-minutes at 50,000. Giving <code>lambda</code> (passed to <code><a href="ilm_glrm.html">ilm_glrm()</a></code>) saves the
-search.</p>
+<code>method = "glrm"</code> fits iteratively and first chooses its penalty from up to
+27 held-out fits, most started from the fit before: 15 seconds at 1,000
+rows, under 2 minutes at 10,000 and 7 minutes at 50,000
+(<a href="https://github.com/huttoncp/illumex/blob/main/dev/studies/results/scale_check_glrm.txt" class="external-link"><code>dev/studies/results/scale_check_glrm.txt</code></a>).
+Giving <code>lambda</code> (passed to <code><a href="ilm_glrm.html">ilm_glrm()</a></code>) saves the search.</p>
     </div>
     <div class="section level2">
     <h2 id="references">References<a class="anchor" aria-label="anchor" href="#references"></a></h2>

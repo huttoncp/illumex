@@ -42,13 +42,13 @@ Source:
 [`DESCRIPTION`](https://github.com/huttoncp/illumex/blob/main/DESCRIPTION)
 
 Hutton C (2026). *illumex: A Data Interrogation Engine for Enabling
-Inference*. R package version 0.0.8.9006,
+Inference*. R package version 0.0.8.9007,
 <https://github.com/huttoncp/illumex>.
 
     @Manual{,
       title = {illumex: A Data Interrogation Engine for Enabling Inference},
       author = {Craig P. Hutton},
       year = {2026},
-      note = {R package version 0.0.8.9006},
+      note = {R package version 0.0.8.9007},
       url = {https://github.com/huttoncp/illumex},
     }

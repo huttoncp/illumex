@@ -15,7 +15,7 @@ squared error, which is where this reduces to ordinary PCA."><meta property="og:
 
     <a class="navbar-brand me-2" href="../index.html">illumex</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.0.8.9006</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.0.8.9007</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -101,7 +101,10 @@ per column: <code>"quadratic"</code>, <code>"logistic"</code>, <code>"multinomia
 An <strong>ordered</strong> factor defaults to <code>"multinomial"</code>, which ignores the
 ordering but never invents a spacing; <code>"quadratic"</code> on its integer codes
 uses the ordering and does invent one, and is available if that is the
-trade you want.</p></dd>
+trade you want. Each column's loss is divided by its loss at the best
+constant (Udell et al. 2016), so every column counts about equally
+whatever its type: unscaled, a factor with many levels outweighed the
+numbers, and a factor of pure noise could take a dimension to itself.</p></dd>
 
 
 <dt id="arg-lambda">lambda<a class="anchor" aria-label="anchor" href="#arg-lambda"></a></dt>
@@ -110,10 +113,16 @@ choose it by holding out observed cells. It is not a detail: a row with
 few observed cells has as many scores as observations and fits them
 exactly, so without enough penalty the reconstruction of everything else
 in that row goes wherever the algebra sends it. On a 400 by 4 matrix with
-20% missing, held-out error ran 0.82 at <code>lambda = 0.1</code>, 0.68 at 2, and
-1.16 at 25 – against 0.78 for an iterative SVD and 1.18 for column means.
-The best value depends on the size, the width and the missingness, which
-is why it is chosen rather than fixed.</p></dd>
+20% of cells missing, the error at the missing cells averaged 1.05 at
+<code>lambda = 0.1</code>, 0.61 at 2, 0.52 at 10 and 1.01 at 100, and 0.51 at the
+value chosen – against 1.47 for an iterative SVD with no penalty, 0.51
+for missMDA's regularised iterative PCA, and 1.01 for column means (50
+replicates, <code>dev/studies/glrm_lambda.R</code>). The best value depends on the
+size, the width and the missingness, which is why it is chosen rather
+than fixed: from 0.1 to 100, on ten folds of the observed cells with
+three held out in turn, walking down from 100 with each fold's fit
+started from its fit at the value before, and starting again cold when
+that fit has collapsed.</p></dd>
 
 
 <dt id="arg-weights">weights<a class="anchor" aria-label="anchor" href="#arg-weights"></a></dt>
@@ -235,12 +244,12 @@ low rank models. <em>Foundations and Trends in Machine Learning</em> 9, 1-118.</
 <span class="r-in"><span><span class="va">g</span> <span class="op">&lt;-</span> <span class="fu">ilm_glrm</span><span class="op">(</span><span class="va">d</span>, rank <span class="op">=</span> <span class="fl">1</span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="va">g</span><span class="op">$</span><span class="va">scores</span><span class="op">)</span></span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>         dim1</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 1 -0.3688959</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 2  0.1534611</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 3 -0.2614024</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 4  0.5985325</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 5  0.1067899</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 6 -0.2188636</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 1 -0.7320449</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 2  0.2589377</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 3 -0.4346019</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 4  1.3940688</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 5  0.2103037</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 6 -0.3442151</span>
 </code></pre></div>
     </div>
   </main><aside class="col-md-3"><nav id="toc" aria-label="Table of contents"><h2>On this page</h2>

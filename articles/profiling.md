@@ -185,10 +185,10 @@ cl
 #> <ilm_cluster> method = kmeans, k = 3 (chosen by gap statistic)
 #> 
 #>   cluster   size    pct  jaccard  stability     sil
-#>         1    132   44.0    0.954     stable   0.497
-#>         2    104   34.7    0.944     stable   0.376
-#>         3     64   21.3    0.998     stable   0.690
-#>   19 observation(s) sit between clusters (silhouette below 0.10) and may be misassigned
+#>         1    140   46.7    0.940     stable   0.460
+#>         2     96   32.0    0.918     stable   0.375
+#>         3     64   21.3    0.994     stable   0.679
+#>   22 observation(s) sit between clusters (silhouette below 0.10) and may be misassigned
 ilm_plot_cluster(cl)
 ```
 
