@@ -100,6 +100,10 @@ ilm_glrm_grad <- function(U, enc, w = NULL) {
   if (is.null(w)) w <- rep(1, nrow(U))
   for (b in enc$blocks) {
     j <- b$cols
+    ## each column's loss is divided by its loss at the best constant (see
+    ## ilm_glrm_best_constant_loss()), so no column weighs more for its type
+    ls <- b$lscale %||% 1
+    obj0 <- obj
     if (b$loss == "quadratic") {
       a <- b$target; ok <- !is.na(a)
       r <- U[, j] - a
@@ -138,8 +142,39 @@ ilm_glrm_grad <- function(U, enc, w = NULL) {
       Gb[!ok, ] <- 0
       G[, j] <- Gb
     }
+    if (ls != 1) {
+      obj <- obj0 + (obj - obj0) / ls
+      G[, j] <- G[, j] / ls
+    }
   }
   list(objective = obj, grad = G)
+}
+
+## A column's loss at the best constant, per observed cell (Udell, Horn,
+## Zadeh and Boyd 2016, section 4.3: sigma_j^2 = min_mu sum_i L_j(mu, A_ij) /
+## (n_j - 1)). Unscaled, a standardised number costs about 0.5 per row at its
+## best constant and a factor with L levels about log L, over L columns, so a
+## many-level factor outweighed the numbers and a pure-noise factor could take
+## a dimension of its own. Dividing each column's loss by this makes every
+## column count about equally when fitted by a constant. Measured in
+## dev/studies/glrm_scaling.R (results beside it): the noise factors' share of
+## the dimensions fell 2 to 7 times, and every outcome improved where the only
+## factors were noise.
+#' @keywords internal
+#' @noRd
+ilm_glrm_best_constant_loss <- function(b) {
+  a <- b$target; a <- a[!is.na(a)]; m <- length(a)
+  if (m < 2L) return(1)
+  s <- switch(b$loss,
+    quadratic = 0.5 * sum((a - mean(a))^2),
+    poisson = { mu <- mean(a); if (mu > 0) sum(mu - a * log(mu)) else 0 },
+    logistic = { p <- mean(a)
+      if (p <= 0 || p >= 1) 0 else -sum(a * log(p) + (1 - a) * log(1 - p)) },
+    multinomial = { p <- tabulate(a, length(b$levels)) / m
+      -sum(log(p[a])) },
+    0)
+  s <- s / (m - 1)
+  if (!is.finite(s) || s <= 1e-12) 1 else s
 }
 
 #' log(1 + exp(u)) without overflowing
@@ -179,16 +214,25 @@ logspace_add0 <- function(u) ifelse(u > 30, u, log1p(exp(pmin(u, 30))))
 #'   An **ordered** factor defaults to `"multinomial"`, which ignores the
 #'   ordering but never invents a spacing; `"quadratic"` on its integer codes
 #'   uses the ordering and does invent one, and is available if that is the
-#'   trade you want.
+#'   trade you want. Each column's loss is divided by its loss at the best
+#'   constant (Udell et al. 2016), so every column counts about equally
+#'   whatever its type: unscaled, a factor with many levels outweighed the
+#'   numbers, and a factor of pure noise could take a dimension to itself.
 #' @param lambda Ridge penalty on the factors, or `NULL` (the default) to
 #'   choose it by holding out observed cells. It is not a detail: a row with
 #'   few observed cells has as many scores as observations and fits them
 #'   exactly, so without enough penalty the reconstruction of everything else
 #'   in that row goes wherever the algebra sends it. On a 400 by 4 matrix with
-#'   20% missing, held-out error ran 0.82 at `lambda = 0.1`, 0.68 at 2, and
-#'   1.16 at 25 -- against 0.78 for an iterative SVD and 1.18 for column means.
-#'   The best value depends on the size, the width and the missingness, which
-#'   is why it is chosen rather than fixed.
+#'   20% of cells missing, the error at the missing cells averaged 1.05 at
+#'   `lambda = 0.1`, 0.61 at 2, 0.52 at 10 and 1.01 at 100, and 0.51 at the
+#'   value chosen -- against 1.47 for an iterative SVD with no penalty, 0.51
+#'   for missMDA's regularised iterative PCA, and 1.01 for column means (50
+#'   replicates, `dev/studies/glrm_lambda.R`). The best value depends on the
+#'   size, the width and the missingness, which is why it is chosen rather
+#'   than fixed: from 0.1 to 100, on ten folds of the observed cells with
+#'   three held out in turn, walking down from 100 with each fold's fit
+#'   started from its fit at the value before, and starting again cold when
+#'   that fit has collapsed.
 #' @param weights Optional non-negative row weights. A row counted twice
 #'   contributes twice to the loss, which is how `illume::ilm_impute()` draws a
 #'   bootstrap replicate without resampling the rows themselves and losing
@@ -276,6 +320,8 @@ ilm_glrm <- function(data, cols = NULL, rank = 2L, loss = NULL, lambda = NULL,
     stop("`lambda` must be a single non-negative number, or NULL to choose ",
          "one by cross-validation.", call. = FALSE)
   enc <- ilm_glrm_encode(sub, as.list(auto))
+  enc$blocks <- lapply(enc$blocks, function(b) {
+    b$lscale <- ilm_glrm_best_constant_loss(b); b })
   d <- enc$d
   if (rank >= min(n, d))
     stop("`rank` is ", rank, " but the encoded data has ", d, " columns over ",
@@ -306,6 +352,13 @@ ilm_glrm <- function(data, cols = NULL, rank = 2L, loss = NULL, lambda = NULL,
   Y <- t(sv$v[, seq_len(rank), drop = FALSE] *
            rep(sqrt(sv$d[seq_len(rank)]), each = d))
   mu <- rep(0, d)
+  ## a warm start, from the penalty path in ilm_glrm_lambda() only: the fit at
+  ## the neighbouring penalty, when it has the same shape
+  st <- .ilm_glrm_start$fit
+  if (!is.null(st) && identical(dim(st$X), dim(X)) &&
+      identical(dim(st$Y), dim(Y)) && length(st$mu) == d) {
+    X <- unname(st$X); Y <- unname(st$Y); mu <- st$mu
+  }
 
   ## Alternating descent with an adaptive step. A step is PROPOSED, evaluated,
   ## and kept only if the objective fell; otherwise the step is halved and the
@@ -427,46 +480,90 @@ print.ilm_glrm <- function(x, ...) {
 #' @keywords internal
 #' @noRd
 ilm_glrm_lambda <- function(sub, loss, rank, maxit, tol, seed,
-                            grid = c(0.1, 0.5, 1, 2, 5, 10), folds = 3L) {
+                            grid = ILM_GLRM_GRID, folds = 10L,
+                            held_out = 1:3) {
   n <- nrow(sub)
   obs <- which(!is.na(as.matrix(
     data.frame(lapply(sub, function(z) as.numeric(as.factor(z)))))))
   if (length(obs) < 60L) return(1)
   if (!is.null(seed)) set.seed(seed)
   fold <- sample(rep_len(seq_len(folds), length(obs)))
-  err <- vapply(grid, function(lam) {
+  ## the three held-out folds' data and cells
+  fl <- lapply(held_out, function(f) {
+    hold <- obs[fold == f]
+    rr <- ((hold - 1L) %% n) + 1L
+    cc <- ((hold - 1L) %/% n) + 1L
+    sh <- sub
+    for (j in unique(cc)) sh[rr[cc == j], j] <- NA
+    list(sh = sh, rows = lapply(seq_along(sub), function(j) rr[cc == j]))
+  })
+  fit_at <- function(dat, lam, start = NULL, passes = min(maxit, 200L)) {
+    .ilm_glrm_start$fit <- start
+    on.exit(.ilm_glrm_start$fit <- NULL)
+    tryCatch(ilm_glrm(dat, rank = rank, loss = unlist(loss), lambda = lam,
+                      maxit = passes, tol = tol, seed = seed, progress = FALSE),
+             error = function(z) NULL)
+  }
+  ## scored on a common scale: squared error for a numeric column after
+  ## standardising, and a miss counted as 1 for a category, so no single
+  ## column's units decide the winner
+  score <- function(fit, rows) {
     e <- 0; m <- 0L
-    for (f in seq_len(folds)) {
-      hold <- obs[fold == f]
-      sh <- sub
-      rr <- ((hold - 1L) %% n) + 1L
-      cc <- ((hold - 1L) %/% n) + 1L
-      for (j in unique(cc)) sh[rr[cc == j], j] <- NA
-      fit <- tryCatch(
-        ilm_glrm(sh, rank = rank, loss = unlist(loss), lambda = lam,
-                 maxit = min(maxit, 200L), tol = tol, seed = seed,
-                 progress = FALSE),
-        error = function(z) NULL)
-      if (is.null(fit)) next
-      ## scored on a common scale: squared error for a numeric column after
-      ## standardising, and a miss counted as 1 for a category, so no single
-      ## column's units decide the winner
-      for (j in seq_along(sub)) {
-        i <- rr[cc == j]
-        if (!length(i)) next
-        tv <- sub[[j]][i]; pv <- fit$fitted[[j]][i]
-        if (is.numeric(tv)) {
-          sc <- stats::sd(sub[[j]], na.rm = TRUE)
-          if (!is.finite(sc) || sc <= 0) sc <- 1
-          e <- e + sum(((as.numeric(pv) - tv) / sc)^2, na.rm = TRUE)
-        } else {
-          e <- e + sum(as.character(pv) != as.character(tv), na.rm = TRUE)
-        }
-        m <- m + length(i)
+    for (j in seq_along(sub)) {
+      i <- rows[[j]]
+      if (!length(i)) next
+      tv <- sub[[j]][i]; pv <- fit$fitted[[j]][i]
+      if (is.numeric(tv)) {
+        sc <- stats::sd(sub[[j]], na.rm = TRUE)
+        if (!is.finite(sc) || sc <= 0) sc <- 1
+        e <- e + sum(((as.numeric(pv) - tv) / sc)^2, na.rm = TRUE)
+      } else {
+        e <- e + sum(as.character(pv) != as.character(tv), na.rm = TRUE)
       }
+      m <- m + length(i)
     }
-    if (m) e / m else Inf
+    c(e = e, m = m)
+  }
+  size <- function(X, Y) sqrt(sum(X^2) + sum(Y^2))
+  ## each fold's starting size, for telling a collapsed warm fit
+  cold <- vapply(fl, function(x) {
+    c0 <- fit_at(x$sh, grid[1L], passes = 0L)
+    if (is.null(c0)) NA_real_ else size(as.matrix(c0$scores), c0$archetypes)
   }, 0)
+  ## Down the grid from the largest penalty, each fold's fit started from its
+  ## fit at the value before (a warm start). A warm fit that has collapsed,
+  ## its factors below 1e-3 of the cold start's size, restarts cold: from a
+  ## large penalty the factors shrink to near zero and a warm start stays
+  ## stuck there. The walk stops after two values without improvement.
+  st <- vector("list", length(fl))
+  err <- rep(NA_real_, length(grid)); best <- Inf; since <- 0L
+  for (k in rev(seq_along(grid))) {
+    e <- 0; m <- 0
+    for (f in seq_along(fl)) {
+      if (!is.null(st[[f]]) && is.finite(cold[f]) &&
+          size(st[[f]]$X, st[[f]]$Y) < ILM_GLRM_COLLAPSE * cold[f])
+        st[f] <- list(NULL)
+      fit <- fit_at(fl[[f]]$sh, grid[k], start = st[[f]])
+      if (is.null(fit)) { st[f] <- list(NULL); next }
+      st[[f]] <- list(X = as.matrix(fit$scores), Y = fit$archetypes, mu = fit$offset)
+      sc <- score(fit, fl[[f]]$rows)
+      e <- e + sc[["e"]]; m <- m + sc[["m"]]
+    }
+    err[k] <- if (m) e / m else Inf
+    if (err[k] < best) { best <- err[k]; since <- 0L } else since <- since + 1L
+    if (since >= 2L) break
+  }
+  err[is.na(err)] <- Inf
   if (all(!is.finite(err))) return(1)
+  ## ascending grid: a tie goes to the smaller penalty
   grid[which.min(err)]
 }
+
+## The penalty's grid, and the share of the cold start's size below which a
+## warm fit counts as collapsed (dev/studies/glrm_penalty.R, arm
+## path3_10_fixed)
+ILM_GLRM_GRID <- c(0.1, 0.5, 1, 2, 5, 10, 20, 50, 100)
+ILM_GLRM_COLLAPSE <- 1e-3
+
+## where ilm_glrm_lambda() hands ilm_glrm() a warm start; never set otherwise
+.ilm_glrm_start <- new.env(parent = emptyenv())

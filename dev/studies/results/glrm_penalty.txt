@@ -1,0 +1,576 @@
+## Commit hashes in this file are from illumex's history before its public
+## restart on 2026-10-01; they are not in this repository.
+## dev/studies/glrm_penalty.R (S3), run at scale on 2026-09-27 and 2026-09-28 with R 4.4.3
+## (the registered arms with the addendum's two ten-fold arms as committed at 7790d3d, run from a
+##  tree at that commit, in two parts; addendum 2's arms as committed at c7977ad -- 7790d3d plus
+##  the addendum, the package code unchanged -- run afterwards on the same datasets and seeds from a
+##  tree at that commit, in two parts; pinned library lib_round2)
+## Printed output of the four parts, verbatim, with the library's provenance before and after; then
+## the library incident during addendum 2's mixed_1000 part and its recheck; then
+##   Rscript dev/studies/glrm_penalty.R summarise <the four CSVs>
+## which applies the rules to all five conditions; then dev/studies/glrm_penalty_contrasts.R over
+## the same CSVs (written after the run to separate the grid, the fold split and the warm start for
+## the default question; descriptive, it adds no rule). The summary reads seconds back from the
+## CSVs, so a median can differ from its part's printout in the last digit.
+## <scratchpad> is this session's scratchpad (under %TEMP%), <work> the study folder outside it.
+
+### registered part: numeric_150, numeric_400, numeric_1000, mixed_200
+## run tree <scratchpad>/runtree_pen at 7790d3d (glrm-penalty)
+## before: 2026-09-27 21:03:18, R version 4.4.3 (2025-02-28 ucrt)
+## .libPaths(): <scratchpad>/lib_round2 ; C:/Program Files/R/R-4.4.3/library 
+##   pkgload      1.3.4        <scratchpad>/lib_round2 installed 2024-04-29 04:33
+##   collapse     2.1.8        <scratchpad>/lib_round2 installed 2026-09-19 23:49
+##   tinyplot     0.7.0        <scratchpad>/lib_round2 installed 2026-09-20 01:34
+
+check: grid6's choice against ilm_glrm(lambda = NULL)'s own, first 3 replicates of each condition
+         cond rep grid6 ilm_glrm same
+  numeric_150   1     2        2 TRUE
+  numeric_150   2     5        5 TRUE
+  numeric_150   3     5        5 TRUE
+  numeric_400   1    10       10 TRUE
+  numeric_400   2     5        5 TRUE
+  numeric_400   3    10       10 TRUE
+ numeric_1000   1    10       10 TRUE
+ numeric_1000   2    10       10 TRUE
+ numeric_1000   3    10       10 TRUE
+    mixed_200   1     5        5 TRUE
+    mixed_200   2     5        5 TRUE
+    mixed_200   3     5        5 TRUE
+
+error at the truly missing cells of the final fit, mean (Monte Carlo SE) over 50 replicates
+         cond      arm         error        regret median_seconds mean_fits scaled_lambda
+  numeric_150    grid6 0.497 (0.026) 0.011 (0.003)           0.98      18.0         0.351
+  numeric_150     wide 0.498 (0.026) 0.011 (0.003)           1.05      27.0         0.351
+  numeric_150     path 0.706 (0.044) 0.220 (0.032)           0.46      18.4         0.140
+  numeric_150    path1 0.788 (0.042) 0.302 (0.037)           0.11       5.8         0.140
+  numeric_150 path1_10 0.745 (0.046) 0.259 (0.037)           0.09       5.7         0.351
+  numeric_150 path3_10 0.757 (0.044) 0.271 (0.037)           0.25      16.5         0.351
+  numeric_150   oracle 0.487 (0.025) 0.000 (0.000)                                  0.351
+  numeric_400    grid6 0.511 (0.024) 0.006 (0.002)           1.75      18.0         0.227
+  numeric_400     wide 0.510 (0.024) 0.005 (0.002)           1.94      27.0         0.227
+  numeric_400     path 0.682 (0.041) 0.177 (0.035)           0.69      17.9         0.227
+  numeric_400    path1 0.655 (0.041) 0.150 (0.033)           0.24       6.0         0.227
+  numeric_400 path1_10 0.724 (0.039) 0.219 (0.038)           0.14       5.5         0.455
+  numeric_400 path3_10 0.704 (0.040) 0.199 (0.038)           0.46      16.8         0.227
+  numeric_400   oracle 0.505 (0.023) 0.000 (0.000)                                  0.455
+ numeric_1000    grid6 0.543 (0.025) 0.016 (0.004)           3.34      18.0         0.297
+ numeric_1000     wide 0.529 (0.022) 0.003 (0.001)           3.74      27.0         0.297
+ numeric_1000     path 0.607 (0.030) 0.081 (0.029)           1.20      16.6         0.297
+ numeric_1000    path1 0.634 (0.032) 0.107 (0.032)           0.36       5.3         0.297
+ numeric_1000 path1_10 0.571 (0.027) 0.045 (0.023)           0.28       5.7         0.297
+ numeric_1000 path3_10 0.529 (0.022) 0.003 (0.001)           0.81      17.1         0.297
+ numeric_1000   oracle 0.526 (0.022) 0.000 (0.000)                                  0.297
+    mixed_200    grid6 0.434 (0.008) 0.041 (0.006)          13.06      18.0         0.282
+    mixed_200     wide 0.434 (0.008) 0.041 (0.006)          19.03      27.0         0.282
+    mixed_200     path 0.434 (0.008) 0.041 (0.006)          11.87      21.0         0.282
+    mixed_200    path1 0.435 (0.008) 0.041 (0.006)           3.93       7.1         0.282
+    mixed_200 path1_10 0.420 (0.007) 0.026 (0.005)           3.57       7.6         0.197
+    mixed_200 path3_10 0.420 (0.008) 0.027 (0.005)          10.70      22.3         0.282
+    mixed_200   oracle 0.393 (0.007) 0.000 (0.000)                                  0.113
+
+lambda chosen, counts
+  numeric_150  grid6   1 x2, 2 x17, 5 x25, 10 x6 
+  numeric_150  wide    1 x2, 2 x17, 5 x25, 10 x5, 20 x1 
+  numeric_150  path    1 x11, 2 x18, 100 x21 
+  numeric_150  path1   0.5 x1, 1 x7, 2 x18, 5 x1, 100 x23 
+  numeric_150  path1_10  0.5 x3, 1 x4, 2 x8, 5 x13, 100 x22 
+  numeric_150  path3_10  1 x2, 2 x13, 5 x12, 100 x23 
+  numeric_150  oracle  1 x3, 2 x13, 5 x23, 10 x11 
+  numeric_400  grid6   2 x6, 5 x20, 10 x24 
+  numeric_400  wide    2 x6, 5 x20, 10 x23, 20 x1 
+  numeric_400  path    2 x6, 5 x29, 10 x1, 100 x14 
+  numeric_400  path1   2 x7, 5 x27, 10 x3, 100 x13 
+  numeric_400  path1_10  0.1 x1, 1 x1, 2 x3, 5 x18, 10 x8, 100 x19 
+  numeric_400  path3_10  2 x3, 5 x25, 10 x5, 100 x17 
+  numeric_400  oracle  2 x4, 5 x19, 10 x23, 20 x4 
+  numeric_1000 grid6   5 x7, 10 x43 
+  numeric_1000 wide    5 x7, 10 x24, 20 x19 
+  numeric_1000 path    5 x6, 10 x27, 20 x11, 100 x6 
+  numeric_1000 path1   5 x4, 10 x23, 20 x14, 100 x9 
+  numeric_1000 path1_10  5 x8, 10 x23, 20 x16, 100 x3 
+  numeric_1000 path3_10  5 x6, 10 x23, 20 x21 
+  numeric_1000 oracle  2 x1, 5 x6, 10 x22, 20 x21 
+  mixed_200    grid6   5 x50 
+  mixed_200    wide    5 x50 
+  mixed_200    path    5 x50 
+  mixed_200    path1   2 x4, 5 x46 
+  mixed_200    path1_10  0.1 x1, 0.5 x4, 1 x1, 2 x19, 5 x25 
+  mixed_200    path3_10  0.1 x1, 0.5 x1, 2 x17, 5 x31 
+  mixed_200    oracle  0.1 x5, 0.5 x4, 1 x5, 2 x23, 5 x13 
+
+error at fixed values of lambda (every arm's final fit is one of these), mean (Monte Carlo SE)
+         cond    lambda_0.1    lambda_0.5      lambda_1      lambda_2      lambda_5     lambda_10     lambda_20     lambda_50    lambda_100
+  numeric_150 1.039 (0.096) 0.744 (0.055) 0.641 (0.045) 0.560 (0.037) 0.506 (0.027) 0.552 (0.022) 0.746 (0.021) 0.993 (0.021) 0.993 (0.021)
+  numeric_400 1.054 (0.092) 0.780 (0.050) 0.685 (0.042) 0.610 (0.037) 0.537 (0.029) 0.522 (0.023) 0.600 (0.017) 0.964 (0.013) 1.006 (0.011)
+ numeric_1000 1.424 (0.185) 0.983 (0.081) 0.824 (0.055) 0.705 (0.041) 0.595 (0.031) 0.545 (0.024) 0.553 (0.018) 0.759 (0.013) 1.022 (0.009)
+    mixed_200 0.447 (0.011) 0.441 (0.010) 0.425 (0.009) 0.407 (0.007) 0.434 (0.008) 0.495 (0.009) 0.615 (0.010) 0.846 (0.010) 0.847 (0.010)
+
+paired differences in error, arm minus reference: mean (paired SE)
+         cond     wide - grid6     path - grid6      path - wide    path1 - grid6     path1 - wide path1_10 - grid6 path3_10 - grid6
+  numeric_150 +0.0006 (0.0006) +0.2087 (0.0316) +0.2081 (0.0317) +0.2909 (0.0370) +0.2904 (0.0370) +0.2481 (0.0375) +0.2599 (0.0379)
+  numeric_400 -0.0015 (0.0015) +0.1708 (0.0348) +0.1724 (0.0346) +0.1435 (0.0328) +0.1450 (0.0328) +0.2129 (0.0386) +0.1930 (0.0380)
+ numeric_1000 -0.0135 (0.0044) +0.0646 (0.0298) +0.0781 (0.0288) +0.0910 (0.0334) +0.1044 (0.0325) +0.0288 (0.0240) -0.0137 (0.0044)
+    mixed_200 +0.0000 (0.0000) +0.0000 (0.0000) +0.0000 (0.0000) +0.0008 (0.0009) +0.0008 (0.0009) -0.0144 (0.0057) -0.0139 (0.0048)
+
+decision rules on this part's conditions only (the rules apply to all five)
+  R1 widen the grid: no worse than grid6 in every condition TRUE; better in at least one TRUE -> WIDEN
+  R2 path1 error within tolerance of grid6 and wide everywhere FALSE; at most half grid6's median time everywhere TRUE -> no
+  R2 path  error within tolerance of grid6 and wide everywhere FALSE; at most half grid6's median time everywhere FALSE -> no
+  R3 path1_10 no worse than grid6 anywhere FALSE; better in at least one TRUE; median time at most grid6's everywhere TRUE -> no
+  R3 path3_10 no worse than grid6 anywhere FALSE; better in at least one TRUE; median time at most grid6's everywhere TRUE -> no
+
+## after: 2026-09-27 22:03:50, R version 4.4.3 (2025-02-28 ucrt)
+## .libPaths(): <scratchpad>/lib_round2 ; C:/Program Files/R/R-4.4.3/library 
+##   pkgload      1.3.4        <scratchpad>/lib_round2 installed 2024-04-29 04:33
+##   collapse     2.1.8        <scratchpad>/lib_round2 installed 2026-09-19 23:49
+##   tinyplot     0.7.0        <scratchpad>/lib_round2 installed 2026-09-20 01:34
+## library unchanged during the run
+
+### registered part: mixed_1000
+## run tree <scratchpad>/runtree_pen at 7790d3d (glrm-penalty)
+## before: 2026-09-27 20:36:12, R version 4.4.3 (2025-02-28 ucrt)
+## .libPaths(): <scratchpad>/lib_round2 ; C:/Program Files/R/R-4.4.3/library 
+##   pkgload      1.3.4        <scratchpad>/lib_round2 installed 2024-04-29 04:33
+##   collapse     2.1.8        <scratchpad>/lib_round2 installed 2026-09-19 23:49
+##   tinyplot     0.7.0        <scratchpad>/lib_round2 installed 2026-09-20 01:34
+
+check: grid6's choice against ilm_glrm(lambda = NULL)'s own, first 3 replicates of each condition
+       cond rep grid6 ilm_glrm same
+ mixed_1000   1    10       10 TRUE
+ mixed_1000   2    10       10 TRUE
+ mixed_1000   3    10       10 TRUE
+
+error at the truly missing cells of the final fit, mean (Monte Carlo SE) over 50 replicates
+       cond      arm         error        regret median_seconds mean_fits scaled_lambda
+ mixed_1000    grid6 0.415 (0.003) 0.045 (0.002)          44.73      18.0         0.284
+ mixed_1000     wide 0.415 (0.003) 0.045 (0.002)          63.80      27.0         0.284
+ mixed_1000     path 0.415 (0.003) 0.045 (0.002)          31.49      18.0         0.284
+ mixed_1000    path1 0.415 (0.003) 0.045 (0.002)          10.37       6.0         0.284
+ mixed_1000 path1_10 0.374 (0.003) 0.004 (0.001)          10.97       6.9         0.142
+ mixed_1000 path3_10 0.374 (0.003) 0.004 (0.001)          32.34      20.8         0.142
+ mixed_1000   oracle 0.370 (0.003) 0.000 (0.000)                                  0.142
+
+lambda chosen, counts
+  mixed_1000   grid6   10 x50 
+  mixed_1000   wide    10 x50 
+  mixed_1000   path    10 x50 
+  mixed_1000   path1   10 x50 
+  mixed_1000   path1_10  2 x1, 5 x45, 10 x4 
+  mixed_1000   path3_10  5 x46, 10 x4 
+  mixed_1000   oracle  0.1 x6, 1 x1, 2 x3, 5 x40 
+
+error at fixed values of lambda (every arm's final fit is one of these), mean (Monte Carlo SE)
+       cond    lambda_0.1    lambda_0.5      lambda_1      lambda_2      lambda_5     lambda_10     lambda_20     lambda_50    lambda_100
+ mixed_1000 0.388 (0.004) 0.395 (0.004) 0.393 (0.004) 0.384 (0.004) 0.373 (0.003) 0.415 (0.003) 0.473 (0.004) 0.616 (0.004) 0.846 (0.005)
+
+paired differences in error, arm minus reference: mean (paired SE)
+       cond     wide - grid6     path - grid6      path - wide    path1 - grid6     path1 - wide path1_10 - grid6 path3_10 - grid6
+ mixed_1000 +0.0000 (0.0000) +0.0000 (0.0000) +0.0000 (0.0000) +0.0000 (0.0000) +0.0000 (0.0000) -0.0407 (0.0024) -0.0407 (0.0025)
+
+decision rules on this part's conditions only (the rules apply to all five)
+  R1 widen the grid: no worse than grid6 in every condition TRUE; better in at least one FALSE -> keep grid6
+  R2 path1 error within tolerance of grid6 and wide everywhere TRUE; at most half grid6's median time everywhere TRUE -> ADOPT
+  R2 path  error within tolerance of grid6 and wide everywhere TRUE; at most half grid6's median time everywhere FALSE -> no
+  R3 path1_10 no worse than grid6 anywhere TRUE; better in at least one TRUE; median time at most grid6's everywhere TRUE -> ADOPT
+  R3 path3_10 no worse than grid6 anywhere TRUE; better in at least one TRUE; median time at most grid6's everywhere TRUE -> passes, but path1_10 is taken first
+
+## after: 2026-09-27 23:09:58, R version 4.4.3 (2025-02-28 ucrt)
+## .libPaths(): <scratchpad>/lib_round2 ; C:/Program Files/R/R-4.4.3/library 
+##   pkgload      1.3.4        <scratchpad>/lib_round2 installed 2024-04-29 04:33
+##   collapse     2.1.8        <scratchpad>/lib_round2 installed 2026-09-19 23:49
+##   tinyplot     0.7.0        <scratchpad>/lib_round2 installed 2026-09-20 01:34
+## library unchanged during the run
+
+### addendum 2 part: numeric_150, numeric_400, numeric_1000, mixed_200
+## run tree <scratchpad>/runtree_pen2 at c7977ad (glrm-penalty)
+## before: 2026-09-27 22:09:03, R version 4.4.3 (2025-02-28 ucrt)
+## .libPaths(): <scratchpad>/lib_round2 ; C:/Program Files/R/R-4.4.3/library 
+##   pkgload      1.3.4        <scratchpad>/lib_round2 installed 2024-04-29 04:33
+##   collapse     2.1.8        <scratchpad>/lib_round2 installed 2026-09-19 23:49
+##   tinyplot     0.7.0        <scratchpad>/lib_round2 installed 2026-09-20 01:34
+
+
+addendum 2, a separate run on the same datasets and seeds: error at the truly missing cells, mean (Monte Carlo SE) over 50 replicates
+         cond            arm         error        regret median_seconds mean_fits
+  numeric_150       grid6_a2 0.497 (0.026) 0.011 (0.003)           0.71      18.0
+  numeric_150        wide_a2 0.498 (0.026) 0.011 (0.003)           0.78      27.0
+  numeric_150     path_fixed 0.499 (0.026) 0.012 (0.003)           0.40      21.8
+  numeric_150    path1_fixed 0.502 (0.026) 0.015 (0.006)           0.13       7.4
+  numeric_150 path1_10_fixed 0.514 (0.028) 0.028 (0.008)           0.11       7.2
+  numeric_150 path3_10_fixed 0.495 (0.025) 0.008 (0.002)           0.29      21.4
+  numeric_150       cold3_10 0.495 (0.025) 0.008 (0.002)           0.66      27.0
+  numeric_400       grid6_a2 0.511 (0.024) 0.006 (0.002)           1.29      18.0
+  numeric_400        wide_a2 0.510 (0.024) 0.005 (0.002)           1.44      27.0
+  numeric_400     path_fixed 0.510 (0.024) 0.005 (0.002)           0.61      19.9
+  numeric_400    path1_fixed 0.508 (0.023) 0.003 (0.001)           0.20       6.6
+  numeric_400 path1_10_fixed 0.513 (0.023) 0.008 (0.002)           0.14       6.5
+  numeric_400 path3_10_fixed 0.509 (0.023) 0.004 (0.002)           0.44      19.6
+  numeric_400       cold3_10 0.509 (0.023) 0.004 (0.002)           1.11      27.0
+ numeric_1000       grid6_a2 0.543 (0.025) 0.016 (0.004)           2.53      18.0
+ numeric_1000        wide_a2 0.529 (0.022) 0.003 (0.001)           2.85      27.0
+ numeric_1000     path_fixed 0.530 (0.022) 0.003 (0.001)           0.94      17.3
+ numeric_1000    path1_fixed 0.529 (0.022) 0.003 (0.001)           0.30       5.8
+ numeric_1000 path1_10_fixed 0.531 (0.022) 0.005 (0.001)           0.23       5.9
+ numeric_1000 path3_10_fixed 0.529 (0.022) 0.003 (0.001)           0.67      17.0
+ numeric_1000       cold3_10 0.529 (0.022) 0.003 (0.001)           2.21      27.0
+    mixed_200       grid6_a2 0.434 (0.008) 0.041 (0.006)          10.03      18.0
+    mixed_200        wide_a2 0.434 (0.008) 0.041 (0.006)          15.06      27.0
+    mixed_200     path_fixed 0.434 (0.008) 0.041 (0.006)           9.79      21.0
+    mixed_200    path1_fixed 0.435 (0.008) 0.042 (0.006)           3.31       7.1
+    mixed_200 path1_10_fixed 0.419 (0.008) 0.026 (0.005)           3.24       7.6
+    mixed_200 path3_10_fixed 0.418 (0.008) 0.025 (0.005)           9.51      22.2
+    mixed_200       cold3_10 0.423 (0.008) 0.029 (0.006)          14.61      27.0
+
+lambda chosen, counts (addendum 2)
+  numeric_150  path_fixed      1 x2, 2 x17, 5 x24, 10 x7 
+  numeric_150  path1_fixed     0.5 x1, 1 x4, 2 x16, 5 x25, 10 x3, 20 x1 
+  numeric_150  path1_10_fixed  0.5 x3, 1 x4, 2 x8, 5 x26, 10 x8, 20 x1 
+  numeric_150  path3_10_fixed  1 x2, 2 x13, 5 x26, 10 x8, 20 x1 
+  numeric_150  cold3_10        1 x2, 2 x13, 5 x26, 10 x8, 20 x1 
+  numeric_400  path_fixed      2 x6, 5 x20, 10 x23, 20 x1 
+  numeric_400  path1_fixed     2 x7, 5 x19, 10 x21, 20 x3 
+  numeric_400  path1_10_fixed  0.1 x1, 1 x1, 2 x4, 5 x17, 10 x22, 20 x5 
+  numeric_400  path3_10_fixed  2 x5, 5 x21, 10 x19, 20 x5 
+  numeric_400  cold3_10        2 x5, 5 x21, 10 x19, 20 x5 
+  numeric_1000 path_fixed      5 x8, 10 x23, 20 x19 
+  numeric_1000 path1_fixed     5 x7, 10 x25, 20 x18 
+  numeric_1000 path1_10_fixed  5 x10, 10 x23, 20 x17 
+  numeric_1000 path3_10_fixed  5 x6, 10 x22, 20 x22 
+  numeric_1000 cold3_10        5 x6, 10 x22, 20 x22 
+  mixed_200    path_fixed      5 x50 
+  mixed_200    path1_fixed     2 x3, 5 x47 
+  mixed_200    path1_10_fixed  0.1 x1, 0.5 x4, 1 x2, 2 x18, 5 x25 
+  mixed_200    path3_10_fixed  0.1 x1, 2 x18, 5 x31 
+  mixed_200    cold3_10        0.1 x3, 2 x16, 5 x31 
+
+paired differences in error, arm minus reference (grid6_a2, wide_a2): mean (paired SE)
+         cond path_fixed - grid6_a2 path1_fixed - grid6_a2 path1_10_fixed - grid6_a2 path3_10_fixed - grid6_a2 cold3_10 - grid6_a2 path_fixed - wide_a2 path1_fixed - wide_a2
+  numeric_150      +0.0012 (0.0012)       +0.0044 (0.0043)          +0.0169 (0.0084)          -0.0025 (0.0035)    -0.0025 (0.0035)     +0.0006 (0.0013)      +0.0038 (0.0043)
+  numeric_400      -0.0015 (0.0015)       -0.0029 (0.0027)          +0.0017 (0.0036)          -0.0025 (0.0030)    -0.0025 (0.0030)     +0.0000 (0.0000)      -0.0013 (0.0023)
+ numeric_1000      -0.0131 (0.0044)       -0.0133 (0.0044)          -0.0113 (0.0044)          -0.0136 (0.0044)    -0.0136 (0.0044)     +0.0003 (0.0003)      +0.0001 (0.0001)
+    mixed_200      +0.0000 (0.0000)       +0.0010 (0.0009)          -0.0148 (0.0054)          -0.0161 (0.0045)    -0.0112 (0.0046)     +0.0000 (0.0000)      +0.0010 (0.0009)
+
+R2 and R3 on the corrected arms, on this part's conditions only
+  R2 path1_fixed    error within tolerance of grid6 and wide everywhere TRUE; at most half grid6's median time everywhere TRUE -> ADOPT
+  R2 path_fixed     error within tolerance of grid6 and wide everywhere TRUE; at most half grid6's median time everywhere FALSE -> no
+  R3 path1_10_fixed no worse than grid6 anywhere FALSE; better in at least one TRUE; median time at most grid6's everywhere TRUE -> no
+  R3 path3_10_fixed no worse than grid6 anywhere TRUE; better in at least one TRUE; median time at most grid6's everywhere TRUE -> ADOPT
+  cold3_10 is descriptive, under no rule
+
+## after: 2026-09-27 23:12:08, R version 4.4.3 (2025-02-28 ucrt)
+## .libPaths(): <scratchpad>/lib_round2 ; C:/Program Files/R/R-4.4.3/library 
+##   pkgload      1.3.4        <scratchpad>/lib_round2 installed 2024-04-29 04:33
+##   collapse     2.1.8        <scratchpad>/lib_round2 installed 2026-09-19 23:49
+##   tinyplot     0.7.0        <scratchpad>/lib_round2 installed 2026-09-20 01:34
+## library unchanged during the run
+
+### addendum 2 part: mixed_1000
+## run tree <scratchpad>/runtree_pen2 at c7977ad (glrm-penalty)
+## before: 2026-09-27 22:09:03, R version 4.4.3 (2025-02-28 ucrt)
+## .libPaths(): <scratchpad>/lib_round2 ; C:/Program Files/R/R-4.4.3/library 
+##   pkgload      1.3.4        <scratchpad>/lib_round2 installed 2024-04-29 04:33
+##   collapse     2.1.8        <scratchpad>/lib_round2 installed 2026-09-19 23:49
+##   tinyplot     0.7.0        <scratchpad>/lib_round2 installed 2026-09-20 01:34
+
+
+addendum 2, a separate run on the same datasets and seeds: error at the truly missing cells, mean (Monte Carlo SE) over 50 replicates
+       cond            arm         error        regret median_seconds mean_fits
+ mixed_1000       grid6_a2 0.415 (0.003) 0.045 (0.002)          41.01      18.0
+ mixed_1000        wide_a2 0.415 (0.003) 0.045 (0.002)          57.55      27.0
+ mixed_1000     path_fixed 0.415 (0.003) 0.045 (0.002)          28.60      18.0
+ mixed_1000    path1_fixed 0.415 (0.003) 0.045 (0.002)           9.77       6.0
+ mixed_1000 path1_10_fixed 0.374 (0.003) 0.004 (0.001)          10.28       6.9
+ mixed_1000 path3_10_fixed 0.374 (0.003) 0.004 (0.001)          31.31      20.8
+ mixed_1000       cold3_10 0.375 (0.003) 0.004 (0.001)          51.59      27.0
+
+lambda chosen, counts (addendum 2)
+  mixed_1000   path_fixed      10 x50 
+  mixed_1000   path1_fixed     10 x50 
+  mixed_1000   path1_10_fixed  2 x1, 5 x45, 10 x4 
+  mixed_1000   path3_10_fixed  5 x46, 10 x4 
+  mixed_1000   cold3_10        0.1 x2, 5 x44, 10 x4 
+
+paired differences in error, arm minus reference (grid6_a2, wide_a2): mean (paired SE)
+       cond path_fixed - grid6_a2 path1_fixed - grid6_a2 path1_10_fixed - grid6_a2 path3_10_fixed - grid6_a2 cold3_10 - grid6_a2 path_fixed - wide_a2 path1_fixed - wide_a2
+ mixed_1000      +0.0000 (0.0000)       +0.0000 (0.0000)          -0.0407 (0.0024)          -0.0407 (0.0025)    -0.0403 (0.0025)     +0.0000 (0.0000)      +0.0000 (0.0000)
+
+R2 and R3 on the corrected arms, on this part's conditions only
+  R2 path1_fixed    error within tolerance of grid6 and wide everywhere TRUE; at most half grid6's median time everywhere TRUE -> ADOPT
+  R2 path_fixed     error within tolerance of grid6 and wide everywhere TRUE; at most half grid6's median time everywhere FALSE -> no
+  R3 path1_10_fixed no worse than grid6 anywhere TRUE; better in at least one TRUE; median time at most grid6's everywhere TRUE -> ADOPT
+  R3 path3_10_fixed no worse than grid6 anywhere TRUE; better in at least one TRUE; median time at most grid6's everywhere TRUE -> passes, but path1_10_fixed is taken first
+  cold3_10 is descriptive, under no rule
+
+## after: 2026-09-28 01:06:32, R version 4.4.3 (2025-02-28 ucrt)
+## .libPaths(): <scratchpad>/lib_round2 ; C:/Program Files/R/R-4.4.3/library 
+##   pkgload      not installed
+##   collapse     not installed
+##   tinyplot     not installed
+## WARNING: the library changed during the run
+
+### the library incident, and the recheck
+## At 00:04 on 2026-09-28, while addendum 2's mixed_1000 part was running, Windows Storage Sense
+## (low disk) swept %TEMP%, where lib_round2 lived. It left 17 of the library's packages: ten
+## whole, and seven, collapse among them, holding only the DLL that a running R session had
+## open; the rest were deleted, pkgload and tinyplot among them. So the part's closing record
+## above reads "not installed". The run had loaded the package at its start and finished without
+## error, but a session can read a package's files after loading, so its results were not taken
+## on trust.
+## Replicates 1-3 of that part were run again from the same tree (c7977ad) on lib_round2b, a
+## pinned library made after the sweep: MD5 records 0 damaged, and pkgload, collapse and tinyplot
+## (no MD5 record) equal file by file to the user library's copies, at the versions lib_round2
+## recorded. Its record is unchanged from start to end. Below, its printout, then its 21 rows
+## (7 arms by 3 replicates) against the original run's, every field but seconds.
+## recheck of addendum 2 mixed_1000, replicates 1-3, run tree c7977ad, library lib_round2b
+## before: 2026-09-28 01:35:38, R version 4.4.3 (2025-02-28 ucrt)
+## .libPaths(): <pinned library> ; C:/Program Files/R/R-4.4.3/library 
+##   pkgload      1.3.4        <pinned library> installed 2026-09-28 01:26
+##   collapse     2.1.8        <pinned library> installed 2026-09-28 01:26
+##   tinyplot     0.7.0        <pinned library> installed 2026-09-28 01:26
+
+addendum 2, a separate run on the same datasets and seeds: error at the truly missing cells, mean (Monte Carlo SE) over 3 replicates
+       cond            arm         error        regret median_seconds mean_fits
+ mixed_1000       grid6_a2 0.402 (0.010) 0.042 (0.006)          66.25      18.0
+ mixed_1000        wide_a2 0.402 (0.010) 0.042 (0.006)          88.41      27.0
+ mixed_1000     path_fixed 0.402 (0.010) 0.042 (0.006)          43.80      18.0
+ mixed_1000    path1_fixed 0.402 (0.010) 0.042 (0.006)          13.90       6.0
+ mixed_1000 path1_10_fixed 0.362 (0.015) 0.002 (0.002)          17.77       7.0
+ mixed_1000 path3_10_fixed 0.362 (0.015) 0.002 (0.002)          45.73      21.0
+ mixed_1000       cold3_10 0.362 (0.015) 0.002 (0.002)          78.64      27.0
+
+lambda chosen, counts (addendum 2)
+  mixed_1000   path_fixed      10 x3 
+  mixed_1000   path1_fixed     10 x3 
+  mixed_1000   path1_10_fixed  5 x3 
+  mixed_1000   path3_10_fixed  5 x3 
+  mixed_1000   cold3_10        5 x3 
+
+paired differences in error, arm minus reference (grid6_a2, wide_a2): mean (paired SE)
+       cond path_fixed - grid6_a2 path1_fixed - grid6_a2 path1_10_fixed - grid6_a2 path3_10_fixed - grid6_a2 cold3_10 - grid6_a2 path_fixed - wide_a2 path1_fixed - wide_a2
+ mixed_1000      +0.0000 (0.0000)       +0.0000 (0.0000)          -0.0402 (0.0056)          -0.0402 (0.0056)    -0.0402 (0.0056)     +0.0000 (0.0000)      +0.0000 (0.0000)
+
+R2 and R3 on the corrected arms, on this part's conditions only
+  R2 path1_fixed    error within tolerance of grid6 and wide everywhere TRUE; at most half grid6's median time everywhere TRUE -> ADOPT
+  R2 path_fixed     error within tolerance of grid6 and wide everywhere TRUE; at most half grid6's median time everywhere FALSE -> no
+  R3 path1_10_fixed no worse than grid6 anywhere TRUE; better in at least one TRUE; median time at most grid6's everywhere TRUE -> ADOPT
+  R3 path3_10_fixed no worse than grid6 anywhere TRUE; better in at least one TRUE; median time at most grid6's everywhere TRUE -> passes, but path1_10_fixed is taken first
+  cold3_10 is descriptive, under no rule
+## after: 2026-09-28 01:54:03, R version 4.4.3 (2025-02-28 ucrt)
+## .libPaths(): <pinned library> ; C:/Program Files/R/R-4.4.3/library 
+##   pkgload      1.3.4        <pinned library> installed 2026-09-28 01:26
+##   collapse     2.1.8        <pinned library> installed 2026-09-28 01:26
+##   tinyplot     0.7.0        <pinned library> installed 2026-09-28 01:26
+
+  rows: 21 recheck, 21 original
+    cond     identical: TRUE
+    n        identical: TRUE
+    d        identical: TRUE
+    rep      identical: TRUE
+    arm      identical: TRUE
+    lambda   identical: TRUE
+    error    identical: TRUE
+    regret   identical: TRUE
+    fits     identical: TRUE
+  arms: cold3_10, grid6_a2, path_fixed, path1_10_fixed, path1_fixed, path3_10_fixed, wide_a2 
+  seconds, recheck over original: 1.79 
+## Every field agrees exactly, so the original run stands; the recheck ran 1.79 times slower
+## because other jobs shared the machine, and its seconds are not used.
+
+### all five conditions: glrm_penalty.R summarise
+
+error at the truly missing cells of the final fit, mean (Monte Carlo SE) over 50 replicates
+         cond      arm         error        regret median_seconds mean_fits scaled_lambda
+  numeric_150    grid6 0.497 (0.026) 0.011 (0.003)           0.98      18.0         0.351
+  numeric_150     wide 0.498 (0.026) 0.011 (0.003)           1.05      27.0         0.351
+  numeric_150     path 0.706 (0.044) 0.220 (0.032)           0.46      18.4         0.140
+  numeric_150    path1 0.788 (0.042) 0.302 (0.037)           0.10       5.8         0.140
+  numeric_150 path1_10 0.745 (0.046) 0.259 (0.037)           0.09       5.7         0.351
+  numeric_150 path3_10 0.757 (0.044) 0.271 (0.037)           0.25      16.5         0.351
+  numeric_150   oracle 0.487 (0.025) 0.000 (0.000)                                  0.351
+  numeric_400    grid6 0.511 (0.024) 0.006 (0.002)           1.75      18.0         0.227
+  numeric_400     wide 0.510 (0.024) 0.005 (0.002)           1.94      27.0         0.227
+  numeric_400     path 0.682 (0.041) 0.177 (0.035)           0.69      17.9         0.227
+  numeric_400    path1 0.655 (0.041) 0.150 (0.033)           0.24       6.0         0.227
+  numeric_400 path1_10 0.724 (0.039) 0.219 (0.038)           0.14       5.5         0.455
+  numeric_400 path3_10 0.704 (0.040) 0.199 (0.038)           0.46      16.8         0.227
+  numeric_400   oracle 0.505 (0.023) 0.000 (0.000)                                  0.455
+ numeric_1000    grid6 0.543 (0.025) 0.016 (0.004)           3.34      18.0         0.297
+ numeric_1000     wide 0.529 (0.022) 0.003 (0.001)           3.74      27.0         0.297
+ numeric_1000     path 0.607 (0.030) 0.081 (0.029)           1.20      16.6         0.297
+ numeric_1000    path1 0.634 (0.032) 0.107 (0.032)           0.36       5.3         0.297
+ numeric_1000 path1_10 0.571 (0.027) 0.045 (0.023)           0.28       5.7         0.297
+ numeric_1000 path3_10 0.529 (0.022) 0.003 (0.001)           0.81      17.1         0.297
+ numeric_1000   oracle 0.526 (0.022) 0.000 (0.000)                                  0.297
+    mixed_200    grid6 0.434 (0.008) 0.041 (0.006)          13.06      18.0         0.282
+    mixed_200     wide 0.434 (0.008) 0.041 (0.006)          19.03      27.0         0.282
+    mixed_200     path 0.434 (0.008) 0.041 (0.006)          11.86      21.0         0.282
+    mixed_200    path1 0.435 (0.008) 0.041 (0.006)           3.93       7.1         0.282
+    mixed_200 path1_10 0.420 (0.007) 0.026 (0.005)           3.57       7.6         0.197
+    mixed_200 path3_10 0.420 (0.008) 0.027 (0.005)          10.70      22.3         0.282
+    mixed_200   oracle 0.393 (0.007) 0.000 (0.000)                                  0.113
+   mixed_1000    grid6 0.415 (0.003) 0.045 (0.002)          44.73      18.0         0.284
+   mixed_1000     wide 0.415 (0.003) 0.045 (0.002)          63.80      27.0         0.284
+   mixed_1000     path 0.415 (0.003) 0.045 (0.002)          31.49      18.0         0.284
+   mixed_1000    path1 0.415 (0.003) 0.045 (0.002)          10.36       6.0         0.284
+   mixed_1000 path1_10 0.374 (0.003) 0.004 (0.001)          10.97       6.9         0.142
+   mixed_1000 path3_10 0.374 (0.003) 0.004 (0.001)          32.34      20.8         0.142
+   mixed_1000   oracle 0.370 (0.003) 0.000 (0.000)                                  0.142
+
+lambda chosen, counts
+  numeric_150  grid6   1 x2, 2 x17, 5 x25, 10 x6 
+  numeric_150  wide    1 x2, 2 x17, 5 x25, 10 x5, 20 x1 
+  numeric_150  path    1 x11, 2 x18, 100 x21 
+  numeric_150  path1   0.5 x1, 1 x7, 2 x18, 5 x1, 100 x23 
+  numeric_150  path1_10  0.5 x3, 1 x4, 2 x8, 5 x13, 100 x22 
+  numeric_150  path3_10  1 x2, 2 x13, 5 x12, 100 x23 
+  numeric_150  oracle  1 x3, 2 x13, 5 x23, 10 x11 
+  numeric_400  grid6   2 x6, 5 x20, 10 x24 
+  numeric_400  wide    2 x6, 5 x20, 10 x23, 20 x1 
+  numeric_400  path    2 x6, 5 x29, 10 x1, 100 x14 
+  numeric_400  path1   2 x7, 5 x27, 10 x3, 100 x13 
+  numeric_400  path1_10  0.1 x1, 1 x1, 2 x3, 5 x18, 10 x8, 100 x19 
+  numeric_400  path3_10  2 x3, 5 x25, 10 x5, 100 x17 
+  numeric_400  oracle  2 x4, 5 x19, 10 x23, 20 x4 
+  numeric_1000 grid6   5 x7, 10 x43 
+  numeric_1000 wide    5 x7, 10 x24, 20 x19 
+  numeric_1000 path    5 x6, 10 x27, 20 x11, 100 x6 
+  numeric_1000 path1   5 x4, 10 x23, 20 x14, 100 x9 
+  numeric_1000 path1_10  5 x8, 10 x23, 20 x16, 100 x3 
+  numeric_1000 path3_10  5 x6, 10 x23, 20 x21 
+  numeric_1000 oracle  2 x1, 5 x6, 10 x22, 20 x21 
+  mixed_200    grid6   5 x50 
+  mixed_200    wide    5 x50 
+  mixed_200    path    5 x50 
+  mixed_200    path1   2 x4, 5 x46 
+  mixed_200    path1_10  0.1 x1, 0.5 x4, 1 x1, 2 x19, 5 x25 
+  mixed_200    path3_10  0.1 x1, 0.5 x1, 2 x17, 5 x31 
+  mixed_200    oracle  0.1 x5, 0.5 x4, 1 x5, 2 x23, 5 x13 
+  mixed_1000   grid6   10 x50 
+  mixed_1000   wide    10 x50 
+  mixed_1000   path    10 x50 
+  mixed_1000   path1   10 x50 
+  mixed_1000   path1_10  2 x1, 5 x45, 10 x4 
+  mixed_1000   path3_10  5 x46, 10 x4 
+  mixed_1000   oracle  0.1 x6, 1 x1, 2 x3, 5 x40 
+
+error at fixed values of lambda (every arm's final fit is one of these), mean (Monte Carlo SE)
+         cond    lambda_0.1    lambda_0.5      lambda_1      lambda_2      lambda_5     lambda_10     lambda_20     lambda_50    lambda_100
+  numeric_150 1.039 (0.096) 0.744 (0.055) 0.641 (0.045) 0.560 (0.037) 0.506 (0.027) 0.552 (0.022) 0.746 (0.021) 0.993 (0.021) 0.993 (0.021)
+  numeric_400 1.054 (0.092) 0.780 (0.050) 0.685 (0.042) 0.610 (0.037) 0.537 (0.029) 0.522 (0.023) 0.600 (0.017) 0.964 (0.013) 1.006 (0.011)
+ numeric_1000 1.424 (0.185) 0.983 (0.081) 0.824 (0.055) 0.705 (0.041) 0.595 (0.031) 0.545 (0.024) 0.553 (0.018) 0.759 (0.013) 1.022 (0.009)
+    mixed_200 0.447 (0.011) 0.441 (0.010) 0.425 (0.009) 0.407 (0.007) 0.434 (0.008) 0.495 (0.009) 0.615 (0.010) 0.846 (0.010) 0.847 (0.010)
+   mixed_1000 0.388 (0.004) 0.395 (0.004) 0.393 (0.004) 0.384 (0.004) 0.373 (0.003) 0.415 (0.003) 0.473 (0.004) 0.616 (0.004) 0.846 (0.005)
+
+paired differences in error, arm minus reference: mean (paired SE)
+         cond     wide - grid6     path - grid6      path - wide    path1 - grid6     path1 - wide path1_10 - grid6 path3_10 - grid6
+  numeric_150 +0.0006 (0.0006) +0.2087 (0.0316) +0.2081 (0.0317) +0.2909 (0.0370) +0.2904 (0.0370) +0.2481 (0.0375) +0.2599 (0.0379)
+  numeric_400 -0.0015 (0.0015) +0.1708 (0.0348) +0.1724 (0.0346) +0.1435 (0.0328) +0.1450 (0.0328) +0.2129 (0.0386) +0.1930 (0.0380)
+ numeric_1000 -0.0135 (0.0044) +0.0646 (0.0298) +0.0781 (0.0288) +0.0910 (0.0334) +0.1044 (0.0325) +0.0288 (0.0240) -0.0137 (0.0044)
+    mixed_200 +0.0000 (0.0000) +0.0000 (0.0000) +0.0000 (0.0000) +0.0008 (0.0009) +0.0008 (0.0009) -0.0144 (0.0057) -0.0139 (0.0048)
+   mixed_1000 +0.0000 (0.0000) +0.0000 (0.0000) +0.0000 (0.0000) +0.0000 (0.0000) +0.0000 (0.0000) -0.0407 (0.0024) -0.0407 (0.0025)
+
+decision rules, fixed before the run
+  R1 widen the grid: no worse than grid6 in every condition TRUE; better in at least one TRUE -> WIDEN
+  R2 path1 error within tolerance of grid6 and wide everywhere FALSE; at most half grid6's median time everywhere TRUE -> no
+  R2 path  error within tolerance of grid6 and wide everywhere FALSE; at most half grid6's median time everywhere FALSE -> no
+  R3 path1_10 no worse than grid6 anywhere FALSE; better in at least one TRUE; median time at most grid6's everywhere TRUE -> no
+  R3 path3_10 no worse than grid6 anywhere FALSE; better in at least one TRUE; median time at most grid6's everywhere TRUE -> no
+
+addendum 2, a separate run on the same datasets and seeds: error at the truly missing cells, mean (Monte Carlo SE) over 50 replicates
+         cond            arm         error        regret median_seconds mean_fits
+  numeric_150       grid6_a2 0.497 (0.026) 0.011 (0.003)           0.71      18.0
+  numeric_150        wide_a2 0.498 (0.026) 0.011 (0.003)           0.78      27.0
+  numeric_150     path_fixed 0.499 (0.026) 0.012 (0.003)           0.40      21.8
+  numeric_150    path1_fixed 0.502 (0.026) 0.015 (0.006)           0.13       7.4
+  numeric_150 path1_10_fixed 0.514 (0.028) 0.028 (0.008)           0.11       7.2
+  numeric_150 path3_10_fixed 0.495 (0.025) 0.008 (0.002)           0.29      21.4
+  numeric_150       cold3_10 0.495 (0.025) 0.008 (0.002)           0.66      27.0
+  numeric_400       grid6_a2 0.511 (0.024) 0.006 (0.002)           1.29      18.0
+  numeric_400        wide_a2 0.510 (0.024) 0.005 (0.002)           1.44      27.0
+  numeric_400     path_fixed 0.510 (0.024) 0.005 (0.002)           0.61      19.9
+  numeric_400    path1_fixed 0.508 (0.023) 0.003 (0.001)           0.20       6.6
+  numeric_400 path1_10_fixed 0.513 (0.023) 0.008 (0.002)           0.14       6.5
+  numeric_400 path3_10_fixed 0.509 (0.023) 0.004 (0.002)           0.44      19.6
+  numeric_400       cold3_10 0.509 (0.023) 0.004 (0.002)           1.10      27.0
+ numeric_1000       grid6_a2 0.543 (0.025) 0.016 (0.004)           2.53      18.0
+ numeric_1000        wide_a2 0.529 (0.022) 0.003 (0.001)           2.85      27.0
+ numeric_1000     path_fixed 0.530 (0.022) 0.003 (0.001)           0.94      17.3
+ numeric_1000    path1_fixed 0.529 (0.022) 0.003 (0.001)           0.30       5.8
+ numeric_1000 path1_10_fixed 0.531 (0.022) 0.005 (0.001)           0.23       5.9
+ numeric_1000 path3_10_fixed 0.529 (0.022) 0.003 (0.001)           0.67      17.0
+ numeric_1000       cold3_10 0.529 (0.022) 0.003 (0.001)           2.21      27.0
+    mixed_200       grid6_a2 0.434 (0.008) 0.041 (0.006)          10.03      18.0
+    mixed_200        wide_a2 0.434 (0.008) 0.041 (0.006)          15.06      27.0
+    mixed_200     path_fixed 0.434 (0.008) 0.041 (0.006)           9.79      21.0
+    mixed_200    path1_fixed 0.435 (0.008) 0.042 (0.006)           3.31       7.1
+    mixed_200 path1_10_fixed 0.419 (0.008) 0.026 (0.005)           3.24       7.6
+    mixed_200 path3_10_fixed 0.418 (0.008) 0.025 (0.005)           9.51      22.2
+    mixed_200       cold3_10 0.423 (0.008) 0.029 (0.006)          14.61      27.0
+   mixed_1000       grid6_a2 0.415 (0.003) 0.045 (0.002)          41.01      18.0
+   mixed_1000        wide_a2 0.415 (0.003) 0.045 (0.002)          57.55      27.0
+   mixed_1000     path_fixed 0.415 (0.003) 0.045 (0.002)          28.60      18.0
+   mixed_1000    path1_fixed 0.415 (0.003) 0.045 (0.002)           9.77       6.0
+   mixed_1000 path1_10_fixed 0.374 (0.003) 0.004 (0.001)          10.28       6.9
+   mixed_1000 path3_10_fixed 0.374 (0.003) 0.004 (0.001)          31.31      20.8
+   mixed_1000       cold3_10 0.375 (0.003) 0.004 (0.001)          51.59      27.0
+
+lambda chosen, counts (addendum 2)
+  numeric_150  path_fixed      1 x2, 2 x17, 5 x24, 10 x7 
+  numeric_150  path1_fixed     0.5 x1, 1 x4, 2 x16, 5 x25, 10 x3, 20 x1 
+  numeric_150  path1_10_fixed  0.5 x3, 1 x4, 2 x8, 5 x26, 10 x8, 20 x1 
+  numeric_150  path3_10_fixed  1 x2, 2 x13, 5 x26, 10 x8, 20 x1 
+  numeric_150  cold3_10        1 x2, 2 x13, 5 x26, 10 x8, 20 x1 
+  numeric_400  path_fixed      2 x6, 5 x20, 10 x23, 20 x1 
+  numeric_400  path1_fixed     2 x7, 5 x19, 10 x21, 20 x3 
+  numeric_400  path1_10_fixed  0.1 x1, 1 x1, 2 x4, 5 x17, 10 x22, 20 x5 
+  numeric_400  path3_10_fixed  2 x5, 5 x21, 10 x19, 20 x5 
+  numeric_400  cold3_10        2 x5, 5 x21, 10 x19, 20 x5 
+  numeric_1000 path_fixed      5 x8, 10 x23, 20 x19 
+  numeric_1000 path1_fixed     5 x7, 10 x25, 20 x18 
+  numeric_1000 path1_10_fixed  5 x10, 10 x23, 20 x17 
+  numeric_1000 path3_10_fixed  5 x6, 10 x22, 20 x22 
+  numeric_1000 cold3_10        5 x6, 10 x22, 20 x22 
+  mixed_200    path_fixed      5 x50 
+  mixed_200    path1_fixed     2 x3, 5 x47 
+  mixed_200    path1_10_fixed  0.1 x1, 0.5 x4, 1 x2, 2 x18, 5 x25 
+  mixed_200    path3_10_fixed  0.1 x1, 2 x18, 5 x31 
+  mixed_200    cold3_10        0.1 x3, 2 x16, 5 x31 
+  mixed_1000   path_fixed      10 x50 
+  mixed_1000   path1_fixed     10 x50 
+  mixed_1000   path1_10_fixed  2 x1, 5 x45, 10 x4 
+  mixed_1000   path3_10_fixed  5 x46, 10 x4 
+  mixed_1000   cold3_10        0.1 x2, 5 x44, 10 x4 
+
+paired differences in error, arm minus reference (grid6, wide): mean (paired SE)
+         cond path_fixed - grid6 path1_fixed - grid6 path1_10_fixed - grid6 path3_10_fixed - grid6 cold3_10 - grid6 path_fixed - wide path1_fixed - wide
+  numeric_150   +0.0012 (0.0012)    +0.0044 (0.0043)       +0.0169 (0.0084)       -0.0025 (0.0035) -0.0025 (0.0035)  +0.0006 (0.0013)   +0.0038 (0.0043)
+  numeric_400   -0.0015 (0.0015)    -0.0029 (0.0027)       +0.0017 (0.0036)       -0.0025 (0.0030) -0.0025 (0.0030)  +0.0000 (0.0000)   -0.0013 (0.0023)
+ numeric_1000   -0.0131 (0.0044)    -0.0133 (0.0044)       -0.0113 (0.0044)       -0.0136 (0.0044) -0.0136 (0.0044)  +0.0003 (0.0003)   +0.0001 (0.0001)
+    mixed_200   +0.0000 (0.0000)    +0.0010 (0.0009)       -0.0148 (0.0054)       -0.0161 (0.0045) -0.0112 (0.0046)  +0.0000 (0.0000)   +0.0010 (0.0009)
+   mixed_1000   +0.0000 (0.0000)    +0.0000 (0.0000)       -0.0407 (0.0024)       -0.0407 (0.0025) -0.0403 (0.0025)  +0.0000 (0.0000)   +0.0000 (0.0000)
+
+R2 and R3 on the corrected arms, as worded
+  R2 path1_fixed    error within tolerance of grid6 and wide everywhere TRUE; at most half grid6's median time everywhere TRUE -> ADOPT
+  R2 path_fixed     error within tolerance of grid6 and wide everywhere TRUE; at most half grid6's median time everywhere FALSE -> no
+  R3 path1_10_fixed no worse than grid6 anywhere FALSE; better in at least one TRUE; median time at most grid6's everywhere TRUE -> no
+  R3 path3_10_fixed no worse than grid6 anywhere TRUE; better in at least one TRUE; median time at most grid6's everywhere TRUE -> ADOPT
+  cold3_10 is descriptive, under no rule
+
+### the default question: glrm_penalty_contrasts.R
+check: the registered run's grid6 and wide errors equal addendum 2's, replicate by replicate: TRUE 
+
+error differences, mean (paired SE), and as a share of grid6's mean error
+         cond grid6_error                   grid                  folds                   warm                  total
+  numeric_150       0.497 +0.0006 (0.0006) +0.1% -0.0031 (0.0034) -0.6% +0.0000 (0.0000) +0.0% -0.0025 (0.0035) -0.5%
+  numeric_400       0.511 -0.0015 (0.0015) -0.3% -0.0009 (0.0026) -0.2% +0.0000 (0.0000) +0.0% -0.0025 (0.0030) -0.5%
+ numeric_1000       0.543 -0.0135 (0.0044) -2.5% -0.0001 (0.0005) -0.0% +0.0000 (0.0000) +0.0% -0.0136 (0.0044) -2.5%
+    mixed_200       0.434 +0.0000 (0.0000) +0.0% -0.0112 (0.0046) -2.6% -0.0049 (0.0025) -1.1% -0.0161 (0.0045) -3.7%
+   mixed_1000       0.415 +0.0000 (0.0000) +0.0% -0.0403 (0.0025) -9.7% -0.0004 (0.0003) -0.1% -0.0407 (0.0025) -9.8%
+
+median seconds per selection (addendum 2's session) and over grid6_a2's
+         cond      grid6_a2       wide_a2      cold3_10 path3_10_fixed  path1_fixed
+  numeric_150  0.71 (x1.00)  0.78 (x1.09)  0.66 (x0.94)   0.29 (x0.41) 0.13 (x0.18)
+  numeric_400  1.29 (x1.00)  1.44 (x1.11)  1.10 (x0.85)   0.44 (x0.34) 0.20 (x0.15)
+ numeric_1000  2.53 (x1.00)  2.85 (x1.12)  2.21 (x0.88)   0.67 (x0.26) 0.30 (x0.12)
+    mixed_200 10.03 (x1.00) 15.06 (x1.50) 14.61 (x1.46)   9.51 (x0.95) 3.31 (x0.33)
+   mixed_1000 41.01 (x1.00) 57.55 (x1.40) 51.59 (x1.26)  31.31 (x0.76) 9.77 (x0.24)

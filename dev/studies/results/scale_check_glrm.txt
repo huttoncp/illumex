@@ -1,0 +1,17 @@
+## dev/studies/scale_check.R's reduce_glrm cell, rerun on 2026-11-07 17:51 to 18:03 on one
+## core (OMP_NUM_THREADS = 1) of the same 16 GB Windows machine as scale_check.txt, R 4.4.3,
+## each cell in a fresh R process with a 15-minute limit, for the timings in ilm_reduce()'s
+## help after ilm_glrm() gained scaled losses and the penalty chosen over 0.1 to 100 on ten
+## folds. Two builds, one after the other, nothing else running:
+##   main      illumex as released at 7f7c469 (0.0.8.9006), unscaled, the penalty from 18 fits
+##   scaled    the same with the scaled losses and the new penalty choice (installed before
+##             the version moved to 0.0.8.9007, so its rows say 0.0.8.9006)
+## The 2026-09-28 run in scale_check.txt, on an earlier build, took 299.2 s at 10,000 rows
+## and timed out at 50,000.
+
+build   cell             n       status   seconds   max MB   data MB
+main    reduce_glrm      1000    ok          13.96     92.5      0.1
+main    reduce_glrm      10000   ok         165.82    110.4      0.8
+scaled  reduce_glrm      1000    ok          15.33     95.1      0.1
+scaled  reduce_glrm      10000   ok         103.16    111.3      0.8
+scaled  reduce_glrm      50000   ok         418.97    182.7      3.8

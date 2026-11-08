@@ -124,10 +124,11 @@ FactoMineR's \code{FAMD()} on eigenvalues and on individual coordinates.
 
 The default method is closed-form: on one core of a 16 GB Windows machine
 (\href{https://github.com/huttoncp/illumex/blob/main/dev/studies/scale_check.R}{\code{dev/studies/scale_check.R}}) it took under a second at 250,000 rows.
-\code{method = "glrm"} fits iteratively and first chooses its penalty from 18
-held-out fits: 30 seconds at 1,000 rows, 5 minutes at 10,000 and over 15
-minutes at 50,000. Giving \code{lambda} (passed to \code{\link[=ilm_glrm]{ilm_glrm()}}) saves the
-search.
+\code{method = "glrm"} fits iteratively and first chooses its penalty from up to
+27 held-out fits, most started from the fit before: 15 seconds at 1,000
+rows, under 2 minutes at 10,000 and 7 minutes at 50,000
+(\href{https://github.com/huttoncp/illumex/blob/main/dev/studies/results/scale_check_glrm.txt}{\code{dev/studies/results/scale_check_glrm.txt}}).
+Giving \code{lambda} (passed to \code{\link[=ilm_glrm]{ilm_glrm()}}) saves the search.
 }
 
 \examples{

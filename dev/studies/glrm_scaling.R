@@ -8,7 +8,7 @@
 ## best constant a standardised number costs about 0.5 per row, a factor with
 ## L levels log L per row over L columns -- and a factor's L logit columns are
 ## identified only through the ridge penalty. Udell, Horn, Zadeh and Boyd
-## (2016, section 5) scale each column's loss by its loss at the best
+## (2016, section 4.3) scale each column's loss by its loss at the best
 ## constant. The decision on making that the default rested on this study;
 ## the package defaults were unchanged while it ran, and the arms were
 ## switched by options read inside ilm_glrm() on the study's branch only.

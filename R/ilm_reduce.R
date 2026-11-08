@@ -33,10 +33,11 @@
 #' @section Size:
 #' The default method is closed-form: on one core of a 16 GB Windows machine
 #' ([`dev/studies/scale_check.R`](https://github.com/huttoncp/illumex/blob/main/dev/studies/scale_check.R)) it took under a second at 250,000 rows.
-#' `method = "glrm"` fits iteratively and first chooses its penalty from 18
-#' held-out fits: 30 seconds at 1,000 rows, 5 minutes at 10,000 and over 15
-#' minutes at 50,000. Giving `lambda` (passed to [ilm_glrm()]) saves the
-#' search.
+#' `method = "glrm"` fits iteratively and first chooses its penalty from up to
+#' 27 held-out fits, most started from the fit before: 15 seconds at 1,000
+#' rows, under 2 minutes at 10,000 and 7 minutes at 50,000
+#' ([`dev/studies/results/scale_check_glrm.txt`](https://github.com/huttoncp/illumex/blob/main/dev/studies/results/scale_check_glrm.txt)).
+#' Giving `lambda` (passed to [ilm_glrm()]) saves the search.
 #'
 #' @param data A data frame.
 #' @param cols Columns to use. A character vector of names, a
