@@ -52,6 +52,10 @@ ilm_smd <- function(v, g, ref) {
 ilm_smd_pair <- function(x1, x0) {
   if (!length(x1) || !length(x0)) return(NA_real_)
   if (is.numeric(x1) && !is.logical(x1)) {
+    ## infinite values are set aside, as in the rows they sit beside: the
+    ## difference is the finite values' (ilm_describe_num())
+    x1 <- x1[is.finite(x1)]; x0 <- x0[is.finite(x0)]
+    if (!length(x1) || !length(x0)) return(NA_real_)
     s <- sqrt((stats::var(x1) + stats::var(x0)) / 2)
     if (!is.finite(s) || s <= 0) return(NA_real_)
     return((mean(x1) - mean(x0)) / s)

@@ -377,19 +377,30 @@ ilm_describe_num <- function(x, digits = 3,
                              gauss = c("index", "ks_d", "both", "none"),
                              probs = c(0, 0.5, 1), skew = FALSE, kurt = FALSE,
                              dispersion = TRUE, cap = 0.06, min_n = 20L,
-                             scale = ilm_floor_scale(x)) {
+                             scale = ilm_floor_scale(x), empty = 0) {
   gauss <- match.arg(gauss)
   if (!is.numeric(probs) || any(probs < 0 | probs > 1))
     stop("`probs` must be numeric values between 0 and 1", call. = FALSE)
-  obs <- length(x); nn <- fnobs(x); na <- obs - nn
+  ## Infinite values are set aside: n is the number of finite values, which is
+  ## what every statistic below uses, so the SE divides by the values it used.
+  ## `na` stays the number of missing values, so obs - n - na is the number of
+  ## infinite ones.
+  obs <- length(x); nm <- fnobs(x); na <- obs - nm
   xv <- x[is.finite(x)]
+  nn <- length(xv)
   s <- if (nn > 1) fsd(xv) else NA_real_
   m <- if (nn > 0) fmean(xv) else NA_real_
   z <- if (nn > 1 && is.finite(s) && s > 0) (xv - m) / s else numeric(0)
 
+  ## The sum of a column or group with nothing finite to sum: `empty` (0) when
+  ## it has no non-missing values at all; what base R's sum() gives when its
+  ## only values are infinite (Inf, -Inf, or NaN for a mix). Every other
+  ## statistic of such a group is NA, by the guards on nn. fsum() of no values
+  ## returns a zero-length result, not 0.
+  tot <- if (nm == 0L) empty else if (nn == 0L) sum(x[!is.na(x)]) else fsum(xv)
   out <- data.frame(
     obs = obs, n = nn, na = na,
-    sum = ilm_rd(fsum(xv), digits), mean = ilm_rd(m, digits),
+    sum = ilm_rd(tot, digits), mean = ilm_rd(m, digits),
     sd = ilm_rd(s, digits), se = ilm_rd(s / sqrt(nn), digits),
     stringsAsFactors = FALSE)
 
