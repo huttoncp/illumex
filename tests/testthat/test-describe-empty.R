@@ -20,7 +20,7 @@ expect_empty_row <- function(row, obs, sum = 0, na = obs) {
   expect_equal(row$obs, obs)
   expect_equal(row$n, 0L)
   expect_equal(row$na, na)
-  expect_identical(row$sum, sum)
+  expect_identical(row$sum, as.numeric(sum))
   for (s in intersect(empty_stats, names(row)))
     expect_true(is.na(row[[s]]), info = s)
 }
@@ -180,4 +180,77 @@ test_that("the standardised difference of a group with an infinite value uses it
   ## a group with no finite values has no standardised difference
   d3 <- data.frame(x = c(1, 2, 3, Inf, Inf, Inf), g = rep(c("a", "b"), each = 3))
   expect_true(is.na(as.data.frame(ilm_describe(d3, "x", by = "g", smd = TRUE))$smd[2]))
+})
+
+## ---- the empty argument -------------------------------------------------------------
+
+test_that("`empty` sets the sum of a column or group with no values", {
+  d <- empty_data()
+  expect_empty_row(ilm_describe(d, "y", empty = NA), 6L, sum = NA)
+  expect_empty_row(ilm_describe(d, "y", empty = -999), 6L, sum = -999)
+  r <- as.data.frame(ilm_describe(d, "x", by = "g", empty = NA))
+  expect_empty_row(r[1, ], 3L, sum = NA)
+  expect_equal(r$sum[2], 8)
+  r <- ilm_describe_all(d[c("x", "z", "g")], by = "g", empty = -1)
+  num <- as.data.frame(if (is.data.frame(r)) r else r$numeric)
+  expect_empty_row(num[num$variable == "x" & num$g == "a", ], 3L, sum = -1)
+  ## a group with values is unaffected, whatever `empty` is
+  expect_equal(num$sum[num$variable == "z"], c(6, 15))
+  ## and a group of infinite values shows its own sum, whatever `empty` is
+  expect_identical(ilm_describe(c(Inf, Inf), empty = NA)$sum, Inf)
+})
+
+test_that("`empty` takes one number or NA, and refuses anything else", {
+  d <- empty_data()
+  for (bad in list("none", c(0, 1), NULL, TRUE, list(0), numeric(0)))
+    expect_error(ilm_describe(d, "y", empty = bad), "`empty` must be one number or NA")
+  expect_error(ilm_describe_all(d, empty = "x"), "`empty` must be one number or NA")
+  expect_no_error(ilm_describe(d, "y", empty = NA_real_))
+  expect_no_error(ilm_describe(d, "y", empty = 0L))
+})
+
+## ---- the count of infinite values, and the message ------------------------------------
+
+inf_messages <- function(expr) {
+  msgs <- character(0)
+  withCallingHandlers(expr, message = function(m) {
+    msgs <<- c(msgs, conditionMessage(m)); invokeRestart("muffleMessage")
+  })
+  grep("infinite", msgs, value = TRUE)
+}
+
+test_that("n_inf counts the infinite values set aside, and appears only when there are some", {
+  r <- suppressMessages(ilm_describe(c(1, 2, 3, Inf, NA)))
+  expect_equal(r$n_inf, 1L)
+  expect_equal(match("n_inf", names(r)), match("na", names(r)) + 1L)
+  expect_equal(r$obs, r$n + r$na + r$n_inf)
+  expect_false("n_inf" %in% names(ilm_describe(c(1, 2, 3, NA))))
+  d <- data.frame(x = c(1, Inf, 3, 4, 5, 6), z = c(1, 2, 3, 4, 5, 6),
+                  g = rep(c("a", "b"), each = 3))
+  r <- as.data.frame(suppressMessages(ilm_describe(d, "x", by = "g")))
+  expect_equal(r$n_inf, c(1L, 0L))
+  expect_false("n_inf" %in% names(ilm_describe(d, "z", by = "g")))
+  r <- suppressMessages(ilm_describe_all(d, by = "g"))
+  num <- as.data.frame(if (is.data.frame(r)) r else r$numeric)
+  expect_equal(num$n_inf, c(1L, 0L, 0L, 0L))
+  expect_false("n_inf" %in% names(as.data.frame(ilm_describe_all(d[c("z", "g")], by = "g"))))
+  expect_equal(suppressMessages(ilm_describe(c(Inf, -Inf, NA)))$n_inf, 2L)
+})
+
+test_that("a call that meets infinite values says so once, and names ilm_recode_errors()", {
+  m <- inf_messages(ilm_describe(c(1, 2, Inf, -Inf)))
+  expect_length(m, 1L)
+  expect_match(m, "ilm_recode_errors()", fixed = TRUE)
+  expect_match(m, "2 infinite values")
+  d <- data.frame(x = c(1, Inf, 3, 4, 5, Inf), w = c(Inf, 2, 3, 4, 5, 6), z = 1:6,
+                  g = rep(c("a", "b"), each = 3))
+  m <- inf_messages(ilm_describe_all(d, by = "g"))
+  expect_length(m, 1L)
+  expect_match(m, "3 infinite values")
+  expect_match(m, "x (a: 1, b: 1)", fixed = TRUE)
+  expect_match(m, "w (a: 1)", fixed = TRUE)
+  m <- inf_messages(ilm_describe(d, c("x", "w")))
+  expect_length(m, 1L)
+  expect_length(inf_messages(ilm_describe_all(d[c("z", "g")], by = "g")), 0L)
+  expect_length(inf_messages(ilm_describe(1:5)), 0L)
 })

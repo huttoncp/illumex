@@ -373,6 +373,83 @@ print.ilm_gauss <- function(x, ...) {
 
 #' @keywords internal
 #' @noRd
+## `empty`, the sum shown for a column or group with no non-missing values,
+## is one number or NA
+#' @keywords internal
+#' @noRd
+ilm_empty_arg <- function(empty) {
+  ok <- length(empty) == 1L && !is.list(empty) &&
+    (is.numeric(empty) || (is.logical(empty) && is.na(empty)))
+  if (!ok)
+    stop("`empty` must be one number or NA: the sum shown for a column or group ",
+         "with no values.", call. = FALSE)
+  invisible(empty)
+}
+
+## ilm_describe() and ilm_describe_all() call ilm_describe() for each column,
+## so only the call the user made -- the outermost -- drops an n_inf column
+## that is 0 throughout and says once what infinite values it met
+ilm_describe_depth <- new.env(parent = emptyenv())
+ilm_describe_depth$n <- 0L
+
+#' @keywords internal
+#' @noRd
+ilm_describe_enter <- function() {
+  ilm_describe_depth$n <- ilm_describe_depth$n + 1L
+  ilm_describe_depth$n == 1L
+}
+
+#' @keywords internal
+#' @noRd
+ilm_describe_leave <- function() ilm_describe_depth$n <- max(0L, ilm_describe_depth$n - 1L)
+
+## For the outermost call: drop n_inf where every row's is 0, and otherwise
+## say how many infinite values were set aside, in which columns and groups.
+## A constant column whose one value is infinite is counted too. `x` is one
+## table or ilm_describe_all()'s list of them.
+#' @keywords internal
+#' @noRd
+ilm_inf_finish <- function(x, fn, y = NULL, by = NULL) {
+  tabs <- if (is.data.frame(x)) list(x) else x
+  gcol <- if (length(by)) paste(by, collapse = ".")
+  parts <- list(); total <- 0
+  note <- function(v, g, k) {
+    if (is.null(parts[[v]])) parts[[v]] <<- list(g = character(0), k = numeric(0))
+    parts[[v]]$g <<- c(parts[[v]]$g, g); parts[[v]]$k <<- c(parts[[v]]$k, k)
+  }
+  for (i in seq_along(tabs)) {
+    t <- tabs[[i]]
+    if (!is.data.frame(t)) next
+    if ("n_inf" %in% names(t)) {
+      hit <- which(t$n_inf > 0)
+      for (j in hit) {
+        v <- if ("variable" %in% names(t)) t$variable[j] else if (length(y) == 1L) y else "the values"
+        note(v, if (!is.null(gcol) && gcol %in% names(t)) as.character(t[[gcol]][j]) else NA, t$n_inf[j])
+        total <- total + t$n_inf[j]
+      }
+      if (!length(hit)) { t$n_inf <- NULL; tabs[[i]] <- t }
+    } else if (all(c("variable", "value", "n") %in% names(t))) {
+      ## the constant section: a column whose one value is infinite
+      inf <- which(t$value %in% c("Inf", "-Inf"))
+      for (j in inf) { note(t$variable[j], NA, t$n[j]); total <- total + t$n[j] }
+    }
+  }
+  if (total > 0) {
+    where <- vapply(names(parts), function(v) {
+      p <- parts[[v]]
+      if (all(is.na(p$g))) sprintf("%s: %d", v, as.integer(sum(p$k)))
+      else sprintf("%s (%s)", v, paste(sprintf("%s: %d", p$g, as.integer(p$k)), collapse = ", "))
+    }, "")
+    message(fn, ": ", total, " infinite value", if (total == 1) "" else "s",
+            " set aside, used in no statistic and not counted in n: ",
+            paste(where, collapse = "; "), ". They are often errors; ",
+            "ilm_recode_errors() can set them to NA.")
+  }
+  if (is.data.frame(x)) return(tabs[[1L]])
+  for (i in seq_along(tabs)) x[[i]] <- tabs[[i]]
+  x
+}
+
 ilm_describe_num <- function(x, digits = 3,
                              gauss = c("index", "ks_d", "both", "none"),
                              probs = c(0, 0.5, 1), skew = FALSE, kurt = FALSE,
@@ -397,9 +474,11 @@ ilm_describe_num <- function(x, digits = 3,
   ## only values are infinite (Inf, -Inf, or NaN for a mix). Every other
   ## statistic of such a group is NA, by the guards on nn. fsum() of no values
   ## returns a zero-length result, not 0.
-  tot <- if (nm == 0L) empty else if (nn == 0L) sum(x[!is.na(x)]) else fsum(xv)
+  tot <- if (nm == 0L) as.numeric(empty) else if (nn == 0L) sum(x[!is.na(x)]) else fsum(xv)
+  ## n_inf, the infinite values set aside, is always made here; the call the
+  ## user made drops the column when no row has any (ilm_inf_finish())
   out <- data.frame(
-    obs = obs, n = nn, na = na,
+    obs = obs, n = nn, na = na, n_inf = nm - nn,
     sum = ilm_rd(tot, digits), mean = ilm_rd(m, digits),
     sd = ilm_rd(s, digits), se = ilm_rd(s / sqrt(nn), digits),
     stringsAsFactors = FALSE)
@@ -638,11 +717,27 @@ ILM_CLASSES <- c("numeric", "categorical", "logical", "time")
 #'   the square root of the average of their p(1 - p); a category of more
 #'   than two levels, Yang and Dalton's (2012) multivariate difference, which
 #'   has no sign. A date is compared as a number. Each group's uses its
-#'   non-missing values. The reference group's own row has none. With two
+#'   finite values: missing and infinite values are left out. The reference
+#'   group's own row has none. With two
 #'   `by` variables, each combination is compared with the reference level of
 #'   the second variable within the same level of the first, so `smd` names a
 #'   level of the second ("unexposed", say): exposed against unexposed
 #'   controls, never cases against controls.
+#' @param empty What the `sum` of a numeric column, or of one group of it,
+#'   shows when it has no non-missing values: 0 by default, or `NA`, or
+#'   another number to mark such groups. Every other statistic of such a
+#'   group is `NA`, and its `n` is 0.
+#' @section Missing and infinite values:
+#' For a numeric column, `n` is the number of finite values, and every
+#' statistic uses those only. `na` counts the missing values (`NA` and
+#' `NaN`). `Inf` and `-Inf` are set aside: when there are any, an `n_inf`
+#' column counts them and a message says where they are. They are often
+#' errors, which [ilm_recode_errors()] can set to `NA`.
+#'
+#' A column or group with no non-missing values has `n` 0, a `sum` of 0
+#' (or what `empty` says), and `NA` for every other statistic. One whose only
+#' values are infinite has `n` 0, `NA` for its statistics, and as its `sum`
+#' what [sum()] gives for them: `Inf`, `-Inf`, or `NaN` for a mix.
 #' @return A one-row data frame, or one row per group when `by` is used.
 #' @references
 #' Austin, P. C. (2009). Balance diagnostics for comparing the distribution of
@@ -670,14 +765,21 @@ ilm_describe <- function(data, y = NULL, by = NULL, digits = 3,
                           gauss = c("index", "ks_d", "both", "none"),
                           probs = c(0, 0.5, 1), skew = FALSE, kurt = FALSE,
                           dispersion = TRUE, rare_n = 5L,
-                          cap = 0.06, min_n = 20L, smd = FALSE, subset = NULL, subset_negate = FALSE, subset_fixed = FALSE) {
+                          cap = 0.06, min_n = 20L, smd = FALSE, subset = NULL, subset_negate = FALSE, subset_fixed = FALSE,
+                          empty = 0) {
   gauss <- match.arg(gauss)
+  ilm_empty_arg(empty)
+  outer <- ilm_describe_enter()
+  on.exit(ilm_describe_leave(), add = TRUE)
   if (inherits(data, "ilm_anomaly") && (!is.null(subset) || isTRUE(subset_negate)))
     stop("`subset` cannot be applied to an ilm_anomaly() result: subset the data ",
          "before ilm_anomaly(), or use the rows its result gives", call. = FALSE)
   rsel <- ilm_select_rows(data, subset, subset_negate, subset_fixed)
   data <- rsel$data
-  fin <- function(out) ilm_select_finish(out, data, rsel, NULL, y)
+  fin <- function(out) {
+    if (outer) out <- ilm_inf_finish(out, "ilm_describe()", y, by)
+    ilm_select_finish(out, data, rsel, NULL, y)
+  }
   ilm_smd_arg(smd, by)
   ## An ilm_anomaly() result is accepted directly: the flagged rows are what
   ## the user wants to look at next, and rebuilding that subset by hand from
@@ -689,7 +791,7 @@ ilm_describe <- function(data, y = NULL, by = NULL, digits = 3,
     if (is.logical(v)) ilm_describe_lgl(v, NULL)
     else if (ilm_is_time(v)) ilm_describe_time(v, NULL)
     else if (is.numeric(v)) ilm_describe_num(v, NULL, gauss, probs, skew, kurt, dispersion,
-                                             cap, min_n, scale = sc)
+                                             cap, min_n, scale = sc, empty = empty)
     else ilm_describe_cat(v, NULL, rare_n = rare_n)
   }
 
@@ -730,7 +832,7 @@ ilm_describe <- function(data, y = NULL, by = NULL, digits = 3,
       ilm_describe(data, cn, by = by, digits = digits, gauss = gauss,
                    probs = probs, skew = skew, kurt = kurt,
                    dispersion = dispersion, rare_n = rare_n,
-                   cap = cap, min_n = min_n, smd = smd))
+                   cap = cap, min_n = min_n, smd = smd, empty = empty))
     r <- do.call(rbind, rs)
     nrep <- nrow(r) / length(cols)
     return(fin(ilm_describe_result(cbind(variable = rep(cols, each = nrep), r,
@@ -857,6 +959,7 @@ ilm_constant_tbl <- function(data, cols) {
 #'
 #' @param data A data frame.
 #' @inheritParams ilm_describe
+#' @inheritSection ilm_describe Missing and infinite values
 #' @inheritParams ilm_reduce
 #' @param cols Columns to describe. A character vector of names, a regular
 #'   expression, a predicate function such as `is.numeric`, or `NULL` for all
@@ -879,8 +982,11 @@ ilm_describe_all <- function(data, by = NULL, cols = NULL, digits = 3,
                               probs = c(0, 0.5, 1), skew = FALSE, kurt = FALSE,
                               dispersion = TRUE, class = "all", rare_n = 5L,
                               cap = 0.06, min_n = 20L, smd = FALSE, cols_negate = FALSE, cols_fixed = FALSE, subset = NULL,
-                              subset_negate = FALSE, subset_fixed = FALSE) {
+                              subset_negate = FALSE, subset_fixed = FALSE, empty = 0) {
   gauss <- match.arg(gauss)
+  ilm_empty_arg(empty)
+  outer <- ilm_describe_enter()
+  on.exit(ilm_describe_leave(), add = TRUE)
   if (inherits(data, "ilm_anomaly") && (!is.null(subset) || isTRUE(subset_negate)))
     stop("`subset` cannot be applied to an ilm_anomaly() result: subset the data ",
          "before ilm_anomaly(), or use the rows its result gives", call. = FALSE)
@@ -924,7 +1030,10 @@ ilm_describe_all <- function(data, by = NULL, cols = NULL, digits = 3,
   ## the columns the result covers: those described, and the constant ones
   ## when they are shown
   used <- c(cand[cl %in% want], if (identical(class, "all") && !is.null(const)) const$variable)
-  fin <- function(out) ilm_select_finish(out, data, rsel, cols, used, by, cols_negate, cols_fixed)
+  fin <- function(out) {
+    if (outer) out <- ilm_inf_finish(out, "ilm_describe_all()", NULL, by)
+    ilm_select_finish(out, data, rsel, cols, used, by, cols_negate, cols_fixed)
+  }
   res <- lapply(want, function(k) {
     cols <- cand[cl == k]
     if (!length(cols)) return(NULL)
@@ -932,7 +1041,7 @@ ilm_describe_all <- function(data, by = NULL, cols = NULL, digits = 3,
       ilm_describe(data, cn, by = by, digits = digits, gauss = gauss,
                     probs = probs, skew = skew, kurt = kurt,
                     dispersion = dispersion, rare_n = rare_n,
-                    cap = cap, min_n = min_n, smd = smd))
+                    cap = cap, min_n = min_n, smd = smd, empty = empty))
     r <- do.call(rbind, rs)
     nrep <- nrow(r) / length(cols)
     cbind(variable = rep(cols, each = nrep), r, stringsAsFactors = FALSE)
