@@ -412,7 +412,9 @@ ilm_describe_leave <- function() ilm_describe_depth$n <- max(0L, ilm_describe_de
 #' @noRd
 ilm_describe_groups <- function(data, by) {
   g <- interaction(data[by], drop = TRUE)
-  list(by = by, n = nrow(data), g = g,
+  ## the by columns themselves are kept, so that the groups are only ever
+  ## reused for the rows they were made from
+  list(by = by, cols = lapply(by, function(b) data[[b]]), g = g,
        two = if (length(by) == 2L) ilm_describe_two(data, by, g))
 }
 
@@ -430,14 +432,17 @@ ilm_describe_groups_keep <- function(data, by) {
 #' @noRd
 ilm_describe_groups_restore <- function(old) ilm_describe_depth$groups <- old
 
-## the groups kept by the call this one is inside, when they are `data`'s for
-## `by`; otherwise worked out here
+## the groups kept by the call this one is inside, when they were made from
+## `data`'s own by columns; otherwise worked out here. identical() of a
+## column with itself returns at once, so the check costs nothing when the
+## groups are reused.
 #' @keywords internal
 #' @noRd
 ilm_describe_groups_get <- function(data, by) {
   k <- ilm_describe_depth$groups
-  if (!is.null(k) && identical(k$by, by) && identical(k$n, nrow(data))) k
-  else ilm_describe_groups(data, by)
+  same <- !is.null(k) && identical(k$by, by) &&
+    all(vapply(seq_along(by), function(i) identical(k$cols[[i]], data[[by[i]]]), TRUE))
+  if (same) k else ilm_describe_groups(data, by)
 }
 
 ## For the outermost call: drop n_inf where every row's is 0, and otherwise

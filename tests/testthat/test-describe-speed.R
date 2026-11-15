@@ -32,3 +32,21 @@ test_that("the record holds the cases it is meant to", {
     record$all_empty_na$value$numeric$variable == "part" &
       record$all_empty_na$value$numeric$g3 == "w"])))
 })
+
+test_that("kept groups are used only for the rows they were made from", {
+  d <- describe_speed_data()
+  kept <- illumex:::ilm_describe_groups_keep(d, "g3")
+  on.exit(illumex:::ilm_describe_groups_restore(kept))
+  ## the same frame: the kept groups
+  same <- illumex:::ilm_describe_groups_get(d, "g3")
+  expect_identical(same$g, interaction(d["g3"], drop = TRUE))
+  ## a frame of the same height in another row order: its own groups
+  r <- d[rev(seq_len(nrow(d))), ]
+  other <- illumex:::ilm_describe_groups_get(r, "g3")
+  expect_identical(other$g, interaction(r["g3"], drop = TRUE))
+  expect_false(identical(other$g, same$g))
+  ## and the same height with other values in the by column
+  d2 <- d; d2$g3 <- rev(d2$g3)
+  expect_identical(illumex:::ilm_describe_groups_get(d2, "g3")$g,
+                   interaction(d2["g3"], drop = TRUE))
+})
