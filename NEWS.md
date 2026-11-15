@@ -22,6 +22,17 @@ New:
   message says where they are and that `ilm_recode_errors()` can set them
   to `NA`.
 
+Faster, with the same results:
+
+* With `by`, `ilm_describe_all()`, and `ilm_describe()` given several
+  columns, work out the groups once for the call instead of once for every
+  column. On 400,000 rows and 20 columns, by one variable it took 11% less
+  time and 22% less memory, and by two variables 80% less time and 58% less
+  memory (`dev/describe_speed/`).
+* With `gauss = "none"` and `dispersion = FALSE`, nothing reads a numeric
+  column's scale, so it is no longer worked out: 34% to 41% less time on the
+  same data.
+
 # illumex 0.0.8.9007
 
 The two changes below were decided and built in September 2026, and the

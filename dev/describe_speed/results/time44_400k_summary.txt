@@ -1,0 +1,8 @@
+rows 400000, 5 repeats of each version
+all_by1        before  2.933 s   2050.3 MB | after  2.601 s   1597.4 MB | time  -11.3%  memory  -22.1%
+all_by2        before 17.016 s   4176.3 MB | after  3.407 s   1748.9 MB | time  -80.0%  memory  -58.1%
+all_by1_none   before  1.540 s   1302.0 MB | after  0.906 s    630.3 MB | time  -41.2%  memory  -51.6%
+all_noby       before  2.515 s   1462.9 MB | after  2.294 s   1462.9 MB | time   -8.8%  memory   +0.0%
+all_noby_none  before  1.052 s    717.3 MB | after  0.691 s    498.6 MB | time  -34.3%  memory  -30.5%
+na_all_by1     before  0.625 s    577.7 MB | after  0.683 s    577.7 MB | time   +9.4%  memory   +0.0%
+na_all_by2     before  1.553 s   1378.4 MB | after  1.475 s   1378.4 MB | time   -5.0%  memory   +0.0%
