@@ -386,6 +386,33 @@ ilm_empty_arg <- function(empty) {
   invisible(empty)
 }
 
+## `notes` and `fast` are TRUE or FALSE
+#' @keywords internal
+#' @noRd
+ilm_flag_arg <- function(x, name) {
+  if (!is.logical(x) || length(x) != 1L || is.na(x))
+    stop("`", name, "` must be TRUE or FALSE.", call. = FALSE)
+  invisible(x)
+}
+
+## the columns of sentences that notes = FALSE leaves out
+ILM_NOTE_COLS <- c("gauss_note", "note")
+
+## For the outermost call with notes = FALSE: the tables without their note
+## columns. `x` is one table or ilm_describe_all()'s list of them.
+#' @keywords internal
+#' @noRd
+ilm_drop_notes <- function(x) {
+  drop1 <- function(t) {
+    if (!is.data.frame(t)) return(t)
+    for (k in intersect(ILM_NOTE_COLS, names(t))) t[[k]] <- NULL
+    t
+  }
+  if (is.data.frame(x)) return(drop1(x))
+  for (i in seq_along(x)) x[[i]] <- drop1(x[[i]])
+  x
+}
+
 ## ilm_describe() and ilm_describe_all() call ilm_describe() for each column,
 ## so only the call the user made -- the outermost -- drops an n_inf column
 ## that is 0 throughout and says once what infinite values it met
@@ -769,6 +796,9 @@ ILM_CLASSES <- c("numeric", "categorical", "logical", "time")
 #'   shows when it has no non-missing values: 0 by default, or `NA`, or
 #'   another number to mark such groups. Every other statistic of such a
 #'   group is `NA`, and its `n` is 0.
+#' @param notes `FALSE` leaves out the columns of sentences: `gauss_note` for
+#'   numeric columns, and `note` for categorical, logical and time columns.
+#'   Every other column is the same either way.
 #' @section Missing and infinite values:
 #' For a numeric column, `n` is the number of finite values, and every
 #' statistic uses those only. `na` counts the missing values (`NA` and
@@ -808,9 +838,10 @@ ilm_describe <- function(data, y = NULL, by = NULL, digits = 3,
                           probs = c(0, 0.5, 1), skew = FALSE, kurt = FALSE,
                           dispersion = TRUE, rare_n = 5L,
                           cap = 0.06, min_n = 20L, smd = FALSE, subset = NULL, subset_negate = FALSE, subset_fixed = FALSE,
-                          empty = 0) {
+                          empty = 0, notes = TRUE) {
   gauss <- match.arg(gauss)
   ilm_empty_arg(empty)
+  ilm_flag_arg(notes, "notes")
   outer <- ilm_describe_enter()
   on.exit(ilm_describe_leave(), add = TRUE)
   if (inherits(data, "ilm_anomaly") && (!is.null(subset) || isTRUE(subset_negate)))
@@ -820,6 +851,7 @@ ilm_describe <- function(data, y = NULL, by = NULL, digits = 3,
   data <- rsel$data
   fin <- function(out) {
     if (outer) out <- ilm_inf_finish(out, "ilm_describe()", y, by)
+    if (outer && !notes) out <- ilm_drop_notes(out)
     ilm_select_finish(out, data, rsel, NULL, y)
   }
   ilm_smd_arg(smd, by)
@@ -1032,9 +1064,11 @@ ilm_describe_all <- function(data, by = NULL, cols = NULL, digits = 3,
                               probs = c(0, 0.5, 1), skew = FALSE, kurt = FALSE,
                               dispersion = TRUE, class = "all", rare_n = 5L,
                               cap = 0.06, min_n = 20L, smd = FALSE, cols_negate = FALSE, cols_fixed = FALSE, subset = NULL,
-                              subset_negate = FALSE, subset_fixed = FALSE, empty = 0) {
+                              subset_negate = FALSE, subset_fixed = FALSE, empty = 0,
+                              notes = TRUE) {
   gauss <- match.arg(gauss)
   ilm_empty_arg(empty)
+  ilm_flag_arg(notes, "notes")
   outer <- ilm_describe_enter()
   on.exit(ilm_describe_leave(), add = TRUE)
   if (inherits(data, "ilm_anomaly") && (!is.null(subset) || isTRUE(subset_negate)))
@@ -1082,6 +1116,7 @@ ilm_describe_all <- function(data, by = NULL, cols = NULL, digits = 3,
   used <- c(cand[cl %in% want], if (identical(class, "all") && !is.null(const)) const$variable)
   fin <- function(out) {
     if (outer) out <- ilm_inf_finish(out, "ilm_describe_all()", NULL, by)
+    if (outer && !notes) out <- ilm_drop_notes(out)
     ilm_select_finish(out, data, rsel, cols, used, by, cols_negate, cols_fixed)
   }
   ## the groups are worked out once here, for every column described

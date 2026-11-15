@@ -21,6 +21,9 @@ New:
 * When a call meets infinite values, an `n_inf` column counts them, and one
   message says where they are and that `ilm_recode_errors()` can set them
   to `NA`.
+* `notes = FALSE` in `ilm_describe()` and `ilm_describe_all()` leaves out
+  the columns of sentences (`gauss_note`, and each table's `note`); every
+  other column is the same.
 
 Faster, with the same results:
 

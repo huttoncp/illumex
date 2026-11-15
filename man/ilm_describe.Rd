@@ -22,7 +22,8 @@ ilm_describe(
   subset = NULL,
   subset_negate = FALSE,
   subset_fixed = FALSE,
-  empty = 0
+  empty = 0,
+  notes = TRUE
 )
 }
 \arguments{
@@ -96,6 +97,10 @@ as substrings. It changes nothing for a logical, positions or a sample.}
 shows when it has no non-missing values: 0 by default, or \code{NA}, or
 another number to mark such groups. Every other statistic of such a
 group is \code{NA}, and its \code{n} is 0.}
+
+\item{notes}{\code{FALSE} leaves out the columns of sentences: \code{gauss_note} for
+numeric columns, and \code{note} for categorical, logical and time columns.
+Every other column is the same either way.}
 }
 \value{
 A one-row data frame, or one row per group when \code{by} is used.
