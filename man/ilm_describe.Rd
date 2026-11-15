@@ -21,7 +21,8 @@ ilm_describe(
   smd = FALSE,
   subset = NULL,
   subset_negate = FALSE,
-  subset_fixed = FALSE
+  subset_fixed = FALSE,
+  empty = 0
 )
 }
 \arguments{
@@ -72,7 +73,8 @@ variances (Austin 2009); a binary's, the difference in proportions over
 the square root of the average of their p(1 - p); a category of more
 than two levels, Yang and Dalton's (2012) multivariate difference, which
 has no sign. A date is compared as a number. Each group's uses its
-non-missing values. The reference group's own row has none. With two
+finite values: missing and infinite values are left out. The reference
+group's own row has none. With two
 \code{by} variables, each combination is compared with the reference level of
 the second variable within the same level of the first, so \code{smd} names a
 level of the second ("unexposed", say): exposed against unexposed
@@ -89,6 +91,11 @@ where it is \code{NA} stay out either way.}
 
 \item{subset_fixed}{If \code{TRUE}, \code{subset}'s patterns are matched literally,
 as substrings. It changes nothing for a logical, positions or a sample.}
+
+\item{empty}{What the \code{sum} of a numeric column, or of one group of it,
+shows when it has no non-missing values: 0 by default, or \code{NA}, or
+another number to mark such groups. Every other statistic of such a
+group is \code{NA}, and its \code{n} is 0.}
 }
 \value{
 A one-row data frame, or one row per group when \code{by} is used.
@@ -109,6 +116,20 @@ A minimum or maximum outside what the column can hold, such as an age of
 999 or -1, is often a code for a missing value; \code{\link[=ilm_recode_errors]{ilm_recode_errors()}}
 replaces it with \code{NA}.
 }
+\section{Missing and infinite values}{
+
+For a numeric column, \code{n} is the number of finite values, and every
+statistic uses those only. \code{na} counts the missing values (\code{NA} and
+\code{NaN}). \code{Inf} and \code{-Inf} are set aside: when there are any, an \code{n_inf}
+column counts them and a message says where they are. They are often
+errors, which \code{\link[=ilm_recode_errors]{ilm_recode_errors()}} can set to \code{NA}.
+
+A column or group with no non-missing values has \code{n} 0, a \code{sum} of 0
+(or what \code{empty} says), and \code{NA} for every other statistic. One whose only
+values are infinite has \code{n} 0, \code{NA} for its statistics, and as its \code{sum}
+what \code{\link[=sum]{sum()}} gives for them: \code{Inf}, \code{-Inf}, or \code{NaN} for a mix.
+}
+
 \examples{
 d <- ilm_example_data()
 ilm_describe(d, "score")
