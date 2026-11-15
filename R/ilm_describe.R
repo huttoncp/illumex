@@ -395,7 +395,9 @@ ilm_flag_arg <- function(x, name) {
   invisible(x)
 }
 
-## the columns of sentences that notes = FALSE leaves out
+## the columns of sentences that notes = FALSE leaves out. They are dropped
+## by name from every table, so no table may give a column of data either
+## of these names.
 ILM_NOTE_COLS <- c("gauss_note", "note")
 
 ## For the outermost call with notes = FALSE: the tables without their note
@@ -680,16 +682,21 @@ ilm_label_spacing <- function(md, secs) {
 
 #' @keywords internal
 #' @noRd
-ilm_describe_time <- function(x, digits = 3) {
+ilm_describe_time <- function(x, digits = 3, fast = FALSE) {
   obs <- length(x); nn <- fnobs(x); na <- obs - nn
   xv <- x[!is.na(x)]; u <- sort(unique(xv)); secs <- inherits(x, "POSIXt")
-  d <- if (length(u) > 1L) as.numeric(diff(u), units = if (secs) "secs" else "days")
+  ## under fast a date-time's spacing -- the steps between its distinct
+  ## times and the most common one -- is not worked out; its columns are NA
+  ## and the note says nothing about spacing. A date's is kept.
+  spaced <- !(fast && secs)
+  d <- if (spaced && length(u) > 1L) as.numeric(diff(u), units = if (secs) "secs" else "days")
        else numeric(0)
   md <- if (length(d)) as.numeric(names(sort(table(round(d, 6)), decreasing = TRUE))[1]) else NA_real_
-  n_gaps <- if (length(d) && is.finite(md) && md > 0) sum(d > 1.5 * md) else 0L
+  n_gaps <- if (!spaced) NA_integer_
+            else if (length(d) && is.finite(md) && md > 0) sum(d > 1.5 * md) else 0L
   ## calendar steps are not constant in days, so allow variation proportional
   ## to the usual step; real gaps are still caught
-  regular <- length(d) > 0 && is.finite(md) &&
+  regular <- if (!spaced) NA else length(d) > 0 && is.finite(md) &&
     all(abs(d - md) <= pmax(1e-6, 0.15 * md))
 
   out <- data.frame(
@@ -698,15 +705,16 @@ ilm_describe_time <- function(x, digits = 3) {
     end   = if (length(u)) as.character(max(u)) else NA_character_,
     span_days = if (length(u) > 1L)
       ilm_rd(as.numeric(difftime(max(u), min(u), units = "days")), digits) else 0,
-    spacing = ilm_label_spacing(md, secs), regular = regular, n_gaps = n_gaps,
+    spacing = if (spaced) ilm_label_spacing(md, secs) else NA_character_,
+    regular = regular, n_gaps = n_gaps,
     n_dup_times = nn - length(u),
     tz = if (secs) { t0 <- attr(x, "tzone")
       if (is.null(t0) || !nzchar(t0[1])) "unset" else t0[1] } else NA_character_,
     stringsAsFactors = FALSE)
   z <- character(0)
-  if (!regular && n_gaps > 0)
+  if (spaced && !regular && n_gaps > 0)
     z <- c(z, sprintf("irregular, %d gaps (AR(1) needs regular spacing)", n_gaps))
-  else if (!regular) z <- c(z, "irregular spacing")
+  else if (spaced && !regular) z <- c(z, "irregular spacing")
   ## Repeated dates are the norm in long-format panel data -- many units share
   ## a date -- so this is described, not warned about. Duplicates only break
   ## AR(1) indexing WITHIN a group, which is visible when `by` is used.
@@ -799,6 +807,11 @@ ILM_CLASSES <- c("numeric", "categorical", "logical", "time")
 #' @param notes `FALSE` leaves out the columns of sentences: `gauss_note` for
 #'   numeric columns, and `note` for categorical, logical and time columns.
 #'   Every other column is the same either way.
+#' @param fast `TRUE` leaves out the costly parts of a description: it means
+#'   `gauss = "none"` and `dispersion = FALSE`, unless either is given, and a
+#'   date-time's spacing is not worked out, so its `spacing`, `regular` and
+#'   `n_gaps` are `NA` and its note says nothing about spacing. A date's
+#'   spacing, and every other column, are kept.
 #' @section Missing and infinite values:
 #' For a numeric column, `n` is the number of finite values, and every
 #' statistic uses those only. `na` counts the missing values (`NA` and
@@ -838,7 +851,11 @@ ilm_describe <- function(data, y = NULL, by = NULL, digits = 3,
                           probs = c(0, 0.5, 1), skew = FALSE, kurt = FALSE,
                           dispersion = TRUE, rare_n = 5L,
                           cap = 0.06, min_n = 20L, smd = FALSE, subset = NULL, subset_negate = FALSE, subset_fixed = FALSE,
-                          empty = 0, notes = TRUE) {
+                          empty = 0, notes = TRUE, fast = FALSE) {
+  ilm_flag_arg(fast, "fast")
+  ## fast is gauss = "none" and dispersion = FALSE, unless either is given
+  if (fast && missing(gauss)) gauss <- "none"
+  if (fast && missing(dispersion)) dispersion <- FALSE
   gauss <- match.arg(gauss)
   ilm_empty_arg(empty)
   ilm_flag_arg(notes, "notes")
@@ -863,7 +880,7 @@ ilm_describe <- function(data, y = NULL, by = NULL, digits = 3,
   ## the values are kept whole; `digits` is how they print
   one <- function(v) {
     if (is.logical(v)) ilm_describe_lgl(v, NULL)
-    else if (ilm_is_time(v)) ilm_describe_time(v, NULL)
+    else if (ilm_is_time(v)) ilm_describe_time(v, NULL, fast = fast)
     else if (is.numeric(v)) ilm_describe_num(v, NULL, gauss, probs, skew, kurt, dispersion,
                                              cap, min_n, scale = sc, empty = empty)
     else ilm_describe_cat(v, NULL, rare_n = rare_n)
@@ -911,7 +928,7 @@ ilm_describe <- function(data, y = NULL, by = NULL, digits = 3,
       ilm_describe(data, cn, by = by, digits = digits, gauss = gauss,
                    probs = probs, skew = skew, kurt = kurt,
                    dispersion = dispersion, rare_n = rare_n,
-                   cap = cap, min_n = min_n, smd = smd, empty = empty))
+                   cap = cap, min_n = min_n, smd = smd, empty = empty, fast = fast))
     r <- do.call(rbind, rs)
     nrep <- nrow(r) / length(cols)
     return(fin(ilm_describe_result(cbind(variable = rep(cols, each = nrep), r,
@@ -1065,7 +1082,10 @@ ilm_describe_all <- function(data, by = NULL, cols = NULL, digits = 3,
                               dispersion = TRUE, class = "all", rare_n = 5L,
                               cap = 0.06, min_n = 20L, smd = FALSE, cols_negate = FALSE, cols_fixed = FALSE, subset = NULL,
                               subset_negate = FALSE, subset_fixed = FALSE, empty = 0,
-                              notes = TRUE) {
+                              notes = TRUE, fast = FALSE) {
+  ilm_flag_arg(fast, "fast")
+  if (fast && missing(gauss)) gauss <- "none"
+  if (fast && missing(dispersion)) dispersion <- FALSE
   gauss <- match.arg(gauss)
   ilm_empty_arg(empty)
   ilm_flag_arg(notes, "notes")
@@ -1131,7 +1151,7 @@ ilm_describe_all <- function(data, by = NULL, cols = NULL, digits = 3,
       ilm_describe(data, cn, by = by, digits = digits, gauss = gauss,
                     probs = probs, skew = skew, kurt = kurt,
                     dispersion = dispersion, rare_n = rare_n,
-                    cap = cap, min_n = min_n, smd = smd, empty = empty))
+                    cap = cap, min_n = min_n, smd = smd, empty = empty, fast = fast))
     r <- do.call(rbind, rs)
     nrep <- nrow(r) / length(cols)
     cbind(variable = rep(cols, each = nrep), r, stringsAsFactors = FALSE)

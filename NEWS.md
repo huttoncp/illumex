@@ -24,6 +24,14 @@ New:
 * `notes = FALSE` in `ilm_describe()` and `ilm_describe_all()` leaves out
   the columns of sentences (`gauss_note`, and each table's `note`); every
   other column is the same.
+* `fast = TRUE` in `ilm_describe()` and `ilm_describe_all()` leaves out the
+  costly parts of a description. It means `gauss = "none"` and
+  `dispersion = FALSE`, unless either is given, and a date-time's spacing
+  is not worked out: its `spacing`, `regular` and `n_gaps` are `NA`, and its
+  note says nothing about spacing. Everything else is as the default. On
+  400,000 rows and 20 columns it took 76% to 82% less time than the default,
+  and 34% to 38% less than the two switches alone
+  (`dev/describe_speed/results/time46_400k_summary.txt`).
 
 Faster, with the same results:
 

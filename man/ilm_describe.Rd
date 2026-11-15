@@ -23,7 +23,8 @@ ilm_describe(
   subset_negate = FALSE,
   subset_fixed = FALSE,
   empty = 0,
-  notes = TRUE
+  notes = TRUE,
+  fast = FALSE
 )
 }
 \arguments{
@@ -101,6 +102,12 @@ group is \code{NA}, and its \code{n} is 0.}
 \item{notes}{\code{FALSE} leaves out the columns of sentences: \code{gauss_note} for
 numeric columns, and \code{note} for categorical, logical and time columns.
 Every other column is the same either way.}
+
+\item{fast}{\code{TRUE} leaves out the costly parts of a description: it means
+\code{gauss = "none"} and \code{dispersion = FALSE}, unless either is given, and a
+date-time's spacing is not worked out, so its \code{spacing}, \code{regular} and
+\code{n_gaps} are \code{NA} and its note says nothing about spacing. A date's
+spacing, and every other column, are kept.}
 }
 \value{
 A one-row data frame, or one row per group when \code{by} is used.
