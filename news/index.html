@@ -7,7 +7,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">illumex</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.0.8.9007</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.0.8.9008</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -40,6 +40,18 @@
       <small>Source: <a href="https://github.com/huttoncp/illumex/blob/main/NEWS.md" class="external-link"><code>NEWS.md</code></a></small>
     </div>
 
+    <div class="section level2">
+<h2 class="pkg-version" data-toc-text="0.0.8.9008" id="illumex-0089008">illumex 0.0.8.9008<a class="anchor" aria-label="anchor" href="#illumex-0089008"></a></h2>
+<p>Mended in <code><a href="../reference/ilm_describe.html">ilm_describe()</a></code> and <code><a href="../reference/ilm_describe_all.html">ilm_describe_all()</a></code>:</p>
+<ul><li>A numeric column, or a group of one, with no non-missing values (all <code>NA</code>, all <code>NaN</code>, or no rows) stopped them with “arguments imply differing number of rows”. Such a group is now described: its <code>n</code> is 0, its <code>sum</code> is 0, and every other statistic is <code>NA</code>.</li>
+<li>
+<code>n</code> counted infinite values, which every statistic leaves out, so the standard error divided by more values than it used. <code>n</code> now counts the finite values, and the standardised difference (<code>smd</code>), which an infinite value made <code>NA</code>, uses them too.</li>
+<li>A column or group whose only values are infinite stopped them as an empty one did. It now has <code>n</code> 0, <code>NA</code> for its statistics, and as its <code>sum</code> what <code><a href="https://rdrr.io/r/base/sum.html" class="external-link">sum()</a></code> gives for them: <code>Inf</code>, <code>-Inf</code>, or <code>NaN</code> for a mix.</li>
+</ul><p>New:</p>
+<ul><li>
+<code>empty</code> sets the <code>sum</code> of a column or group with no non-missing values: 0 by default, or <code>NA</code>, or another number that marks such groups.</li>
+<li>When a call meets infinite values, an <code>n_inf</code> column counts them, and one message says where they are and that <code><a href="../reference/ilm_recode_errors.html">ilm_recode_errors()</a></code> can set them to <code>NA</code>.</li>
+</ul></div>
     <div class="section level2">
 <h2 class="pkg-version" data-toc-text="0.0.8.9007" id="illumex-0089007">illumex 0.0.8.9007<a class="anchor" aria-label="anchor" href="#illumex-0089007"></a></h2>
 <p>The two changes below were decided and built in September 2026, and the GLRM studies in <code>dev/studies</code> describe them as the default, but they never reached this repository’s code. They’re here now. Coordinates, loadings, fitted values and the penalty chosen by <code><a href="../reference/ilm_glrm.html">ilm_glrm()</a></code>, and so by <code>ilm_reduce(method = "glrm")</code>, change.</p>

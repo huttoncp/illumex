@@ -1,5 +1,35 @@
 # Changelog
 
+## illumex 0.0.8.9008
+
+Mended in
+[`ilm_describe()`](https://huttoncp.github.io/illumex/reference/ilm_describe.md)
+and
+[`ilm_describe_all()`](https://huttoncp.github.io/illumex/reference/ilm_describe_all.md):
+
+- A numeric column, or a group of one, with no non-missing values (all
+  `NA`, all `NaN`, or no rows) stopped them with “arguments imply
+  differing number of rows”. Such a group is now described: its `n` is
+  0, its `sum` is 0, and every other statistic is `NA`.
+- `n` counted infinite values, which every statistic leaves out, so the
+  standard error divided by more values than it used. `n` now counts the
+  finite values, and the standardised difference (`smd`), which an
+  infinite value made `NA`, uses them too.
+- A column or group whose only values are infinite stopped them as an
+  empty one did. It now has `n` 0, `NA` for its statistics, and as its
+  `sum` what [`sum()`](https://rdrr.io/r/base/sum.html) gives for them:
+  `Inf`, `-Inf`, or `NaN` for a mix.
+
+New:
+
+- `empty` sets the `sum` of a column or group with no non-missing
+  values: 0 by default, or `NA`, or another number that marks such
+  groups.
+- When a call meets infinite values, an `n_inf` column counts them, and
+  one message says where they are and that
+  [`ilm_recode_errors()`](https://huttoncp.github.io/illumex/reference/ilm_recode_errors.md)
+  can set them to `NA`.
+
 ## illumex 0.0.8.9007
 
 The two changes below were decided and built in September 2026, and the

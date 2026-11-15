@@ -26,7 +26,8 @@ ilm_describe(
   smd = FALSE,
   subset = NULL,
   subset_negate = FALSE,
-  subset_fixed = FALSE
+  subset_fixed = FALSE,
+  empty = 0
 )
 ```
 
@@ -103,12 +104,12 @@ ilm_describe(
   proportions over the square root of the average of their p(1 - p); a
   category of more than two levels, Yang and Dalton's (2012)
   multivariate difference, which has no sign. A date is compared as a
-  number. Each group's uses its non-missing values. The reference
-  group's own row has none. With two `by` variables, each combination is
-  compared with the reference level of the second variable within the
-  same level of the first, so `smd` names a level of the second
-  ("unexposed", say): exposed against unexposed controls, never cases
-  against controls.
+  number. Each group's uses its finite values: missing and infinite
+  values are left out. The reference group's own row has none. With two
+  `by` variables, each combination is compared with the reference level
+  of the second variable within the same level of the first, so `smd`
+  names a level of the second ("unexposed", say): exposed against
+  unexposed controls, never cases against controls.
 
 - subset:
 
@@ -131,6 +132,13 @@ ilm_describe(
   If `TRUE`, `subset`'s patterns are matched literally, as substrings.
   It changes nothing for a logical, positions or a sample.
 
+- empty:
+
+  What the `sum` of a numeric column, or of one group of it, shows when
+  it has no non-missing values: 0 by default, or `NA`, or another number
+  to mark such groups. Every other statistic of such a group is `NA`,
+  and its `n` is 0.
+
 ## Value
 
 A one-row data frame, or one row per group when `by` is used.
@@ -145,6 +153,22 @@ A minimum or maximum outside what the column can hold, such as an age of
 999 or -1, is often a code for a missing value;
 [`ilm_recode_errors()`](https://huttoncp.github.io/illumex/reference/ilm_recode_errors.md)
 replaces it with `NA`.
+
+## Missing and infinite values
+
+For a numeric column, `n` is the number of finite values, and every
+statistic uses those only. `na` counts the missing values (`NA` and
+`NaN`). `Inf` and `-Inf` are set aside: when there are any, an `n_inf`
+column counts them and a message says where they are. They are often
+errors, which
+[`ilm_recode_errors()`](https://huttoncp.github.io/illumex/reference/ilm_recode_errors.md)
+can set to `NA`.
+
+A column or group with no non-missing values has `n` 0, a `sum` of 0 (or
+what `empty` says), and `NA` for every other statistic. One whose only
+values are infinite has `n` 0, `NA` for its statistics, and as its `sum`
+what [`sum()`](https://rdrr.io/r/base/sum.html) gives for them: `Inf`,
+`-Inf`, or `NaN` for a mix.
 
 ## References
 

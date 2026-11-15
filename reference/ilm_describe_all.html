@@ -9,7 +9,7 @@ columns with different summaries are not forced into a common shape."><meta prop
 
     <a class="navbar-brand me-2" href="../index.html">illumex</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.0.8.9007</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.0.8.9008</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -69,7 +69,8 @@ columns with different summaries are not forced into a common shape.</p>
 <span>  cols_fixed <span class="op">=</span> <span class="cn">FALSE</span>,</span>
 <span>  subset <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  subset_negate <span class="op">=</span> <span class="cn">FALSE</span>,</span>
-<span>  subset_fixed <span class="op">=</span> <span class="cn">FALSE</span></span>
+<span>  subset_fixed <span class="op">=</span> <span class="cn">FALSE</span>,</span>
+<span>  empty <span class="op">=</span> <span class="fl">0</span></span>
 <span><span class="op">)</span></span></code></pre></div>
     </div>
 
@@ -150,7 +151,8 @@ variances (Austin 2009); a binary's, the difference in proportions over
 the square root of the average of their p(1 - p); a category of more
 than two levels, Yang and Dalton's (2012) multivariate difference, which
 has no sign. A date is compared as a number. Each group's uses its
-non-missing values. The reference group's own row has none. With two
+finite values: missing and infinite values are left out. The reference
+group's own row has none. With two
 <code>by</code> variables, each combination is compared with the reference level of
 the second variable within the same level of the first, so <code>smd</code> names a
 level of the second ("unexposed", say): exposed against unexposed
@@ -185,6 +187,13 @@ where it is <code>NA</code> stay out either way.</p></dd>
 <dd><p>If <code>TRUE</code>, <code>subset</code>'s patterns are matched literally,
 as substrings. It changes nothing for a logical, positions or a sample.</p></dd>
 
+
+<dt id="arg-empty">empty<a class="anchor" aria-label="anchor" href="#arg-empty"></a></dt>
+<dd><p>What the <code>sum</code> of a numeric column, or of one group of it,
+shows when it has no non-missing values: 0 by default, or <code>NA</code>, or
+another number to mark such groups. Every other statistic of such a
+group is <code>NA</code>, and its <code>n</code> is 0.</p></dd>
+
 </dl></div>
     <div class="section level2">
     <h2 id="value">Value<a class="anchor" aria-label="anchor" href="#value"></a></h2>
@@ -197,6 +206,20 @@ section results.</p>
     <p>Constant columns are split into their own <code>constant</code> section rather than
 padding every other table with rows of <code>NA</code>: a variable with one value tells
 you nothing a statistic can show, and it will break a model matrix.</p>
+    </div>
+    <div class="section level2">
+    <h2 id="missing-and-infinite-values">Missing and infinite values<a class="anchor" aria-label="anchor" href="#missing-and-infinite-values"></a></h2>
+
+
+<p>For a numeric column, <code>n</code> is the number of finite values, and every
+statistic uses those only. <code>na</code> counts the missing values (<code>NA</code> and
+<code>NaN</code>). <code>Inf</code> and <code>-Inf</code> are set aside: when there are any, an <code>n_inf</code>
+column counts them and a message says where they are. They are often
+errors, which <code><a href="ilm_recode_errors.html">ilm_recode_errors()</a></code> can set to <code>NA</code>.</p>
+<p>A column or group with no non-missing values has <code>n</code> 0, a <code>sum</code> of 0
+(or what <code>empty</code> says), and <code>NA</code> for every other statistic. One whose only
+values are infinite has <code>n</code> 0, <code>NA</code> for its statistics, and as its <code>sum</code>
+what <code><a href="https://rdrr.io/r/base/sum.html" class="external-link">sum()</a></code> gives for them: <code>Inf</code>, <code>-Inf</code>, or <code>NaN</code> for a mix.</p>
     </div>
     <div class="section level2">
     <h2 id="see-also">See also<a class="anchor" aria-label="anchor" href="#see-also"></a></h2>
