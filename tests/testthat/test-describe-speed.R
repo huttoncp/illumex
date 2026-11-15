@@ -50,3 +50,21 @@ test_that("kept groups are used only for the rows they were made from", {
   expect_identical(illumex:::ilm_describe_groups_get(d2, "g3")$g,
                    interaction(d2["g3"], drop = TRUE))
 })
+
+test_that("ilm_describe_na_all() counts in one pass what ilm_describe_na() counts column by column", {
+  d <- describe_speed_data()
+  for (b in list(NULL, "g3", c("g2", "g3"))) {
+    one <- ilm_describe_na_all(d, by = b, sort = FALSE)
+    use <- setdiff(names(d), b)
+    each <- do.call(rbind, lapply(use, function(cn)
+      cbind(variable = cn, as.data.frame(ilm_describe_na(d, cn, by = b)), stringsAsFactors = FALSE)))
+    rownames(each) <- NULL
+    expect_equal(as.data.frame(one), each, ignore_attr = TRUE)
+  }
+  ## a list column is counted as ilm_describe_na() counts it
+  dl <- data.frame(g = rep(c("a", "b"), 3), x = c(1, NA, 3, 4, NA, 6))
+  dl$l <- I(list(1, NULL, 3, NA, 5, 6))
+  r <- ilm_describe_na_all(dl, by = "g", sort = FALSE)
+  expect_equal(r$variable, rep(c("x", "l"), each = 2))
+  expect_equal(r$n[r$variable == "x"], c(2L, 2L))
+})

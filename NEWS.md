@@ -32,6 +32,10 @@ Faster, with the same results:
 * With `gauss = "none"` and `dispersion = FALSE`, nothing reads a numeric
   column's scale, so it is no longer worked out: 34% to 41% less time on the
   same data.
+* `ilm_describe_na_all()` counts every column's missing values in one pass,
+  with the groups worked out once, instead of one column at a time. On the
+  same data it took 91% to 92% less time and 75% to 87% less memory with
+  `by`.
 
 # illumex 0.0.8.9007
 

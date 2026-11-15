@@ -68,6 +68,9 @@ describe_speed_calls <- list(
   na_all_cols    = function(d) ilm_describe_na_all(d, by = "g3", cols = c("num", "fac", "day")),
   na_all_subset  = function(d) ilm_describe_na_all(d, by = "g2", subset = d$int > 10),
   na_all_digits  = function(d) ilm_describe_na_all(d, by = "g2", digits = 2),
+  na_all_byfac   = function(d) ilm_describe_na_all(d, by = "fac"),
+  na_all_bylgl2  = function(d) ilm_describe_na_all(d, by = c("lgl", "g3"), sort = FALSE),
+  na_all_negate  = function(d) ilm_describe_na_all(d, by = "g2", cols = "^g", cols_negate = TRUE),
   na_one_by1     = function(d) ilm_describe_na(d, "num", by = "g3"))
 
 ## a call's result and the messages it gives
