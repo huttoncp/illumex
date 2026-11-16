@@ -746,6 +746,41 @@ ilm_describe_na <- function(data, y = NULL, by = NULL, digits = 4, subset = NULL
   fin(ilm_describe_result(res, "ilm_describe_na", y, by, digits))
 }
 
+## The counts of ilm_describe_na_all(), for the columns `use`, in one pass:
+## without `by`, each column's non-missing values; with it, each column's in
+## each group, the groups those of interaction(data[by], drop = TRUE) with the
+## rows whose group is missing left out, in the order of its levels. The
+## columns and their order are ilm_describe_na()'s: variable, the groups,
+## obs, n, na, p_na.
+#' @keywords internal
+#' @noRd
+ilm_describe_na_counts <- function(data, use, by) {
+  k <- length(use)
+  if (!length(by)) {
+    obs <- nrow(data)
+    nn <- vapply(data[use], fnobs, 0L, USE.NAMES = FALSE)
+    return(data.frame(variable = use, obs = rep(obs, k), n = nn, na = obs - nn,
+                      p_na = (obs - nn) / obs, stringsAsFactors = FALSE))
+  }
+  g <- interaction(data[by], drop = TRUE)
+  keep <- !is.na(g)
+  gk <- g[keep]
+  lev <- levels(gk)
+  obs <- tabulate(as.integer(gk), length(lev))
+  ## non-missing values by group: one count per group for every column
+  nn <- vapply(data[use], function(v) as.integer(fnobs(v[keep], g = gk, use.g.names = FALSE)),
+               integer(length(lev)), USE.NAMES = FALSE)
+  if (!is.matrix(nn)) nn <- matrix(nn, nrow = length(lev))
+  out <- data.frame(variable = rep(use, each = length(lev)),
+                    grp = rep(lev, times = k),
+                    obs = rep(obs, times = k), n = as.vector(nn),
+                    stringsAsFactors = FALSE)
+  out$na <- out$obs - out$n
+  out$p_na <- out$na / out$obs
+  names(out)[2L] <- paste(by, collapse = ".")
+  out
+}
+
 #' Missingness in every variable
 #'
 #' Sorted with the most missing first, since those are the variables worth
@@ -774,9 +809,16 @@ ilm_describe_na_all <- function(data, by = NULL, cols = NULL, digits = 4, sort =
     stop("`by` variable(s) not found in the data: ", paste(miss, collapse = ", "),
          call. = FALSE)
   use <- ilm_resolve_cols(data, cols, exclude = by, negate = cols_negate, fixed = cols_fixed)
-  rs <- lapply(use, function(cn) ilm_describe_na(data, cn, by = by, digits = digits))
-  res <- do.call(rbind, lapply(seq_along(use), function(i)
-    cbind(variable = use[i], rs[[i]], stringsAsFactors = FALSE)))
+  ## every column's counts in one pass over the frame, with the groups worked
+  ## out once; the same table ilm_describe_na() gives column by column, which
+  ## is still used for a list column, where counting is the vector's own
+  atomic <- length(use) && all(vapply(data[use], is.atomic, TRUE))
+  res <- if (atomic) ilm_describe_na_counts(data, use, by)
+  else {
+    rs <- lapply(use, function(cn) ilm_describe_na(data, cn, by = by, digits = digits))
+    do.call(rbind, lapply(seq_along(use), function(i)
+      cbind(variable = use[i], rs[[i]], stringsAsFactors = FALSE)))
+  }
   ## the variables with the most missingness are the ones worth looking at, so
   ## they go first unless the caller wants the original column order; ordered
   ## by the share as it prints, so shares that print alike keep name order

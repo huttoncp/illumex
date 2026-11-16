@@ -403,6 +403,48 @@ ilm_describe_enter <- function() {
 #' @noRd
 ilm_describe_leave <- function() ilm_describe_depth$n <- max(0L, ilm_describe_depth$n - 1L)
 
+## The groups `by` makes of a data frame: the grouping factor, and with two
+## variables how the second's groups sit within the first's. A call that
+## describes several columns works them out once and keeps them here while
+## its columns are described (ilm_describe_groups_keep()), so each column's
+## description reuses them instead of building them again.
+#' @keywords internal
+#' @noRd
+ilm_describe_groups <- function(data, by) {
+  g <- interaction(data[by], drop = TRUE)
+  ## the by columns themselves are kept, so that the groups are only ever
+  ## reused for the rows they were made from
+  list(by = by, cols = lapply(by, function(b) data[[b]]), g = g,
+       two = if (length(by) == 2L) ilm_describe_two(data, by, g))
+}
+
+## keep `data`'s groups for the columns described inside this call; returns
+## what was kept before, to be put back with ilm_describe_groups_restore()
+#' @keywords internal
+#' @noRd
+ilm_describe_groups_keep <- function(data, by) {
+  old <- ilm_describe_depth$groups
+  ilm_describe_depth$groups <- if (length(by)) ilm_describe_groups(data, by)
+  old
+}
+
+#' @keywords internal
+#' @noRd
+ilm_describe_groups_restore <- function(old) ilm_describe_depth$groups <- old
+
+## the groups kept by the call this one is inside, when they were made from
+## `data`'s own by columns; otherwise worked out here. identical() of a
+## column with itself returns at once, so the check costs nothing when the
+## groups are reused.
+#' @keywords internal
+#' @noRd
+ilm_describe_groups_get <- function(data, by) {
+  k <- ilm_describe_depth$groups
+  same <- !is.null(k) && identical(k$by, by) &&
+    all(vapply(seq_along(by), function(i) identical(k$cols[[i]], data[[by[i]]]), TRUE))
+  if (same) k else ilm_describe_groups(data, by)
+}
+
 ## For the outermost call: drop n_inf where every row's is 0, and otherwise
 ## say how many infinite values were set aside, in which columns and groups.
 ## A constant column whose one value is infinite is counted too. `x` is one
@@ -828,6 +870,11 @@ ilm_describe <- function(data, y = NULL, by = NULL, digits = 3,
   } else x <- data
 
   if (!is.null(cols)) {
+    if (length(by)) {
+      ilm_check_by(data, by)
+      kept <- ilm_describe_groups_keep(data, by)
+      on.exit(ilm_describe_groups_restore(kept), add = TRUE)
+    }
     rs <- lapply(cols, function(cn)
       ilm_describe(data, cn, by = by, digits = digits, gauss = gauss,
                    probs = probs, skew = skew, kurt = kurt,
@@ -841,15 +888,18 @@ ilm_describe <- function(data, y = NULL, by = NULL, digits = 3,
   }
 
   ## a numeric variable's scale is its whole column's, so each group is read
-  ## against the same one (items 292 and 297)
-  sc <- if (is.numeric(x) && !is.logical(x)) ilm_floor_scale(x) else NULL
+  ## against the same one (items 292 and 297). Only the Gaussian index and the
+  ## dispersion column read it, so with neither it is not worked out.
+  sc <- if (is.numeric(x) && !is.logical(x) && (gauss != "none" || dispersion))
+    ilm_floor_scale(x) else NULL
   if (is.null(by)) return(fin(ilm_describe_result(one(x), "ilm_describe", y, by, digits)))
   ilm_check_by(data, by)
   miss <- setdiff(by, names(data))
   if (length(miss))
     stop("`by` variable(s) not found in the data: ", paste(miss, collapse = ", "),
          call. = FALSE)
-  g <- interaction(data[by], drop = TRUE)
+  grp <- ilm_describe_groups_get(data, by)
+  g <- grp$g
   parts <- lapply(split(x, g), one)
   res <- cbind(setNames(data.frame(names(parts), stringsAsFactors = FALSE),
                         paste(by, collapse = ".")),
@@ -858,7 +908,7 @@ ilm_describe <- function(data, y = NULL, by = NULL, digits = 3,
   ## first (exposure within a modifier, controls split by exposure), and a
   ## standardised difference compares the second's groups within one level
   ## of the first (ilm_describe_two())
-  two <- if (length(by) == 2L) ilm_describe_two(data, by, g)
+  two <- grp$two
   xs <- if (ilm_is_time(x)) ilm_time_number(x) else x
   if (!isFALSE(smd)) {
     if (is.null(two)) {
@@ -1033,6 +1083,11 @@ ilm_describe_all <- function(data, by = NULL, cols = NULL, digits = 3,
   fin <- function(out) {
     if (outer) out <- ilm_inf_finish(out, "ilm_describe_all()", NULL, by)
     ilm_select_finish(out, data, rsel, cols, used, by, cols_negate, cols_fixed)
+  }
+  ## the groups are worked out once here, for every column described
+  if (length(by) && length(cand)) {
+    kept <- ilm_describe_groups_keep(data, by)
+    on.exit(ilm_describe_groups_restore(kept), add = TRUE)
   }
   res <- lapply(want, function(k) {
     cols <- cand[cl == k]
