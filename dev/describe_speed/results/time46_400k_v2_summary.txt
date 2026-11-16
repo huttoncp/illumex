@@ -1,0 +1,7 @@
+rows 400000, 7 repeats of each setting
+by none default  median  2.771 s   1462.9 MB | against the default: time   +0.0%  memory   +0.0%
+by none switches median  0.837 s    498.6 MB | against the default: time  -69.8%  memory  -65.9%
+by none fast     median  0.425 s    362.9 MB | against the default: time  -84.7%  memory  -75.2%
+by g    default  median  3.061 s   1596.6 MB | against the default: time   +0.0%  memory   +0.0%
+by g    switches median  1.152 s    630.3 MB | against the default: time  -62.4%  memory  -60.5%
+by g    fast     median  0.697 s    494.0 MB | against the default: time  -77.2%  memory  -69.1%

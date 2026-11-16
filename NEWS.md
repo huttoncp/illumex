@@ -28,10 +28,17 @@ New:
   costly parts of a description. It means `gauss = "none"` and
   `dispersion = FALSE`, unless either is given, and a date-time's spacing
   is not worked out: its `spacing`, `regular` and `n_gaps` are `NA`, and its
-  note says nothing about spacing. Everything else is as the default. On
-  400,000 rows and 20 columns it took 76% to 82% less time than the default,
-  and 34% to 38% less than the two switches alone
-  (`dev/describe_speed/results/time46_400k_summary.txt`).
+  note says nothing about spacing. A text column's case variants are not
+  counted: the categorical table has no `case_variants` column, and its note
+  says nothing about them. In `counts_tb`, values with the same count come in
+  code-point order (capitals before small letters), the same on every
+  machine, not in the dictionary order of the language settings. Everything
+  else is as the default. On
+  400,000 rows and 20 columns it took 77% to 85% less time than the default,
+  and 40% to 49% less than the two switches alone
+  (`dev/describe_speed/results/time46_400k_v2_summary.txt`); on one text
+  column of a million distinct values, 96% less than the default
+  (`dev/describe_speed/results/time46_text_1m_summary.txt`).
 
 Faster, with the same results:
 

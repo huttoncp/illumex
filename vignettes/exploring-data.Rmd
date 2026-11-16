@@ -151,21 +151,29 @@ date is simply what long-format panel data looks like.
 
 Most of the time `ilm_describe_all()` spends goes on a few columns that are
 worth having but not always needed on a first pass: the Gaussian index and its
-note, the dispersion ratio, and the spacing of date-times. `fast = TRUE` leaves
-those out and keeps everything else. On 400,000 rows and 20 columns it took
-a fifth to a quarter of the default's time.
+note, the dispersion ratio, the spacing of date-times, and the count of a
+text column's case variants. `fast = TRUE` leaves those out and keeps
+everything else. On 400,000 rows and 20 columns it took 15% to 23% of the
+default's time.
 
 ```{r}
 fst <- ilm_describe_all(d, fast = TRUE)
 setdiff(names(r$numeric), names(fst$numeric))
-identical(fst$categorical, r$categorical)
+setdiff(names(r$categorical), names(fst$categorical))
+same <- setdiff(names(fst$categorical), c("counts_tb", "note"))
+identical(fst$categorical[same], r$categorical[same])
 ```
 
 For numbers, `fast = TRUE` is `gauss = "none"` and `dispersion = FALSE`
 together, so the numeric table loses `gauss`, `gauss_note` and
-`dispersion` and keeps every other column unchanged. The categorical,
-logical and constant tables are exactly the default's. Either switch you give
-yourself wins, so the index can be kept while the rest stays quick:
+`dispersion` and keeps every other column unchanged. The categorical table
+loses `case_variants`, and its note says nothing about them. In its
+`counts_tb`, values with the same count come in code-point order, with
+capitals before small letters, which is the same on every machine; without
+`fast` they come in the dictionary order of your computer's language
+settings. Every other column, and the logical and constant tables, are
+exactly the default's. Either switch you give yourself wins, so the index can
+be kept while the rest stays quick:
 
 ```{r}
 names(ilm_describe_all(d, fast = TRUE, gauss = "index")$numeric)

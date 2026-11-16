@@ -598,10 +598,20 @@ ilm_describe_num <- function(x, digits = 3,
 
 #' @keywords internal
 #' @noRd
-ilm_describe_cat <- function(x, digits = 3, sep = "_", top = 3L, rare_n = 5L) {
+ilm_describe_cat <- function(x, digits = 3, sep = "_", top = 3L, rare_n = 5L,
+                             fast = FALSE) {
   obs <- length(x); nn <- fnobs(x); na <- obs - nn
   chr <- as.character(x); vals <- chr[!is.na(chr)]
-  tb <- sort(table(vals), decreasing = TRUE); nu <- length(tb)
+  if (fast) {
+    ## under fast the distinct values are counted without table(), which
+    ## sorts them in the locale's dictionary order; values with the same
+    ## count come in code-point order instead (radix sorts text in the C
+    ## locale, byte by byte, which for UTF-8 is code-point order)
+    u <- unique(vals); k <- tabulate(match(vals, u), length(u))
+    o <- order(-k, u, method = "radix")
+    tb <- stats::setNames(k[o], u[o])
+  } else tb <- sort(table(vals), decreasing = TRUE)
+  nu <- length(tb)
 
   out <- data.frame(
     obs = obs, n = nn, na = na,
@@ -617,13 +627,15 @@ ilm_describe_cat <- function(x, digits = 3, sep = "_", top = 3L, rare_n = 5L) {
     n_rare = sum(tb < rare_n),
     n_unused = if (is.factor(x)) sum(!(levels(x) %in% vals)) else 0L,
     ## tolower() stops on text that is not valid UTF-8, which has no case
-    ## variant anyway
-    case_variants = { u <- unique(vals); u <- u[validUTF8(u)]
-                      sum(table(tolower(trimws(u))) > 1L) },
+    ## variant anyway; under fast nothing is counted, and the column goes
+    case_variants = if (fast) NA else {
+      u <- unique(vals); u <- u[validUTF8(u)]
+      sum(table(tolower(trimws(u))) > 1L) },
     counts_tb = paste(sprintf("%s%s%d", names(tb)[seq_len(min(top, nu))],
                               sep, as.integer(tb)[seq_len(min(top, nu))]),
                       collapse = ", "),
     stringsAsFactors = FALSE)
+  if (fast) out$case_variants <- NULL
   z <- character(0)
   ## an ordered factor is a rating scale: a pile at its lowest or highest
   ## level comes first, as a numeric rating's does (item 292); its labels
@@ -637,7 +649,7 @@ ilm_describe_cat <- function(x, digits = 3, sep = "_", top = 3L, rare_n = 5L) {
                       if (n_bad == 1L) "value" else "values"))
   if (out$n_empty > 0) z <- c(z, sprintf("%d empty strings (not NA)", out$n_empty))
   if (out$n_unused > 0) z <- c(z, sprintf("%d unused levels", out$n_unused))
-  if (out$case_variants > 0) z <- c(z, sprintf("%d case/space variants", out$case_variants))
+  if (!fast && out$case_variants > 0) z <- c(z, sprintf("%d case/space variants", out$case_variants))
   if (out$n_rare > 0) z <- c(z, sprintf("%d rare levels (separation risk)", out$n_rare))
   if (is.finite(out$p_max) && out$p_max > 0.99) z <- c(z, "near-constant")
   out$note <- paste(utils::head(z, 2L), collapse = "; ")
@@ -808,10 +820,17 @@ ILM_CLASSES <- c("numeric", "categorical", "logical", "time")
 #'   numeric columns, and `note` for categorical, logical and time columns.
 #'   Every other column is the same either way.
 #' @param fast `TRUE` leaves out the costly parts of a description: it means
-#'   `gauss = "none"` and `dispersion = FALSE`, unless either is given, and a
+#'   `gauss = "none"` and `dispersion = FALSE`, unless either is given; a
 #'   date-time's spacing is not worked out, so its `spacing`, `regular` and
-#'   `n_gaps` are `NA` and its note says nothing about spacing. A date's
-#'   spacing, and every other column, are kept.
+#'   `n_gaps` are `NA` and its note says nothing about spacing; and a text
+#'   column's case variants are not counted, so the categorical table has no
+#'   `case_variants` column and its note says nothing about them. In
+#'   `counts_tb`, values with the same count come in code-point order, the
+#'   order of their characters' numbers in Unicode, in which capitals come
+#'   before small letters (`"B"` before `"a"`); it is the same on every
+#'   machine. Without `fast` they come in the dictionary order of the
+#'   computer's language settings. A date's spacing, and every other column,
+#'   are kept.
 #' @section Missing and infinite values:
 #' For a numeric column, `n` is the number of finite values, and every
 #' statistic uses those only. `na` counts the missing values (`NA` and
@@ -883,7 +902,7 @@ ilm_describe <- function(data, y = NULL, by = NULL, digits = 3,
     else if (ilm_is_time(v)) ilm_describe_time(v, NULL, fast = fast)
     else if (is.numeric(v)) ilm_describe_num(v, NULL, gauss, probs, skew, kurt, dispersion,
                                              cap, min_n, scale = sc, empty = empty)
-    else ilm_describe_cat(v, NULL, rare_n = rare_n)
+    else ilm_describe_cat(v, NULL, rare_n = rare_n, fast = fast)
   }
 
   ## Resolving what is actually being described.

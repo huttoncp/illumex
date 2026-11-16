@@ -117,10 +117,17 @@ numeric columns, and \code{note} for categorical, logical and time columns.
 Every other column is the same either way.}
 
 \item{fast}{\code{TRUE} leaves out the costly parts of a description: it means
-\code{gauss = "none"} and \code{dispersion = FALSE}, unless either is given, and a
+\code{gauss = "none"} and \code{dispersion = FALSE}, unless either is given; a
 date-time's spacing is not worked out, so its \code{spacing}, \code{regular} and
-\code{n_gaps} are \code{NA} and its note says nothing about spacing. A date's
-spacing, and every other column, are kept.}
+\code{n_gaps} are \code{NA} and its note says nothing about spacing; and a text
+column's case variants are not counted, so the categorical table has no
+\code{case_variants} column and its note says nothing about them. In
+\code{counts_tb}, values with the same count come in code-point order, the
+order of their characters' numbers in Unicode, in which capitals come
+before small letters (\code{"B"} before \code{"a"}); it is the same on every
+machine. Without \code{fast} they come in the dictionary order of the
+computer's language settings. A date's spacing, and every other column,
+are kept.}
 }
 \value{
 A named list of data frames, one per class present, plus \code{constant}

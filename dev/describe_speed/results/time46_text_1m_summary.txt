@@ -1,0 +1,4 @@
+rows 1000000 | 5 repeats | R 4.4.3 | 16 Nov 2026 18:23:05 
+all_distinct  default 30.116 s    503.1 MB | fast  1.121 s    141.9 MB | time  -96.3%  memory  -71.8%
+repeated      default  0.179 s     96.5 MB | fast  0.085 s     53.9 MB | time  -52.6%  memory  -44.2%
+variants      default  1.515 s    123.5 MB | fast  0.189 s     60.1 MB | time  -87.5%  memory  -51.3%
