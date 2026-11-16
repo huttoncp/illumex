@@ -51,6 +51,11 @@
 <ul><li>
 <code>empty</code> sets the <code>sum</code> of a column or group with no non-missing values: 0 by default, or <code>NA</code>, or another number that marks such groups.</li>
 <li>When a call meets infinite values, an <code>n_inf</code> column counts them, and one message says where they are and that <code><a href="../reference/ilm_recode_errors.html">ilm_recode_errors()</a></code> can set them to <code>NA</code>.</li>
+</ul><p>Faster, with the same results:</p>
+<ul><li>With <code>by</code>, <code><a href="../reference/ilm_describe_all.html">ilm_describe_all()</a></code>, and <code><a href="../reference/ilm_describe.html">ilm_describe()</a></code> given several columns, work out the groups once for the call instead of once for every column. On 400,000 rows and 20 columns, by one variable it took 22% less memory and slightly less time, and by two variables 80% less time and 58% less memory (<code>dev/describe_speed/</code>).</li>
+<li>With <code>gauss = "none"</code> and <code>dispersion = FALSE</code>, nothing reads a numeric column’s scale, so it is no longer worked out: 34% to 41% less time on the same data.</li>
+<li>
+<code><a href="../reference/ilm_describe_na_all.html">ilm_describe_na_all()</a></code> counts every column’s missing values in one pass, with the groups worked out once, instead of one column at a time. On the same data it took 91% to 92% less time and 75% to 87% less memory with <code>by</code>.</li>
 </ul></div>
     <div class="section level2">
 <h2 class="pkg-version" data-toc-text="0.0.8.9007" id="illumex-0089007">illumex 0.0.8.9007<a class="anchor" aria-label="anchor" href="#illumex-0089007"></a></h2>

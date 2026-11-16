@@ -30,6 +30,24 @@ New:
   [`ilm_recode_errors()`](https://huttoncp.github.io/illumex/reference/ilm_recode_errors.md)
   can set them to `NA`.
 
+Faster, with the same results:
+
+- With `by`,
+  [`ilm_describe_all()`](https://huttoncp.github.io/illumex/reference/ilm_describe_all.md),
+  and
+  [`ilm_describe()`](https://huttoncp.github.io/illumex/reference/ilm_describe.md)
+  given several columns, work out the groups once for the call instead
+  of once for every column. On 400,000 rows and 20 columns, by one
+  variable it took 22% less memory and slightly less time, and by two
+  variables 80% less time and 58% less memory (`dev/describe_speed/`).
+- With `gauss = "none"` and `dispersion = FALSE`, nothing reads a
+  numeric column’s scale, so it is no longer worked out: 34% to 41% less
+  time on the same data.
+- [`ilm_describe_na_all()`](https://huttoncp.github.io/illumex/reference/ilm_describe_na_all.md)
+  counts every column’s missing values in one pass, with the groups
+  worked out once, instead of one column at a time. On the same data it
+  took 91% to 92% less time and 75% to 87% less memory with `by`.
+
 ## illumex 0.0.8.9007
 
 The two changes below were decided and built in September 2026, and the
