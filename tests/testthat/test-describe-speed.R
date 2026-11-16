@@ -4,8 +4,22 @@
 ## the record made on the commit before those changes
 ## (fixtures/describe_speed.rds, made by dev/describe_speed/make_fixtures.R,
 ## which stores the commit it was made on).
+##
+## The record was made on one platform and R version (Windows, R 4.4.3). On
+## other platforms and versions many numbers differ from it in their last
+## digits -- among them sums, standard deviations and errors, dispersion,
+## standardised differences, the Gaussian index, skewness and kurtosis -- by
+## at most about 3 parts in 10^15 in the checks run so far. So the results
+## are held to the record with a relative tolerance of 1e-12 (a single value
+## changed by one part in 10^10 still fails), while every element's type and
+## every message must be exactly the same. Off the platform the record was made on, this shows agreement to one
+## part in 10^12, not identity; on it, each change was checked with
+## identical() when it was built.
 
 record <- readRDS(test_path("fixtures", "describe_speed.rds"))
+
+## every element's type, all the way down, which a numeric tolerance ignores
+types_of <- function(x) rapply(unclass(x), function(v) c(typeof(v), class(v)), how = "list")
 
 test_that("the record covers every call", {
   expect_setequal(names(record), names(describe_speed_calls))
@@ -16,7 +30,9 @@ test_that("every call returns exactly what it did, with the same messages", {
   d <- describe_speed_data()
   for (k in names(describe_speed_calls)) {
     now <- describe_speed_run(describe_speed_calls[[k]], d)
-    expect_identical(now$value, record[[k]]$value, label = k)
+    expect_equal(now$value, record[[k]]$value, tolerance = 1e-12, label = k)
+    expect_identical(types_of(now$value), types_of(record[[k]]$value),
+                     label = paste(k, "types"))
     expect_identical(now$messages, record[[k]]$messages, label = paste(k, "messages"))
   }
 })
