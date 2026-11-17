@@ -200,3 +200,27 @@ test_that("under fast the categorical columns other than the top counts and note
     expect_true(all(startsWith(fst$note[!none], before)))
   }
 })
+
+test_that("under fast tied values marked latin1 come in code-point order, alone or beside UTF-8", {
+  ## distinct and tied: by code point a-grave (224), e-acute (233), u-umlaut (252)
+  utf <- c("é", "à", "ü")
+  lat <- iconv(utf, "UTF-8", "latin1")
+  expect_identical(Encoding(lat), rep("latin1", 3))
+  want <- "à_1, é_1, ü_1"
+  mixed <- c(utf[1], lat[2], utf[3])
+  for (v in list(utf, lat, mixed)) {
+    r <- ilm_describe(data.frame(t = v, stringsAsFactors = FALSE), "t", fast = TRUE)
+    expect_identical(enc2utf8(r$counts_tb), want)
+    expect_identical(enc2utf8(r$counts_tb), top_cp(enc2utf8(v)))
+  }
+  ## four tied at the cut of three, two marked latin1: which three are shown
+  ## depends on the order. By code point a-grave (224), a-umlaut (228),
+  ## e-acute (233), u-umlaut (252), so u-umlaut is the one left out
+  cut <- c("é", iconv("à", "UTF-8", "latin1"), "ü", iconv("ä", "UTF-8", "latin1"))
+  r <- ilm_describe(data.frame(t = cut, stringsAsFactors = FALSE), "t", fast = TRUE)
+  expect_identical(enc2utf8(r$counts_tb), "à_1, ä_1, é_1")
+  ## a leader, then ties across marks
+  v <- c(lat, utf[1], "b", "b", "b")
+  r <- ilm_describe(data.frame(t = v, stringsAsFactors = FALSE), "t", fast = TRUE)
+  expect_identical(enc2utf8(r$counts_tb), "b_3, é_2, à_1")
+})

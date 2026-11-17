@@ -606,9 +606,11 @@ ilm_describe_cat <- function(x, digits = 3, sep = "_", top = 3L, rare_n = 5L,
     ## under fast the distinct values are counted without table(), which
     ## sorts them in the locale's dictionary order; values with the same
     ## count come in code-point order instead (radix sorts text in the C
-    ## locale, byte by byte, which for UTF-8 is code-point order)
+    ## locale, byte by byte, which for UTF-8 is code-point order). It
+    ## compares the stored bytes without translating, so values marked
+    ## latin1 beside UTF-8 ones would sort apart: the key is in UTF-8.
     u <- unique(vals); k <- tabulate(match(vals, u), length(u))
-    o <- order(-k, u, method = "radix")
+    o <- order(-k, enc2utf8(u), method = "radix")
     tb <- stats::setNames(k[o], u[o])
   } else tb <- sort(table(vals), decreasing = TRUE)
   nu <- length(tb)
