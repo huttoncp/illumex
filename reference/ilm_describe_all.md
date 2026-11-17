@@ -28,7 +28,9 @@ ilm_describe_all(
   subset = NULL,
   subset_negate = FALSE,
   subset_fixed = FALSE,
-  empty = 0
+  empty = 0,
+  notes = TRUE,
+  fast = FALSE
 )
 ```
 
@@ -158,6 +160,27 @@ ilm_describe_all(
   it has no non-missing values: 0 by default, or `NA`, or another number
   to mark such groups. Every other statistic of such a group is `NA`,
   and its `n` is 0.
+
+- notes:
+
+  `FALSE` leaves out the columns of sentences: `gauss_note` for numeric
+  columns, and `note` for categorical, logical and time columns. Every
+  other column is the same either way.
+
+- fast:
+
+  `TRUE` leaves out the costly parts of a description: it means
+  `gauss = "none"` and `dispersion = FALSE`, unless either is given; a
+  date-time's spacing is not worked out, so its `spacing`, `regular` and
+  `n_gaps` are `NA` and its note says nothing about spacing; and a text
+  column's case variants are not counted, so the categorical table has
+  no `case_variants` column and its note says nothing about them. In
+  `counts_tb`, values with the same count come in code-point order, the
+  order of their characters' numbers in Unicode, in which capitals come
+  before small letters (`"B"` before `"a"`); it is the same on every
+  machine. Without `fast` they come in the dictionary order of the
+  computer's language settings. A date's spacing, and every other
+  column, are kept.
 
 ## Value
 

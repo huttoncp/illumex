@@ -199,6 +199,67 @@ gaps” here is much better than discovering it when the model fails.
 Repeated dates are *described* rather than warned about: many units
 sharing a date is simply what long-format panel data looks like.
 
+## A quicker look at large data: `fast = TRUE`
+
+Most of the time
+[`ilm_describe_all()`](https://huttoncp.github.io/illumex/reference/ilm_describe_all.md)
+spends goes on a few columns that are worth having but not always needed
+on a first pass: the Gaussian index and its note, the dispersion ratio,
+the spacing of date-times, and the count of a text column’s case
+variants. `fast = TRUE` leaves those out and keeps everything else. On
+400,000 rows and 20 columns it took 15% to 23% of the default’s time.
+
+``` r
+
+fst <- ilm_describe_all(d, fast = TRUE)
+setdiff(names(r$numeric), names(fst$numeric))
+#> [1] "dispersion" "gauss"      "gauss_note"
+setdiff(names(r$categorical), names(fst$categorical))
+#> [1] "case_variants"
+same <- setdiff(names(fst$categorical), c("counts_tb", "note"))
+identical(fst$categorical[same], r$categorical[same])
+#> [1] TRUE
+```
+
+For numbers, `fast = TRUE` is `gauss = "none"` and `dispersion = FALSE`
+together, so the numeric table loses `gauss`, `gauss_note` and
+`dispersion` and keeps every other column unchanged. The categorical
+table loses `case_variants`, and its note says nothing about them. In
+its `counts_tb`, values with the same count come in code-point order,
+with capitals before small letters, which is the same on every machine;
+without `fast` they come in the dictionary order of your computer’s
+language settings. Every other column, and the logical and constant
+tables, are exactly the default’s. Either switch you give yourself wins,
+so the index can be kept while the rest stays quick:
+
+``` r
+
+names(ilm_describe_all(d, fast = TRUE, gauss = "index")$numeric)
+#>  [1] "variable"   "obs"        "n"          "na"         "sum"       
+#>  [6] "mean"       "sd"         "se"         "p0"         "p50"       
+#> [11] "p100"       "p_zero"     "gauss"      "gauss_note"
+```
+
+A date keeps its spacing. A date-time’s spacing is not worked out under
+`fast`: its `spacing`, `regular` and `n_gaps` are `NA`, and its note
+says nothing about spacing. Read that `NA` as “not checked”, never as
+“regular”.
+
+``` r
+
+stamps <- data.frame(when = as.POSIXct("2024-01-01", tz = "UTC") +
+                       c(0, 3600, 7200, 30000, 30600))
+ilm_describe(stamps, "when")[c("spacing", "regular", "n_gaps", "note")]
+#>   spacing regular n_gaps                                            note
+#> 1  hourly   FALSE      1 irregular, 1 gaps (AR(1) needs regular spacing)
+ilm_describe(stamps, "when", fast = TRUE)[c("spacing", "regular", "n_gaps", "note")]
+#>   spacing regular n_gaps note
+#> 1    <NA>      NA     NA
+```
+
+When the data look worth a closer look, describe them again without
+`fast`.
+
 ## Problems that belong to the whole data frame
 
 Some problems are not properties of any single variable.
@@ -274,7 +335,7 @@ ilm_plot(d, "income")
 #> ilm_plot: gauss 0.00 — right-skewed; heavy-tailed
 ```
 
-![](exploring-data_files/figure-html/unnamed-chunk-15-1.png)
+![](exploring-data_files/figure-html/unnamed-chunk-18-1.png)
 
 The subtitle is not decoration. A histogram of a skewed variable looks
 like a histogram; the annotation says how far from Gaussian it is and in
@@ -316,7 +377,7 @@ ilm_plot(big, "a", "b")
 #> ilm_plot: gauss 1.00  |  50000 points exceeds n_max = 5000, so density is drawn instead of points
 ```
 
-![](exploring-data_files/figure-html/unnamed-chunk-18-1.png)
+![](exploring-data_files/figure-html/unnamed-chunk-21-1.png)
 
 ### Choosing the geom yourself
 
@@ -368,7 +429,7 @@ ilm_plot(d, "grp", "score", geom = "violin", fill = "lightblue",
 #> ilm_plot: gauss 1.00
 ```
 
-![](exploring-data_files/figure-html/unnamed-chunk-21-1.png)
+![](exploring-data_files/figure-html/unnamed-chunk-24-1.png)
 
 ``` r
 
@@ -376,7 +437,7 @@ ilm_plot(d, "score", "income", by = "grp", palette = "Dark 2", alpha = 0.6)
 #> ilm_plot: gauss 0.00 — right-skewed; heavy-tailed
 ```
 
-![](exploring-data_files/figure-html/unnamed-chunk-22-1.png)
+![](exploring-data_files/figure-html/unnamed-chunk-25-1.png)
 
 ## Cleaning
 

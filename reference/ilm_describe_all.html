@@ -70,7 +70,9 @@ columns with different summaries are not forced into a common shape.</p>
 <span>  subset <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  subset_negate <span class="op">=</span> <span class="cn">FALSE</span>,</span>
 <span>  subset_fixed <span class="op">=</span> <span class="cn">FALSE</span>,</span>
-<span>  empty <span class="op">=</span> <span class="fl">0</span></span>
+<span>  empty <span class="op">=</span> <span class="fl">0</span>,</span>
+<span>  notes <span class="op">=</span> <span class="cn">TRUE</span>,</span>
+<span>  fast <span class="op">=</span> <span class="cn">FALSE</span></span>
 <span><span class="op">)</span></span></code></pre></div>
     </div>
 
@@ -193,6 +195,27 @@ as substrings. It changes nothing for a logical, positions or a sample.</p></dd>
 shows when it has no non-missing values: 0 by default, or <code>NA</code>, or
 another number to mark such groups. Every other statistic of such a
 group is <code>NA</code>, and its <code>n</code> is 0.</p></dd>
+
+
+<dt id="arg-notes">notes<a class="anchor" aria-label="anchor" href="#arg-notes"></a></dt>
+<dd><p><code>FALSE</code> leaves out the columns of sentences: <code>gauss_note</code> for
+numeric columns, and <code>note</code> for categorical, logical and time columns.
+Every other column is the same either way.</p></dd>
+
+
+<dt id="arg-fast">fast<a class="anchor" aria-label="anchor" href="#arg-fast"></a></dt>
+<dd><p><code>TRUE</code> leaves out the costly parts of a description: it means
+<code>gauss = "none"</code> and <code>dispersion = FALSE</code>, unless either is given; a
+date-time's spacing is not worked out, so its <code>spacing</code>, <code>regular</code> and
+<code>n_gaps</code> are <code>NA</code> and its note says nothing about spacing; and a text
+column's case variants are not counted, so the categorical table has no
+<code>case_variants</code> column and its note says nothing about them. In
+<code>counts_tb</code>, values with the same count come in code-point order, the
+order of their characters' numbers in Unicode, in which capitals come
+before small letters (<code>"B"</code> before <code>"a"</code>); it is the same on every
+machine. Without <code>fast</code> they come in the dictionary order of the
+computer's language settings. A date's spacing, and every other column,
+are kept.</p></dd>
 
 </dl></div>
     <div class="section level2">
