@@ -33,9 +33,8 @@ New:
   says nothing about them. In `counts_tb`, values with the same count come in
   code-point order (capitals before small letters), the same on every
   machine, not in the dictionary order of the language settings. Everything
-  else is as the default. On
-  400,000 rows and 20 columns it took 77% to 85% less time than the default,
-  and 40% to 49% less than the two switches alone
+  else is as the default. On 400,000 rows and 20 columns it took 77% to 85%
+  less time than the default, and 40% to 49% less than the two switches alone
   (`dev/describe_speed/results/time46_400k_v2_summary.txt`); on one text
   column of a million distinct values, 96% less than the default
   (`dev/describe_speed/results/time46_text_1m_summary.txt`).
