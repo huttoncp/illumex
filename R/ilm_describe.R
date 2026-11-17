@@ -386,6 +386,35 @@ ilm_empty_arg <- function(empty) {
   invisible(empty)
 }
 
+## `notes` and `fast` are TRUE or FALSE
+#' @keywords internal
+#' @noRd
+ilm_flag_arg <- function(x, name) {
+  if (!is.logical(x) || length(x) != 1L || is.na(x))
+    stop("`", name, "` must be TRUE or FALSE.", call. = FALSE)
+  invisible(x)
+}
+
+## the columns of sentences that notes = FALSE leaves out. They are dropped
+## by name from every table, so no table may give a column of data either
+## of these names.
+ILM_NOTE_COLS <- c("gauss_note", "note")
+
+## For the outermost call with notes = FALSE: the tables without their note
+## columns. `x` is one table or ilm_describe_all()'s list of them.
+#' @keywords internal
+#' @noRd
+ilm_drop_notes <- function(x) {
+  drop1 <- function(t) {
+    if (!is.data.frame(t)) return(t)
+    for (k in intersect(ILM_NOTE_COLS, names(t))) t[[k]] <- NULL
+    t
+  }
+  if (is.data.frame(x)) return(drop1(x))
+  for (i in seq_along(x)) x[[i]] <- drop1(x[[i]])
+  x
+}
+
 ## ilm_describe() and ilm_describe_all() call ilm_describe() for each column,
 ## so only the call the user made -- the outermost -- drops an n_inf column
 ## that is 0 throughout and says once what infinite values it met
@@ -569,10 +598,22 @@ ilm_describe_num <- function(x, digits = 3,
 
 #' @keywords internal
 #' @noRd
-ilm_describe_cat <- function(x, digits = 3, sep = "_", top = 3L, rare_n = 5L) {
+ilm_describe_cat <- function(x, digits = 3, sep = "_", top = 3L, rare_n = 5L,
+                             fast = FALSE) {
   obs <- length(x); nn <- fnobs(x); na <- obs - nn
   chr <- as.character(x); vals <- chr[!is.na(chr)]
-  tb <- sort(table(vals), decreasing = TRUE); nu <- length(tb)
+  if (fast) {
+    ## under fast the distinct values are counted without table(), which
+    ## sorts them in the locale's dictionary order; values with the same
+    ## count come in code-point order instead (radix sorts text in the C
+    ## locale, byte by byte, which for UTF-8 is code-point order). It
+    ## compares the stored bytes without translating, so values marked
+    ## latin1 beside UTF-8 ones would sort apart: the key is in UTF-8.
+    u <- unique(vals); k <- tabulate(match(vals, u), length(u))
+    o <- order(-k, enc2utf8(u), method = "radix")
+    tb <- stats::setNames(k[o], u[o])
+  } else tb <- sort(table(vals), decreasing = TRUE)
+  nu <- length(tb)
 
   out <- data.frame(
     obs = obs, n = nn, na = na,
@@ -588,13 +629,15 @@ ilm_describe_cat <- function(x, digits = 3, sep = "_", top = 3L, rare_n = 5L) {
     n_rare = sum(tb < rare_n),
     n_unused = if (is.factor(x)) sum(!(levels(x) %in% vals)) else 0L,
     ## tolower() stops on text that is not valid UTF-8, which has no case
-    ## variant anyway
-    case_variants = { u <- unique(vals); u <- u[validUTF8(u)]
-                      sum(table(tolower(trimws(u))) > 1L) },
+    ## variant anyway; under fast nothing is counted, and the column goes
+    case_variants = if (fast) NA else {
+      u <- unique(vals); u <- u[validUTF8(u)]
+      sum(table(tolower(trimws(u))) > 1L) },
     counts_tb = paste(sprintf("%s%s%d", names(tb)[seq_len(min(top, nu))],
                               sep, as.integer(tb)[seq_len(min(top, nu))]),
                       collapse = ", "),
     stringsAsFactors = FALSE)
+  if (fast) out$case_variants <- NULL
   z <- character(0)
   ## an ordered factor is a rating scale: a pile at its lowest or highest
   ## level comes first, as a numeric rating's does (item 292); its labels
@@ -608,7 +651,7 @@ ilm_describe_cat <- function(x, digits = 3, sep = "_", top = 3L, rare_n = 5L) {
                       if (n_bad == 1L) "value" else "values"))
   if (out$n_empty > 0) z <- c(z, sprintf("%d empty strings (not NA)", out$n_empty))
   if (out$n_unused > 0) z <- c(z, sprintf("%d unused levels", out$n_unused))
-  if (out$case_variants > 0) z <- c(z, sprintf("%d case/space variants", out$case_variants))
+  if (!fast && out$case_variants > 0) z <- c(z, sprintf("%d case/space variants", out$case_variants))
   if (out$n_rare > 0) z <- c(z, sprintf("%d rare levels (separation risk)", out$n_rare))
   if (is.finite(out$p_max) && out$p_max > 0.99) z <- c(z, "near-constant")
   out$note <- paste(utils::head(z, 2L), collapse = "; ")
@@ -653,16 +696,21 @@ ilm_label_spacing <- function(md, secs) {
 
 #' @keywords internal
 #' @noRd
-ilm_describe_time <- function(x, digits = 3) {
+ilm_describe_time <- function(x, digits = 3, fast = FALSE) {
   obs <- length(x); nn <- fnobs(x); na <- obs - nn
   xv <- x[!is.na(x)]; u <- sort(unique(xv)); secs <- inherits(x, "POSIXt")
-  d <- if (length(u) > 1L) as.numeric(diff(u), units = if (secs) "secs" else "days")
+  ## under fast a date-time's spacing -- the steps between its distinct
+  ## times and the most common one -- is not worked out; its columns are NA
+  ## and the note says nothing about spacing. A date's is kept.
+  spaced <- !(fast && secs)
+  d <- if (spaced && length(u) > 1L) as.numeric(diff(u), units = if (secs) "secs" else "days")
        else numeric(0)
   md <- if (length(d)) as.numeric(names(sort(table(round(d, 6)), decreasing = TRUE))[1]) else NA_real_
-  n_gaps <- if (length(d) && is.finite(md) && md > 0) sum(d > 1.5 * md) else 0L
+  n_gaps <- if (!spaced) NA_integer_
+            else if (length(d) && is.finite(md) && md > 0) sum(d > 1.5 * md) else 0L
   ## calendar steps are not constant in days, so allow variation proportional
   ## to the usual step; real gaps are still caught
-  regular <- length(d) > 0 && is.finite(md) &&
+  regular <- if (!spaced) NA else length(d) > 0 && is.finite(md) &&
     all(abs(d - md) <= pmax(1e-6, 0.15 * md))
 
   out <- data.frame(
@@ -671,15 +719,16 @@ ilm_describe_time <- function(x, digits = 3) {
     end   = if (length(u)) as.character(max(u)) else NA_character_,
     span_days = if (length(u) > 1L)
       ilm_rd(as.numeric(difftime(max(u), min(u), units = "days")), digits) else 0,
-    spacing = ilm_label_spacing(md, secs), regular = regular, n_gaps = n_gaps,
+    spacing = if (spaced) ilm_label_spacing(md, secs) else NA_character_,
+    regular = regular, n_gaps = n_gaps,
     n_dup_times = nn - length(u),
     tz = if (secs) { t0 <- attr(x, "tzone")
       if (is.null(t0) || !nzchar(t0[1])) "unset" else t0[1] } else NA_character_,
     stringsAsFactors = FALSE)
   z <- character(0)
-  if (!regular && n_gaps > 0)
+  if (spaced && !regular && n_gaps > 0)
     z <- c(z, sprintf("irregular, %d gaps (AR(1) needs regular spacing)", n_gaps))
-  else if (!regular) z <- c(z, "irregular spacing")
+  else if (spaced && !regular) z <- c(z, "irregular spacing")
   ## Repeated dates are the norm in long-format panel data -- many units share
   ## a date -- so this is described, not warned about. Duplicates only break
   ## AR(1) indexing WITHIN a group, which is visible when `by` is used.
@@ -769,6 +818,21 @@ ILM_CLASSES <- c("numeric", "categorical", "logical", "time")
 #'   shows when it has no non-missing values: 0 by default, or `NA`, or
 #'   another number to mark such groups. Every other statistic of such a
 #'   group is `NA`, and its `n` is 0.
+#' @param notes `FALSE` leaves out the columns of sentences: `gauss_note` for
+#'   numeric columns, and `note` for categorical, logical and time columns.
+#'   Every other column is the same either way.
+#' @param fast `TRUE` leaves out the costly parts of a description: it means
+#'   `gauss = "none"` and `dispersion = FALSE`, unless either is given; a
+#'   date-time's spacing is not worked out, so its `spacing`, `regular` and
+#'   `n_gaps` are `NA` and its note says nothing about spacing; and a text
+#'   column's case variants are not counted, so the categorical table has no
+#'   `case_variants` column and its note says nothing about them. In
+#'   `counts_tb`, values with the same count come in code-point order, the
+#'   order of their characters' numbers in Unicode, in which capitals come
+#'   before small letters (`"B"` before `"a"`); it is the same on every
+#'   machine. Without `fast` they come in the dictionary order of the
+#'   computer's language settings. A date's spacing, and every other column,
+#'   are kept.
 #' @section Missing and infinite values:
 #' For a numeric column, `n` is the number of finite values, and every
 #' statistic uses those only. `na` counts the missing values (`NA` and
@@ -808,9 +872,14 @@ ilm_describe <- function(data, y = NULL, by = NULL, digits = 3,
                           probs = c(0, 0.5, 1), skew = FALSE, kurt = FALSE,
                           dispersion = TRUE, rare_n = 5L,
                           cap = 0.06, min_n = 20L, smd = FALSE, subset = NULL, subset_negate = FALSE, subset_fixed = FALSE,
-                          empty = 0) {
+                          empty = 0, notes = TRUE, fast = FALSE) {
+  ilm_flag_arg(fast, "fast")
+  ## fast is gauss = "none" and dispersion = FALSE, unless either is given
+  if (fast && missing(gauss)) gauss <- "none"
+  if (fast && missing(dispersion)) dispersion <- FALSE
   gauss <- match.arg(gauss)
   ilm_empty_arg(empty)
+  ilm_flag_arg(notes, "notes")
   outer <- ilm_describe_enter()
   on.exit(ilm_describe_leave(), add = TRUE)
   if (inherits(data, "ilm_anomaly") && (!is.null(subset) || isTRUE(subset_negate)))
@@ -820,6 +889,7 @@ ilm_describe <- function(data, y = NULL, by = NULL, digits = 3,
   data <- rsel$data
   fin <- function(out) {
     if (outer) out <- ilm_inf_finish(out, "ilm_describe()", y, by)
+    if (outer && !notes) out <- ilm_drop_notes(out)
     ilm_select_finish(out, data, rsel, NULL, y)
   }
   ilm_smd_arg(smd, by)
@@ -831,10 +901,10 @@ ilm_describe <- function(data, y = NULL, by = NULL, digits = 3,
   ## the values are kept whole; `digits` is how they print
   one <- function(v) {
     if (is.logical(v)) ilm_describe_lgl(v, NULL)
-    else if (ilm_is_time(v)) ilm_describe_time(v, NULL)
+    else if (ilm_is_time(v)) ilm_describe_time(v, NULL, fast = fast)
     else if (is.numeric(v)) ilm_describe_num(v, NULL, gauss, probs, skew, kurt, dispersion,
                                              cap, min_n, scale = sc, empty = empty)
-    else ilm_describe_cat(v, NULL, rare_n = rare_n)
+    else ilm_describe_cat(v, NULL, rare_n = rare_n, fast = fast)
   }
 
   ## Resolving what is actually being described.
@@ -879,7 +949,7 @@ ilm_describe <- function(data, y = NULL, by = NULL, digits = 3,
       ilm_describe(data, cn, by = by, digits = digits, gauss = gauss,
                    probs = probs, skew = skew, kurt = kurt,
                    dispersion = dispersion, rare_n = rare_n,
-                   cap = cap, min_n = min_n, smd = smd, empty = empty))
+                   cap = cap, min_n = min_n, smd = smd, empty = empty, fast = fast))
     r <- do.call(rbind, rs)
     nrep <- nrow(r) / length(cols)
     return(fin(ilm_describe_result(cbind(variable = rep(cols, each = nrep), r,
@@ -1032,9 +1102,14 @@ ilm_describe_all <- function(data, by = NULL, cols = NULL, digits = 3,
                               probs = c(0, 0.5, 1), skew = FALSE, kurt = FALSE,
                               dispersion = TRUE, class = "all", rare_n = 5L,
                               cap = 0.06, min_n = 20L, smd = FALSE, cols_negate = FALSE, cols_fixed = FALSE, subset = NULL,
-                              subset_negate = FALSE, subset_fixed = FALSE, empty = 0) {
+                              subset_negate = FALSE, subset_fixed = FALSE, empty = 0,
+                              notes = TRUE, fast = FALSE) {
+  ilm_flag_arg(fast, "fast")
+  if (fast && missing(gauss)) gauss <- "none"
+  if (fast && missing(dispersion)) dispersion <- FALSE
   gauss <- match.arg(gauss)
   ilm_empty_arg(empty)
+  ilm_flag_arg(notes, "notes")
   outer <- ilm_describe_enter()
   on.exit(ilm_describe_leave(), add = TRUE)
   if (inherits(data, "ilm_anomaly") && (!is.null(subset) || isTRUE(subset_negate)))
@@ -1082,6 +1157,7 @@ ilm_describe_all <- function(data, by = NULL, cols = NULL, digits = 3,
   used <- c(cand[cl %in% want], if (identical(class, "all") && !is.null(const)) const$variable)
   fin <- function(out) {
     if (outer) out <- ilm_inf_finish(out, "ilm_describe_all()", NULL, by)
+    if (outer && !notes) out <- ilm_drop_notes(out)
     ilm_select_finish(out, data, rsel, cols, used, by, cols_negate, cols_fixed)
   }
   ## the groups are worked out once here, for every column described
@@ -1096,7 +1172,7 @@ ilm_describe_all <- function(data, by = NULL, cols = NULL, digits = 3,
       ilm_describe(data, cn, by = by, digits = digits, gauss = gauss,
                     probs = probs, skew = skew, kurt = kurt,
                     dispersion = dispersion, rare_n = rare_n,
-                    cap = cap, min_n = min_n, smd = smd, empty = empty))
+                    cap = cap, min_n = min_n, smd = smd, empty = empty, fast = fast))
     r <- do.call(rbind, rs)
     nrep <- nrow(r) / length(cols)
     cbind(variable = rep(cols, each = nrep), r, stringsAsFactors = FALSE)

@@ -25,7 +25,9 @@ ilm_describe_all(
   subset = NULL,
   subset_negate = FALSE,
   subset_fixed = FALSE,
-  empty = 0
+  empty = 0,
+  notes = TRUE,
+  fast = FALSE
 )
 }
 \arguments{
@@ -109,6 +111,23 @@ as substrings. It changes nothing for a logical, positions or a sample.}
 shows when it has no non-missing values: 0 by default, or \code{NA}, or
 another number to mark such groups. Every other statistic of such a
 group is \code{NA}, and its \code{n} is 0.}
+
+\item{notes}{\code{FALSE} leaves out the columns of sentences: \code{gauss_note} for
+numeric columns, and \code{note} for categorical, logical and time columns.
+Every other column is the same either way.}
+
+\item{fast}{\code{TRUE} leaves out the costly parts of a description: it means
+\code{gauss = "none"} and \code{dispersion = FALSE}, unless either is given; a
+date-time's spacing is not worked out, so its \code{spacing}, \code{regular} and
+\code{n_gaps} are \code{NA} and its note says nothing about spacing; and a text
+column's case variants are not counted, so the categorical table has no
+\code{case_variants} column and its note says nothing about them. In
+\code{counts_tb}, values with the same count come in code-point order, the
+order of their characters' numbers in Unicode, in which capitals come
+before small letters (\code{"B"} before \code{"a"}); it is the same on every
+machine. Without \code{fast} they come in the dictionary order of the
+computer's language settings. A date's spacing, and every other column,
+are kept.}
 }
 \value{
 A named list of data frames, one per class present, plus \code{constant}
